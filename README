@@ -1,0 +1,22 @@
+knowledge-db-app/
+├── config/
+│   └── db.php
+├── public/
+│   ├── index.php
+│   ├── login.php
+│   ├── logout.php
+│   ├── register.php
+│   ├── dashboard.php
+│   ├── create_article.php
+│   └── admin/
+│       ├── categories.php
+│       ├── users.php
+│       └── articles.php
+├── includes/
+│   ├── auth.php
+│   ├── functions.php
+│   └── header.php
+├── assets/
+│   └── css/style.css
+└── sql/
+    └── schema.sql

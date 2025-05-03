@@ -1,0 +1,13 @@
+>> Add multi-language feature
+>> Re-design the admin menu (header.php)
+>> Re-design the first page 
+    - arange artcles on two colums
+    - include other info like a left menu (expand/colapse) for borowsing categories
+    - any other idea?
+>> Think about other features for normal user
+    - add user types: 
+        - publisher - who publish an article
+        - contributor - update the article
+    - ...
+>> Add logging feature - log all the operations of the user into database
+>> 

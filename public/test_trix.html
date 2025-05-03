@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Trix</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.js"></script>
+</head>
+<body>
+
+<form method="POST">
+    <input id="content" type="hidden" name="content">
+    <trix-editor input="content"></trix-editor>
+    <button type="submit">Trimite</button>
+</form>
+
+</body>
+</html>
+
+CREATE USER 'root'@'localhost' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON *.* TO 'marius'@'localhost';
