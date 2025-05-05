@@ -88,11 +88,14 @@ $articles = $stmt->fetchAll();
 <div id="searchResults" style="margin-top:10px;"></div>
 
 <div id="defaultContent">
-
+    
+        <h2>Articole aprobate</h2>
     <?php if (count($articles) === 0): ?>
         <p>Niciun articol aprobat momentan.</p>
     <?php else: ?>
-        <?php 
+       
+        <div class="article-grid">
+            <?php 
             foreach ($articles as $a): 
             
 
@@ -106,30 +109,45 @@ $articles = $stmt->fetchAll();
                     $textOnly = strip_tags($content);
                     
                     // Scurtăm textul
-                    $shortText = shortenText($textOnly, 500);
+                    $shortText = shortenText($textOnly, 300);
                     
 
-                    $preview = truncateHtmlWithImages($a['content'], 500);
+                    $preview = truncateHtmlWithImages($a['content'], 100);
                     ?>
 
-                    <div class="article-preview">
-                        <div class="preview-text">
-                            <h3><?= escape($a['title']) ?></h3>
-                            <p><em>Autor: <?= escape($a['username']) ?> | Categorie: <?= escape($a['category']) ?> | Publicat: <?= formatDate($a['created_at']) ?></em></p>
-                            <p><?= nl2br(escape($shortText)) ?>...</p>
-                            <a href="view_article.php?id=<?= (int)$a['id'] ?>" style="color:blue;">Citește mai mult...</a>
-                        </div>
-
-                        <?php if ($image): ?>
-                            <div class="preview-image">
-                                <img src="<?= escape($image) ?>" alt="Imagine articol">
+                    <div class="article-card">
+                        
+                            <h3 class="artcle-title"><?= escape($a['title']) ?></h3>
+                            <div class="article-body">
+                                <p><?= nl2br(escape($shortText)) ?>...</>
                             </div>
-                        <?php endif; ?>
+                            <a class="read-more" href="view_article.php?id=<?= (int)$a['id'] ?>" style="color:blue;">Citește mai mult...</a>
+                            <div class="article-footer">
+                                <span class="article-meta">Autor: <?= escape($a['username']) ?> | Categorie: <?= escape($a['category']) ?> | Publicat: <?= formatDate($a['created_at']) ?></span>
+                            </div>
                     </div>
 
 
             <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 </div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const clampElements = document.querySelectorAll(".clamp-fallback");
+    clampElements.forEach(el => {
+        if (!CSS.supports("-webkit-line-clamp", "4") && !CSS.supports("line-clamp", "4")) {
+            const lineHeight = parseInt(window.getComputedStyle(el).lineHeight);
+            const maxHeight = lineHeight * 4; // 👈 4 lines
+            el.style.maxHeight = maxHeight + "px";
+            el.style.overflow = "hidden";
+            el.style.textOverflow = "ellipsis";
+        }
+    });
+});
+</script>
+
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

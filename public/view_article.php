@@ -21,6 +21,9 @@ $stmt = $db->prepare("
 $stmt->execute([$id]);
 $article = $stmt->fetch();
 
+
+logActivity($_SESSION['user']['id'], 'article_viewed', 'User ' .$_SESSION['user']['username'] .' viewed the article:'.$article['title']);
+
 if (!$article) {
     echo "Articol inexistent sau neaprobat.";
     exit;

@@ -24,11 +24,13 @@ $totalPages = ceil($totalArticles / $perPage);
 if (isset($_GET['approve'])) {
     $stmt = $db->prepare("UPDATE articles SET status='approved' WHERE id=?");
     $stmt->execute([$_GET['approve']]);
+    logActivity($_SESSION['user']['id'], 'article_approved', 'User ' .$_SESSION['user']['username'] .' approved an article');
 }
 
 if (isset($_GET['disable'])) {
     $stmt = $db->prepare("UPDATE articles SET status='pending' WHERE id=?");
     $stmt->execute([$_GET['disable']]);
+    logActivity($_SESSION['user']['id'], 'article_disabled', 'User ' .$_SESSION['user']['username'] .' disabled an article');
 }
 
 $stmt = $db->prepare("

@@ -1,6 +1,10 @@
-knowledge-db-app/
+mykdb
+├── README
+├── TODO
 ├── config/
-│   └── db.php
+│   ├── db.php
+│   ├── config.php
+│   ├── bootstrap.php   
 ├── public/
 │   ├── index.php
 │   ├── login.php
@@ -8,15 +12,28 @@ knowledge-db-app/
 │   ├── register.php
 │   ├── dashboard.php
 │   ├── create_article.php
+│   ├── edit_article.php
+│   ├── view_article.php
+│   ├── search_article.php
+│   ├── upload_image.php
 │   └── admin/
 │       ├── categories.php
 │       ├── users.php
+│       ├── approve_user.php
+│       ├── restore_user.php
 │       └── articles.php
 ├── includes/
 │   ├── auth.php
+│   ├── database.php
 │   ├── functions.php
+│   ├── footer.php
 │   └── header.php
 ├── assets/
-│   └── css/style.css
+│   ├── css/ 
+│   │   └──style.css
+│   ├── js/
+│   │   └── scripts.js
+│   └── images/
+
 └── sql/
     └── schema.sql

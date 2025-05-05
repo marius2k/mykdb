@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $db->prepare("INSERT INTO articles (title, content, category_id, user_id) VALUES (?, ?, ?, ?)");
         $stmt->execute([$title, $clean_content, $category_id, $user_id]);
+        // Log the creation
+        logActivity($user_id, 'create_article', 'User '. $_SESSION['user']['username'].' created the article:'. $_POST['title']);
         header('Location: dashboard.php');
         exit;
     }

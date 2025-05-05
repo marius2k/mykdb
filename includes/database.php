@@ -143,6 +143,12 @@ class Database {
     public function getPdo() {
         return $this->pdo;
     }
+
+    public function lastInsertedId(){
+
+        return (int) $this->pdo->lastInsertId();
+    }
+    
     
 }
 
@@ -157,3 +163,4 @@ function getDatabaseConnection() {
     
     return $db->getPdo(); // Returnează direct instanța PDO pentru compatibilitate
 }
+

@@ -37,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $db->prepare("INSERT INTO users (username, first_name, last_name, password, role, status) VALUES (?, ?, ?, ?, 'user', 'pending')");
             $stmt->execute([$username, $first_name, $last_name, $hash]);
+
+            logActivity($db->lastInsertedId(), 'register_user', 'User registered: ' . $username);
             header('Location: login.php');
             exit;
         }

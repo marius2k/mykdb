@@ -1,7 +1,11 @@
->> Add multi-language feature
+
+TO DO List
+====================================================================================================
+
+>> Add multi-language support
 >> Re-design the admin menu (header.php)
 >> Re-design the first page 
-    - arange artcles on two colums
+    - arange articles on two colums
     - include other info like a left menu (expand/colapse) for borowsing categories
     - any other idea?
 >> Think about other features for normal user
@@ -9,5 +13,16 @@
         - publisher - who publish an article
         - contributor - update the article
     - ...
->> Add logging feature - log all the operations of the user into database
+
+>> Add Profile Settings for user/admin
+>> Write a function to delete all atticles related to a category (used when delete a category);
 >> 
+
+
+
+ChangeLog
+===================================================================================================
+
+May 2025
+-------------
+>> Added "log activity" feature - log all the operations of the user into database

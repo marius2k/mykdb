@@ -115,3 +115,27 @@ function removeImageCaptionText($html) {
 function full_name($user) {
     return trim($user['first_name'] . ' ' . $user['last_name']);
 }
+
+
+
+/**
+ * Log user activity
+ *
+ * @param int|null $userId User ID (optional)
+ * @param string $actionType Type of action (e.g., 'login', 'logout', 'update')
+ * @param array $details Additional details (optional)
+ */
+function logActivity(int $userId = null, string $actionType, string $details = null) {
+    $db = new Database();
+    
+    $data = [
+        'user_id' => $userId,
+        'action_type' => $actionType,
+        'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+        'details' => $details ? json_encode($details) : null
+    ];
+    
+    $db->insert('activity_log', $data);
+}
+

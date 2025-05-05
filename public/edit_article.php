@@ -15,7 +15,11 @@ if (!$article) {
 
 // Doar autorul sau adminul poate edita
 if ($_SESSION['user']['id'] !== $article['user_id'] && $_SESSION['user']['role'] !== 'admin') {
+
+    logActivity($_SESSION['user']['id'], 'edit_article', 'User '. $_SESSION['user']['username'].'tried to edit an article without permission');
+
     die("Nu ai permisiunea să modifici acest articol.");
+    
 }
 
 // Preia categorii
@@ -47,7 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $db->prepare("UPDATE articles SET title = ?, content = ?, category_id = ?, status = 'pending' WHERE id = ?");
         $stmt->execute([$title, $clean_content, $category_id, $id]);
-
+        
+        // Log the edit
+        logActivity($_SESSION['user']['id'], 'edit_article', 'User '. $_SESSION['user']['username'].' edited an article');
+        
         header('Location: '. APP_URL . 'public/admin/articles.php?updated=1');
         exit;
     }

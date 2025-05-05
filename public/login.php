@@ -32,14 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($user) && $user['status'] == 'active'){
         $_SESSION['user'] = $user;
         header('Location: index.php');
+        logActivity($user['id'], 'login_success', 'User logged in'.$username);
         exit;
-    }elseif($user['status'] == 'pending'){
-            $error = 'Contul tău este în așteptare de aprobare.';
+    }elseif($user['status'] == 'disabled' || $user['status'] == 'pending'){
+            $error = 'Contul tău este dezactivat sau în așteptare de aprobare.';
+            logActivity($user['id'], 'login_failed','Login attempt for a disabled or inactive user: ' . $username);
             //exit;
             //$_SESSION['user']['role']=$user['role'];            
         
     } else {
         $error = 'Date incorecte.';
+        logActivity($_SESSION['user']['id'] ?? null, 'login_failed', 'Failed login attempt for username: ' . $username);
+        //exit;
     }
 }
 ?>

@@ -36,7 +36,7 @@ if (isset($_GET['disable']) && is_numeric($_GET['disable'])) {
     // Soft delete
     $stmt = $db->prepare("UPDATE users SET status = 'disabled' WHERE id = ?");
     $stmt->execute([$userIdToDisable]);
-
+    logActivity($userIdToDisable, 'user_disabled', 'User disabled: ' . $_SESSION['user']['username']);
     header('Location: users.php');
     exit;
 }

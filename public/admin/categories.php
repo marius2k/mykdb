@@ -26,6 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['name'])) {
 if (isset($_GET['delete'])) {
     $stmt = $db->prepare("DELETE FROM categories WHERE id = ?");
     $stmt->execute([$_GET['delete']]);
+    
+    // Log the deletion
+    logActivity($_SESSION['user']['id'], 'category_deleted', 'User'.$_SESSION['user']['username']. ' deleted category : ' . $_GET['delete']);
+  
     header('Location: categories.php');
     exit;
 }
