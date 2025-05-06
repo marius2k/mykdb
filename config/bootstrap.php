@@ -10,6 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // ✅ Load essentials
 require_once APP_ROOT . 'config/config.php';
 require_once APP_ROOT . 'config/db.php';
-require_once APP_ROOT . 'includes/database.php';
+require_once APP_ROOT . 'classes/database.php';
+require_once APP_ROOT . 'classes/usersettings.php';
 require_once APP_ROOT . 'includes/functions.php';
 require_once APP_ROOT . 'includes/auth.php';
