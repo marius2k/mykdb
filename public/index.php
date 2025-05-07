@@ -60,40 +60,65 @@ $stmt = $db->prepare("
 $stmt->execute($params);
 $articles = $stmt->fetchAll();
 
+if (isset($_SESSION['user']['id'])) {
 
-?>
+    // user is logged in
 
+    $db = new Database();
+
+    $userId = $_SESSION['user']['id'];
+    $settings = new UserSettings($db);
+    $currentSettings = $settings->getAll($userId);
+    $lang = $currentSettings['language'];
+    $theme = $currentSettings['theme'];
+    $_SESSION['settings'] = $currentSettings;
+
+}else {
+
+    // user not logged in
+    $lang = 'en';
+    $theme = 'light';
+}
 
 ?>
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
 
+<div class="search-category">
+    <div class="category-box">
+        <!-- Category filter -->
+        <form method="GET">
+            <select name="category" onchange="this.form.submit()">
+                <option value="">--<?= lang_all_categories; ?>--</option>
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?= $cat['id'] ?>" <?= (isset($_GET['category']) && $_GET['category'] == $cat['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($cat['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+    </div>
+    <div class="search-box">
+            <em><?=lang_search?>: </em> 
+            <input type="text" id="liveSearch" placeholder="<?=lang_search_placeholder; ?>" autocomplete="off">
+    </div>
 
-<!-- Category filter -->
-<form method="GET">
-    <select name="category" onchange="this.form.submit()">
-        <option value="">-- Toate categoriile --</option>
-        <?php foreach ($categories as $cat): ?>
-            <option value="<?= $cat['id'] ?>" <?= (isset($_GET['category']) && $_GET['category'] == $cat['id']) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($cat['name']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-</form>
+</div>
 
-<hr>
+<br>
 
 <!-- search results -->
 <div id="searchResults" style="margin-top:10px;"></div>
 
 <div id="defaultContent">
     
-        <h2>Articole aprobate</h2>
+        <h2><?=lang_articles?></h2>
     <?php if (count($articles) === 0): ?>
         <p>Niciun articol aprobat momentan.</p>
     <?php else: ?>
-       
+    
+    
         <div class="article-grid">
             <?php 
             foreach ($articles as $a): 
@@ -117,13 +142,13 @@ $articles = $stmt->fetchAll();
 
                     <div class="article-card">
                         
-                            <h3 class="artcle-title"><?= escape($a['title']) ?></h3>
+                            <h3 class="article-title"><?= escape($a['title']) ?></h3>
                             <div class="article-body">
-                                <p><?= nl2br(escape($shortText)) ?>...</>
+                                <p><?= nl2br(escape($shortText)) ?>...</d>
                             </div>
-                            <a class="read-more" href="view_article.php?id=<?= (int)$a['id'] ?>" style="color:blue;">Citește mai mult...</a>
+                            <a class="read-more" href="view_article.php?id=<?= (int)$a['id'] ?>" style="color:blue;"><?= lang_read_more; ?> </a>
                             <div class="article-footer">
-                                <span class="article-meta">Autor: <?= escape($a['username']) ?> | Categorie: <?= escape($a['category']) ?> | Publicat: <?= formatDate($a['created_at']) ?></span>
+                                <span class="article-meta"><?=lang_article_author?>:<?=escape($a['username']) ?> | <?=lang_article_category?>:<?=escape($a['category']) ?> | <?=lang_article_published?>:<?=formatDate($a['created_at']) ?>| <?=lang_article_updated?>:<?=formatDate($a['updated_at'])?></span>
                             </div>
                     </div>
 
@@ -131,6 +156,7 @@ $articles = $stmt->fetchAll();
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
+    
 </div>
 
 

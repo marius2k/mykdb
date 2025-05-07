@@ -1,8 +1,6 @@
 
 TO DO List
-====================================================================================================
-
->> Add multi-language support
+==================================================================================================== 
 >> Re-design the admin menu (header.php)
 >> Re-design the first page 
     - arange articles on two colums
@@ -13,8 +11,6 @@ TO DO List
         - publisher - who publish an article
         - contributor - update the article
     - ...
-
->> Add Profile Settings for user/admin
 >> Write a function to delete all atticles related to a category (used when delete a category);
 >> 
 
@@ -26,5 +22,5 @@ ChangeLog
 May 2025
 -------------
 >> Added "log activity" feature - log all the operations of the user into database
->>
->>
+>> Added multi-language support
+>> Added Profile Settings for user/admin

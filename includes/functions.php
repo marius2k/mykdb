@@ -138,4 +138,56 @@ function logActivity(int $userId = null, string $actionType, string $details = n
     
     $db->insert('activity_log', $data);
 }
+/**
+ * Get user setting from session
+ *
+ * @param string $key Setting key
+ * @param mixed $default Default value if setting not found
+ * @return mixed Setting value or default
+ */
+function getUserSetting(string $key, $default = null) {
+    return $_SESSION['settings'][$key] ?? $default;
+}
 
+
+function generateNavBar($role = 'guest') {
+
+    $currentPage = basename($_SERVER['SCRIPT_NAME']);
+   
+    //echo "Curent Page:".$currentPage;
+
+
+     $nav = '';
+
+    switch ($role) {
+        case 'admin':
+            $nav .= '
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="active">' : '>'). lang_home .'</a>
+                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="active">' : '>'). lang_dashboard . '</a>
+                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="active">' : '>'). lang_users. '</a>
+                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="active">' : '>').lang_categories.'</a>
+                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="active">' : '>').lang_articles.'</a>
+                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="active">' : '>').lang_settings.'</a>
+                <a href="'.APP_URL.'public/logout.php">'. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
+            break;
+
+        case 'user':
+            $nav .= '
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="active">' : '>').lang_home.'</a>
+                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="active">' : '>').lang_dashboard.'</a>
+                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="active">' : '>').lang_settings.'</a>
+                <a href="'.APP_URL.'public/logout.php">'.lang_logout. '('. escape($_SESSION['user']['username']).')</a>';
+            break;
+
+        default:
+            $nav .= '
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="active">' : '>').lang_home.'</a>
+                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="active">' : '>').lang_login.'</a>
+                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="active">' : '>').lang_register.'</a>';
+            break;
+    }
+
+    //echo "NavBar:".$nav;
+
+    return $nav;
+}

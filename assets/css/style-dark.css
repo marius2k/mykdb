@@ -594,9 +594,10 @@ a:hover {
 .article-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* ⚙️ Exact 2 coloane */
-    gap: 24px;
+    gap: 20px;
     padding: 20px;
-    max-width: 1200px;
+    /*max-width: 1200px;*/
+    width: 95%;
     margin: 0 auto;
     align-items: stretch;
 }
@@ -608,88 +609,6 @@ a:hover {
 }
 
 
-
-.article-card {
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 250px; /* sau auto dacă vrei dinamic */
-  }
-
-  .article-title {
-    background: #c5c2c2;
-    font-size: 1.4rem;
-    margin-bottom: 12px;
-    font-weight: bold;
-    color: #222;
-  } 
-  
-  .article-body {
-    flex-grow: 1;
-    font-size: 1.05rem;
-    color: #444;
-    overflow: hidden;
-  
-    /* 🔒 Primary - for WebKit (Chrome, Edge, Safari) */
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
-  
-    /* 🧪 Experimental standard property (not supported everywhere yet) */
-    line-clamp: 5;
-    box-orient: vertical;
-  
-    /* Optional fallback for old browsers: fixed height + overflow ellipsis */
-    max-height: 6.2em; /* assuming 1.24em line-height */
-    line-height: 1.24em;
-    text-overflow: ellipsis;
-  }
-  
-  .article-footer {
-    margin-top: 16px;
-    font-size: 0.85rem;
-    color: #666;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .read-more {
-    color: #078fce;
-    text-decoration: none;
-    font-size: small;
-  }
-  .read-more:hover {
-    text-decoration: underline;
-  }
-
-
-
-.article-card:hover {
-    transform: translateY(-3px);
-}
-
-
-
-.btn-read-more {
-    display: inline-block;
-    background-color: #007bff;
-    color: #fff;
-    padding: 6px 12px;
-    font-size: 0.9rem;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: background 0.3s;
-}
-.btn-read-more:hover {
-    background-color: #0056b3;
-}
 
 
 
@@ -1116,4 +1035,199 @@ button[disabled],
     flex-wrap: nowrap; /* forțăm pe un rând */
 }
 
+/* setari pentru headerul aplicatiei */
 
+.app-header {
+    background-color: rgb(95, 95, 95);
+    /*background: linear-gradient(to right,rgb(95, 95, 95),rgb(146, 146, 146));*/
+    padding:10px;
+    color: #111;
+}
+
+.nav-app-name {
+    color:white;
+    font-size: 40px;
+}
+.nav-header {
+    text-decoration: none;
+    color:white;
+}
+
+.nav-header a{
+    text-decoration: none;
+    color:white;
+}
+
+.nav-header a:hover{
+    text-decoration: none;
+    color:rgb(168, 168, 168);
+}
+
+/* setari pentru zona de selectie categorii si search box din index.php */
+
+.search-category {
+    width: 100%;
+    display: flex;
+    height: auto;
+    border-bottom: #6b6a6a 1px solid;
+}
+
+/*setari pentru search box in index.php */
+
+.search-box {
+    width: 50%;
+    box-sizing: border-box;
+    text-align: right;
+}
+
+/* setari pentru selectorul de categorii din index.php */
+
+.category-box {
+    width: 50%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+
+/* setari pentru drop-down de selectie tema/limba din header.php */
+
+.settings-bar {
+    float: right;
+    display: flex;
+    gap: 10px;
+    padding: 5px;
+}
+
+.settings-bar-text{
+    font-size: 1.0rem;
+    color: white;
+    margin-right: 5px;
+}
+
+.settings-dropdown {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+
+.article-card {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    /*padding: 16px 20px;*/
+    margin-bottom: 24px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 270px; /* sau auto dacă vrei dinamic */
+}
+  
+.article-title{
+    background: linear-gradient(to right,rgb(95, 95, 95),rgb(146, 146, 146));
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    font-weight: bold;
+    color: #faf9f9;
+    padding: 5px 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+} 
+
+
+.article-body {
+    flex-grow: 1;
+    font-size: 1.05rem;
+    color: #444;
+    overflow: hidden;
+  
+    /* 🔒 Primary - for WebKit (Chrome, Edge, Safari) */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  
+    /* 🧪 Experimental standard property (not supported everywhere yet) */
+    line-clamp: 5;
+    box-orient: vertical;
+  
+    /* Optional fallback for old browsers: fixed height + overflow ellipsis */
+    max-height: 6.2em; /* assuming 1.24em line-height */
+    line-height: 1.24em;
+    text-overflow: ellipsis;
+    padding: 5px 10px;
+}
+  
+.article-footer {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1px 5px;
+}
+  
+  .read-more {
+    color: #078fce;
+    text-decoration: none;
+    font-size: small;
+    padding: 5px 10px;
+  }
+  .read-more:hover {
+    text-decoration: underline;
+  }
+
+
+
+.article-card:hover {
+    transform: translateY(-3px);
+}
+
+
+
+.btn-read-more {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+.btn-read-more:hover {
+    background-color: #0056b3;
+}
+
+/* Add a black background color to the top navigation */
+.topnav {
+    
+    background-color: #808181;
+    /*background-color: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238));*/
+    overflow: hidden;
+ }
+  
+  /* Style the links inside the navigation bar */
+  .topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;   
+    text-decoration: none;
+    font-size: 17px;
+    padding: 8px 8px;
+  }
+  
+  /* Change the color of links on hover */
+  .topnav a:hover {
+    background-color: #a9aaaa;
+    color: rgb(10, 10, 10);
+  }
+  
+  /* Add a color to the active/current link */
+  .topnav a.active {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #f3f8f3;
+    color: rgb(0, 0, 0);
+  }

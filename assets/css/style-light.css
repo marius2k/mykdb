@@ -1,0 +1,1236 @@
+/* 1. Variabile și stiluri de bază */
+:root {
+    --primary-color: #47c1ca;
+    --primary-dark: #36afaf;
+    --secondary-color: #858796;
+    --success-color: #1cc88a;
+    --danger-color: #e74a3b;
+    --warning-color: #f6c23e;
+    --info-color: #36b9cc;
+    --light-color: #f8f9fc;
+    --dark-color: #5a5c69;
+    --body-bg: #f8f9fc;
+    --card-bg: #ffffff;
+    --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --border-radius: 0.35rem;
+    --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+/* 2. Reset și stiluri de bază */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--body-bg);
+    color: var(--dark-color);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+a:hover {
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+
+/* 3. Layout și container */
+.container {
+    max-width: 1200px;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem 0;
+}
+
+/* 4. Butoane */
+.btn {
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* 5. Carduri */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 1.5rem;
+    background-color: var(--card-bg);
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 1rem 1.35rem;
+    border-radius: calc(var(--border-radius) calc(var(--border-radius)) 0 0) !important;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* 6. Formulare */
+.form-control {
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d3e2;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* 7. Tabele */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+    border-collapse: collapse;
+}
+
+.table th {
+    background-color: #f8f9fc;
+    color: var(--dark-color);
+    font-weight: 700;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid #e3e6f0;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-top: 1px solid #e3e6f0;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* 8. Alert-uri și mesaje */
+.alert {
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* 9. Navigație */
+.navbar {
+    padding: 0.5rem 1rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+
+.nav-link {
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+}
+
+/* 10. Footer */
+.footer {
+    background-color: var(--dark-color);
+    color: white;
+    padding: 2rem 0;
+    margin-top: auto;
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.footer a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer h6 {
+    color: white;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+/* 11. Utilitare */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.shadow {
+    box-shadow: var(--box-shadow) !important;
+}
+
+/* 12. Responsive */
+@media (max-width: 768px) {
+    .navbar-collapse {
+        padding-top: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+/* 13. Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 14. Custom components */
+/* Back to top button */
+#back-to-top {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#back-to-top.show {
+    opacity: 1;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item.active {
+    color: var(--secondary-color);
+}
+
+/* Badges */
+.badge {
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+}
+
+.badge-primary {
+    background-color: var(--primary-color);
+}
+
+/* Progress bars */
+.progress {
+    height: 1rem;
+    border-radius: 0.35rem;
+    background-color: #eaecf4;
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+}
+
+/* Tooltips */
+.tooltip-inner {
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+}
+
+/* 15. Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --body-bg: #1a1a2e;
+        --card-bg: #16213e;
+        --dark-color: #e6e6e6;
+        --light-color: #0f3460;
+        --secondary-color: #b8b8b8;
+    }
+    
+    .card {
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    .table {
+        color: var(--dark-color);
+    }
+    
+    .table th {
+        background-color: #0f3460;
+        color: white;
+    }
+    
+    .form-control {
+        background-color: #0f3460;
+        border-color: #1a1a2e;
+        color: white;
+    }
+}
+.form-container {
+    max-width: 700px;
+    margin: 50px auto;
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.article-form .form-group {
+    margin-bottom: 20px;
+}
+
+.article-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.article-form input[type="text"],
+.article-form select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.article-form trix-editor {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-height: 200px;
+    padding: 10px;
+}
+
+.btn-primary {
+    background: #007BFF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+.form-errors {
+    background: #ffdddd;
+    border: 1px solid #ff5c5c;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 15px auto;
+}
+.article-content figure {
+    margin: 20px 0;
+    text-align: center;
+}
+.article-content a {
+    text-decoration: none;
+    color: inherit;
+}
+.article-content img,
+.article-preview img {
+    float: right;
+    max-width: 300px;
+    height: auto;
+    margin: 10px 0 10px 15px;
+    border: 3px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Asigurăm că layout-ul nu se rupe */
+.article-content::after,
+.article-preview::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.article-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.article-preview:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.article-preview .preview-text {
+    flex: 2;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.article-preview .preview-image {
+    flex: 1;
+    max-width: 300px;
+}
+
+.article-preview .preview-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+
+
+
+.btn-secondary {
+    background: #ccc;
+    color: #333;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    display: inline-block;
+    transition: background 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #bbb;
+}
+
+
+.articles-table {
+    width: 80%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 12px rgba(7, 0, 0, 0.1);
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.95rem;
+}
+
+.articles-table thead {
+    background-color: #bdbaba;
+    box-shadow: 0 4px 12px rgba(7, 0, 0, 0.1);
+}
+
+.articles-table th,
+.articles-table td {
+    padding: 10px;
+    /*text-align: left;*/
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.articles-table tbody tr:hover {
+    background-color: #f5f2f2;
+}
+
+
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 15px auto;
+}
+.article-content figure {
+    margin: 20px 0;
+    text-align: center;
+}
+.article-content a {
+    text-decoration: none;
+    color: inherit;
+}
+.article-content img,
+.article-preview img {
+    float: right;
+    max-width: 300px;
+    height: auto;
+    margin: 10px 0 10px 15px;
+    border: 3px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.article-preview img:hover {
+    transform: scale(1.2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Asigurăm că layout-ul nu se rupe */
+.article-content::after,
+.article-preview::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.article-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.article-preview .preview-text {
+    flex: 2;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.article-preview .preview-footer {
+    font-size: small;
+    color:#1f97c7
+}
+.article-preview .preview-image {
+    flex: 1;
+    max-width: 300px;
+}
+
+.article-preview .preview-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+
+
+
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* ⚙️ Exact 2 coloane */
+    gap: 20px;
+    padding: 20px;
+    /*max-width: 1200px;*/
+    width: 95%;
+    margin: 0 auto;
+    align-items: stretch;
+}
+
+@media (max-width: 768px) {
+    .article-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+
+.card-preview img {
+    max-height: 150px;         /* înălțime maximă permisă */
+    width: auto;               /* păstrează proporțiile */
+    float: right;              /* aliniere dreapta */
+    margin-left: 15px;
+    margin-bottom: 10px;
+    object-fit: contain;   
+}
+
+.card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.card-text {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6; /* ajustează după font */
+    line-clamp: 6;
+    box-orient: vertical;
+    line-height: 1.5rem; /* sau ce ai în sistem */
+    max-height: calc(1.5rem * 6); /* match cu line-clamp */
+}
+
+
+
+
+.card-content h2 {
+    font-size: 1.25rem;
+    margin: 0 0 10px;
+}
+
+.card-meta {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+
+.card-btn {
+    align-self: flex-start;
+    margin-top: auto;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+
+.card-btn:hover {
+    color: #0056b3;
+}
+
+
+.table-wrapper {
+    flex: 2;
+    min-width: 400px;
+    overflow-x: auto;
+}
+
+.table-wrapper-1 {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+}
+
+
+.btn-group {
+    display: flex;
+    width: 130px;
+    gap: 10px;
+    text-align: center;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: rgb(44, 45, 48);
+    flex: 1;
+    width: 130px;
+}
+
+.btn-view {
+    background-color: #c8d3dd;
+    width: 50px;
+}
+
+.btn-outline-grey {
+    background-color: transparent;
+    color: #72716f;
+    border: 1px solid #72716f;
+}
+
+.btn-outline-grey:hover {
+    background-color: #cfcecb;
+    color: rgb(5, 5, 5);
+}
+
+.btn-edit {
+    background-color: #8ab6e4;
+    width: 50px;
+}
+
+.btn-delete {
+    background-color: #eea2a9;
+    width: 50px;
+}
+
+.btn-approve {
+    background-color: #99c5a3;
+    width: 50px;
+}
+
+.btn-sm:hover {
+    opacity: 0.9;
+}
+
+.btn-add {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.btn-add:hover {
+    background-color: #218838;
+}
+
+.btn-add-inline {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 14px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-add-inline:hover {
+    background-color: #218838;
+}
+
+.btn-plus-icon {
+    display: block;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px 12px;
+    margin-left: 6px;
+    transition: color 0.2s ease;
+    text-align: left;
+}
+
+.btn-plus-icon:hover {
+    color: #007bff;
+    transform: scale(1.2);
+}
+
+.btn-toggle-add {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 10px;
+    text-align: left;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-toggle-add:hover {
+    color: #007bff;
+    transform: translateX(3px);
+}
+
+.btn-toggle-add span::before {
+    content: "+";
+    margin-right: 6px;
+    font-size: 1.1rem;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-icon:hover {
+    transform: scale(1.1);
+}
+
+.icon-img {
+    background:none;
+    width: 30px;
+    height: 30px;
+    border:none;
+    display: inline-flex;
+    margin: 0;
+    opacity: 0.4;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform-origin: center;
+}
+
+.btn-icon:hover .icon-img {
+    opacity: 1; /* complet vizibil la hover */
+    transform: rotate(90deg);
+}
+
+.rotate-on-hover {
+    transition: transform 0.3s ease;
+    transform-origin: center;
+}
+
+.btn-icon:hover .rotate-on-hover {
+    transform: rotate(90deg);
+}
+
+
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+
+/* Variantă globală pentru orice buton cu atribut `disabled` */
+button[disabled],
+.btn-disabled {
+    background-color: #ccc !important;
+    color: #666;
+    border: 1px solid #aaa;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.fake-disabled {
+    pointer-events: none;
+    color: #888;
+    background-color: #ddd;
+    border: 1px solid #bbb;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 3px;
+    background: #f0f0f0;
+    color: #333;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.pagination a:hover {
+    background: #ddd;
+}
+
+.pagination a.active {
+    background: #a0a0a0;
+    color: white;
+    font-weight: bold;
+}
+
+.pagination-footer {
+    text-align: center;
+    padding: 12px 0;
+    background-color: #fafafa;
+}
+
+.pagination-footer a {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 6px 12px;
+    background: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.pagination-footer a:hover {
+    background: #ddd;
+}
+
+.pagination-footer a.active {
+    background-color: #a0a0a0;
+    color: white;
+    font-weight: bold;
+}
+
+/* Formulare */
+
+.form-card {
+    background: #fff;
+    max-width: 450px;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.form-card-1 {
+    flex: 0 0 300px; /* fix: 300px */
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+
+.form-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-styled .form-group {
+    margin-bottom: 15px;
+}
+
+.form-styled label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-styled input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+}
+
+.form-styled input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.btn-primary.full-width {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-primary.full-width:hover {
+    background-color: #0056b3;
+}
+
+.form-errors {
+    background: #ffe0e0;
+    border-left: 5px solid #d9534f;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 40px; /* pentru spațiu lângă buton */
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.toggle-password:hover {
+    color: #000;
+}
+
+.categories-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: nowrap; /* forțăm pe un rând */
+}
+
+
+.app-header {
+    background-color: #1c7a92;
+    /*background: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238));*/
+    color:#fff;
+    padding:10px;
+    }
+
+.nav-app-name {
+        color:white;
+        font-size: 40px;
+}
+
+.nav-header {
+    text-decoration: none;
+    color:white;
+}
+
+.nav-header a {
+    text-decoration: none;
+    color:white;
+}
+
+.nav-header a:hover {
+    text-decoration: none;
+    color:rgb(160, 159, 159);
+}
+
+/* setari pentru zona de selectie categorii si search box din index.php */
+
+.search-category {
+    width: 100%;
+    display: flex;
+    height: auto;
+    border-bottom: #d3d3d3 1px solid;
+}
+
+/*setari pentru search box in index.php */
+
+.search-box {
+    width: 50%;
+    box-sizing: border-box;
+    text-align: right;
+    
+}
+
+/* setari pentru selectorul de categorii din index.php */
+
+.category-box {
+    width: 50%;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* setari pentru drop-down de selectie tema/limba din header.php */
+
+.settings-bar {
+    float: right;
+    display: flex;
+    gap: 10px;
+    padding: 5px;
+}
+
+.settings-bar-text{
+    font-size: 1.0rem;
+    color: white;
+    margin-right: 5px;
+}
+
+.settings-dropdown {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+
+
+
+.article-card {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    /*padding: 16px 20px;*/
+    margin-bottom: 24px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 270px; /* sau auto dacă vrei dinamic */
+}
+
+.article-title {
+    background: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238)); 
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    font-weight: bold;
+    color: #fffefe;
+    padding: 5px 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+} 
+
+
+.article-body {
+    flex-grow: 1;
+    font-size: 1.05rem;
+    color: #444;
+    overflow: hidden;
+  
+    /* 🔒 Primary - for WebKit (Chrome, Edge, Safari) */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  
+    /* 🧪 Experimental standard property (not supported everywhere yet) */
+    line-clamp: 5;
+    box-orient: vertical;
+  
+    /* Optional fallback for old browsers: fixed height + overflow ellipsis */
+    max-height: 6.2em; /* assuming 1.24em line-height */
+    line-height: 1.24em;
+    text-overflow: ellipsis;
+    padding: 5px 10px;
+}
+  
+.article-footer {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1px 5px;
+}
+  
+  .read-more {
+    color: #078fce;
+    text-decoration: none;
+    font-size: small;
+    padding: 5px 10px;
+  }
+  .read-more:hover {
+    text-decoration: underline;
+  }
+
+
+
+.article-card:hover {
+    transform: translateY(-3px);
+}
+
+
+
+.btn-read-more {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+.btn-read-more:hover {
+    background-color: #0056b3;
+}
+
+
+/* Add a black background color to the top navigation */
+.topnav {
+    
+    background-color: #1697ad;
+    /*background-color: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238));*/
+    overflow: hidden;
+ }
+  
+  /* Style the links inside the navigation bar */
+  .topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;   
+    text-decoration: none;
+    font-size: 17px;
+    padding: 8px 8px;
+  }
+  
+  /* Change the color of links on hover */
+  .topnav a:hover {
+    background-color: #36b1b9;
+    color: rgb(8, 8, 8);
+  }
+  
+  /* Add a color to the active/current link */
+  .topnav a.active {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #f3f8f3;
+    color: rgb(0, 0, 0);
+  }

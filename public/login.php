@@ -30,10 +30,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //$user = $stmt->fetch();
 
     if (($user) && $user['status'] == 'active'){
+        
+        //Authentificare reușită
+
         $_SESSION['user'] = $user;
         header('Location: index.php');
         logActivity($user['id'], 'login_success', 'User logged in'.$username);
+
+        $db = new Database();
+        
+        // Load user settings
+        $userSettings = new UserSettings($db);
+        $_SESSION['settings'] = $userSettings->getAll($user['id']);
+
+
         exit;
+        
     }elseif($user['status'] == 'disabled' || $user['status'] == 'pending'){
             $error = 'Contul tău este dezactivat sau în așteptare de aprobare.';
             logActivity($user['id'], 'login_failed','Login attempt for a disabled or inactive user: ' . $username);
