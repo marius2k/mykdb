@@ -936,6 +936,7 @@ button[disabled],
     margin: 50px auto;
     padding: 30px;
     border-radius: 8px;
+    /*border: #9c9c9c 1px solid;*/
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
@@ -953,10 +954,23 @@ button[disabled],
     margin-bottom: 20px;
 }
 
-.form-styled .form-group {
+.form-styled {
     margin-bottom: 15px;
+    border-radius: 4px;
+    border-color: #777;
+    border: #c5c3c3 1px solid;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: background 0.3s ease;
 }
 
+.form-group {
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border-color: #777;
+    /*border: #9c9c9c 1px solid;*/
+}
 .form-styled label {
     display: block;
     margin-bottom: 5px;
@@ -1104,6 +1118,13 @@ button[disabled],
     margin-right: 5px;
 }
 
+.settings-category-text{
+    font-size: 1.0rem;
+    color: rgb(129, 129, 129);
+    margin-right: 5px;
+}
+
+
 .settings-dropdown {
     padding: 4px 8px;
     border-radius: 4px;
@@ -1218,7 +1239,7 @@ button[disabled],
     text-align: center;   
     text-decoration: none;
     font-size: 17px;
-    padding: 8px 8px;
+    padding: 5px 8px;
   }
   
   /* Change the color of links on hover */
@@ -1234,3 +1255,9 @@ button[disabled],
     background-color: #f3f8f3;
     color: rgb(0, 0, 0);
   }
+
+  .profile-form input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+}

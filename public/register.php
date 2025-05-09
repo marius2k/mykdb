@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="password">Parolă:</label>
             <div class="password-wrapper">
                 <input type="password" name="password" id="password" required>
-                <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">👁️</button>
             </div>
         </div>
 
@@ -92,9 +92,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <small id="password-match-msg" style="color: red; display: none;">Parolele nu coincid</small>
         </div>
 
-        <button type="submit" class="btn-primary full-width">Creează cont</button>
+        <button type="submit" class="btn-primary full-width" >Creează cont</button>
     </form>
 </div>
+<script>
 
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirm_password');
+const message = document.getElementById('password-match-msg');
+const submitBtn = document.querySelector('button[type="submit"]');
+
+function validatePasswords() {
+    if (confirmPassword.value.length === 0) {
+        message.style.display = "none";
+        submitBtn.disabled = false;
+        return;
+    }
+
+    if (password.value !== confirmPassword.value) {
+        message.style.display = "block";
+        message.textContent = "Parolele nu coincid";
+        message.style.color = "red";
+        submitBtn.disabled = true;
+    } else {
+        message.style.display = "block";
+        message.textContent = "Parolele coincid ✔️";
+        message.style.color = "green";
+        submitBtn.disabled = false;
+    }
+}
+
+password.addEventListener('input', validatePasswords);
+confirmPassword.addEventListener('input', validatePasswords);
+
+
+</script>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

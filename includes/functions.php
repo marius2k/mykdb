@@ -162,28 +162,28 @@ function generateNavBar($role = 'guest') {
     switch ($role) {
         case 'admin':
             $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="active">' : '>'). lang_home .'</a>
-                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="active">' : '>'). lang_dashboard . '</a>
-                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="active">' : '>'). lang_users. '</a>
-                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="active">' : '>').lang_categories.'</a>
-                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="active">' : '>').lang_articles.'</a>
-                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="active">' : '>').lang_settings.'</a>
-                <a href="'.APP_URL.'public/logout.php">'. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>
+                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>
+                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang_users. '</a>
+                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang_categories.'</a>
+                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>
+                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_settings.'</a>
+                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
             break;
 
         case 'user':
             $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="active">' : '>').lang_home.'</a>
-                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="active">' : '>').lang_dashboard.'</a>
-                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="active">' : '>').lang_settings.'</a>
-                <a href="'.APP_URL.'public/logout.php">'.lang_logout. '('. escape($_SESSION['user']['username']).')</a>';
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
+                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> ').lang_dashboard.'</a>
+                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_settings.'</a>
+                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '.lang_logout. '('. escape($_SESSION['user']['username']).')</a>';
             break;
 
         default:
             $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="active">' : '>').lang_home.'</a>
-                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="active">' : '>').lang_login.'</a>
-                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="active">' : '>').lang_register.'</a>';
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
+                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang_login.'</a>
+                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang_register.'</a>';
             break;
     }
 

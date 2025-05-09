@@ -88,9 +88,10 @@ if (isset($_SESSION['user']['id'])) {
 <div class="search-category">
     <div class="category-box">
         <!-- Category filter -->
+        <em class="settings-category-text"><?=lang_categories?>: </em>
         <form method="GET">
-            <select name="category" onchange="this.form.submit()">
-                <option value="">--<?= lang_all_categories; ?>--</option>
+            <select name="category" onchange="this.form.submit()" class="settings-dropdown">
+                <option value="">--<?= lang_all_categories ?>--</option>
                 <?php foreach ($categories as $cat): ?>
                     <option value="<?= $cat['id'] ?>" <?= (isset($_GET['category']) && $_GET['category'] == $cat['id']) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($cat['name']) ?>
@@ -161,6 +162,7 @@ if (isset($_SESSION['user']['id'])) {
 
 
 <script>
+/*
 document.addEventListener("DOMContentLoaded", function () {
     const clampElements = document.querySelectorAll(".clamp-fallback");
     clampElements.forEach(el => {
@@ -173,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+*/
 </script>
 
 

@@ -5,6 +5,7 @@
 //$pass = '';
 //$charset = 'utf8mb4';
 
+
 $dsn = "mysql:host=". DB_HOST . ";dbname=" . DB_NAME . ";charset=". DB_CHARSET;
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

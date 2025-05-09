@@ -5,7 +5,10 @@
 require_once '../config/bootstrap.php';
 
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 logActivity($_SESSION['user']['id'] ?? null, 'logout', 'User logged out');
 session_destroy();
 

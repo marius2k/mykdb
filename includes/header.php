@@ -66,21 +66,47 @@ switch ($lang) {
         <div class="nav-app-name">🧠 <?= APP_NAME; ?></div>
         <div style="float: right;">
 
-            <form id="user-settings-form" method="post" action="<?=APP_URL?>public/update_settings.php">
-                <em class="settings-bar-text"><?=lang_select_theme?></em>
-                <select name="theme" onchange="this.form.submit()" class="settings-dropdown">
-                    <option value="light" <?= $theme === 'light' ? 'selected' : '' ?>>Light</option>
-                    <option value="dark" <?= $theme === 'dark' ? 'selected' : '' ?>>Dark</option>
-                </select>
-                <em class="settings-bar-text"><?=lang_select_language?></em>
-                <select name="lang" onchange="this.form.submit()" class="settings-dropdown">
-                    <option value="en" <?= $lang === 'en' ? 'selected' : '' ?>><?=lang_select_english?></option>
-                    <option value="ro" <?= $lang === 'ro' ? 'selected' : '' ?>><?=lang_select_romanian?></option>
-                    <!-- adaugă alte limbi dacă e cazul -->
-                </select>
-                <input type="hidden" name="redirect_back" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
-            </form>
+            <!-- User Dropdown -->
+            <?php if (is_logged_in()) { ?>
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                <div class="me-2 d-none d-md-block text-end">
+                                    <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'User') ?></div>
+                                    <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role'] ?? 'user') ?></div>
+                                </div>
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="<?php APP_URL ?>profile.php">
+                                        <i class="bi bi-person-fill me-2"></i><?=lang_profile?>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="<?php APP_URL ?>settings.php">
+                                        <i class="bi bi-gear-fill me-2"></i><?=lang_settings?>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="<?php APP_URL ?>settings.php">
+                                        <i class="bi bi-lightbulb-fill me-2"></i><?=lang_settings?>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="<?php APP_URL ?>logout.php">
+                                        <i class="bi bi-box-arrow-right me-2"></i><?=lang_logout?>
+                                    </a>
+                                </li>
+                            </ul>
+            <?php } else { ?>
 
+
+                                <a class="nav-link" href="<?php APP_URL ?>login.php">
+                                    <i class="bi bi-box-arrow-in-right fs-4"></i>
+                                    <div style="color: white; font-size: 15px;"><?=lang_login?></div>
+                                </a>
+            <?php } ?> 
+           
         </div>
         
     </div>
@@ -96,7 +122,24 @@ switch ($lang) {
                 echo $navbar;
             ?>
             </div>
-            
+            <div style="float: right; padding-right: 10px; padding-top: 5px; justify-content: space-between;">
+
+                <form id="user-settings-form" method="post" action="<?=APP_URL?>public/update_settings.php">
+                    <em class="settings-bar-text"><?=lang_select_theme?></em>
+                    <select name="theme" onchange="this.form.submit()" class="settings-dropdown">
+                        <option value="light" <?= $theme === 'light' ? 'selected' : '' ?>>Light</option>
+                        <option value="dark" <?= $theme === 'dark' ? 'selected' : '' ?>>Dark</option>
+                    </select>
+                    <em class="settings-bar-text"><?=lang_select_language?></em>
+                    <select name="lang" onchange="this.form.submit()" class="settings-dropdown">
+                        <option value="en" <?= $lang === 'en' ? 'selected' : '' ?>><?=lang_select_english?></option>
+                        <option value="ro" <?= $lang === 'ro' ? 'selected' : '' ?>><?=lang_select_romanian?></option>
+                        <!-- adaugă alte limbi dacă e cazul -->
+                    </select>
+                    <input type="hidden" name="redirect_back" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
+                </form>
+
+            </div>
         </div>   
         
 

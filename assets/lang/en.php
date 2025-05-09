@@ -42,6 +42,6 @@ define(constant_name:'lang_select_english',value:'English');
 define(constant_name:'lang_select_romanian',value:'Romanian');
 define(constant_name:'lang_select_language',value:'Language');
 define(constant_name:'lang_select_theme',value:'Theme');
-
+define(constant_name:'lang_profile',value:'My Profile');
 
 ?>

@@ -1,9 +1,8 @@
 
 TO DO List
 ==================================================================================================== 
->> Re-design the admin menu (header.php)
+
 >> Re-design the first page 
-    - arange articles on two colums
     - include other info like a left menu (expand/colapse) for borowsing categories
     - any other idea?
 >> Think about other features for normal user
@@ -12,9 +11,12 @@ TO DO List
         - contributor - update the article
     - ...
 >> Write a function to delete all atticles related to a category (used when delete a category);
->> 
-
-
+>> re-arange navbar menu 
+    - add admin/user features under one menu option
+>> re-design of the article box 
+    - include small icon in article title based on category
+>> add "back-to-top" button
+>> BUG: theme and language is changeing instantelly only from Home (index.php). If I change them from other pages, it isn't applied immediately (onChage event of dropdown list)  
 
 ChangeLog
 ===================================================================================================
@@ -24,3 +26,10 @@ May 2025
 >> Added "log activity" feature - log all the operations of the user into database
 >> Added multi-language support
 >> Added Profile Settings for user/admin
+    - user can modify the profile information (first and last name, email)
+>> Re-designed the user/admin menu using tabs
+>> Added Bootstrap icons on NavBar
+>> Added User Dropdown box for Prifile, Settings and Logout 
+>> Added User Profile Settings icon/menu on top-right corner  
+>> Solved BUG: when go to profile section (profile.php), the user's seesion is destroyed, NavBar is built as "guest". If you click on My Profile option on top-right corner, the admin (previus logged user) info is displayed.
+>> Implemented Change Password feature for user/admin

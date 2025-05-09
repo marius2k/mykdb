@@ -14,3 +14,5 @@ require_once APP_ROOT . 'classes/database.php';
 require_once APP_ROOT . 'classes/usersettings.php';
 require_once APP_ROOT . 'includes/functions.php';
 require_once APP_ROOT . 'includes/auth.php';
+
+

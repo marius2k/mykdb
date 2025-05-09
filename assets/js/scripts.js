@@ -37,8 +37,9 @@ const searchArticles = async () => {
 input.addEventListener('input', debounce(searchArticles, 300));
 
 
-function togglePasswordVisibility() {
-    const passwordInput = document.getElementById("password");
+function togglePasswordVisibility(inputId) {
+    const passwordInput = document.getElementById(inputId);
+    //const passwordInput = document.getElementById("password");
     const toggleBtn = document.querySelector(".toggle-password");
 
     if (passwordInput.type === "password") {
@@ -51,34 +52,55 @@ function togglePasswordVisibility() {
 }
 
 
-// Function to toggle password visibility
+/**
+ * Inițializează tooltip-urile Bootstrap
+ */
+function initTooltips() {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, {
+            trigger: 'hover'
+        });
+    });
+}
 
+/**
+ * Inițializează popover-urile Bootstrap
+ */
+function initPopovers() {
+    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl, {
+            trigger: 'focus'
+        });
+    });
+}
 
-const password = document.getElementById('password');
-const confirmPassword = document.getElementById('confirm_password');
-const message = document.getElementById('password-match-msg');
-const submitBtn = document.querySelector('button[type="submit"]');
-
-function validatePasswords() {
-    if (confirmPassword.value.length === 0) {
-        message.style.display = "none";
-        submitBtn.disabled = false;
-        return;
-    }
-
-    if (password.value !== confirmPassword.value) {
-        message.style.display = "block";
-        message.textContent = "Parolele nu coincid";
-        message.style.color = "red";
-        submitBtn.disabled = true;
-    } else {
-        message.style.display = "block";
-        message.textContent = "Parolele coincid ✔️";
-        message.style.color = "green";
-        submitBtn.disabled = false;
+/**
+ * Buton "Back to Top"
+ */
+function initBackToTop() {
+    const backToTopButton = document.getElementById('back-to-top');
+    
+    if (backToTopButton) {
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 }
 
-password.addEventListener('input', validatePasswords);
-confirmPassword.addEventListener('input', validatePasswords);
+
+
+// Function to toggle password visibility
+
+
 // Function to handle the form submission
