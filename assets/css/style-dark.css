@@ -958,19 +958,34 @@ button[disabled],
     border-radius: 4px;
     border-color: #777;
     border: #c5c3c3 1px solid;
-    padding: 20px;
+    /*padding: 20px;*/
     background: #ffffff;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transition: background 0.3s ease;
 }
 
+.form-styled-title {
+    text-align: left;
+    font-size: 1.2rem;
+    padding: 0 0 0 10px;
+    background-color: #979797;
+}
+.form-styled-body{
+    padding: 20px;
+    
+}
 .form-group {
     margin-bottom: 15px;
     border-radius: 4px;
     border-color: #777;
     /*border: #9c9c9c 1px solid;*/
 }
-
+.form-group-1 {
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: #cecdcd 1px solid;
+    padding: 20px;
+}
 .form-styled label {
     display: block;
     margin-bottom: 5px;
@@ -1255,3 +1270,10 @@ button[disabled],
     padding: 8px;
     margin-top: 4px;
 }
+
+.avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+  }
+  

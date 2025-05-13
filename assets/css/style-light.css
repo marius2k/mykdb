@@ -1,7 +1,7 @@
 /* 1. Variabile și stiluri de bază */
 :root {
-    --primary-color: #47c1ca;
-    --primary-dark: #36afaf;
+    --primary-color: #48bec7;
+    --primary-dark: #31a3a3;
     --secondary-color: #858796;
     --success-color: #1cc88a;
     --danger-color: #e74a3b;
@@ -68,6 +68,7 @@ a:hover {
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
+
 }
 
 .btn-primary:hover {
@@ -959,11 +960,24 @@ button[disabled],
     border-radius: 4px;
     border-color: #777;
     border: #c5c3c3 1px solid;
-    padding: 20px;
+    /*padding: 20px;*/
     background: #ffffff;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transition: background 0.3s ease;
 }
+.form-styled-title {
+    text-align: left;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 0 0 0 10px;
+    background-color: #01b0b6;
+    color: #ffffff;
+}
+.form-styled-body{
+    padding: 20px;
+    
+}
+
 
 .form-group {
     margin-bottom: 15px;
@@ -971,6 +985,14 @@ button[disabled],
     border-color: #777;
     /*border: #9c9c9c 1px solid;*/
 }
+
+.form-group-1 {
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: #cecdcd 1px solid;
+    padding: 20px;
+}
+
 .form-styled label {
     display: block;
     margin-bottom: 5px;
@@ -1261,3 +1283,10 @@ button[disabled],
     padding: 8px;
     margin-top: 4px;
 }
+
+.avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+  }
+  

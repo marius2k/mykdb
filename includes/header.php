@@ -73,7 +73,17 @@ switch ($lang) {
                                     <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'User') ?></div>
                                     <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role'] ?? 'user') ?></div>
                                 </div>
-                                <i class="bi bi-person-circle fs-4"></i>
+                                <?php
+                                       if (isset($_SESSION['user']['profile_picture']) && $_SESSION['user']['profile_picture'] != '') {
+                                            $profilePicture = APP_URL . 'uploads/profile_pics/' . $_SESSION['user']['profile_picture'];
+                                            echo '<img src="'. htmlspecialchars($profilePicture) . '" class="avatar" alt="Avatar" width="60" height="60">';
+                                        } else {
+                                            $profilePicture = APP_URL . 'uploads/profile_pics/default-profile.png';
+                                            echo '<img src="'. htmlspecialchars($profilePicture) . '" class="avatar" alt="Avatar" width="60" height="60">';
+                                        }
+                                ?>
+
+
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>

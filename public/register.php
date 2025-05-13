@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="password">Parolă:</label>
             <div class="password-wrapper">
                 <input type="password" name="password" id="password" required>
-                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">👁️</button>
+                <button type="button" id="btn-password" class="toggle-password" onclick="togglePasswordVisibility('password','btn-password')">👁️</button>
             </div>
         </div>
 

@@ -16,20 +16,24 @@ TO DO List
 >> re-design of the article box 
     - include small icon in article title based on category
 >> add "back-to-top" button
->> BUG: theme and language is changeing instantelly only from Home (index.php). If I change them from other pages, it isn't applied immediately (onChage event of dropdown list)  
+>> BUG: theme and language is changing instantelly only from Home (index.php). If I change them from other pages, it isn't applied immediately (onChage event of dropdown list)  
+
+
 
 ChangeLog
 ===================================================================================================
 
 May 2025
 -------------
->> Added "log activity" feature - log all the operations of the user into database
->> Added multi-language support
->> Added Profile Settings for user/admin
+>> added "log activity" feature - log all the operations of the user into database
+>> added multi-language support
+>> added Profile Settings for user/admin
     - user can modify the profile information (first and last name, email)
->> Re-designed the user/admin menu using tabs
->> Added Bootstrap icons on NavBar
->> Added User Dropdown box for Prifile, Settings and Logout 
->> Added User Profile Settings icon/menu on top-right corner  
->> Solved BUG: when go to profile section (profile.php), the user's seesion is destroyed, NavBar is built as "guest". If you click on My Profile option on top-right corner, the admin (previus logged user) info is displayed.
+>> re-designed the user/admin menu using tabs
+>> added Bootstrap icons on NavBar
+>> added User Dropdown box for Prifile, Settings and Logout 
+>> added User Profile Settings icon/menu on top-right corner  
+>> solved BUG: when go to profile section (profile.php), the user's seesion is destroyed, NavBar is built as "guest". If you click on My Profile option on top-right corner, the admin (previus logged user) info is displayed.
 >> Implemented Change Password feature for user/admin
+>> added profile photo for user and implemented the change of it;
+>> added log activities - display all activities performed by users/admins

@@ -37,10 +37,11 @@ const searchArticles = async () => {
 input.addEventListener('input', debounce(searchArticles, 300));
 
 
-function togglePasswordVisibility(inputId) {
+function togglePasswordVisibility(inputId,btnVisible) {
     const passwordInput = document.getElementById(inputId);
     //const passwordInput = document.getElementById("password");
-    const toggleBtn = document.querySelector(".toggle-password");
+    //const toggleBtn = document.querySelector(".toggle-password");
+    const toggleBtn = document.getElementById(btnVisible);
 
     if (passwordInput.type === "password") {
         passwordInput.type = "text";
