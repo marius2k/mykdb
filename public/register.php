@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Simple HTML register form -->
 
 <div class="form-card">
-    <h2>📝 Înregistrare cont nou</h2>
+    <h2>📝 <?=lang_reg_msg_top?></h2>
 
     <?php if (!empty($errors)): ?>
         <div> class="form-errors">
@@ -64,22 +64,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" class="form-styled">
         <div class="form-group">
-            <label for="first_name">Prenume:</label>
+            <label for="first_name"><?=lang_reg_fname?></label>
             <input type="text" name="first_name" id="first_name" required>
         </div>
 
         <div class="form-group">
-            <label for="last_name">Nume:</label>
+            <label for="last_name"><?=lang_reg_lname?></label>
             <input type="text" name="last_name" id="last_name" required>
         </div>
 
         <div class="form-group">
-            <label for="username">Username:</label>
+            <label for="username"><?=lang_reg_username?></label>
             <input type="text" name="username" id="username" required>
         </div>
 
         <div class="form-group password-toggle-group">
-            <label for="password">Parolă:</label>
+            <label for="password"><?=lang_reg_pass?></label>
             <div class="password-wrapper">
                 <input type="password" name="password" id="password" required>
                 <button type="button" id="btn-password" class="toggle-password" onclick="togglePasswordVisibility('password','btn-password')">👁️</button>
@@ -87,12 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="form-group password-toggle-group">
-            <label for="confirm_password">Confirmă parolă:</label>
+            <label for="confirm_password"><?=lang_reg_pass_confirm?></label>
             <input type="password" name="confirm_password" id="confirm_password" required>
-            <small id="password-match-msg" style="color: red; display: none;">Parolele nu coincid</small>
+            <small id="password-match-msg" style="color: red; display: none;"><?=lang_reg_pass_nomatch?></small>
         </div>
 
-        <button type="submit" class="btn-primary full-width" >Creează cont</button>
+        <button type="submit" class="btn-primary full-width" ><?=lang_reg_btn_create?></button>
     </form>
 </div>
 <script>
@@ -111,12 +111,12 @@ function validatePasswords() {
 
     if (password.value !== confirmPassword.value) {
         message.style.display = "block";
-        message.textContent = "Parolele nu coincid";
+        message.textContent = "<?=lang_reg_pass_nok ?>";
         message.style.color = "red";
         submitBtn.disabled = true;
     } else {
         message.style.display = "block";
-        message.textContent = "Parolele coincid ✔️";
+        message.textContent = "<?=lang_reg_pass_ok ?> ✔️";
         message.style.color = "green";
         submitBtn.disabled = false;
     }

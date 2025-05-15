@@ -64,16 +64,16 @@ $articles = $db->query("
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
-<h2>Articole</h2>
+<h2><?=lang_art_articles?></h2>
 <table class="articles-table">
     <thead>
         <tr>
             <th align="center">#</th>
-            <th>Titlu</th>
-            <th>Autor</th>
-            <th>Categorie</th>
-            <th>Status</th>
-            <th>Acțiuni</th>
+            <th><?=lang_art_title?></th>
+            <th><?=lang_art_author?></th>
+            <th><?=lang_art_category?></th>
+            <th><?=lang_art_status?></th>
+            <th><?=lang_art_actions?></th>
         </tr>
     </thead>
     <tbody>
@@ -88,13 +88,13 @@ $articles = $db->query("
             <td><?= $a['status'] ?></td>
             <td>
                 
-                <a href="../view_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">👁️  Vizualizeaza</a>
-                <a href="../edit_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✏️ Editeaza</a>
+                <a href="../view_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">👁️ <?=lang_btn_view?></a>
+                <a href="../edit_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✏️ <?=lang_btn_edit?></a>
                 
                 <?php if ($a['status'] == 'pending'): ?>
-                    <a href="?approve=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✅ Aproba</a>
+                    <a href="?approve=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✅ <?=lang_btn_approve?></a>
                 <?php else: ?>
-                    <a href="?disable=<?= $a['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('Dezactivezi acest articol?')">🗑️ Dezactiveaza</a>
+                    <a href="?disable=<?= $a['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('<?=lang_art_msg_disable?>')">🗑️ <?=lang_btn_disable?></a>
                 <?php endif; ?>
             <?php $x++; ?>
             </td>

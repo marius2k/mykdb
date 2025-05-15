@@ -37,7 +37,7 @@ if (isset($_GET['delete'])) {
 
 // paginate categories
 
-$perPage = 2;
+$perPage = 5;
 $totalStmt = $db->query("SELECT COUNT(*) FROM categories");
 $totalCategories = $totalStmt->fetchColumn();
 $totalPages = ceil($totalCategories / $perPage);
@@ -62,7 +62,7 @@ $categories = $stmt->fetchAll();
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
 
-<h2>📁 Categorii</h2>
+<h2><?=lang_cat_categories?></h2>
 
 <table class="articles-table" id="categories-table">
     <thead>
@@ -72,9 +72,9 @@ $categories = $stmt->fetchAll();
               <img src="../../assets/images/btn_add_icon.png" alt="Add" class="icon-img rotate-on-hover">
               </button>
             </th>
-            <th>Nume</th>
-            <th>Descriere</th>
-            <th>Acțiuni</th>
+            <th><?=lang_cat_name?></th>
+            <th><?=lang_cat_description?></th>
+            <th><?=lang_cat_actions?></th>
         </tr>
     </thead>
     <tbody>
@@ -91,9 +91,9 @@ $categories = $stmt->fetchAll();
         <tr id="add-form-row" style="display: none;">
             <form method="POST">
                 <td align="center">-></td>
-                <td><input type="text" name="name" placeholder="Categorie" required></td>
-                <td><input type="text" name="description" placeholder="Descriere"></td>
-                <td><button type="submit" class="btn-sm btn-outline-grey">✅ Salvează</button></td>
+                <td><input type="text" name="name" placeholder="<?=lang_cat_category?>" required></td>
+                <td><input type="text" name="description" placeholder="<?=lang_cat_description?>"></td>
+                <td><button type="submit" class="btn-sm btn-outline-grey">✅ <?=lang_btn_save?></button></td>
             </form>
         </tr>
 
@@ -105,8 +105,8 @@ $categories = $stmt->fetchAll();
                 <td><?= escape($c['description']) ?></td>
                 <td>
                     <div class="action-grid">
-                        <a href="edit_category.php?id=<?= $c['id'] ?>" class="btn-sm btn-outline-grey">✏️ Editeaza</a>
-                        <a href="delete_category.php?id=<?= $c['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('Ștergi această categorie?')">🗑️ Sterge</a>
+                        <a href="edit_category.php?id=<?= $c['id'] ?>" class="btn-sm btn-outline-grey">✏️ <?=lang_btn_edit?></a>
+                        <a href="delete_category.php?id=<?= $c['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('<?=lang_cat_msg_delete?>')">🗑️ <?=lang_btn_delete?></a>
                     </div>
                 </td>
             </tr>

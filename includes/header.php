@@ -23,6 +23,10 @@ if (isset($_SESSION['user']) && !isset($_SESSION['settings'])) {
 $theme = $_SESSION['settings']['theme'] ?? 'light';
 $lang = $_SESSION['settings']['language'] ?? 'en';
 
+
+//echo "header.php: theme:" . $theme . "language: ".$lang;
+
+
 //echo "<body class='theme-$theme'>";
 //echo "Settings->Theme: ".$theme;
 //echo " Settings->Lang: ".$lang;
@@ -86,27 +90,10 @@ switch ($lang) {
 
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="<?php APP_URL ?>profile.php">
-                                        <i class="bi bi-person-fill me-2"></i><?=lang_profile?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="<?php APP_URL ?>settings.php">
-                                        <i class="bi bi-gear-fill me-2"></i><?=lang_settings?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="<?php APP_URL ?>settings.php">
-                                        <i class="bi bi-lightbulb-fill me-2"></i><?=lang_settings?>
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="<?php APP_URL ?>logout.php">
-                                        <i class="bi bi-box-arrow-right me-2"></i><?=lang_logout?>
-                                    </a>
-                                </li>
+                                    <?php
+                                        $aMenu = generateAvatarMenu($_SESSION['user']['role']);
+                                        echo $aMenu;
+                                    ?>
                             </ul>
             <?php } else { ?>
 

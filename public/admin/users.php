@@ -58,19 +58,19 @@ $totalPages = ceil($totalUsers / $perPage);
 
 ?>
 
-<?php include APP_ROOT . 'includes/header.php'; ?>
+<?php include APP_ROOT . '/includes/header.php'; ?>
 
-<h2>Users</h2>
+<h2><?=lang_users?></h2>
 <div>
     <table class="articles-table">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Username</th>
-                <th>Rol</th>
-                <th>Status</th>
-                <th>Nume si Prenume</th>
-                <th>Acțiuni</th>
+                <th><?=lang_users_username?></th>
+                <th><?=lang_users_role?></th>
+                <th><?=lang_users_status?></th>
+                <th><?=lang_users_name?></th>
+                <th><?=lang_users_actions?></th>
             </tr>
         </thead>
         <tbody>
@@ -84,27 +84,27 @@ $totalPages = ceil($totalUsers / $perPage);
                 <td>
                         <?php if ($user['status'] === 'pending'): ?>
                                 <div class="btn-group">                   
-                                <a href="approve_user.php?id=<?= $user['id'] ?>" class="btn-sm btn-outline-grey">✅ Aproba</a>
+                                <a href="approve_user.php?id=<?= $user['id'] ?>" class="btn-sm btn-outline-grey">✅ <?=lang_btn_approve?></a>
                                 </div>
                         <?php else: ?>
                                 <?php if ($user['status'] === 'disabled'): ?>
                                     <?php if ($user['role'] === 'admin'): ?>
                                         <div class="btn-group">
-                                        <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">♻️ Activeaza</a>
+                                        <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">♻️ <?=lang_btn_enable?></a>
                                         </div>
                                     <?php else: ?>
                                         <div class="btn-group">
-                                        <a href="restore_user.php?id=<?= $user['id'] ?>" class="btn-sm btn-outline-grey">♻️ Activeaza</a>
+                                        <a href="restore_user.php?id=<?= $user['id'] ?>" class="btn-sm btn-outline-grey">♻️ <?=lang_btn_enable?></a>
                                         </div>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <?php if ($user['role'] === 'admin'): ?>
                                         <div class="btn-group">
-                                        <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">🗑️ Dezactiveaza</a>
+                                        <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">🗑️ <?=lang_btn_disable?></a>
                                         </div>
                                     <?php else: ?>
                                         <div class="btn-group">
-                                        <a href="?disable=<?= $user['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('Ești sigur că vrei să ștergi <?= escape($user['username']) ?>?')">🗑️ Dezactiveaza</a>
+                                        <a href="?disable=<?= $user['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('<?=lang_users_msg_disable?> <?= escape($user['username']) ?>?')">🗑️ <?=lang_btn_disable?></a>
                                         </div>
                                     <?php endif;?>
                                 <?php endif; ?>                                
@@ -127,4 +127,4 @@ $totalPages = ceil($totalUsers / $perPage);
 </div>
 
 
-<?php include APP_ROOT . 'includes/footer.php'; ?>
+<?php include APP_ROOT . '/includes/footer.php'; ?>

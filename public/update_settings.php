@@ -19,16 +19,20 @@ $db = new Database();
 $theme = $_POST['theme'] ?? null;
 $lang = $_POST['lang'] ?? null;
 
+//echo "Tema selectat:".$theme;
+//echo "<br>Limba selectata:".$lang;
+
+
 $settings = new UserSettings($db);
 
 if ($theme) {
     $settings->set('theme', $theme, $userId);
-    $_SESSION['theme'] = $theme;
+    $_SESSION['settings']['theme'] = $theme;
 }
 
 if ($lang) {
     $settings->set('language', $lang, $userId);
-    $_SESSION['language'] = $lang;
+    $_SESSION['settings']['language'] = $lang;
 }
 
 // După ce am aplicat setările (ex: salvate în DB) ma intorc la pagina de unde am venit

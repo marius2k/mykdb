@@ -1,7 +1,7 @@
 
 TO DO List
 ==================================================================================================== 
-
+>> 
 >> Re-design the first page 
     - include other info like a left menu (expand/colapse) for borowsing categories
     - any other idea?
@@ -16,9 +16,38 @@ TO DO List
 >> re-design of the article box 
     - include small icon in article title based on category
 >> add "back-to-top" button
->> BUG: theme and language is changing instantelly only from Home (index.php). If I change them from other pages, it isn't applied immediately (onChage event of dropdown list)  
+ 
+>> Implementation of a "comments system": 
+    - users could comment articles, 
+    - admins could moderate/delete the comments
+    - notifications when new comments
+>> Statistics and Analytica (admin)
+    - top viewed articles
+    - weekly/monthly popular articles
+    - average time for an article
+>> Advanced Search
+    - search by title, category, author
+    - filtering by date, category, tag
+    - live-search with debounce & highlight 
 
+>> Export/Import of articles
+    - export in .pdf, .docx, .html
+    - import from .json or .xml
 
+>> Schedule the publish date of an article
+    - Publică articolul la data X”
+    - Cron job sau verificare la încărcare
+    - Status: scheduled, draft, published
+
+>> Roles advanced system 
+    - extended roles: editor, moderator, contributor
+    - ACL (Access Control List) on the Actions
+    - Personalizare fine-grained per utilizator
+
+>> Notification System
+    - notify when article is published
+    - notify when comment is made
+    - see the articles closed to the publication date (drafts)
 
 ChangeLog
 ===================================================================================================
@@ -37,3 +66,10 @@ May 2025
 >> Implemented Change Password feature for user/admin
 >> added profile photo for user and implemented the change of it;
 >> added log activities - display all activities performed by users/admins
+>> added index.html in app root for redirecting to public/index.php
+>> solved BUG: theme and language is changing instantelly only from Home (index.php). If I change them from other pages, it isn't applied immediately (onChage event of dropdown list) 
+>> 
+
+
+
+

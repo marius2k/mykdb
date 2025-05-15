@@ -165,16 +165,16 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
             <?php endif; ?>
 
             
-            <h2>Log activitate</h2>
+            <h2><?=lang_db_activity_log?></h2>
             
             <?php 
             if ($isAdmin) { 
                 // show filter form if user is admin
             ?>
                 <form method="get" class="mb-3">
-                    <label>Filtru după utilizator:</label>
+                    <label><?=lang_db_filter_by_user?></label>
                     <select name="user_id" onchange="this.form.submit()">
-                        <option value="0">-- Toți --</option>
+                        <option value="0">-- <?=lang_db_filter_all_users?> --</option>
                         <?php foreach ($users as $u): ?>
                             <option value="<?= $u['id'] ?>" <?= $filterUserId == $u['id'] ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($u['username']) ?>
@@ -187,11 +187,11 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
                 <table class="articles-table">
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Acțiune</th>
-                            <th>Agent</th>
-                            <th>Detalii</th>
-                            <th>Data</th>
+                            <th><?=lang_db_log_table_user?></th>
+                            <th><?=lang_db_log_table_action?></th>
+                            <th><?=lang_db_log_table_agent?></th>
+                            <th><?=lang_db_log_table_details?></th>
+                            <th><?=lang_db_log_table_data?></th>
                         </tr>
                     </thead>
                     <tbody>

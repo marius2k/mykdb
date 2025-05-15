@@ -144,7 +144,7 @@ if (isset($_POST['change_password'])) {
 
 <div class="container mt-4" style="max-width: 600px;">
         <div class="form-styled"> 
-            <div class="form-styled-title"> Modificare date profil</div>
+            <div class="form-styled-title"><?=lang_prof_msg_top_info?></div>
             
             <?php if (!empty($_SESSION['flash'])): ?>
                 <div class="alert alert-success"><?= $_SESSION['flash']; unset($_SESSION['flash']); ?></div>
@@ -153,21 +153,21 @@ if (isset($_POST['change_password'])) {
             <div class="form-styled-body">
                 <form method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label>Prenume</label>
+                        <label><?=lang_prof_fname?></label>
                         <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($user['first_name']) ?>">
                     </div>
 
                     <div class="form-group">
-                        <label>Nume</label>
+                        <label><?=lang_prof_lname?></label>
                         <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($user['last_name']) ?>">
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
+                        <label><?=lang_prof_email?></label>
                         <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>">
                     </div>
                     <div class="form-group-1">
                         
-                        <div>Poza de profil:
+                        <div><?=lang_prof_photo?>
                         <?php
                                        if (isset($_SESSION['user']['profile_picture']) && $_SESSION['user']['profile_picture'] != '') {
                                             $profilePicture = APP_URL . 'uploads/profile_pics/' . $_SESSION['user']['profile_picture'];
@@ -178,12 +178,12 @@ if (isset($_POST['change_password'])) {
                                         }
                         ?>
                         </div>
-                        <div> Schimba poza:
+                        <div><?=lang_prof_photo_change?>
                             <input type="file" name="profile_picture" accept="image/*" class="form-control mb-2">
                         </div>
                     </div>
                     <div align="right">
-                        <button type="submit" name="update_profile" class="btn btn-primary">Salvează modificările</button>
+                        <button type="submit" name="update_profile" class="btn btn-primary"><?=lang_prof_btn_save?></button>
                     </div>
                 </form>
             </div>  
@@ -206,35 +206,35 @@ if (isset($_POST['change_password'])) {
 
     <div class="form-styled">
 
-        <div class="form-styled-title">Schimbare parola</div>
+        <div class="form-styled-title"><?=lang_prof_msg_top_pass?></div>
         <div class="form-styled-body">
 
                 <form method="post">
                     <div class="form-group password-toggle-group">
-                        <label for="current_password">Parola actuală</label>
+                        <label for="current_password"><?=lang_prof_pass_crt?></label>
                         <div class="password-wrapper">    
                             <input type="password" name="current_password" id="current_password" required>
                             <button type="button" id="btn-current-password" class="toggle-password" onclick="togglePasswordVisibility('current_password','btn-current-password')">👁️</button>
                         </div>
                     </div>
                     <div class="form-group password-toggle-group">
-                        <label for="new_password">Parolă nouă</label>
+                        <label for="new_password"><?=lang_prof_pass_new?></label>
                         <div class="password-wrapper">
                             <input type="password" name="new_password" id="new_password" required>
                             <button type="button" id="btn-new-password" class="toggle-password" onclick="togglePasswordVisibility('new_password','btn-new-password')">👁️</button>
                         </div>  
                     </div>
                     <div class="form-group password-toggle-group">
-                        <div><label for="confirm_password">Confirmă noua parolă</label></div>
+                        <div><label for="confirm_password"><?=lang_prof_pass_confirm?></label></div>
                         <div class="password-wrapper">    
                             <input type="password" name="confirm_password" class="confirm_password" id="confirm_password" required>
                             <button type="button" id="btn-confirm-password" class="toggle-password" onclick="togglePasswordVisibility('confirm_password','btn-confirm-password')">👁️</button>
-                            <small id="password-match-msg" style="color: red; display: none;">Parolele nu coincid</small>
+                            <small id="password-match-msg" style="color: red; display: none;"><?=lang_prof_pass_nomatch?></small>
                         </div>
                     </div>
 
                     <div align="right">
-                        <button type="submit" id="change_password" name="change_password" class="btn btn-primary">Actualizează parola</button>
+                        <button type="submit" id="change_password" name="change_password" class="btn btn-primary"><?=lang_prof_btn_pass?></button>
                     </div>
                 </form>
         </div>

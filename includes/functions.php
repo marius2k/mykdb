@@ -149,7 +149,12 @@ function getUserSetting(string $key, $default = null) {
     return $_SESSION['settings'][$key] ?? $default;
 }
 
-
+/**
+ * Generate navigation bar based on user role
+ *
+ * @param string $role User role (admin, user, guest)
+ * @return string HTML for the navigation bar
+ */
 function generateNavBar($role = 'guest') {
 
     $currentPage = basename($_SERVER['SCRIPT_NAME']);
@@ -190,4 +195,50 @@ function generateNavBar($role = 'guest') {
     //echo "NavBar:".$nav;
 
     return $nav;
+}
+
+function generateAvatarMenu($role='guest') {
+
+        $menu = '';
+
+    switch ($role) {
+        
+        case 'admin':
+            
+                $menu .= '<li>
+                            <a class="dropdown-item" href="' . APP_URL . 'public/profile.php">
+                                <i class="bi bi-person-fill me-2"></i>'.lang_profile . '</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="'.APP_URL.'public/settings.php">
+                                <i class="bi bi-gear-fill me-2"></i>'.lang_settings.'</a>
+                        </li>        
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="'.APP_URL.'public/logout.php">
+                                <i class="bi bi-box-arrow-right me-2"></i>'.lang_logout.'</a>
+                        </li>';
+            break;
+        case 'user':
+                $menu .= '<li>
+                            <a class="dropdown-item" href="' . APP_URL . 'public/profile.php">
+                                <i class="bi bi-person-fill me-2"></i>'.lang_profile . '</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="'.APP_URL.'public/settings.php">
+                                <i class="bi bi-gear-fill me-2"></i>'.lang_settings.'</a>
+                        </li>        
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="'.APP_URL.'public/logout.php">
+                                <i class="bi bi-box-arrow-right me-2"></i>'.lang_logout.'</a>
+                        </li>';
+
+            break;
+
+        default:    
+
+            break;
+    }        
+    return $menu;
 }

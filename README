@@ -37,3 +37,13 @@ mykdb
 
 └── sql/
     └── schema.sql
+
+
+
+Users created in the database (user/pass):
+
+admin/admin
+mihai/mihai2002
+corny/corny
+user1/user1
+user2/user2
