@@ -80,6 +80,8 @@ if (isset($_SESSION['user']['id'])) {
     $theme = 'light';
 }
 
+//echo "index.php: user id: ". $_SESSION['user']['id'];
+
 ?>
 
 <?php include APP_ROOT . 'includes/header.php'; ?>

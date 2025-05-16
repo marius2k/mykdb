@@ -2,6 +2,7 @@
 require_once '../config/bootstrap.php';
 
 
+
 header('Content-Type: application/json');
 
 $search = strtolower(trim($_GET['q'] ?? ''));

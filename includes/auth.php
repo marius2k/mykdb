@@ -53,13 +53,7 @@ function authUser($usr, $pass) {
         }
         
 
-        // Verificare parola fara hash
-        //if ($password == $user['password']){
-            // Ștergem parola din array-ul returnat
-        //    unset($user['password']);
-        //    return $user;
-        //}
-
+    
     }
     //echo "auth_user: user auth failed...<br>";
     return false;

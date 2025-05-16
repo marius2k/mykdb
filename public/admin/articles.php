@@ -3,7 +3,24 @@
 require_once '../../config/bootstrap.php';
 
 
-require_admin();
+//require_admin();
+
+
+$ops = ['edit_article','disable_article','enable_article','view_article'];
+
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    exit;     
+}
+
+
 
 $db = new Database();
 
@@ -87,14 +104,38 @@ $articles = $db->query("
             <td><?= htmlspecialchars($a['category']) ?></td>
             <td><?= $a['status'] ?></td>
             <td>
-                
-                <a href="../view_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">👁️ <?=lang_btn_view?></a>
+                <?php
+                    $op=['view_article'];
+
+                    if (hasPermission($_SESSION['user']['id'],$op)){
+                ?>
+                        <a href="../view_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">👁️ <?=lang_btn_view?></a>
+                <?php } ?>
+
+                <?php
+                    $op = ['edit_article'];
+                    if (hasPermission($_SESSION['user']['id'],$op)){
+                ?>
                 <a href="../edit_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✏️ <?=lang_btn_edit?></a>
-                
+                <?php } ?>
+
                 <?php if ($a['status'] == 'pending'): ?>
+
+                    <?php
+                        $op=['approve_article'];
+                        if (hasPermission($_SESSION['user']['id'],$op)){
+                    ?>
                     <a href="?approve=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✅ <?=lang_btn_approve?></a>
+                    <?php } ?>
+
                 <?php else: ?>
+                    <?php
+                        $op=['disable_article'];
+                        if (hasPermission($_SESSION['user']['id'],$op)){
+                    ?>
                     <a href="?disable=<?= $a['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('<?=lang_art_msg_disable?>')">🗑️ <?=lang_btn_disable?></a>
+
+                    <?php } ?>
                 <?php endif; ?>
             <?php $x++; ?>
             </td>

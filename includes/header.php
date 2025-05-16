@@ -10,14 +10,19 @@ if (session_status() === PHP_SESSION_NONE) {
 //error_reporting(E_ALL);
 
 
+
+
 // Load user settings
 
 
 if (isset($_SESSION['user']) && !isset($_SESSION['settings'])) {
     $db = new Database();
+
+    //$_SESSION['user']['id']=2;
+
     $userSettings = new UserSettings($db);
     $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
-    echo "user: set; settings: not set";
+    //echo "user: set; settings: not set";
 }
 
 $theme = $_SESSION['settings']['theme'] ?? 'light';
@@ -33,13 +38,19 @@ $lang = $_SESSION['settings']['language'] ?? 'en';
 
 switch ($lang) {
     case 'ro':
-        require_once APP_ROOT . 'assets/lang/ro.php';
+        //require_once APP_ROOT . 'assets/lang/ro.php';
+        $langFile = APP_ROOT . 'assets/lang/ro.php';
+        $translations = file_exists($langFile) ? include $langFile : [];
         break;
     case 'en':
-        require_once APP_ROOT . 'assets/lang/en.php';
+        //require_once APP_ROOT . 'assets/lang/en.php';
+        $langFile = APP_ROOT . 'assets/lang/en.php';
+        $translations = file_exists($langFile) ? include $langFile : [];
         break;
     default:
-        require_once APP_ROOT . 'assets/lang/en.php';
+        //require_once APP_ROOT . 'assets/lang/en.php';
+        $langFile = APP_ROOT . 'assets/lang/en.php';
+        $translations = file_exists($langFile) ? include $langFile : [];
         break;
 }
 
@@ -62,20 +73,23 @@ switch ($lang) {
 <body>
 
 
-<div class="app-header">
-<!-- 
-<div style="background-image: url('<?= APP_URL ?>/assets/images/kdb_top.jpeg');background-size: cover; background-position: center; background-repeat: no-repeat; padding:10px;">    
+<div class="app-header" style="background-image: url('<?= APP_URL ?>assets/images/banner-top.png');background-size: cover; background-position: center; background-repeat: no-repeat;height: 130px;">
+ 
+<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">    
+
+<!--
+    <div style="background-image: url('<?=APP_URL?>assets/images/banner-top.png; background-size: cover; background-position: left; background-repeat: no-repeat; background-color: #f0f0f0; width: 100%; height: 400px; width: 100%; display: flex; align-items: center; justify-content: space-between; ">
 -->
-    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
-        <div class="nav-app-name">🧠 <?= APP_NAME; ?></div>
+    <div class="nav-app-name"><img src="<?=APP_URL?>assets/images/kdb-logo-1.png" style="width: auto; height: 50px;"></div>
         <div style="float: right;">
 
             <!-- User Dropdown -->
             <?php if (is_logged_in()) { ?>
+                            
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                                 <div class="me-2 d-none d-md-block text-end">
-                                    <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'User') ?></div>
-                                    <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role'] ?? 'user') ?></div>
+                                    <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'Guest') ?></div>
+                                    <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role_label'] ?? 'Guest') ?></div>
                                 </div>
                                 <?php
                                        if (isset($_SESSION['user']['profile_picture']) && $_SESSION['user']['profile_picture'] != '') {
@@ -91,7 +105,8 @@ switch ($lang) {
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                     <?php
-                                        $aMenu = generateAvatarMenu($_SESSION['user']['role']);
+                                        //echo "header.php: User Role;" . $_SESSION['user']['role'];
+                                        $aMenu = generateAvatarMenu($_SESSION['user']['id']);
                                         echo $aMenu;
                                     ?>
                             </ul>
@@ -114,8 +129,8 @@ switch ($lang) {
             <div style="float: left; width: 70%">
             <?php
 
-                $role = $_SESSION['user']['role'] ?? null;
-                $navbar = generateNavBar($role); 
+                $userID = $_SESSION['user']['id'] ?? null;
+                $navbar = generateNavBar2($userID); 
                 echo $navbar;
             ?>
             </div>

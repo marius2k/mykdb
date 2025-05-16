@@ -42,6 +42,7 @@ define(constant_name:'lang_select_romanian',value:'Romana');
 define(constant_name:'lang_select_language',value:'Limba');
 define(constant_name:'lang_select_theme',value:'Tema');
 define(constant_name:'lang_profile',value:'Profilul meu');
+define(constant_name:'lang_edit_acl',value:'Editeaza ACL');
 
 
 // Define constants for Dashboard (file: dashboard.php)
@@ -140,5 +141,39 @@ define(constant_name:'lang_reg_btn_create',value:'Creaza cont');
 define(constant_name:'lang_reg_pass_nomatch',value:'Parolele nu se potrivesc');
 define(constant_name:'lang_reg_pass_ok',value:'Parolele coincid !');
 define(constant_name:'lang_reg_pass_nok',value:'Parolele nu conincid !');
+
+
+
+return [
+    'search' => 'cauta info in articole',
+    'view_article' => 'vizualizeaza toate articolel publicate',
+    'create_article' => 'creaza un articol',
+    'edit_own_article' => 'modifica propriile articole',
+    'edit_article' => 'editeaza toate articolele',
+    'publish_article' => 'publica articole',
+    'disable_article' => 'dezactiveaza articole',
+    'enable_article' => 'activeaza articole',
+    'approve_article' => 'aproba articole',
+    'delete_article' => 'sterge articole',
+    'export_article' => 'exporta articole',
+    'add_comment' => 'adauga comentarii la articole',
+    'edit_comment' => 'editeaza comentarii',
+    'delete_comment' => 'sterge comentarii',
+    'approve_comment' => 'aproba comentarii',
+    'add_category' => 'adauga categorii',
+    'edit_category' => 'modifica categorii',
+    'edit_user' => 'modifica useri',
+    'disable_user' => 'dizactiveaza useri',
+    'enable_user' => 'activeza useri',
+    'delete_user' => 'sterge useri',
+    'modify_user' => 'modifica toti userii',
+    'modify_own_user' => 'modifica info de profil',
+    'view_own_activity' => 'vizualizeaza doar activitatile proprii',
+    'view_all_activity' => 'vizualizeaza toate activitatile',
+    'backup_data' => 'backup date',
+    'edit_acl' => 'modifica lista de access',
+    'register' => 'inregistrare user',
+    'approve_user' => 'aproba user in pending'
+  ];
 
 ?>

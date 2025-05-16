@@ -6,22 +6,43 @@ if (!is_logged_in()) {
     exit;
 }
 
+$ops=['modify_own_user'];
+
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    exit;     
+}
+
+
 //echo "USER ID: " . $_SESSION['user']['id'] . "<br>";
 
 $db = new Database();
 $userId = $_SESSION['user']['id'];
-$user = $db->fetchSingle("SELECT username, profile_picture, email, first_name, last_name, role FROM users WHERE id = ?", [$userId]);
+$user = $db->fetchSingle("
+        SELECT u.*, r.name AS role_name, r.label AS role_label
+        FROM users u
+        JOIN roles r ON u.role_id = r.id
+        WHERE u.id = ?", [$userId]
+    );
 
-$role = $user['role'];
+$role = $user['role_name'];
 $picture = $user['profile_picture'] ?? null;
 
 //echo "Role: " . $role . "<br>";
-//echo "Picture: " . $_FILES['profile_picture'] . "<br>";
+echo "Picture name: " . $_FILES['profile_picture']['name'] ?? "no picture selected <br>";
 
 
 // schimbare poza de profil
 
-if (isset($_FILES['profile_picture'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_picture']['name'])) {
+
     $file = $_FILES['profile_picture'];
 
     if ($file['error'] === UPLOAD_ERR_OK) {
@@ -53,11 +74,25 @@ if (isset($_FILES['profile_picture'])) {
             $firstName, $lastName, $email, $filename, $userId]);
 
             $_SESSION['flash'] = "Poza actualizata cu succes!!!";
-            $_SESSION['user']['first_name'] = $firstName;
-            $_SESSION['user']['last_name'] = $lastName;
-            $_SESSION['user']['email'] = $email;
-            $_SESSION['user']['role'] = $role;
-            $_SESSION['user']['profile_picture'] = $filename;
+            
+
+            $_SESSION['user'] = [
+                'id' => $userId,
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'username' => $user['username'],
+                'email' => $email,
+                'role' => $user['role_name'],     // ex: 'admin'
+                'role_label' => $user['role_label'], // ex: 'Administrator'
+                'profile_picture' => $filename,
+                'status' => $user['status']
+            ];
+            
+            //$_SESSION['user']['first_name'] = $firstName;
+            //$_SESSION['user']['last_name'] = $lastName;
+            //$_SESSION['user']['email'] = $email;
+            //$_SESSION['user']['role'] = $role;
+            //$_SESSION['user']['profile_picture'] = $filename;
 
             header('Location: profile.php');
             exit;
@@ -66,10 +101,6 @@ if (isset($_FILES['profile_picture'])) {
             header('Location: profile.php');
             exit;
         }
-    } else {
-        $_SESSION['flash'] = "Eroare la încărcare imagine.";
-        header('Location: profile.php');
-        exit;
     }
 }
 
@@ -82,18 +113,32 @@ if (isset($_POST['update_profile'])) {
     $lastName  = trim($_POST['last_name']);
     $email     = trim($_POST['email']);
     //$role     = trim($_POST['role'] ?? 'user');
-    $picture   = trim($_POST['profile_picture'] ?? null);
+    //$profilePicture   = trim($_POST['profile_picture'] ?? null);
+    //$profilePicture = $picture;
 
     $db->query("UPDATE users SET first_name = ?, last_name = ?, profile_picture = ?, email = ? WHERE id = ?", [
         $firstName, $lastName, $picture, $email, $userId
     ]);
 
     $_SESSION['flash'] = "Profil actualizat cu succes.";
-    $_SESSION['user']['first_name'] = $firstName;
-    $_SESSION['user']['last_name'] = $lastName;
-    $_SESSION['user']['email'] = $email;
-    $_SESSION['user']['role'] = $role;
-    $_SESSION['user']['profile_picture'] = $picture;
+    //$_SESSION['user']['first_name'] = $firstName;
+    //$_SESSION['user']['last_name'] = $lastName;
+    //$_SESSION['user']['email'] = $email;
+    //$_SESSION['user']['role'] = $role;
+    //$_SESSION['user']['profile_picture'] = $picture;
+
+    $_SESSION['user'] = [
+        'id' => $userId,
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'username' => $user['username'],
+        'email' => $email,
+        'role' => $user['role_name'],     // ex: 'admin'
+        'role_label' => $user['role_label'], // ex: 'Administrator'
+        'profile_picture' => $picture,
+        'status' => $user['status']
+    ];
+
 
     header('Location: profile.php');
     exit;
@@ -256,12 +301,12 @@ function validatePasswords() {
 
     if (newPassword.value !== confirmPassword.value) {
         message.style.display = "block";
-        message.textContent = "Parolele nu coincid";
+        message.textContent = "<?=lang_reg_pass_nok?>";
         message.style.color = "red";
         submitBtn.disabled = true;
     } else {
         message.style.display = "block";
-        message.textContent = "Parolele coincid ✔️";
+        message.textContent = "<?=lang_reg_pass_ok?> ✔️";
         message.style.color = "green";
         submitBtn.disabled = false;
     }

@@ -1290,3 +1290,76 @@ button[disabled],
     border: 2px solid #ccc;
   }
   
+ /*
+  style for vertical menu in acl_edit.php
+ */
+  .acl-container {
+    display: flex;
+    min-height: 500px;
+    /*border: 1px solid #ccc;*/
+    margin-top: 20px;
+  }
+  
+  .role-list {
+    flex: 0 0 220px;
+    background: #f5f5f5;
+    /*border-right: 1px solid #ccc;*/
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .role-list li {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    color: #050505;
+  }
+  
+  .role-list li.active {
+    background: #d3e4e7;
+    font-weight: bold;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+  
+  .role-list a {
+    text-decoration: none;
+    color: #111;
+    display: block;
+  }
+  .role-list a:hover {
+    text-decoration: none;
+    color: #020202;
+    display: block;
+    
+  }
+  .permissions {
+    flex: 1;
+    padding: 25px;
+    background: #d3e4e7;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+  
+  .permissions h3 {
+    margin-bottom: 20px;
+  }
+  
+  .permissions .perm-columns {
+    columns: 3;
+    max-width: 100%;
+  }
+  
+  .permissions label {
+    display: block;
+    margin-bottom: 6px;
+  }
+  
+  input[disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  
+
+  

@@ -1,6 +1,21 @@
 <?php
 require_once '../../config/bootstrap.php';
-require_admin();
+//require_admin();
+
+$ops = ['approve_user'];
+
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    exit;     
+}
+
 
 $db = new Database();
 

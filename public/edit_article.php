@@ -2,7 +2,24 @@
 require_once '../config/bootstrap.php';
 require_login();
 
+
+
+
 $id = (int)($_GET['id'] ?? 0);
+
+$ops = ['edit_article'];
+
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    exit;     
+}
 
 // Obține articolul
 $stmt = $pdo->prepare("SELECT * FROM articles WHERE id = ?");

@@ -16,6 +16,8 @@ define(constant_name:'lang_articles',value:'Articles');
 define(constant_name:'lang_search',value:'Search');
 define(constant_name:'lang_search_placeholder',value:'Search articles...');
 define(constant_name:'lang_search_results',value:'Search Results');
+define(constant_name:'lang_edit_acl',value:'Edit ACL');
+
 
 // Define constants for Articles
 
@@ -146,5 +148,42 @@ define(constant_name:'lang_reg_btn_create',value:'Create Account');
 define(constant_name:'lang_reg_pass_nomatch',value:'Passwords not matching');
 define(constant_name:'lang_reg_pass_ok',value:'Passwords matching !');
 define(constant_name:'lang_reg_pass_nok',value:'Passwords not matching !');
+
+
+
+// lang/en.php
+return [
+    'search' => 'search info in articles',
+    'view_article' => 'view all published articles',
+    'create_article' => 'create an article',
+    'edit_own_article' => 'modify the articles created by himself',
+    'edit_article' => 'edit all articles',
+    'publish_article' => 'publish an article',
+    'disable_article' => 'disable an article',
+    'enable_article' => 'enable an article',
+    'approve_article' => 'approve an article',
+    'delete_article' => 'remove article',
+    'export_article' => 'export article',
+    'add_comment' => 'add comments to an article',
+    'edit_comment' => 'edit comments',
+    'delete_comment' => 'remove comments',
+    'approve_comment' => 'approve comments',
+    'add_category' => 'add a new category',
+    'edit_category' => 'modify an existing category',
+    'edit_user' => 'modify user',
+    'disable_user' => 'disable an user',
+    'enable_user' => 'enable an user',
+    'delete_user' => 'remove an existing user',
+    'modify_user' => 'modify all users',
+    'modify_own_user' => 'modify own info (profile)',
+    'view_own_activity' => 'view only his own activity logs',
+    'view_all_activity' => 'view all activity logs',
+    'backup_data' => 'backup data',
+    'edit_acl' => 'modify the access list',
+    'register' => 'user registration',
+    'approve_user' => 'approve user in pending'
+  ];
+  
+
 
 ?>

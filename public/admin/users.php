@@ -2,8 +2,24 @@
 
 require_once '../../config/bootstrap.php';
 
-require_admin();
+//require_admin();
 
+
+$ops = ['edit_user','disable_user','enable_user','delete_user','modify_user','approve_user'];
+
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    
+    exit;
+        
+}
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -42,7 +58,11 @@ if (isset($_GET['disable']) && is_numeric($_GET['disable'])) {
 }
 
 
-$users = $db->query("SELECT * FROM users")->fetchAll();
+$users = $db->query("
+        SELECT u.*, r.name AS role_name, r.label AS role_label
+        FROM users u
+        JOIN roles r ON u.role_id = r.id
+        ")->fetchAll();
 
 
 
@@ -78,7 +98,7 @@ $totalPages = ceil($totalUsers / $perPage);
             <tr>
                 <td><?= $user['id'] ?></td>
                 <td><?= escape($user['username']) ?></td>
-                <td><?= escape($user['role']) ?></td>
+                <td><?= escape($user['role_label']) ?></td>
                 <td><?= escape($user['status']) ?></td>
                 <td><?= escape($user['first_name'] . ' ' . $user['last_name']) ?></td>
                 <td>
@@ -88,7 +108,7 @@ $totalPages = ceil($totalUsers / $perPage);
                                 </div>
                         <?php else: ?>
                                 <?php if ($user['status'] === 'disabled'): ?>
-                                    <?php if ($user['role'] === 'admin'): ?>
+                                    <?php if ($user['role_name'] === 'admin'): ?>
                                         <div class="btn-group">
                                         <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">♻️ <?=lang_btn_enable?></a>
                                         </div>
@@ -98,7 +118,7 @@ $totalPages = ceil($totalUsers / $perPage);
                                         </div>
                                     <?php endif; ?>
                                 <?php else: ?>
-                                    <?php if ($user['role'] === 'admin'): ?>
+                                    <?php if ($user['role_name'] === 'admin'): ?>
                                         <div class="btn-group">
                                         <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">🗑️ <?=lang_btn_disable?></a>
                                         </div>

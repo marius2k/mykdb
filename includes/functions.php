@@ -165,7 +165,20 @@ function generateNavBar($role = 'guest') {
      $nav = '';
 
     switch ($role) {
+        case 'superadmin':
+            $nav .= '
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>
+                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>
+                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang_users. '</a>
+                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang_categories.'</a>
+                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>
+                <a href="'.APP_URL.'public/admin/acl_edit.php"'.($currentPage === 'acl_edit.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_edit_acl.'</a>
+                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
+            break;
         case 'admin':
+        case 'moderator':
+        case 'editor':
+        case 'contributor':
             $nav .= '
                 <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>
                 <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>
@@ -174,14 +187,6 @@ function generateNavBar($role = 'guest') {
                 <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>
                 <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_settings.'</a>
                 <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
-            break;
-
-        case 'user':
-            $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
-                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> ').lang_dashboard.'</a>
-                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_settings.'</a>
-                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '.lang_logout. '('. escape($_SESSION['user']['username']).')</a>';
             break;
 
         default:
@@ -197,48 +202,189 @@ function generateNavBar($role = 'guest') {
     return $nav;
 }
 
-function generateAvatarMenu($role='guest') {
+/*
+    generate the navigation bar (NavBar), based on logged user 
+    $uid - user id of logged user; 
+*/
+function generateNavBar2($uid) {
 
-        $menu = '';
+    $currentPage = basename($_SERVER['SCRIPT_NAME']);
+   
 
-    switch ($role) {
-        
-        case 'admin':
-            
-                $menu .= '<li>
-                            <a class="dropdown-item" href="' . APP_URL . 'public/profile.php">
-                                <i class="bi bi-person-fill me-2"></i>'.lang_profile . '</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="'.APP_URL.'public/settings.php">
-                                <i class="bi bi-gear-fill me-2"></i>'.lang_settings.'</a>
-                        </li>        
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="'.APP_URL.'public/logout.php">
-                                <i class="bi bi-box-arrow-right me-2"></i>'.lang_logout.'</a>
-                        </li>';
-            break;
-        case 'user':
-                $menu .= '<li>
-                            <a class="dropdown-item" href="' . APP_URL . 'public/profile.php">
-                                <i class="bi bi-person-fill me-2"></i>'.lang_profile . '</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="'.APP_URL.'public/settings.php">
-                                <i class="bi bi-gear-fill me-2"></i>'.lang_settings.'</a>
-                        </li>        
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="'.APP_URL.'public/logout.php">
-                                <i class="bi bi-box-arrow-right me-2"></i>'.lang_logout.'</a>
-                        </li>';
 
-            break;
 
-        default:    
+    $nav = '';
 
-            break;
-    }        
+    if($uid === null){
+        $nav .= '
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
+                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang_login.'</a>
+                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang_register.'</a>';
+        return $nav;
+    }
+
+
+    $ops=['view_article',
+          'search'
+        ];
+
+    if(hasPermission($uid,$ops)){
+        $nav .= '<a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>';
+    }
+
+    // check users allowed for view activity logs;
+
+    $ops=['view_own_activity',
+          'view_all_activity'
+        ];
+
+    if (hasPermission($uid,$ops)){
+        $nav.='<a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>';
+    }
+
+    // check users allowed for users management (file: admin/users.php);
+
+    $ops=['add_user',
+          'edit_user',
+          'enable_user',
+          'disable_user',
+          'delete_user',
+          'modify_user',
+          'modify_own_user'];
+    
+    if(hasPermission($uid,$ops)){
+
+        $nav.='<a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang_users. '</a>';
+    }
+
+    //check users allowed to manage categories (file: admin/categories.php)
+
+    $ops=['add_category',
+          'edit_category'
+        ];
+
+    if (hasPermission($uid,$ops)){
+
+        $nav.='<a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang_categories.'</a>';
+
+    }
+
+    //check users allowed to manage articles
+    $ops = ['view_article',
+            'edit_article',
+            'create_article',
+            'edit_own_article',
+            'publish_article',
+            'disable_article',
+            'enable_article',
+            'approve_article',
+            'delete_article',
+            'export_article'
+            ];
+
+    if (hasPermission($uid,$ops)){
+
+        $nav.='<a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>';
+    }
+
+    //check users allowed to edit ACL (file:admin/acl_edit.php)
+
+    $ops=['edit_acl'];
+
+    if(hasPermission($uid,$ops)){
+        $nav.='<a href="'.APP_URL.'public/admin/acl_edit.php"'.($currentPage === 'acl_edit.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_edit_acl.'</a>';
+    }
+
+    
+    $ops=['register'
+        ];
+
+    if(hasPermission($uid,$ops)){
+        $nav.= '<a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang_register.'</a>';
+    }    
+
+    $nav.='<a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
+
+    return $nav;
+}
+
+
+function generateAvatarMenu($uid) {
+
+    $menu = '';
+
+    // check if user is allowed to edit his profile;
+
+    //$ops = ['modify_own_user'];
+    if (hasPermission($uid,['modify_own_user'])) {
+
+        $menu .= '<li>
+                        <a class="dropdown-item" href="' . APP_URL . 'public/profile.php">
+                            <i class="bi bi-person-fill me-2"></i>'.lang_profile . '</a>
+                    </li>';
+    }
+
+
+    //check if user is allowed to edit ACL
+    //$ops = ['edit_acl'];
+
+    if (hasPermission($uid,['edit_acl'])) {
+     
+            $menu .='<li>
+                        <a class="dropdown-item" href="'.APP_URL.'public/admin/acl_edit.php">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>'.lang_edit_acl.'</a>
+                    </li>';
+    }
+
+
+            $menu .='<li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="'.APP_URL.'public/logout.php">
+                            <i class="bi bi-box-arrow-right me-2"></i>'.lang_logout.'</a>
+                    </li>';
+
     return $menu;
+}
+
+// Checking if the logged user's role is authorized for $requiredOps
+// $requiredOps - array contans all the operation done on a section 
+
+function hasPermission(int $user_id, array $requiredOps): bool {
+    
+    if (!$user_id || empty($requiredOps)) return false;
+
+
+    static $userPermissions = []; // contains the operations allowed to user
+
+    // Cache per user
+    if (!isset($userPermissions[$user_id])) {
+    
+        $db=new Database();
+
+        $sql = "
+            SELECT o.name
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            JOIN role_permissions rp ON rp.role_id = r.id
+            JOIN operations o ON o.id = rp.operation_id
+            WHERE u.id = ?
+        ";
+        $results = $db->fetchAll($sql, [$user_id]);
+        $userPermissions[$user_id] = array_column($results, 'name');
+    }
+
+    // Verificăm dacă are cel puțin o operație permisă
+    foreach ($requiredOps as $op) {
+        if (in_array($op, $userPermissions[$user_id])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+function lang(string $key): string {
+    global $translations;
+    return $translations[$key] ?? $key;
 }

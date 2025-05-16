@@ -4,6 +4,20 @@
 
 require_once '../config/bootstrap.php';
 
+$ops = ['register'];
+
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    exit;     
+}
+
 $errors = [];
 
 $db = new Database();
@@ -13,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $password = $_POST['password'];
+    $role = $_POST['role'];
+    $status = 'pending';
     //$confirm = $_POST['confirm'];
 
     $confirm_password = trim($_POST['confirm_password']);
@@ -34,9 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->fetch()) {
             $errors[] = 'Utilizatorul există deja.';
         } else {
+            //$status = "pending";
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $db->prepare("INSERT INTO users (username, first_name, last_name, password, role, status) VALUES (?, ?, ?, ?, 'user', 'pending')");
-            $stmt->execute([$username, $first_name, $last_name, $hash]);
+            $stmt = $db->prepare("INSERT INTO users (username, first_name, last_name, password, status, role_id) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$username, $first_name, $last_name, $hash, $status, $role]);
 
             logActivity($db->lastInsertedId(), 'register_user', 'User registered: ' . $username);
             header('Location: login.php');
@@ -91,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" name="confirm_password" id="confirm_password" required>
             <small id="password-match-msg" style="color: red; display: none;"><?=lang_reg_pass_nomatch?></small>
         </div>
-
+        <input type="hidden" name="role" value="3"> <!-- by defaul user is "moderator", user_id=3 -->
         <button type="submit" class="btn-primary full-width" ><?=lang_reg_btn_create?></button>
     </form>
 </div>

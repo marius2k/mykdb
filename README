@@ -18,6 +18,8 @@ mykdb
 │   ├── upload_image.php
 │   └── admin/
 │       ├── categories.php
+|       ├── acl_roles.php          ← listă cu toate rolurile
+|       ├── acl_edit.php?role_id=  ← editezi permisiunile pe rol
 │       ├── users.php
 │       ├── approve_user.php
 │       ├── restore_user.php

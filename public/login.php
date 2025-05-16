@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     //echo "user authenti/cation started...<br>";
-    $user = authUser($username, $password);
+    $userok = authUser($username, $password);
 
     //echo "user authentication ended...";
     
@@ -29,11 +29,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //$stmt->execute([$username]);
     //$user = $stmt->fetch();
 
-    if (($user) && $user['status'] == 'active'){
+    if (($userok) && $userok['status'] == 'active'){
         
         //Authentificare reușită
+        $userId = $userok['id'];
+        //echo "UID: ".$userId;
 
-        $_SESSION['user'] = $user;
+        $db = new Database();
+
+        $sql = "SELECT u.*, r.name AS role_name, r.label AS role_label, r.id AS role_id
+                FROM users u
+                JOIN roles r ON u.role_id = r.id
+                WHERE u.id = ?";
+        
+        //echo "SQL: ". $sql;
+
+        $user = $db->fetchSingle($sql, [$userId]);
+        
+        
+        
+        $_SESSION['user'] = [
+            'id' => $user['id'],
+            'first_name' => $user['first_name'],
+            'last_name' => $user['last_name'],
+            'username' => $user['username'],
+            'email' => $user['email'],
+            'role' => $user['role_name'],     // ex: 'admin'
+            'role_id' => $user['role_id'],
+            'role_label' => $user['role_label'], // ex: 'Administrator'
+            'profile_picture' => $user['profile_picture'],
+            'status' => $user['status']
+        ];
+
+        //echo "User ID: ". $_SESSION['user']['id'];
         header('Location: index.php');
         logActivity($user['id'], 'login_success', 'User logged in'.$username);
 
@@ -41,11 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Load user settings
         $userSettings = new UserSettings($db);
-        $_SESSION['settings'] = $userSettings->getAll($user['id']);
+        $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
 
+        //echo "User Settings: ". $_SESSION['settings']['language'];
 
         exit;
-        
+
     }elseif($user['status'] == 'disabled' || $user['status'] == 'pending'){
             $error = 'Contul tău este dezactivat sau în așteptare de aprobare.';
             logActivity($user['id'], 'login_failed','Login attempt for a disabled or inactive user: ' . $username);
@@ -58,9 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //exit;
     }
 }
+
+
+
+
+
 ?>
-
-
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
 

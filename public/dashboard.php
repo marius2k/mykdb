@@ -5,8 +5,19 @@
 require_once '../config/bootstrap.php';
 require_login();
 
+$ops=['view_own_activity','view_all_activity'];
 
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
 
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    exit;     
+}
 
 $errors = [];
 $userId = $_SESSION['user']['id'];
@@ -34,7 +45,7 @@ if (isset($_GET['page']) && is_numeric($_GET['page'])) {
 
 
 
-echo "Filter User ID: " . $filterUserId;
+//echo "Filter User ID: " . $filterUserId;
 
 if (!$isAdmin) {
 
@@ -66,7 +77,7 @@ if (!$isAdmin) {
         //$totalRows= $totalStmt->execute([$userId]);
         $totalRows = $totalStmt->fetchColumn();
         $totalPages = ceil($totalRows / $perPage);
-        echo " totalRows: " . $totalRows;
+        //echo " totalRows: " . $totalRows;
         
         //header('Location: dashboard.php');
         //exit;
@@ -85,7 +96,7 @@ if (!$isAdmin) {
         $totalRows = $totalStmt->fetchColumn();
         $totalPages = ceil($totalRows / $perPage);
 
-        echo " totalRows: " . $totalRows;
+        //echo " totalRows: " . $totalRows;
 
         $stmt = $db->prepare("
             SELECT l.*, u.username

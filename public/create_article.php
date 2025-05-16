@@ -5,8 +5,19 @@
 require_once '../config/bootstrap.php';
 require_login();
 
+$ops=['create_article'];
 
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
+    
+    $_SESSION['flash'] = "⚠️ Access Denied";
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
 
+    echo "<script>
+            alert('⚠️ Access Denied');
+            window.location.href = '$referer';
+        </script>";
+    exit;     
+}
 
 $errors = [];
 $user_id = $_SESSION['user']['id'];
