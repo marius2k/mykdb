@@ -14,7 +14,7 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
           window.location.href = '$referer';
       </script>";
   exit;     
-}
+}   
 
 $db = new Database();
 
