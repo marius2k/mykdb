@@ -29,6 +29,13 @@ $id = (int)$_GET['id'];
 
 $db = new Database();
 
+
+// increment view counter for the article;
+
+$db->query("UPDATE articles SET views = views + 1 WHERE id = ?", [$id]);
+
+
+
 // Fetch articolul
 $stmt = $db->prepare("
     SELECT a.*, u.username, c.name AS category
@@ -47,6 +54,13 @@ if (!$article) {
     echo "Articol inexistent sau neaprobat.";
     exit;
 }
+
+
+
+
+
+
+
 ?>
 
 <?php include APP_ROOT . 'includes/header.php'; ?>

@@ -80,7 +80,11 @@ if (isset($_SESSION['user']['id'])) {
     $theme = 'light';
 }
 
+
 //echo "index.php: user id: ". $_SESSION['user']['id'];
+
+
+
 
 ?>
 
@@ -137,7 +141,7 @@ if (isset($_SESSION['user']['id'])) {
                     $textOnly = strip_tags($content);
                     
                     // Scurtăm textul
-                    $shortText = shortenText($textOnly, 300);
+                    $shortText = shortenText($textOnly, 500);
                     
 
                     $preview = truncateHtmlWithImages($a['content'], 100);
@@ -146,12 +150,52 @@ if (isset($_SESSION['user']['id'])) {
                     <div class="article-card">
                         
                             <h3 class="article-title"><?= escape($a['title']) ?></h3>
-                            <div class="article-body">
-                                <p><?= nl2br(escape($shortText)) ?>...</d>
+                            <div class="article-body" id="article<?=$a['id']?>">
+                                <p><?= nl2br(escape($shortText)) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/images/icon-rm1.png" title="<?= lang_read_more; ?>"> </a></p>
                             </div>
-                            <a class="read-more" href="view_article.php?id=<?= (int)$a['id'] ?>" style="color:blue;"><?= lang_read_more; ?> </a>
+                            
                             <div class="article-footer">
-                                <span class="article-meta"><?=lang_article_author?>:<?=escape($a['username']) ?> | <?=lang_article_category?>:<?=escape($a['category']) ?> | <?=lang_article_published?>:<?=formatDate($a['created_at']) ?>| <?=lang_article_updated?>:<?=formatDate($a['updated_at'])?></span>
+                                <div>
+                                    <span class="article-meta"><?=lang_article_author?>:<?=escape($a['username']) ?> | <?=lang_article_category?>:<?=escape($a['category']) ?> | <?=lang_article_published?>:<?=formatDate($a['created_at']) ?>| <?=lang_article_updated?>:<?=formatDate($a['updated_at'])?></span>
+                                </div>
+                                <div class="vote-buttons-container"> 
+                                            <div class="vote-buttons">
+                                                <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>">
+                                                <img src="<?=APP_URL?>assets/images/icon-view.png" title="<?=lang_article_views?>" class="vote-icon"></a>
+                                                <span class="like-count"><?= escape($a['views']) ?></span>
+
+                                                <a href="<?=APP_URL?>public/view_comments.php?id=<?= (int)$a['id'] ?>">
+                                                <img src="<?=APP_URL?>assets/images/icon-comm.png" title="<?=lang_article_add_comments?>" class="vote-icon"></a>
+                                                <span class="like-count"><?php $commCount = getCommentCount($a['id']); echo $commCount;?></span>
+                                            </div>
+                                               
+                                            <div class="vote-buttons">
+                                                
+                                                <?php
+                                                    $votes = getArticleLikesDislikes($a['id']);
+                                                    $currentVote = $userId ? getUserVote($a['id'], $userId) : null;
+                                                    //echo "crt vote:".$currentVote;
+
+                                                ?>
+
+                                                <!-- LIKE -->
+                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'like', this); return false;">
+                                                    <img src="<?=APP_URL?>assets/images/icon-like.png" class="vote-icon <?= $currentVote === 'like' ? 'active' : '' ?>" width="20" high="auto" title="<?=lang_article_like?>">  
+                                                </a>
+                                                <span class="like-count"><?= $votes['like'] ?></span>
+                                                
+                                                <!-- DISLIKE -->
+                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'dislike', this); return false;">
+                                                    <img src="<?=APP_URL?>assets/images/icon-dlike.png" class="vote-icon <?= $currentVote === 'dislike' ? 'active' : '' ?>" width="20" height="auto" title="<?=lang_article_dislike?>">    
+                                                
+                                                </a>
+                                                <span class="dislike-count"><?= $votes['dislike'] ?></span>
+
+                                            </div>
+                                </div>                               
+
+                                   
+                                
                             </div>
                     </div>
 
@@ -180,5 +224,45 @@ document.addEventListener("DOMContentLoaded", function () {
 */
 </script>
 
+<script>
+function voteArticle(articleId, voteType, el) {
+  fetch('vote_article.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `aid=${articleId}&vote=${voteType}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      // Găsim ambele span-uri (în același container)
+      const container = el.closest('div') || el.parentNode;
+      const likeSpan = container.querySelector('.like-count');
+      const dislikeSpan = container.querySelector('.dislike-count');
+
+      if (likeSpan) likeSpan.textContent = data.likes;
+      if (dislikeSpan) dislikeSpan.textContent = data.dislikes;
+        // eliminăm toate clasele "active" locale
+        container.querySelectorAll('.vote-icon').forEach(img => img.classList.remove('active'));
+
+        // adăugăm clasa doar pe iconul votat
+        if (voteType === 'like') {
+                container.querySelector('img[src*="icon-like"]').classList.add('active');
+        } else {
+                container.querySelector('img[src*="icon-dlike"]').classList.add('active');
+        }
+    } else {
+      alert(data.message || 'Eroare la vot!');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Eroare AJAX!');
+  });
+
+ 
+}
+</script>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

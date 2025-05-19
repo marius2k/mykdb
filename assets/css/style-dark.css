@@ -593,7 +593,7 @@ a:hover {
 
 .article-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* ⚙️ Exact 2 coloane */
+    grid-template-columns: repeat(1, 1fr); /* ⚙️ Exact 2 coloane */
     gap: 20px;
     padding: 20px;
     /*max-width: 1200px;*/
@@ -1154,11 +1154,12 @@ button[disabled],
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 270px; /* sau auto dacă vrei dinamic */
+    height: auto; /* sau auto dacă vrei dinamic */
+    width: 80%;
 }
   
 .article-title{
-    background: linear-gradient(to right,rgb(95, 95, 95),rgb(146, 146, 146));
+    /*background: linear-gradient(to right,rgb(95, 95, 95),rgb(146, 146, 146));*/
     font-size: 1.4rem;
     margin-bottom: 12px;
     font-weight: bold;
@@ -1211,13 +1212,13 @@ button[disabled],
     text-decoration: underline;
   }
 
-
+/*
 
 .article-card:hover {
     transform: translateY(-3px);
 }
 
-
+*/
 
 .btn-read-more {
     display: inline-block;
@@ -1335,3 +1336,89 @@ button[disabled],
     cursor: not-allowed;
     opacity: 0.5;
   }
+
+  .vote-icon {
+    filter: grayscale(100%);
+    transition: 0.2s ease;
+  }
+  .vote-icon.active {
+    filter: none;
+  }
+  .vote-icon:hover {
+    transform: scale(1.2);
+  }
+
+  .vote-buttons-container {
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+  .vote-buttons {
+  display: flex;
+  align-items: right;
+  gap: 16px; /* spațiu între like/dislike */
+  margin-top: 6px;
+  user-select: none;
+}
+
+.vote-buttons a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.vote-buttons a:hover {
+  opacity: 0.85;
+}
+
+.vote-buttons img.vote-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: grayscale(100%);
+  cursor: pointer;
+}
+
+.vote-buttons img.vote-icon:hover {
+  transform: scale(1.15);
+}
+
+.vote-buttons img.vote-icon.active {
+  filter: none; /* afișează color */
+}
+
+.vote-buttons span {
+  font-size: 14px;
+  min-width: 18px;
+  display: inline-block;
+}
+
+.like-count,
+.dislike-count {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  min-width: 20px;
+  text-align: center;
+  display: inline-block;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.like-count:hover,
+.dislike-count:hover {
+  transform: scale(1.1);
+  cursor: default;
+}
+
+.like-count {
+  color: #198754; /* Bootstrap success */
+}
+
+.dislike-count {
+  color: #dc3545; /* Bootstrap danger */
+}

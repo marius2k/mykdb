@@ -162,3 +162,8 @@
     </article>
   </section>
 </div>
+
+
+
+<a href="vote_article.php?aid=<?=$a['id']?>&vote=like&redirect=<?= urlencode($_SERVER['REQUEST_URI'] . '#article' . $a['id'])?>"><img width="20" height="auto" src="<?=APP_URL?>assets/images/icon-like.png" title="<?=lang_article_likes?>"></a><?=$votes['like']?>&nbsp;&nbsp;
+<a href="vote_article.php?aid=<?=$a['id']?>&vote=dislike&redirect=<?= urlencode($_SERVER['REQUEST_URI'] . '#article' . $a['id']) ?>"><img width="20" height="auto" src="<?=APP_URL?>assets/images/icon-dlike.png" title="<?=lang_article_dislikes?>"></a><?=$votes['dislike']?>&nbsp;&nbsp;

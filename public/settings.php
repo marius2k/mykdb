@@ -62,7 +62,6 @@ $_SESSION['settings'] = $currentSettings;
             <select name="lang" id="lang" class="form-control">
                 <option value="en" <?= $lang === 'en' ? 'selected' : '' ?>>English</option>
                 <option value="ro" <?= $lang === 'ro' ? 'selected' : '' ?>>Română</option>
-                <option value="fr" <?= $lang === 'fr' ? 'selected' : '' ?>>Français</option>
             </select>
         </div>
 

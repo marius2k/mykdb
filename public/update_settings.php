@@ -36,6 +36,7 @@ if ($lang) {
 }
 
 // După ce am aplicat setările (ex: salvate în DB) ma intorc la pagina de unde am venit
+
 $redirectTo = '/index.php'; // fallback implicit
 
 if (!empty($_POST['redirect_back'])) {
@@ -43,11 +44,11 @@ if (!empty($_POST['redirect_back'])) {
 
     // Validare basică: trebuie să înceapă cu "/" ca să nu fie redirect extern
     if (strpos($url, '/') === 0) {
-        $redirectTo = $url;
+          $redirectTo = $url;
     }
 }
 
 header("Location: $redirectTo");
 exit;
 
-
+?>

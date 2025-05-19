@@ -388,3 +388,62 @@ function lang(string $key): string {
     global $translations;
     return $translations[$key] ?? $key;
 }
+
+function getCommentCount(int $articleId): int {
+    global $db;
+
+    $sql = "SELECT COUNT(*) FROM article_comments WHERE article_id = ? AND status = 'approved'";
+    $result = $db->fetchSingle($sql, [$articleId]);
+
+    return (int) $result['COUNT(*)'];
+}
+
+
+function getArticleLikesDislikes(int $aid): array {
+    
+    $db=new Database();
+
+    $sql = "
+        SELECT vote_type, COUNT(*) AS total
+        FROM article_likes
+        WHERE article_id = ?
+        GROUP BY vote_type
+    ";
+
+    $rows = $db->fetchAll($sql, [$aid]);
+
+    $counts = ['like' => 0, 'dislike' => 0];
+    foreach ($rows as $row) {
+        $counts[$row['vote_type']] = (int)$row['total'];
+    }
+
+    return $counts;
+}
+
+
+
+// După ce am aplicat setările (ex: salvate în DB) ma intorc la pagina de unde am venit
+function get_back($redirect){
+
+        //$redirectTo = '/index.php'; // fallback implicit
+
+        $r = $redirect;
+        $url = filter_var($r, FILTER_SANITIZE_URL);
+
+        // Validare basică: trebuie să înceapă cu "/" ca să nu fie redirect extern
+        if (strpos($url, '/') === 0) {
+            $redirectTo = $url;
+        }
+        
+        //echo "Redirect to: ".$_POST['redirect'];
+        header("Location: $redirectTo");
+        //exit;
+}
+
+function getUserVote(int $articleId, int $userId): ?string {
+    
+    $db = new Database();
+
+    $row = $db->fetchSingle("SELECT vote_type FROM article_likes WHERE article_id = ? AND user_id = ?", [$articleId, $userId]);
+    return $row['vote_type'] ?? null; // 'like', 'dislike' sau null
+}

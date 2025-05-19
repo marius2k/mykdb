@@ -594,7 +594,7 @@ a:hover {
 
 .article-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* ⚙️ Exact 2 coloane */
+    grid-template-columns: repeat(1, 1fr); /* ⚙️ Exact 2 coloane */
     gap: 20px;
     padding: 20px;
     /*max-width: 1200px;*/
@@ -1166,18 +1166,22 @@ button[disabled],
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 270px; /* sau auto dacă vrei dinamic */
+    height: auto; /* sau auto dacă vrei dinamic */
+    width: 80%;
 }
 
 .article-title {
-    background: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238)); 
-    font-size: 1.4rem;
+    /*background: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238));*/ 
+    font-size: 1.5rem;
     margin-bottom: 12px;
     font-weight: bold;
-    color: #fffefe;
-    padding: 5px 10px;
+    color: #000000;
+    padding-left: 25px;
+    padding-top:  15px;
+    padding-bottom: 15px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    font-family: var (--font-main);
 } 
 
 
@@ -1210,7 +1214,9 @@ button[disabled],
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1px 5px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
   
   .read-more {
@@ -1224,11 +1230,11 @@ button[disabled],
   }
 
 
-
+/*
 .article-card:hover {
     transform: translateY(-3px);
 }
-
+*/
 
 
 .btn-read-more {
@@ -1360,6 +1366,92 @@ button[disabled],
     opacity: 0.5;
   }
   
-  
 
+
+  .vote-icon {
+    filter: grayscale(100%);
+    transition: 0.2s ease;
+  }
+  .vote-icon.active {
+    filter: none;
+  }
+  .vote-icon:hover {
+    transform: scale(1.2);
+  } 
+
+.vote-buttons-container {
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    /*gap: 5px;*/
+}
+  .vote-buttons {
+  display: flex;
+  align-items: right;
+  gap: 3px; /* spațiu între like/dislike */
+  margin-top: 6px;
+  user-select: none;
+}
+
+.vote-buttons a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.vote-buttons a:hover {
+  opacity: 0.85;
+}
+
+.vote-buttons img.vote-icon {
+  width: 24px;
+  height: 24px;
+  /*margin-right: 6px;*/
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: grayscale(100%);
+  cursor: pointer;
+}
+
+.vote-buttons img.vote-icon:hover {
+  transform: scale(1.15);
+}
+
+.vote-buttons img.vote-icon.active {
+  filter: none; /* afișează color */
+}
+
+.vote-buttons span {
+  font-size: 14px;
+  min-width: 18px;
+  display: inline-block;
   
+}
+
+.like-count,
+.dislike-count {
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 10px;
+  color: #333;
+  min-width: 20px;
+  text-align: left;
+  display: inline-block;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.like-count:hover,
+.dislike-count:hover {
+  /*transform: scale(1.1);*/
+  cursor: default;
+}
+
+.like-count {
+  color: #6a6b6b; /* Bootstrap success */
+}
+
+.dislike-count {
+  color: #6a6b6b;; /* Bootstrap danger */
+}
