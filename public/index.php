@@ -26,7 +26,7 @@ if (isset($_GET['category'])) {
     //echo $filter;
 }
 
-if ($_GET['category'] == NULL) {
+if (!isset($_GET['category'])) {
     $filter = '';
     $params = [];
 }
@@ -69,8 +69,8 @@ if (isset($_SESSION['user']['id'])) {
     $userId = $_SESSION['user']['id'];
     $settings = new UserSettings($db);
     $currentSettings = $settings->getAll($userId);
-    $lang = $currentSettings['language'];
-    $theme = $currentSettings['theme'];
+    $lang = $currentSettings['language'] ?? 'en';
+    $theme = $currentSettings['theme'] ?? 'light';
     $_SESSION['settings'] = $currentSettings;
 
 }else {
@@ -80,7 +80,11 @@ if (isset($_SESSION['user']['id'])) {
     $theme = 'light';
 }
 
+
 //echo "index.php: user id: ". $_SESSION['user']['id'];
+
+
+
 
 ?>
 
@@ -137,7 +141,7 @@ if (isset($_SESSION['user']['id'])) {
                     $textOnly = strip_tags($content);
                     
                     // Scurtăm textul
-                    $shortText = shortenText($textOnly, 300);
+                    $shortText = shortenText($textOnly, 500);
                     
 
                     $preview = truncateHtmlWithImages($a['content'], 100);
@@ -146,12 +150,52 @@ if (isset($_SESSION['user']['id'])) {
                     <div class="article-card">
                         
                             <h3 class="article-title"><?= escape($a['title']) ?></h3>
-                            <div class="article-body">
-                                <p><?= nl2br(escape($shortText)) ?>...</d>
+                            <div class="article-body" id="article<?=$a['id']?>">
+                                <p><?= nl2br(escape($shortText)) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/images/icon-rm1.png" title="<?= lang_read_more; ?>"> </a></p>
                             </div>
-                            <a class="read-more" href="view_article.php?id=<?= (int)$a['id'] ?>" style="color:blue;"><?= lang_read_more; ?> </a>
+                            
                             <div class="article-footer">
-                                <span class="article-meta"><?=lang_article_author?>:<?=escape($a['username']) ?> | <?=lang_article_category?>:<?=escape($a['category']) ?> | <?=lang_article_published?>:<?=formatDate($a['created_at']) ?>| <?=lang_article_updated?>:<?=formatDate($a['updated_at'])?></span>
+                                <div>
+                                    <span class="article-meta"><?=lang_article_author?>:<?=escape($a['username']) ?> | <?=lang_article_category?>:<?=escape($a['category']) ?> | <?=lang_article_published?>:<?=formatDate($a['created_at']) ?>| <?=lang_article_updated?>:<?=formatDate($a['updated_at'])?></span>
+                                </div>
+                                <div class="vote-buttons-container"> 
+                                            <div class="vote-buttons" id="meta-<?=$a['id']?>">
+                                                <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>">
+                                                <img src="<?=APP_URL?>assets/images/icon-view.png" title="<?=lang_article_views?>" class="vote-icon"></a>
+                                                <span class="view-count"><?= escape($a['views']) ?></span>
+
+                                                <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>#comments">
+                                                <img src="<?=APP_URL?>assets/images/icon-comm.png" title="<?=lang_article_add_comments?>" class="vote-icon"></a>
+                                                <span class="comments-count"><?=getCommentCount($a['id'])?></span>
+                                            </div>
+                                               
+                                            <div class="vote-buttons">
+                                                
+                                                <?php
+                                                    $votes = getArticleLikesDislikes($a['id']);
+                                                    $currentVote = $userId ? getUserVote($a['id'], $userId) : null;
+                                                    //echo "crt vote:".$currentVote;
+
+                                                ?>
+
+                                                <!-- LIKE -->
+                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'like', this); return false; updateArticleMeta(<?=$a['id']?>);">
+                                                    <img src="<?=APP_URL?>assets/images/icon-like.png" class="vote-icon <?= $currentVote === 'like' ? 'active' : '' ?>" width="20" high="auto" title="<?=lang_article_like?>">  
+                                                </a>
+                                                <span class="like-count"><?= $votes['like'] ?></span>
+                                                
+                                                <!-- DISLIKE -->
+                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'dislike', this); return false; updateArticleMeta(<?=$a['id']?>);">
+                                                    <img src="<?=APP_URL?>assets/images/icon-dlike.png" class="vote-icon <?= $currentVote === 'dislike' ? 'active' : '' ?>" width="20" height="auto" title="<?=lang_article_dislike?>">    
+                                                
+                                                </a>
+                                                <span class="dislike-count"><?= $votes['dislike'] ?></span>
+
+                                            </div>
+                                </div>                               
+
+                                   
+                                
                             </div>
                     </div>
 
@@ -163,22 +207,6 @@ if (isset($_SESSION['user']['id'])) {
 </div>
 
 
-<script>
-/*
-document.addEventListener("DOMContentLoaded", function () {
-    const clampElements = document.querySelectorAll(".clamp-fallback");
-    clampElements.forEach(el => {
-        if (!CSS.supports("-webkit-line-clamp", "4") && !CSS.supports("line-clamp", "4")) {
-            const lineHeight = parseInt(window.getComputedStyle(el).lineHeight);
-            const maxHeight = lineHeight * 4; // 👈 4 lines
-            el.style.maxHeight = maxHeight + "px";
-            el.style.overflow = "hidden";
-            el.style.textOverflow = "ellipsis";
-        }
-    });
-});
-*/
-</script>
 
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

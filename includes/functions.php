@@ -287,6 +287,19 @@ function generateNavBar2($uid) {
         $nav.='<a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>';
     }
 
+    // check users allowed to manage comments
+    $ops = ['add_comment',
+            'approve_comment',
+            'delete_comment',
+            'edit_comment'
+            ];
+
+    if (hasPermission($uid,$ops)){
+
+        $nav.='<a href="'.APP_URL.'public/admin/comments.php"'.($currentPage === 'comments.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_com_comments.'</a>';
+    }
+
+
     //check users allowed to edit ACL (file:admin/acl_edit.php)
 
     $ops=['edit_acl'];
@@ -387,4 +400,63 @@ function hasPermission(int $user_id, array $requiredOps): bool {
 function lang(string $key): string {
     global $translations;
     return $translations[$key] ?? $key;
+}
+
+function getCommentCount(int $articleId): int {
+    global $db;
+
+    $sql = "SELECT COUNT(*) FROM article_comments WHERE article_id = ? AND status = 'approved'";
+    $result = $db->fetchSingle($sql, [$articleId]);
+
+    return (int) $result['COUNT(*)'];
+}
+
+
+function getArticleLikesDislikes(int $aid): array {
+    
+    $db=new Database();
+
+    $sql = "
+        SELECT vote_type, COUNT(*) AS total
+        FROM article_likes
+        WHERE article_id = ?
+        GROUP BY vote_type
+    ";
+
+    $rows = $db->fetchAll($sql, [$aid]);
+
+    $counts = ['like' => 0, 'dislike' => 0];
+    foreach ($rows as $row) {
+        $counts[$row['vote_type']] = (int)$row['total'];
+    }
+
+    return $counts;
+}
+
+
+
+// După ce am aplicat setările (ex: salvate în DB) ma intorc la pagina de unde am venit
+function get_back($redirect){
+
+        //$redirectTo = '/index.php'; // fallback implicit
+
+        $r = $redirect;
+        $url = filter_var($r, FILTER_SANITIZE_URL);
+
+        // Validare basică: trebuie să înceapă cu "/" ca să nu fie redirect extern
+        if (strpos($url, '/') === 0) {
+            $redirectTo = $url;
+        }
+        
+        //echo "Redirect to: ".$_POST['redirect'];
+        header("Location: $redirectTo");
+        //exit;
+}
+
+function getUserVote(int $articleId, int $userId): ?string {
+    
+    $db = new Database();
+
+    $row = $db->fetchSingle("SELECT vote_type FROM article_likes WHERE article_id = ? AND user_id = ?", [$articleId, $userId]);
+    return $row['vote_type'] ?? null; // 'like', 'dislike' sau null
 }

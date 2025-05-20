@@ -82,17 +82,17 @@ $categories = $stmt->fetchAll();
 
 <h2><?=lang_cat_categories?></h2>
 
-<table class="articles-table" id="categories-table">
+<table class="articles-table" id="categories-table" width="80%">
     <thead>
         <tr>
             <th width="50px" align="center">
               <button class="btn-plus-icon" onclick="toggleAddCategory()" title="Adaugă categorie">
-              <img src="../../assets/images/btn_add_icon.png" alt="Add" class="icon-img rotate-on-hover">
+              <img src="../../assets/icons/icon-add.svg" alt="Add Category" class="op-icon">
               </button>
             </th>
             <th><?=lang_cat_name?></th>
             <th><?=lang_cat_description?></th>
-            <th><?=lang_cat_actions?></th>
+            <th align="center"><?=lang_cat_actions?></th>
         </tr>
     </thead>
     <tbody>
@@ -106,12 +106,12 @@ $categories = $stmt->fetchAll();
         -->
         
         <!-- Formular de adăugare, ascuns -->
-        <tr id="add-form-row" style="display: none;">
+        <tr id="add-form-row" style="display: none; background-color: paleturquoise;">
             <form method="POST">
                 <td align="center">-></td>
                 <td><input type="text" name="name" placeholder="<?=lang_cat_category?>" required></td>
                 <td><input type="text" name="description" placeholder="<?=lang_cat_description?>"></td>
-                <td><button type="submit" class="btn-sm btn-outline-grey">✅ <?=lang_btn_save?></button></td>
+                <td align="center"><button type="submit" class="btn-plus-icon"><img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?=lang_btn_save?>"></button></td>
             </form>
         </tr>
 
@@ -121,10 +121,10 @@ $categories = $stmt->fetchAll();
                 <td align="center"><?= $c['id'] ?></td>
                 <td><?= escape($c['name']) ?></td>
                 <td><?= escape($c['description']) ?></td>
-                <td>
-                    <div class="action-grid">
-                        <a href="edit_category.php?id=<?= $c['id'] ?>" class="btn-sm btn-outline-grey">✏️ <?=lang_btn_edit?></a>
-                        <a href="delete_category.php?id=<?= $c['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('<?=lang_cat_msg_delete?>')">🗑️ <?=lang_btn_delete?></a>
+                <td align="center">
+                    <div>
+                        <a href="edit_category.php?id=<?= $c['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-edit.svg" class="op-icon" title="<?=lang_btn_edit?>"></a>
+                        <a href="delete_category.php?id=<?= $c['id'] ?>" onclick="return confirm('<?=lang_cat_msg_delete?>')"><img src="<?=APP_URL?>assets/icons/icon-delete.svg" class="op-icon" title="<?=lang_btn_delete?>"></a>
                     </div>
                 </td>
             </tr>

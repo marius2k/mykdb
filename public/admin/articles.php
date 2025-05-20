@@ -82,7 +82,7 @@ $articles = $db->query("
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
 <h2><?=lang_art_articles?></h2>
-<table class="articles-table">
+<table class="articles-table" width="80%">
     <thead>
         <tr>
             <th align="center">#</th>
@@ -90,7 +90,7 @@ $articles = $db->query("
             <th><?=lang_art_author?></th>
             <th><?=lang_art_category?></th>
             <th><?=lang_art_status?></th>
-            <th><?=lang_art_actions?></th>
+            <th align="center"><?=lang_art_actions?></th>
         </tr>
     </thead>
     <tbody>
@@ -103,20 +103,20 @@ $articles = $db->query("
             <td><?= htmlspecialchars($a['username']) ?></td>
             <td><?= htmlspecialchars($a['category']) ?></td>
             <td><?= $a['status'] ?></td>
-            <td>
+            <td align="center">
                 <?php
                     $op=['view_article'];
 
                     if (hasPermission($_SESSION['user']['id'],$op)){
                 ?>
-                        <a href="../view_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">👁️ <?=lang_btn_view?></a>
+                        <a href="../view_article.php?id=<?= $a['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-view.svg" class="op-icon" title="<?=lang_btn_view?>"></a>
                 <?php } ?>
 
                 <?php
                     $op = ['edit_article'];
                     if (hasPermission($_SESSION['user']['id'],$op)){
                 ?>
-                <a href="../edit_article.php?id=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✏️ <?=lang_btn_edit?></a>
+                <a href="../edit_article.php?id=<?= $a['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-edit.svg" class="op-icon" title="<?=lang_btn_edit?>"></a>
                 <?php } ?>
 
                 <?php if ($a['status'] == 'pending'): ?>
@@ -125,7 +125,7 @@ $articles = $db->query("
                         $op=['approve_article'];
                         if (hasPermission($_SESSION['user']['id'],$op)){
                     ?>
-                    <a href="?approve=<?= $a['id'] ?>" class="btn-sm btn-outline-grey">✅ <?=lang_btn_approve?></a>
+                    <a href="?approve=<?= $a['id'] ?>" ><img src="<?=APP_URL?>assets/icons/icon-approve.svg" class="op-icon" title="<?=lang_btn_approve?>"></a>
                     <?php } ?>
 
                 <?php else: ?>
@@ -133,7 +133,7 @@ $articles = $db->query("
                         $op=['disable_article'];
                         if (hasPermission($_SESSION['user']['id'],$op)){
                     ?>
-                    <a href="?disable=<?= $a['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('<?=lang_art_msg_disable?>')">🗑️ <?=lang_btn_disable?></a>
+                    <a href="?disable=<?= $a['id'] ?>" onclick="return confirm('<?=lang_art_msg_disable?>')"><img src="<?=APP_URL?>assets/icons/icon-disable.svg" class="op-icon" title="<?=lang_btn_disable?>"></a>
 
                     <?php } ?>
                 <?php endif; ?>

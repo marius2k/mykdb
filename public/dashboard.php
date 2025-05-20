@@ -38,7 +38,7 @@ if (!isset($filterUserId)) {
 if (isset($_GET['page']) && is_numeric($_GET['page'])) {
     $filterUserId = $_GET['filterUserId'];
 } else {
-    $filterUserId = $_GET['user_id'];
+    $filterUserId = $_GET['user_id'] ?? '0';
 }
 
 //$filterUserId = $_GET['user_id'] ?? null;

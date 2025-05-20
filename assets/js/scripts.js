@@ -101,7 +101,90 @@ function initBackToTop() {
 
 
 
-// Function to toggle password visibility
+function voteArticle(articleId, voteType, el) {
+  fetch('vote_article.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `aid=${articleId}&vote=${voteType}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      // Găsim ambele span-uri (în același container)
+      const container = el.closest('div') || el.parentNode;
+      const likeSpan = container.querySelector('.like-count');
+      const dislikeSpan = container.querySelector('.dislike-count');
 
+      if (likeSpan) likeSpan.textContent = data.likes;
+      if (dislikeSpan) dislikeSpan.textContent = data.dislikes;
+        // eliminăm toate clasele "active" locale
+        container.querySelectorAll('.vote-icon').forEach(img => img.classList.remove('active'));
 
-// Function to handle the form submission
+        // adăugăm clasa doar pe iconul votat
+        if (voteType === 'like') {
+                container.querySelector('img[src*="icon-like"]').classList.add('active');
+        } else {
+                container.querySelector('img[src*="icon-dlike"]').classList.add('active');
+        }
+    } else {
+      alert(data.message || 'Eroare la vot!');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Eroare AJAX!');
+  });
+
+ 
+}
+
+function submitComment() {
+  const articleId = document.getElementById('article_id').value;
+  const content = document.getElementById('comment-content').value.trim();
+
+  if (!content) {
+    alert('Comentariul nu poate fi gol.');
+    return false;
+  }
+
+  fetch('add_comment.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `article_id=${encodeURIComponent(articleId)}&content=${encodeURIComponent(content)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      document.getElementById('comment-feedback').classList.remove('d-none');
+      document.getElementById('comment-content').value = '';
+      updateArticleMeta(articleId); // actualizează contorul 💬
+    } else {
+      alert(data.message || 'Eroare la trimiterea comentariului.');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Eroare AJAX!');
+  });
+
+  return false; // prevenim reload
+}
+
+function updateArticleMeta(articleId) {
+  fetch('get_article_meta.php?aid=' + articleId)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.querySelector('#meta-' + articleId);
+      if (!container) return;
+
+      const views = container.querySelector('.views-count');
+      const comments = container.querySelector('.comments-count');
+
+      if (views) views.textContent = data.views;
+      if (comments) comments.textContent = data.comments;
+    })
+    .catch(err => console.error('Eroare la update meta:', err));
+}
+

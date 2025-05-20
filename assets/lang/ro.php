@@ -8,7 +8,7 @@ define(constant_name:'lang_privacy',value:'Politica de confidentialitate');
 define(constant_name:'lang_login', value:'Autentificare');    
 define(constant_name:'lang_logout',value:'Deconectare');
 define(constant_name:'lang_register',value:'Inregistrare');
-define(constant_name:'lang_dashboard',value:'Tabloul de bord');
+define(constant_name:'lang_dashboard',value:'Dashboard');
 define(constant_name:'lang_users',value:'Utilizatori');
 define(constant_name:'lang_categories',value:'Categorii');
 define(constant_name:'lang_articles',value:'Articole');
@@ -29,14 +29,18 @@ define(constant_name:'lang_edit_article',value:'Editeaza articol');
 define(constant_name:'lang_edit_article_success',value:'Articol editat cu succes!');
 define(constant_name:'lang_edit_article_error',value:'Eroare la editarea articolului.');
 define(constant_name:'lang_settings',value:'Setari');
-define(constant_name:'lang_read_more',value:'[Citeste mai mult...]');
+define(constant_name:'lang_read_more',value:'Citeste mai mult');
 define(constant_name:'lang_article_author',value:'Autor');
 define(constant_name:'lang_article_category',value:'Categorie');
 define(constant_name:'lang_article_published',value:'Publicat');
 define(constant_name:'lang_article_approved',value:'Aprobat');
+define(constant_name:'lang_article_views',value:'Vizualizari');
 define(constant_name:'lang_all_categories',value:' Toate Categoriile ');
 define(constant_name:'lang_article_updated',value:'Actualizat');
 define(constant_name:'lang_article_created',value:'Creat');
+define(constant_name:'lang_article_like',value:'Like');
+define(constant_name:'lang_article_dislike',value:'Dislike');
+define(constant_name:'lang_article_add_comments',value:'Commentarii');
 define(constant_name:'lang_select_english',value:'Engleza');
 define(constant_name:'lang_select_romanian',value:'Romana');
 define(constant_name:'lang_select_language',value:'Limba');
@@ -95,6 +99,21 @@ define(constant_name:'lang_art_status',value:'Stare');
 define(constant_name:'lang_art_actions',value:'Actiuni');
 define(constant_name:'lang_art_msg_disable',value:'Dezactivezi acest articol?');
 
+// Define constants for Comments (file: admin/comments.php)
+
+define(constant_name:'lang_com_comments',value:'Comentarii');
+define(constant_name:'lang_com_title',value:'Titlu');
+define(constant_name:'lang_com_author',value:'Autor');
+define(constant_name:'lang_com_category',value:'Categorie');
+define(constant_name:'lang_com_status',value:'Status');
+define(constant_name:'lang_com_actions',value:'Actiuni');
+define(constant_name:'lang_com_msg_disable',value:'Dezactivezi acest commentariu?');
+define(constant_name:'lang_com_msg_nocommw',value:'Nu exista comentarii in asteptare');
+define(constant_name:'lang_com_msg_nocomm',value:'Nu exista comentarii');
+define(constant_name:'lang_com_article',value:'Articol');
+define(constant_name:'lang_com_user',value:'Utilizator');
+define(constant_name:'lang_com_comm',value:'Commentariu');
+define(constant_name:'lang_com_data',value:'Data creare');
 
 // Define constants for Buttons in tables
 
@@ -105,6 +124,7 @@ define(constant_name:'lang_btn_disable',value:'Dezactiveaza');
 define(constant_name:'lang_btn_delete',value:'Sterge');
 define(constant_name:'lang_btn_save',value:'Salveaza');
 define(constant_name:'lang_btn_edit',value:'Editeaza');
+define(constant_name:'lang_btn_reject',value:'Respinge');
 
 
 
