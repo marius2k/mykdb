@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 16, 2025 at 04:42 PM
+-- Generation Time: May 20, 2025 at 10:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -259,7 +259,96 @@ INSERT INTO `activity_log` (`id`, `user_id`, `action_type`, `ip_address`, `user_
 (215, 6, 'user_approved', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User approved: user2\"', '2025-05-16 14:26:45'),
 (216, 6, 'user_disabled', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User disabled: user2\"', '2025-05-16 14:27:02'),
 (217, 4, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-16 14:29:21'),
-(218, 7, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inmarius\"', '2025-05-16 14:29:26');
+(218, 7, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inmarius\"', '2025-05-16 14:29:26'),
+(219, 7, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-16 16:08:02'),
+(220, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-05-16 16:08:13'),
+(221, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-16 16:08:44'),
+(222, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-05-17 19:22:45'),
+(223, 2, 'create_article', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin created the article:What is a Knowledge Base System? \"', '2025-05-17 20:02:33'),
+(224, 2, 'article_approved', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin approved an article\"', '2025-05-17 20:02:42'),
+(225, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:What is a Knowledge Base System?\"', '2025-05-17 20:02:49'),
+(226, 2, 'create_article', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin created the article:Why You Need a Knowledge Base\"', '2025-05-17 20:13:57'),
+(227, 2, 'article_approved', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin approved an article\"', '2025-05-17 20:14:45'),
+(228, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:Why You Need a Knowledge Base\"', '2025-05-19 10:59:05'),
+(229, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:Why You Need a Knowledge Base\"', '2025-05-19 13:38:05'),
+(230, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:Articol de test cu upload de imagine\"', '2025-05-19 13:40:51'),
+(231, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-19 14:02:01'),
+(232, 4, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inuser2\"', '2025-05-19 14:02:07'),
+(233, 4, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User user2 viewed the article:Why You Need a Knowledge Base\"', '2025-05-19 14:57:21'),
+(234, 4, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-19 15:55:54'),
+(235, 4, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inuser2\"', '2025-05-19 15:56:08'),
+(236, 4, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-19 15:56:30'),
+(237, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-05-19 15:56:35'),
+(238, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:What is a Knowledge Base System?\"', '2025-05-19 15:57:12'),
+(239, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:How To create a knowledge article\"', '2025-05-19 16:36:25'),
+(240, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:test cu imagine\"', '2025-05-19 20:04:47'),
+(241, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:test cu imagine\"', '2025-05-19 20:04:59'),
+(242, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-20 06:40:15'),
+(243, 5, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inmihai\"', '2025-05-20 06:40:21'),
+(244, 5, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-20 06:41:37'),
+(245, NULL, 'login_failed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"Failed login attempt for username: corny\"', '2025-05-20 06:41:45'),
+(246, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-05-20 06:42:14'),
+(247, 3, 'user_restored', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User restored: admin\"', '2025-05-20 06:42:23'),
+(248, 6, 'user_restored', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User restored: admin\"', '2025-05-20 06:42:26'),
+(249, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-20 06:42:30'),
+(250, 6, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged incorny\"', '2025-05-20 06:42:36'),
+(251, 6, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User corny viewed the article:What is a Knowledge Base System?\"', '2025-05-20 06:44:02'),
+(252, 6, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User corny viewed the article:What is a Knowledge Base System?\"', '2025-05-20 06:44:09'),
+(253, 6, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User corny viewed the article:test cu imagine\"', '2025-05-20 06:44:25'),
+(254, 6, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User corny viewed the article:test cu imagine\"', '2025-05-20 06:44:34'),
+(255, 6, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-20 07:06:12'),
+(256, 7, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inmarius\"', '2025-05-20 07:06:18'),
+(257, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:07:45'),
+(258, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:09:59'),
+(259, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:14:07'),
+(260, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:14:09'),
+(261, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:15:05'),
+(262, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:15:06'),
+(263, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:15:09'),
+(264, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:16:15'),
+(265, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:17:02');
+INSERT INTO `activity_log` (`id`, `user_id`, `action_type`, `ip_address`, `user_agent`, `details`, `created_at`) VALUES
+(266, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:17:03'),
+(267, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:17:16'),
+(268, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:18:48'),
+(269, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:19:13'),
+(270, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:19:37'),
+(271, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:20:13'),
+(272, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:21:24'),
+(273, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:23:26'),
+(274, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:24:29'),
+(275, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:28:44'),
+(276, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:30:02'),
+(277, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:31:50'),
+(278, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:What is a Knowledge Base System?\"', '2025-05-20 07:37:25'),
+(279, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:What is a Knowledge Base System?\"', '2025-05-20 07:38:17'),
+(280, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:What is a Knowledge Base System?\"', '2025-05-20 07:42:43'),
+(281, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:What is a Knowledge Base System?\"', '2025-05-20 07:43:54'),
+(282, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:What is a Knowledge Base System?\"', '2025-05-20 07:44:12'),
+(283, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:49:35'),
+(284, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:51:29'),
+(285, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 07:51:44'),
+(286, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 08:18:48'),
+(287, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 08:19:41'),
+(288, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Why You Need a Knowledge Base\"', '2025-05-20 08:19:47'),
+(289, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:What is a Knowledge Base System?\"', '2025-05-20 08:21:50'),
+(290, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:What is a Knowledge Base System?\"', '2025-05-20 08:21:55'),
+(291, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Articol de test cu upload de imagine\"', '2025-05-20 08:39:46'),
+(292, 7, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User marius viewed the article:Articol de test cu upload de imagine\"', '2025-05-20 08:40:33'),
+(293, 7, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-20 08:46:04'),
+(294, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-05-20 08:46:09'),
+(295, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:How to Reset Your Password\"', '2025-05-20 08:57:29'),
+(296, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:test qwe\"', '2025-05-20 08:57:58'),
+(297, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:Test 1 for Installation and Configuration\"', '2025-05-20 08:58:18'),
+(298, 2, 'article_viewed', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin viewed the article:Test 1 for Installation and Configuration\"', '2025-05-20 08:58:34'),
+(299, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-20 09:54:48'),
+(300, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-05-20 09:54:54'),
+(301, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged out\"', '2025-05-20 09:55:25'),
+(302, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-05-20 09:55:43'),
+(303, 2, 'reject_comment', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin rejected a comment\"', '2025-05-20 13:25:42'),
+(304, 2, 'reject_comment', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin rejected a comment\"', '2025-05-20 13:32:36'),
+(305, 2, 'approve_comment', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User admin approved a comment\"', '2025-05-20 13:32:53'),
+(306, 3, 'user_disabled', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', '\"User disabled: admin\"', '2025-05-20 20:13:18');
 
 -- --------------------------------------------------------
 
@@ -275,22 +364,84 @@ CREATE TABLE `articles` (
   `user_id` int(11) DEFAULT NULL,
   `status` enum('pending','approved') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `views` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `articles`
 --
 
-INSERT INTO `articles` (`id`, `title`, `content`, `category_id`, `user_id`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Test 1 for Installation and Configuration', 'This is the first test article for the Installation and Configuration category', 1, 2, 'approved', '2025-04-23 11:06:19', '2025-04-23 13:32:35'),
-(2, 'How To create a knowledge article', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce pharetra sagittis porta. Sed nec mauris nulla. Sed tristique iaculis diam, ut ultrices sem fringilla nec. Nunc sollicitudin, turpis ac tincidunt porta, lectus tortor luctus sapien, quis dignissim diam orci pharetra urna. Proin sagittis nunc ut urna euismod, quis vehicula risus ullamcorper. Fusce nibh nibh, ultricies eu ante eget, dictum laoreet ex. Integer diam ipsum, egestas vel risus tincidunt, convallis consectetur elit. Etiam auctor erat quis sem dignissim, at malesuada est laoreet. Donec id porta tortor, non auctor metus. Pellentesque bibendum mollis risus. Maecenas cursus ipsum urna, at vestibulum turpis ornare sit amet. Nunc malesuada, dolor non tincidunt laoreet, erat risus faucibus ante, eu viverra elit felis at leo. Maecenas tincidunt mattis diam. first', 2, 3, 'approved', '2025-04-23 13:34:05', '2025-04-23 21:00:26'),
-(3, 'How to Reset Your Password', 'If you forgot your password, follow these steps to reset it. Steps to Reset Password:\r\n1. Go to the Login Page.\r\n2. Click \"Forgot Password?\".\r\n3. Enter your registered email address.\r\n4. Check your inbox for a reset link (valid for 24 hours).\r\n5.Click the link and set a new password.', 2, 4, 'approved', '2025-04-23 13:38:49', '2025-04-23 20:20:10'),
-(4, 'Articol de test cu upload de imagine', '<strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nisi neque, cursus at pulvinar at, dapibus sed nibh.</strong> <br><br><em>Nullam bibendum nisi sed mi vulputate, vitae viverra mauris fringilla.</em> Fusce vitae laoreet neque. Fusce vitae purus et diam bibendum tristique. Nunc sit amet scelerisque dui. Pellentesque tempor enim ac ullamcorper mollis. <br><a href=\"uploads/img_680f527d2b5cb2.20153610.jpeg\">kdb_top.jpeg 53.39 KB</a><em><br></em>Praesent placerat convallis ante, non viverra libero lacinia quis. Aliquam non eros sit amet leo dictum vestibulum. Integer felis turpis, venenatis nec gravida sodales, laoreet in neque. Nunc eu accumsan diam. Sed dolor ex, ultricies nec purus et, vehicula tincidunt metus. Nulla quis leo vitae nisl posuere faucibus. Curabitur mi ipsum, tempor sollicitudin orci mattis, posuere consequat purus.<br><br>Suspendisse non cursus lacus, interdum gravida justo. Maecenas cursus tincidunt arcu. Aliquam quis tellus massa. Nullam maximus luctus lectus vel efficitur. Nulla tempor, purus ac pulvinar ornare, libero dolor convallis sapien, quis dictum lacus arcu lacinia ex. Donec auctor odio imperdiet, semper purus in, posuere leo. Mauris in dictum massa. Aliquam urna risus, lobortis non urna nec, bibendum egestas urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nunc non dui ut tortor elementum mattis. Mauris ut eleifend nibh, non laoreet neque. Pellentesque elementum laoreet arcu ut pellentesque. Morbi egestas urna et consequat consequat.<br><br><br>', 2, 2, 'approved', '2025-04-28 10:04:15', '2025-04-28 10:50:59'),
-(5, 'test cu imagine', 'Vestibulum dignissim blandit augue ac elementum. Maecenas luctus, ligula a tempus varius, leo dui laoreet purus, auctor tempor libero lorem vitae nibh. Interdum et malesuada fames ac ante ipsum primis in faucibus. Praesent rhoncus turpis in urna scelerisque congue. <br><a href=\"http://localhost/mykdb/uploads/img_680f606e54a986.34743773.png\"></a><br><br>Phasellus finibus vestibulum eros eget aliquet. Duis euismod viverra ex. Nunc sollicitudin erat id leo efficitur, et aliquam felis dignissim. Aenean fringilla viverra mi, a tincidunt ligula ornare eu. Sed nulla nibh, malesuada a accumsan vitae, tincidunt vel ipsum. Nulla facilisi. In vitae ullamcorper purus. Duis ornare diam quis tortor vulputate, pellentesque pharetra nunc aliquam. Duis vitae enim in lorem tristique rhoncus. Maecenas ultrices condimentum ipsum, nec tristique enim accumsan volutpat. Cras placerat maximus mauris in interdum. Maecenas finibus ex at gravida auctor.', 1, 2, 'approved', '2025-04-28 11:03:16', '2025-04-29 10:12:24'),
-(9, 'test qwe', 'Vestibulum dignissim blandit augue ac elementum.<br><br><figure data-trix-attachment=\"{&quot;contentType&quot;:&quot;image/jpeg&quot;,&quot;filename&quot;:&quot;kdb_top.jpeg&quot;,&quot;filesize&quot;:54675,&quot;height&quot;:348,&quot;href&quot;:&quot;http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg&quot;,&quot;url&quot;:&quot;http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg&quot;,&quot;width&quot;:1102}\" data-trix-content-type=\"image/jpeg\" data-trix-attributes=\"{&quot;presentation&quot;:&quot;gallery&quot;}\" class=\"attachment attachment--preview attachment--jpeg\"><a href=\"http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg\"><img src=\"http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg\" width=\"1102\" height=\"348\"></a></figure>\r\nIn vitae ullamcorper purus. Duis ornare diam quis tortor vulputate, pellentesque pharetra nunc aliquam. Duis vitae enim in lorem tristique rhoncus. Maecenas ultrices condimentum ipsum, nec tristique enim accumsan volutpat. Cras placerat maximus mauris in interdum. Maecenas finibus ex at gravida auctor.', 1, 2, 'approved', '2025-04-28 15:12:06', '2025-04-29 10:12:47'),
-(11, 'test 2904_01', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nisi neque, cursus at pulvinar at, dapibus sed nibh. Nullam bibendum nisi sed mi vulputate, vitae viverra mauris fringilla. Fusce vitae laoreet neque. Fusce vitae purus et diam bibendum tristique. Nunc sit amet scelerisque dui. Pellentesque tempor enim ac ullamcorper mollis. Praesent placerat convallis ante, non viverra libero lacinia quis. Aliquam non eros sit amet leo dictum vestibulum. Integer felis turpis, venenatis nec gravida sodales, laoreet in neque. Nunc eu accumsan diam. Sed dolor ex, ultricies nec purus et, vehicula tincidunt metus. Nulla quis leo vitae nisl posuere faucibus. Curabitur mi ipsum, tempor sollicitudin orci mattis, posuere consequat purus.', 1, 2, 'pending', '2025-04-29 08:52:13', '2025-05-02 10:28:48'),
-(12, 'test 1234567', 'L111122121orem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nisi neque, cursus at pulvinar at, dapibus sed nibh. Nullam bibendum nisi sed mi vulputate, vitae viverra mauris fringilla.<br><figure data-trix-attachment=\"{&quot;contentType&quot;:&quot;image/jpeg&quot;,&quot;filename&quot;:&quot;kdb_top.jpeg&quot;,&quot;filesize&quot;:54675,&quot;height&quot;:348,&quot;href&quot;:&quot;http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg&quot;,&quot;url&quot;:&quot;http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg&quot;,&quot;width&quot;:1102}\" data-trix-content-type=\"image/jpeg\" data-trix-attributes=\"{&quot;presentation&quot;:&quot;gallery&quot;}\" class=\"attachment attachment--preview attachment--jpeg\"><a href=\"http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg\"><img src=\"http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg\" width=\"1102\" height=\"348\"></a></figure>Suspendisse non cursus lacus, interdum gravida justo. Maecenas cursus tincidunt arcu. Aliquam quis tellus massa. Nullam maximus luctus lectus vel efficitur. Nulla tempor, purus ac pulvinar ornare, libero dolor convallis sapien, quis dictum lacus arcu lacinia ex. Donec auctor odio imperdiet, semper purus in, posuere leo.&nbsp;', 1, 2, 'pending', '2025-04-29 10:16:03', '2025-04-30 11:24:32');
+INSERT INTO `articles` (`id`, `title`, `content`, `category_id`, `user_id`, `status`, `created_at`, `updated_at`, `views`) VALUES
+(1, 'Test 1 for Installation and Configuration', 'This is the first test article for the Installation and Configuration category', 1, 2, 'approved', '2025-04-23 11:06:19', '2025-05-20 08:58:34', 2),
+(2, 'How To create a knowledge article', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce pharetra sagittis porta. Sed nec mauris nulla. Sed tristique iaculis diam, ut ultrices sem fringilla nec. Nunc sollicitudin, turpis ac tincidunt porta, lectus tortor luctus sapien, quis dignissim diam orci pharetra urna. Proin sagittis nunc ut urna euismod, quis vehicula risus ullamcorper. Fusce nibh nibh, ultricies eu ante eget, dictum laoreet ex. Integer diam ipsum, egestas vel risus tincidunt, convallis consectetur elit. Etiam auctor erat quis sem dignissim, at malesuada est laoreet. Donec id porta tortor, non auctor metus. Pellentesque bibendum mollis risus. Maecenas cursus ipsum urna, at vestibulum turpis ornare sit amet. Nunc malesuada, dolor non tincidunt laoreet, erat risus faucibus ante, eu viverra elit felis at leo. Maecenas tincidunt mattis diam. first', 2, 3, 'approved', '2025-04-23 13:34:05', '2025-05-19 16:36:25', 1),
+(3, 'How to Reset Your Password', 'If you forgot your password, follow these steps to reset it. Steps to Reset Password:\r\n1. Go to the Login Page.\r\n2. Click \"Forgot Password?\".\r\n3. Enter your registered email address.\r\n4. Check your inbox for a reset link (valid for 24 hours).\r\n5.Click the link and set a new password.', 2, 4, 'approved', '2025-04-23 13:38:49', '2025-05-20 08:57:29', 1),
+(4, 'Articol de test cu upload de imagine', '<strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nisi neque, cursus at pulvinar at, dapibus sed nibh.</strong> <br><br><em>Nullam bibendum nisi sed mi vulputate, vitae viverra mauris fringilla.</em> Fusce vitae laoreet neque. Fusce vitae purus et diam bibendum tristique. Nunc sit amet scelerisque dui. Pellentesque tempor enim ac ullamcorper mollis. <br><a href=\"uploads/img_680f527d2b5cb2.20153610.jpeg\">kdb_top.jpeg 53.39 KB</a><em><br></em>Praesent placerat convallis ante, non viverra libero lacinia quis. Aliquam non eros sit amet leo dictum vestibulum. Integer felis turpis, venenatis nec gravida sodales, laoreet in neque. Nunc eu accumsan diam. Sed dolor ex, ultricies nec purus et, vehicula tincidunt metus. Nulla quis leo vitae nisl posuere faucibus. Curabitur mi ipsum, tempor sollicitudin orci mattis, posuere consequat purus.<br><br>Suspendisse non cursus lacus, interdum gravida justo. Maecenas cursus tincidunt arcu. Aliquam quis tellus massa. Nullam maximus luctus lectus vel efficitur. Nulla tempor, purus ac pulvinar ornare, libero dolor convallis sapien, quis dictum lacus arcu lacinia ex. Donec auctor odio imperdiet, semper purus in, posuere leo. Mauris in dictum massa. Aliquam urna risus, lobortis non urna nec, bibendum egestas urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nunc non dui ut tortor elementum mattis. Mauris ut eleifend nibh, non laoreet neque. Pellentesque elementum laoreet arcu ut pellentesque. Morbi egestas urna et consequat consequat.<br><br><br>', 2, 2, 'approved', '2025-04-28 10:04:15', '2025-05-20 08:40:33', 3),
+(5, 'test cu imagine', 'Vestibulum dignissim blandit augue ac elementum. Maecenas luctus, ligula a tempus varius, leo dui laoreet purus, auctor tempor libero lorem vitae nibh. Interdum et malesuada fames ac ante ipsum primis in faucibus. Praesent rhoncus turpis in urna scelerisque congue. <br><a href=\"http://localhost/mykdb/uploads/img_680f606e54a986.34743773.png\"></a><br><br>Phasellus finibus vestibulum eros eget aliquet. Duis euismod viverra ex. Nunc sollicitudin erat id leo efficitur, et aliquam felis dignissim. Aenean fringilla viverra mi, a tincidunt ligula ornare eu. Sed nulla nibh, malesuada a accumsan vitae, tincidunt vel ipsum. Nulla facilisi. In vitae ullamcorper purus. Duis ornare diam quis tortor vulputate, pellentesque pharetra nunc aliquam. Duis vitae enim in lorem tristique rhoncus. Maecenas ultrices condimentum ipsum, nec tristique enim accumsan volutpat. Cras placerat maximus mauris in interdum. Maecenas finibus ex at gravida auctor.', 1, 2, 'approved', '2025-04-28 11:03:16', '2025-05-20 06:44:34', 4),
+(9, 'test qwe', 'Vestibulum dignissim blandit augue ac elementum.<br><br><figure data-trix-attachment=\"{&quot;contentType&quot;:&quot;image/jpeg&quot;,&quot;filename&quot;:&quot;kdb_top.jpeg&quot;,&quot;filesize&quot;:54675,&quot;height&quot;:348,&quot;href&quot;:&quot;http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg&quot;,&quot;url&quot;:&quot;http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg&quot;,&quot;width&quot;:1102}\" data-trix-content-type=\"image/jpeg\" data-trix-attributes=\"{&quot;presentation&quot;:&quot;gallery&quot;}\" class=\"attachment attachment--preview attachment--jpeg\"><a href=\"http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg\"><img src=\"http://localhost/mykdb/uploads/img_680f9abc0960a7.16651368.jpeg\" width=\"1102\" height=\"348\"></a></figure>\r\nIn vitae ullamcorper purus. Duis ornare diam quis tortor vulputate, pellentesque pharetra nunc aliquam. Duis vitae enim in lorem tristique rhoncus. Maecenas ultrices condimentum ipsum, nec tristique enim accumsan volutpat. Cras placerat maximus mauris in interdum. Maecenas finibus ex at gravida auctor.', 1, 2, 'approved', '2025-04-28 15:12:06', '2025-05-20 08:57:58', 1),
+(11, 'test 2904_01', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nisi neque, cursus at pulvinar at, dapibus sed nibh. Nullam bibendum nisi sed mi vulputate, vitae viverra mauris fringilla. Fusce vitae laoreet neque. Fusce vitae purus et diam bibendum tristique. Nunc sit amet scelerisque dui. Pellentesque tempor enim ac ullamcorper mollis. Praesent placerat convallis ante, non viverra libero lacinia quis. Aliquam non eros sit amet leo dictum vestibulum. Integer felis turpis, venenatis nec gravida sodales, laoreet in neque. Nunc eu accumsan diam. Sed dolor ex, ultricies nec purus et, vehicula tincidunt metus. Nulla quis leo vitae nisl posuere faucibus. Curabitur mi ipsum, tempor sollicitudin orci mattis, posuere consequat purus.', 1, 2, 'pending', '2025-04-29 08:52:13', '2025-05-02 10:28:48', 0),
+(12, 'test 1234567', 'L111122121orem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nisi neque, cursus at pulvinar at, dapibus sed nibh. Nullam bibendum nisi sed mi vulputate, vitae viverra mauris fringilla.<br><figure data-trix-attachment=\"{&quot;contentType&quot;:&quot;image/jpeg&quot;,&quot;filename&quot;:&quot;kdb_top.jpeg&quot;,&quot;filesize&quot;:54675,&quot;height&quot;:348,&quot;href&quot;:&quot;http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg&quot;,&quot;url&quot;:&quot;http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg&quot;,&quot;width&quot;:1102}\" data-trix-content-type=\"image/jpeg\" data-trix-attributes=\"{&quot;presentation&quot;:&quot;gallery&quot;}\" class=\"attachment attachment--preview attachment--jpeg\"><a href=\"http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg\"><img src=\"http://localhost/mykdb/uploads/img_6810a670e29597.06364992.jpeg\" width=\"1102\" height=\"348\"></a></figure>Suspendisse non cursus lacus, interdum gravida justo. Maecenas cursus tincidunt arcu. Aliquam quis tellus massa. Nullam maximus luctus lectus vel efficitur. Nulla tempor, purus ac pulvinar ornare, libero dolor convallis sapien, quis dictum lacus arcu lacinia ex. Donec auctor odio imperdiet, semper purus in, posuere leo.&nbsp;', 1, 2, 'pending', '2025-04-29 10:16:03', '2025-04-30 11:24:32', 0),
+(13, 'What is a Knowledge Base System?', 'A knowledge base is a centralized repository of structured information, often used by businesses to provide answers and solutions to common questions and issues. It can be either internal for employees or external for customers, and it can include various resources like FAQs, troubleshooting guides, and product documentation.&nbsp;<br><br>Here\'s a more detailed explanation:<br><br><strong><em>Purpose:<br></em></strong><strong><br>Self-service customer support:<br></strong>Knowledge bases enable customers to find answers and resolve problems independently, reducing the burden on support teams. <br><br><strong>Employee onboarding and training:<br></strong>Internal knowledge bases provide employees with quick access to information, improving efficiency and productivity. <br><br><strong>Documentation and guidance:<br></strong>Knowledge bases can store and organize various types of information, like internal policies, procedures, and best practices.&nbsp;<br><strong><em>Key Characteristics:<br><br></em></strong><strong>Centralized:<br></strong>All information is stored in one place, making it easy to access and share. <br><br><strong>Structured:<br></strong>Information is organized in a way that is easy to understand and navigate. <br><br><strong>Self-service:<br></strong>Users can find information and answers without needing to contact a human representative. <br><br><strong>Up-to-date:<br></strong>Content should be regularly reviewed and updated to ensure accuracy and relevance.&nbsp;<br><br><br><strong><em>Examples of Content:<br></em></strong><strong>FAQs:</strong> Frequently asked questions about products, services, or processes.&nbsp;<br><strong>Troubleshooting guides:</strong> Step-by-step instructions for resolving common issues.&nbsp;<br><strong>Product documentation:</strong> Detailed information about products, including specifications, features, and instructions.&nbsp;<br><strong>Internal policies and procedures:</strong> Guidelines for employees on various aspects of the company.&nbsp;<br><strong>Tutorials and guides:</strong> Step-by-step instructions on how to use specific tools or software.&nbsp;<br><br><br><strong><em>Benefits:<br></em></strong><strong>Reduced support costs:<br></strong>By providing self-service options, knowledge bases can significantly reduce the number of support requests handled by human agents. <br><br><strong>Improved customer satisfaction:<br></strong>Customers can find answers quickly and efficiently, leading to increased satisfaction.&nbsp;<br><br><strong>Increased employee productivity:<br></strong>Employees can access information quickly, reducing the need for time-consuming searches and questions.&nbsp;<br><br><strong>Improved knowledge sharing:<br></strong>Knowledge bases facilitate the sharing of knowledge across the organization, fostering collaboration and innovation.&nbsp;<br><br><strong>Enhanced brand image:<br></strong>By providing a comprehensive and helpful resource, knowledge bases can improve the overall customer experience and enhance the brand\'s reputation.&nbsp;', 3, 2, 'approved', '2025-05-17 20:02:33', '2025-05-20 08:21:55', 10),
+(14, 'Why You Need a Knowledge Base', '<br>Customer service departments exist to improve the customer experience. When users have a question or issue, they speak to your customer service team to get the answers they need.&nbsp;<br><br>This type of customer service is reactive and can become time-consuming because you have to have well-trained support staff operating these systems and interacting with customers to ensure a good experience. For example, if you work at a photo-sharing startup, you might get the same question about how to upload a photo dozens of times a day.<br><br>This reactive repetition is time-consuming, stressful, and isn’t scalable. Enter the knowledge base. Let’s go over some key reasons why knowledge bases are important.<br><br><strong>1. It\'s helpful for your reps.</strong>&nbsp;<br><br>Whether answering questions over the phone, email, or live chat, your support teams can only handle so much at a time.&nbsp;<br><br>By providing a helpful knowledge base, your customers can get the answers they need on their own. This frees up your support reps to handle more important issues and allows your customers to feel accomplished that they found a solution all by themselves. After all, <a href=\"https://clouddamcdnprodep.azureedge.net/gdc/gdcPiLLQw/original?ocid=mkto_eml_EM582302A1LA1\">consumers expect your business to help them find their own solutions</a> with self-service tools.&nbsp;<br><br><strong>2. It\'s faster for your customers.<br></strong><br>People no longer have the patience to flip through dusty encyclopedias in public libraries. They want answers, and they want them now. If a customer or prospect has a specific question about your company -- whether it be \"What is artificial intelligence?\" or \"How do I apply for a job?\" -- they\'ll assume they can simply search that question or similar keywords on your website and find the answers they’re looking for.&nbsp;<br><br><strong>3. It can include all types of helpful content.&nbsp;<br></strong><br>A knowledge base doesn’t simply have to be a reservoir of help center articles. It can also include functions like a frequently-asked questions (FAQ) section, a user forum, articles, white papers, how-to articles, video tutorials, case studies, and dictionaries or glossaries — anything that helps customers understand and use your products or services.<br><br>But you could also set up an IT or internal company knowledge base to help your employers learn how your organization operates, discover benefits and HR information, or get answers to common technical questions.<br><br><strong>4. It\'s easy to build.<br></strong><br>If you can\'t provide immediate answers to your customers, they will turn to a competitor who can. It can be tough to create and manage a knowledge base. However, it can start off easily -- think about the questions you\'ve had customers ask you in the past and, maybe, the questions you\'ve searched for yourself. You can analyze common tickets to determine which issues crop up most frequently that you need to address first. Slowly, your team can build an informative knowledge base that can be a constant resource. Let’s discuss how.<br><br><br>', 2, 2, 'approved', '2025-05-17 20:13:57', '2025-05-20 08:19:47', 129);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `article_comments`
+--
+
+CREATE TABLE `article_comments` (
+  `id` int(11) NOT NULL,
+  `article_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `content` text NOT NULL,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `article_comments`
+--
+
+INSERT INTO `article_comments` (`id`, `article_id`, `user_id`, `content`, `status`, `created_at`) VALUES
+(1, 14, 2, 'UX design skills can grow pay — Build in-demand skills for a new career—now with AI training from Google UX designers. Gain the skills, confidence, and experience needed to launch your career in UX Design.', 'approved', '2025-05-19 13:42:58'),
+(2, 13, 7, 'Acesta este primul comentariu la un articol....', 'approved', '2025-05-20 07:44:10'),
+(3, 14, 7, 'Alt comentariu la acest articol ... bla bla bla....', 'approved', '2025-05-20 07:51:26'),
+(4, 4, 7, 'Comentariu la acest articol...', 'rejected', '2025-05-20 08:40:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `article_likes`
+--
+
+CREATE TABLE `article_likes` (
+  `id` int(11) NOT NULL,
+  `article_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `vote_type` enum('like','dislike') NOT NULL DEFAULT 'like'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `article_likes`
+--
+
+INSERT INTO `article_likes` (`id`, `article_id`, `user_id`, `created_at`, `vote_type`) VALUES
+(1, 9, 2, '2025-05-19 16:22:58', 'like'),
+(2, 5, 2, '2025-05-19 16:32:47', 'dislike'),
+(3, 1, 2, '2025-05-19 16:35:31', 'like'),
+(4, 2, 2, '2025-05-19 16:35:38', 'like'),
+(5, 14, 2, '2025-05-19 16:40:38', 'like'),
+(6, 13, 2, '2025-05-19 17:52:49', 'like'),
+(7, 4, 2, '2025-05-19 17:55:26', 'like'),
+(8, 3, 2, '2025-05-19 18:00:07', 'like'),
+(9, 14, 5, '2025-05-20 06:40:30', 'like'),
+(10, 13, 6, '2025-05-20 06:44:01', 'like'),
+(11, 14, 7, '2025-05-20 07:32:36', 'dislike'),
+(12, 3, 7, '2025-05-20 08:18:28', 'like'),
+(13, 2, 7, '2025-05-20 08:38:50', 'like'),
+(14, 1, 7, '2025-05-20 08:39:00', 'dislike');
 
 -- --------------------------------------------------------
 
@@ -358,7 +509,8 @@ INSERT INTO `operations` (`id`, `name`, `description`) VALUES
 (26, 'backup_data', 'Make Data Backup'),
 (27, 'edit_acl', 'Edit the Access for Operations'),
 (28, 'register', 'user registration'),
-(29, 'approve_user', 'approve user in pending state');
+(29, 'approve_user', 'approve user in pending state'),
+(30, 'reject_comment', 'Reject a Comment');
 
 -- --------------------------------------------------------
 
@@ -427,6 +579,7 @@ INSERT INTO `role_permissions` (`role_id`, `operation_id`) VALUES
 (1, 25),
 (1, 27),
 (1, 29),
+(1, 30),
 (2, 2),
 (2, 3),
 (2, 4),
@@ -453,12 +606,14 @@ INSERT INTO `role_permissions` (`role_id`, `operation_id`) VALUES
 (4, 9),
 (4, 12),
 (4, 13),
+(4, 14),
 (4, 15),
 (4, 19),
 (4, 20),
 (4, 23),
 (4, 24),
 (4, 29),
+(4, 30),
 (5, 1),
 (5, 2),
 (5, 3),
@@ -487,6 +642,7 @@ INSERT INTO `role_permissions` (`role_id`, `operation_id`) VALUES
 (5, 26),
 (5, 27),
 (5, 29),
+(5, 30),
 (6, 1),
 (6, 2),
 (6, 28);
@@ -519,7 +675,7 @@ INSERT INTO `users` (`id`, `username`, `first_name`, `last_name`, `email`, `pass
 (3, 'user1', 'Adrian', 'Ionescu', '', '$2y$10$N68o/sEk5L4WoPpquepyn.XI.BAjb56i7ProIs4/Q01vnb5PaOlQ6', '2025-04-23 11:22:37', 'disabled', NULL, 2),
 (4, 'user2', 'Marcel', 'Popescu', 'marcel.popescu@example.co', '$2y$10$qj4MqWqGuGMWv9yTL51IPuK57ar4c3/QQPN8Ws5EBoaGl8mIzhcBq', '2025-04-23 11:23:02', 'active', 'user_4_6821e34cbb8e2.jpeg', 4),
 (5, 'mihai', 'Mihai', 'Dragulescu', 'mihaid2002@yahoo.com', '$2y$10$WdXQXrY/Lmnu526H1i75Xu7KXlIK8b5MKCbfTHkfrWy/Xatey57Pu', '2025-05-01 12:38:22', 'active', 'mihai.png', 2),
-(6, 'corny', 'Cornelia', 'Buse', '', '$2y$10$JKXBLX2EUgS/KjC2wgY2Eul8RqBMdZMuD3OrNbMQ75AKKLHAQcA46', '2025-05-05 13:33:26', 'disabled', NULL, 2),
+(6, 'corny', 'Cornelia', 'Buse', '', '$2y$10$JKXBLX2EUgS/KjC2wgY2Eul8RqBMdZMuD3OrNbMQ75AKKLHAQcA46', '2025-05-05 13:33:26', 'active', 'user_6_682c24869ddbe.jpeg', 2),
 (7, 'marius', 'Marius', 'Dragulescu', 'mariusdragulescu@gmail.com', '$2y$10$422zXDULi727g6bu/.4sDu4ZCA1UvbF4A6p7sSk9RW7MkNH/90pf2', '2025-05-15 12:58:28', 'active', 'user_7_6825f530152f3.jpeg', 5);
 
 -- --------------------------------------------------------
@@ -541,10 +697,12 @@ CREATE TABLE `user_settings` (
 --
 
 INSERT INTO `user_settings` (`id`, `user_id`, `setting_key`, `setting_value`, `updated_at`) VALUES
-(1, 2, 'language', 'en', '2025-05-16 11:56:40'),
+(1, 2, 'language', 'en', '2025-05-20 20:31:36'),
 (2, 2, 'theme', 'light', '2025-05-14 09:41:21'),
 (3, 5, 'theme', 'light', '2025-05-13 17:16:26'),
-(4, 5, 'language', 'en', '2025-05-09 08:59:04');
+(4, 5, 'language', 'en', '2025-05-09 08:59:04'),
+(5, 7, 'theme', 'light', '2025-05-20 08:44:15'),
+(6, 7, 'language', 'ro', '2025-05-20 08:44:15');
 
 --
 -- Indexes for dumped tables
@@ -565,6 +723,22 @@ ALTER TABLE `activity_log`
 ALTER TABLE `articles`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `article_comments`
+--
+ALTER TABLE `article_comments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `article_id` (`article_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `article_likes`
+--
+ALTER TABLE `article_likes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_vote` (`article_id`,`user_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
@@ -617,13 +791,25 @@ ALTER TABLE `user_settings`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=219;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=307;
 
 --
 -- AUTO_INCREMENT for table `articles`
 --
 ALTER TABLE `articles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `article_comments`
+--
+ALTER TABLE `article_comments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `article_likes`
+--
+ALTER TABLE `article_likes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -635,7 +821,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `operations`
 --
 ALTER TABLE `operations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -653,7 +839,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `user_settings`
 --
 ALTER TABLE `user_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -671,6 +857,20 @@ ALTER TABLE `activity_log`
 ALTER TABLE `articles`
   ADD CONSTRAINT `articles_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `articles_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `article_comments`
+--
+ALTER TABLE `article_comments`
+  ADD CONSTRAINT `article_comments_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `articles` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `article_comments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `article_likes`
+--
+ALTER TABLE `article_likes`
+  ADD CONSTRAINT `article_likes_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `articles` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `article_likes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `role_permissions`

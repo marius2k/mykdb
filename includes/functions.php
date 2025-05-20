@@ -287,6 +287,19 @@ function generateNavBar2($uid) {
         $nav.='<a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>';
     }
 
+    // check users allowed to manage comments
+    $ops = ['add_comment',
+            'approve_comment',
+            'delete_comment',
+            'edit_comment'
+            ];
+
+    if (hasPermission($uid,$ops)){
+
+        $nav.='<a href="'.APP_URL.'public/admin/comments.php"'.($currentPage === 'comments.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_com_comments.'</a>';
+    }
+
+
     //check users allowed to edit ACL (file:admin/acl_edit.php)
 
     $ops=['edit_acl'];

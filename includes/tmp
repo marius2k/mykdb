@@ -167,3 +167,20 @@
 
 <a href="vote_article.php?aid=<?=$a['id']?>&vote=like&redirect=<?= urlencode($_SERVER['REQUEST_URI'] . '#article' . $a['id'])?>"><img width="20" height="auto" src="<?=APP_URL?>assets/images/icon-like.png" title="<?=lang_article_likes?>"></a><?=$votes['like']?>&nbsp;&nbsp;
 <a href="vote_article.php?aid=<?=$a['id']?>&vote=dislike&redirect=<?= urlencode($_SERVER['REQUEST_URI'] . '#article' . $a['id']) ?>"><img width="20" height="auto" src="<?=APP_URL?>assets/images/icon-dlike.png" title="<?=lang_article_dislikes?>"></a><?=$votes['dislike']?>&nbsp;&nbsp;
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $action = $_POST['action'] ?? '';
+  $commentId = (int)$_POST['comment_id'];
+
+  if ($action === 'approve') {
+    $db->query("UPDATE article_comments SET status = 'approved' WHERE id = ?", [$commentId]);
+  } elseif ($action === 'reject') {
+    $db->query("UPDATE article_comments SET status = 'rejected' WHERE id = ?", [$commentId]);
+  } elseif ($action === 'delete') {
+    $db->query("DELETE FROM article_comments WHERE id = ?", [$commentId]);
+  }
+
+  header("Location: comments.php");
+  exit;
+}

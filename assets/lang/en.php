@@ -43,10 +43,10 @@ define(constant_name:'lang_article_approved',value:'Approved');
 define(constant_name:'lang_all_categories',value:' All Categories ');
 define(constant_name:'lang_article_updated',value:'Updated');
 define(constant_name:'lang_article_created',value:'Created');
-define(constant_name:'lang_article_views',value:'Total Views');
+define(constant_name:'lang_article_views',value:'Views');
 define(constant_name:'lang_article_like',value:'Like');
 define(constant_name:'lang_article_dislike',value:'Dislike');
-define(constant_name:'lang_article_add_comments',value:'Add Comments');
+define(constant_name:'lang_article_add_comments',value:'Comments');
 define(constant_name:'lang_select_english',value:'English');
 define(constant_name:'lang_select_romanian',value:'Romanian');
 define(constant_name:'lang_select_language',value:'Language');
@@ -104,6 +104,27 @@ define(constant_name:'lang_art_actions',value:'Actions');
 define(constant_name:'lang_art_msg_disable',value:'Disable this article?');
 
 
+
+// Define constants for Comments (file: admin/comments.php)
+
+define(constant_name:'lang_com_comments',value:'Comments');
+define(constant_name:'lang_com_title',value:'Title');
+define(constant_name:'lang_com_author',value:'Author');
+define(constant_name:'lang_com_category',value:'Category');
+define(constant_name:'lang_com_status',value:'Status');
+define(constant_name:'lang_com_actions',value:'Actions');
+define(constant_name:'lang_com_msg_disable',value:'Disable this comment?');
+define(constant_name:'lang_com_msg_nocommw',value:'No Comments in Waiting');
+define(constant_name:'lang_com_msg_nocomm',value:'No Comments in Waiting');
+define(constant_name:'lang_com_article',value:'Article');
+define(constant_name:'lang_com_user',value:'User');
+define(constant_name:'lang_com_comm',value:'Comment');
+define(constant_name:'lang_com_data',value:'Date Created');
+
+
+
+
+
 //define(constant_name:'lang_art_btn_view',value:'View');
 //define(constant_name:'lang_art_btn_edit',value:'Edit');
 //define(constant_name:'lang_art_btn_disable',value:'View');
@@ -119,7 +140,7 @@ define(constant_name:'lang_btn_disable',value:'Disable');
 define(constant_name:'lang_btn_delete',value:'Delete');
 define(constant_name:'lang_btn_save',value:'Save');
 define(constant_name:'lang_btn_edit',value:'Edit');
-
+define(constant_name:'lang_btn_reject',value:'Reject');
 
 
 // Define constants for User Profile (file: profile.php)

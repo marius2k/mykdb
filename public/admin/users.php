@@ -82,7 +82,7 @@ $totalPages = ceil($totalUsers / $perPage);
 
 <h2><?=lang_users?></h2>
 <div>
-    <table class="articles-table">
+    <table class="articles-table" width="70%">
         <thead>
             <tr>
                 <th>ID</th>
@@ -101,30 +101,30 @@ $totalPages = ceil($totalUsers / $perPage);
                 <td><?= escape($user['role_label']) ?></td>
                 <td><?= escape($user['status']) ?></td>
                 <td><?= escape($user['first_name'] . ' ' . $user['last_name']) ?></td>
-                <td>
+                <td align="center">
                         <?php if ($user['status'] === 'pending'): ?>
-                                <div class="btn-group">                   
-                                <a href="approve_user.php?id=<?= $user['id'] ?>" class="btn-sm btn-outline-grey">✅ <?=lang_btn_approve?></a>
+                                <div>                   
+                                <a href="approve_user.php?id=<?= $user['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-approve.svg" class="op-icon" title="><?=lang_btn_approve?>"></a>
                                 </div>
                         <?php else: ?>
                                 <?php if ($user['status'] === 'disabled'): ?>
                                     <?php if ($user['role_name'] === 'admin'): ?>
-                                        <div class="btn-group">
-                                        <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">♻️ <?=lang_btn_enable?></a>
+                                        <div>
+                                        <a href="?disable=<?= $user['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-enable.svg" class="op-icon" title="<?=lang_btn_enable?>"></a>
                                         </div>
                                     <?php else: ?>
-                                        <div class="btn-group">
-                                        <a href="restore_user.php?id=<?= $user['id'] ?>" class="btn-sm btn-outline-grey">♻️ <?=lang_btn_enable?></a>
+                                        <div>
+                                        <a href="restore_user.php?id=<?= $user['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-enable.svg" class="op-icon" title="<?=lang_btn_enable?>"></a>
                                         </div>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <?php if ($user['role_name'] === 'admin'): ?>
-                                        <div class="btn-group">
-                                        <a href="?disable=<?= $user['id'] ?>"class="btn-sm btn-disabled fake-disabled">🗑️ <?=lang_btn_disable?></a>
+                                        <div >
+                                        <a href="?disable=<?= $user['id'] ?>"class="btn-disabled fake-disabled"><img src="<?=APP_URL?>assets/icons/icon-disable.svg" class="op-icon" title="<?=lang_btn_disable?>"></a>
                                         </div>
                                     <?php else: ?>
-                                        <div class="btn-group">
-                                        <a href="?disable=<?= $user['id'] ?>" class="btn-sm btn-outline-grey" onclick="return confirm('<?=lang_users_msg_disable?> <?= escape($user['username']) ?>?')">🗑️ <?=lang_btn_disable?></a>
+                                        <div >
+                                        <a href="?disable=<?= $user['id'] ?>" onclick="return confirm('<?=lang_users_msg_disable?> <?= escape($user['username']) ?>?')"><img src="<?=APP_URL?>assets/icons/icon-disable.svg" class="op-icon" title="<?=lang_btn_disable?>"></a>
                                         </div>
                                     <?php endif;?>
                                 <?php endif; ?>                                

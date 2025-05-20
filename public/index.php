@@ -26,7 +26,7 @@ if (isset($_GET['category'])) {
     //echo $filter;
 }
 
-if ($_GET['category'] == NULL) {
+if (!isset($_GET['category'])) {
     $filter = '';
     $params = [];
 }
@@ -69,8 +69,8 @@ if (isset($_SESSION['user']['id'])) {
     $userId = $_SESSION['user']['id'];
     $settings = new UserSettings($db);
     $currentSettings = $settings->getAll($userId);
-    $lang = $currentSettings['language'];
-    $theme = $currentSettings['theme'];
+    $lang = $currentSettings['language'] ?? 'en';
+    $theme = $currentSettings['theme'] ?? 'light';
     $_SESSION['settings'] = $currentSettings;
 
 }else {
@@ -159,14 +159,14 @@ if (isset($_SESSION['user']['id'])) {
                                     <span class="article-meta"><?=lang_article_author?>:<?=escape($a['username']) ?> | <?=lang_article_category?>:<?=escape($a['category']) ?> | <?=lang_article_published?>:<?=formatDate($a['created_at']) ?>| <?=lang_article_updated?>:<?=formatDate($a['updated_at'])?></span>
                                 </div>
                                 <div class="vote-buttons-container"> 
-                                            <div class="vote-buttons">
+                                            <div class="vote-buttons" id="meta-<?=$a['id']?>">
                                                 <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>">
                                                 <img src="<?=APP_URL?>assets/images/icon-view.png" title="<?=lang_article_views?>" class="vote-icon"></a>
-                                                <span class="like-count"><?= escape($a['views']) ?></span>
+                                                <span class="view-count"><?= escape($a['views']) ?></span>
 
-                                                <a href="<?=APP_URL?>public/view_comments.php?id=<?= (int)$a['id'] ?>">
+                                                <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>#comments">
                                                 <img src="<?=APP_URL?>assets/images/icon-comm.png" title="<?=lang_article_add_comments?>" class="vote-icon"></a>
-                                                <span class="like-count"><?php $commCount = getCommentCount($a['id']); echo $commCount;?></span>
+                                                <span class="comments-count"><?=getCommentCount($a['id'])?></span>
                                             </div>
                                                
                                             <div class="vote-buttons">
@@ -179,13 +179,13 @@ if (isset($_SESSION['user']['id'])) {
                                                 ?>
 
                                                 <!-- LIKE -->
-                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'like', this); return false;">
+                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'like', this); return false; updateArticleMeta(<?=$a['id']?>);">
                                                     <img src="<?=APP_URL?>assets/images/icon-like.png" class="vote-icon <?= $currentVote === 'like' ? 'active' : '' ?>" width="20" high="auto" title="<?=lang_article_like?>">  
                                                 </a>
                                                 <span class="like-count"><?= $votes['like'] ?></span>
                                                 
                                                 <!-- DISLIKE -->
-                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'dislike', this); return false;">
+                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'dislike', this); return false; updateArticleMeta(<?=$a['id']?>);">
                                                     <img src="<?=APP_URL?>assets/images/icon-dlike.png" class="vote-icon <?= $currentVote === 'dislike' ? 'active' : '' ?>" width="20" height="auto" title="<?=lang_article_dislike?>">    
                                                 
                                                 </a>
@@ -207,62 +207,6 @@ if (isset($_SESSION['user']['id'])) {
 </div>
 
 
-<script>
-/*
-document.addEventListener("DOMContentLoaded", function () {
-    const clampElements = document.querySelectorAll(".clamp-fallback");
-    clampElements.forEach(el => {
-        if (!CSS.supports("-webkit-line-clamp", "4") && !CSS.supports("line-clamp", "4")) {
-            const lineHeight = parseInt(window.getComputedStyle(el).lineHeight);
-            const maxHeight = lineHeight * 4; // 👈 4 lines
-            el.style.maxHeight = maxHeight + "px";
-            el.style.overflow = "hidden";
-            el.style.textOverflow = "ellipsis";
-        }
-    });
-});
-*/
-</script>
 
-<script>
-function voteArticle(articleId, voteType, el) {
-  fetch('vote_article.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: `aid=${articleId}&vote=${voteType}`
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === 'ok') {
-      // Găsim ambele span-uri (în același container)
-      const container = el.closest('div') || el.parentNode;
-      const likeSpan = container.querySelector('.like-count');
-      const dislikeSpan = container.querySelector('.dislike-count');
-
-      if (likeSpan) likeSpan.textContent = data.likes;
-      if (dislikeSpan) dislikeSpan.textContent = data.dislikes;
-        // eliminăm toate clasele "active" locale
-        container.querySelectorAll('.vote-icon').forEach(img => img.classList.remove('active'));
-
-        // adăugăm clasa doar pe iconul votat
-        if (voteType === 'like') {
-                container.querySelector('img[src*="icon-like"]').classList.add('active');
-        } else {
-                container.querySelector('img[src*="icon-dlike"]').classList.add('active');
-        }
-    } else {
-      alert(data.message || 'Eroare la vot!');
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('Eroare AJAX!');
-  });
-
- 
-}
-</script>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>
