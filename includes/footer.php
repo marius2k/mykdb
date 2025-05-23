@@ -8,7 +8,7 @@
 
 <footer style="text-align:center; padding:10px; small;">
     <?php SystemStatus(); ?>
-    <div class="width: 100%; display: flex; align-items: center; justify-content: space-between; small">&copy; <?= date("Y"); echo " ".APP_NAME; ?>.Toate drepturile rezervate.</div>
+    <div class="width: 100%; display: flex; align-items: center; justify-content: space-between; small">&copy; <?= date("Y"); echo " ".APP_NAME; echo " ".APP_VERSION . ".   "; ?>Toate drepturile rezervate.</div>
     <div class="width: 100%; display: flex; align-items: center; justify-content: space-between; small">
         <?php if (isset($_SESSION['user'])): ?>
             <?php if ($_SESSION['user']['role'] === 'admin'): ?>

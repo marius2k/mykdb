@@ -15,4 +15,5 @@ require_once APP_ROOT . 'classes/usersettings.php';
 require_once APP_ROOT . 'includes/functions.php';
 require_once APP_ROOT . 'includes/auth.php';
 
+date_default_timezone_set('Europe/Bucharest');
 

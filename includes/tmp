@@ -165,8 +165,6 @@
 
 
 
-<a href="vote_article.php?aid=<?=$a['id']?>&vote=like&redirect=<?= urlencode($_SERVER['REQUEST_URI'] . '#article' . $a['id'])?>"><img width="20" height="auto" src="<?=APP_URL?>assets/images/icon-like.png" title="<?=lang_article_likes?>"></a><?=$votes['like']?>&nbsp;&nbsp;
-<a href="vote_article.php?aid=<?=$a['id']?>&vote=dislike&redirect=<?= urlencode($_SERVER['REQUEST_URI'] . '#article' . $a['id']) ?>"><img width="20" height="auto" src="<?=APP_URL?>assets/images/icon-dlike.png" title="<?=lang_article_dislikes?>"></a><?=$votes['dislike']?>&nbsp;&nbsp;
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -184,3 +182,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   header("Location: comments.php");
   exit;
 }
+
+
+
+<form method="POST">
+                        <td align="center"> 
+                            
+                        </td>
+                        <td>    
+                            <div class="dropdown-wrapper">
+                                <button type="button" class="dropdown-toggle-1" onclick="toggleIconDropdown()">
+                                    <span id="selected-icon-label">Alege icon</span>
+                                    <span id="selected-icon-preview"></span>
+                                </button>
+
+                                <ul class="dropdown-menu-1" id="icon-dropdown" style="display:none;">
+                                    <?php foreach ($availableIcons as $icon): ?>
+                                    <li onclick="selectIconDropdown('<?= $icon['value'] ?>')">
+                                        <?php if (preg_match('/\.(png|svg)$/i', $icon['value'])): ?>
+                                        <img src="<?=APP_URL?>assets/icons/<?= $icon['value'] ?>" width="20">
+                                        <?php else: ?>
+                                        <span><?= $icon['value'] ?></span>
+                                        <?php endif; ?>
+                                        <?= htmlspecialchars($icon['label']) ?>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+
+                                <input type="hidden" name="icon" id="selected-icon-value">
+                            </div>
+
+
+                        </td>
+                        <td><input type="text" name="name" placeholder="<?=lang_cat_category?>" required></td>
+                        <td><input type="text" name="description" placeholder="<?=lang_cat_description?>"></td>
+                        <td align="center"><button type="submit" class="btn-plus-icon"><img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?=lang_btn_save?>"></button></td>
+                    </form>

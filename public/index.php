@@ -19,18 +19,25 @@ $params= [];
 
 
 // Optional category filter
-if (isset($_GET['category'])) {
+if (isset($_GET['category']) && $_GET['category'] !== '') {
     $filter = "AND category_id = ?";
     $params[] = $_GET['category'];
     //echo $_GET['category'];
     //echo $filter;
-}
-
-if (!isset($_GET['category'])) {
+}else {
     $filter = '';
     $params = [];
 }
 
+//echo "filter: ".$filter;
+
+
+/*
+if (!isset($_GET['category'])) {
+    $filter = '';
+    $params = [];
+}
+*/
 /*
 if ($_GET['category'] == NULL) {
     $filter = '';
@@ -50,11 +57,12 @@ $categories = $stmt1->fetchAll();
 
 // Fetch approved articles
 $stmt = $db->prepare("
-    SELECT a.*, u.username, c.name AS category 
+    SELECT a.*, u.username, c.name AS category, c.icon 
     FROM articles a 
     JOIN users u ON a.user_id = u.id 
     LEFT JOIN categories c ON a.category_id = c.id 
     WHERE a.status = 'approved' $filter
+    AND (a.publish_at IS NULL OR a.publish_at <= NOW())
     ORDER BY a.created_at DESC
 ");
 $stmt->execute($params);
@@ -149,9 +157,16 @@ if (isset($_SESSION['user']['id'])) {
 
                     <div class="article-card">
                         
-                            <h3 class="article-title"><?= escape($a['title']) ?></h3>
+                            <h3 class="article-title">
+                                <?php if (!empty($a['icon'])): ?>
+                                        <?php if (str_starts_with($a['icon'], 'http') || str_ends_with($a['icon'], '.png') || str_ends_with($a['icon'], '.svg')): ?>
+                                            <img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;">
+                                            <?php else: ?>
+                                            <span class="me-1"><?= htmlspecialchars($a['icon']) ?></span>
+                                        <?php endif; ?>
+                                <?php endif; ?><?= escape($a['title']) ?></h3>
                             <div class="article-body" id="article<?=$a['id']?>">
-                                <p><?= nl2br(escape($shortText)) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/images/icon-rm1.png" title="<?= lang_read_more; ?>"> </a></p>
+                                <p><?= nl2br(escape($shortText)) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="<?= lang_read_more; ?>"> </a></p>
                             </div>
                             
                             <div class="article-footer">

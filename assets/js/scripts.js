@@ -188,3 +188,51 @@ function updateArticleMeta(articleId) {
     .catch(err => console.error('Eroare la update meta:', err));
 }
 
+// face toggle (arata-ascunde) pe un form. Nu tine cont ca in pagina exista un alt form deschis.
+
+function toggleAddForm(formId) {
+  const form = document.getElementById(formId);
+  const isHidden = form.style.display === 'none' || getComputedStyle(form).display === 'none';
+  form.style.display = isHidden ? 'block' : 'none';
+
+  if (isHidden) {
+    const input = form.querySelector('input[type="text"], input:not([type])');
+    if (input) input.focus();
+  }
+}
+
+
+// face toggle pe un form (arata-ascunde) DAR tine cont daca in pagina mai exista alt form deja deschis
+// pe care il inchide
+
+function toggleAddFormHide(formId, buttonEl) {
+  const allForms = document.querySelectorAll('.form-box');
+  const allButtons = document.querySelectorAll('.btn-toggle-form');
+  const targetForm = document.getElementById(formId);
+
+  const isCurrentlyVisible = getComputedStyle(targetForm).display !== 'none';
+
+  // 🔁 Ascunde toate formularele
+  allForms.forEach(form => form.style.display = 'none');
+
+  // 🔁 Curăță complet toate butoanele
+  allButtons.forEach(btn => {
+    btn.classList.remove('active-tabs');
+    btn.style.backgroundColor = ''; // ✨ eliminăm stilul inline
+  });
+
+  if (!isCurrentlyVisible) {
+    targetForm.style.display = 'block';
+
+    const formBg = getComputedStyle(targetForm).backgroundColor;
+
+    buttonEl.style.backgroundColor = formBg;
+    buttonEl.classList.add('active-tabs');
+
+    const input = targetForm.querySelector('input[type="text"], input:not([type])');
+    if (input) input.focus();
+  }
+}
+
+
+

@@ -460,3 +460,27 @@ function getUserVote(int $articleId, int $userId): ?string {
     $row = $db->fetchSingle("SELECT vote_type FROM article_likes WHERE article_id = ? AND user_id = ?", [$articleId, $userId]);
     return $row['vote_type'] ?? null; // 'like', 'dislike' sau null
 }
+
+// preview category icon
+function renderCategoryIconPreview(string $icon = ''): string {
+  if (!$icon) return '';
+  if (preg_match('/\.(png|svg)$/i', $icon)) {
+    return '<img src="/mykdb/assets/icons/' . htmlspecialchars($icon) . '" style="width:20px;">';
+  } else {
+    return '<span style="font-size:18px;">' . htmlspecialchars($icon) . '</span>';
+  }
+}
+
+// check if an icon is already added into DB; 
+// used for icons management in Categories section 
+function iconExists(string $filename): bool {
+
+    $db =new Database(); 
+    
+    $result = $db->fetchAll(
+        "SELECT id FROM categories_icons WHERE filename = ? LIMIT 1",
+        [$filename]
+    );
+
+    return !empty($result); // returnează true dacă există, false dacă nu
+}

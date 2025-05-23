@@ -91,17 +91,24 @@ define(constant_name:'lang_cat_actions',value:'Actions');
 //define(constant_name:'lang_cat_btn_edit',value:'Edit');
 //define(constant_name:'lang_cat_btn_delete',value:'Delete');
 define(constant_name:'lang_cat_msg_delete',value:'Remove this category?');
+define(constant_name:'lang_cat_icon',value:'Icon');
+define(constant_name:'lang_cat_icon_label',value:'Icon Label');
+
+
+
 
 
 // Define constants for Articles (file: articles.php)
 
-define(constant_name:'lang_art_articles',value:'Articles');
+define(constant_name:'lang_art_articles',value:'Articles Management');
 define(constant_name:'lang_art_title',value:'Title');
 define(constant_name:'lang_art_author',value:'Author');
 define(constant_name:'lang_art_category',value:'Category');
 define(constant_name:'lang_art_status',value:'Status');
 define(constant_name:'lang_art_actions',value:'Actions');
 define(constant_name:'lang_art_msg_disable',value:'Disable this article?');
+define(constant_name:'lang_art_create',value:'Create New Article');
+define(constant_name:'lang_art_publish_at',value:'Publication Date');
 
 
 
@@ -120,6 +127,8 @@ define(constant_name:'lang_com_article',value:'Article');
 define(constant_name:'lang_com_user',value:'User');
 define(constant_name:'lang_com_comm',value:'Comment');
 define(constant_name:'lang_com_data',value:'Date Created');
+define(constant_name:'lang_com_admin_comments',value:'Comments Management');
+
 
 
 

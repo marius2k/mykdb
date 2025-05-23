@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_picture']['n
     $file = $_FILES['profile_picture'];
 
     if ($file['error'] === UPLOAD_ERR_OK) {
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $ext =  strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'gif'];
 
         if (in_array($ext, $allowed)) {

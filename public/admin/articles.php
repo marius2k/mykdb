@@ -36,17 +36,37 @@ $totalPages = ceil($totalArticles / $perPage);
 
 
 
+// update publish date
+
+if ($_GET['action'] === 'publish_at' && isset($_GET['article_id'])) {
+    $articleId = (int) $_GET['article_id'];
+    $publishAt = $_GET['publish_at'] ?? null;
+
+    if ($publishAt && !strtotime($publishAt)) {
+        die('⚠️ Dată invalidă.');
+    }
+
+    $db->query("UPDATE articles SET publish_at = ? WHERE id = ?", [
+        $publishAt ?: null, $articleId
+    ]);
+
+    header("Location: articles.php#article" . $articleId); // opțional: scroll
+    exit;
+}
+
 
 
 if (isset($_GET['approve'])) {
-    $stmt = $db->prepare("UPDATE articles SET status='approved' WHERE id=?");
+    $stmt = $db->prepare("UPDATE articles SET status = 'approved' WHERE id = ?");
     $stmt->execute([$_GET['approve']]);
     logActivity($_SESSION['user']['id'], 'article_approved', 'User ' .$_SESSION['user']['username'] .' approved an article');
 }
 
 if (isset($_GET['disable'])) {
-    $stmt = $db->prepare("UPDATE articles SET status='pending' WHERE id=?");
-    $stmt->execute([$_GET['disable']]);
+    $newDate=date('Y-m-d H:i:s');
+
+    $stmt = $db->prepare("UPDATE articles SET status='pending', publish_at = ? WHERE id=?");
+    $stmt->execute([$newDate,$_GET['disable']]);
     logActivity($_SESSION['user']['id'], 'article_disabled', 'User ' .$_SESSION['user']['username'] .' disabled an article');
 }
 
@@ -81,7 +101,8 @@ $articles = $db->query("
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
-<h2><?=lang_art_articles?></h2>
+
+<h2><?=lang_art_articles?>&nbsp;&nbsp;&nbsp;<a href="<?=APP_URL?>public/create_article.php"><img src="<?=APP_URL?>assets/icons/icon-create-article.svg" class="op-icon" title="<?=lang_art_create?>"></a></h2>
 <table class="articles-table" width="80%">
     <thead>
         <tr>
@@ -90,6 +111,7 @@ $articles = $db->query("
             <th><?=lang_art_author?></th>
             <th><?=lang_art_category?></th>
             <th><?=lang_art_status?></th>
+            <th><?=lang_art_publish_at?></th>
             <th align="center"><?=lang_art_actions?></th>
         </tr>
     </thead>
@@ -103,6 +125,38 @@ $articles = $db->query("
             <td><?= htmlspecialchars($a['username']) ?></td>
             <td><?= htmlspecialchars($a['category']) ?></td>
             <td><?= $a['status'] ?></td>
+            <?php
+            
+            if ($a['status'] == 'pending' ){ ?>
+
+                <!-- daca articolul este in pending si data publicarii este in viitor, pot sa-l aprob si sa-i setez data publicarii -->
+                <td>
+                <input type="datetime-local" value="<?= $a['publish_at'] ? date('Y-m-d\TH:i', strtotime($a['publish_at'])) : '' ?>" onchange="changePublishAt(this.value, <?= $a['id'] ?>)">
+                </td>
+        <?php }else{
+                
+                //daca articolul nu este in pending (deja publicat), afisez doar data publicarii (disabled)
+                
+                $isFuture = strtotime($a['publish_at']) > time();
+                $class = $isFuture ? 'text-primary' : '';
+                //$pdate = new DateTime($a['publish_at']);
+                //$crtdate = new DateTime();
+
+                if ($isFuture) { ?>
+
+                    <td class="<?=$class?>">
+                        <?php echo $a['publish_at']; ?>
+                    </td>
+                    
+                <?php }else{ ?>
+                    <td>
+                        <?php echo $a['publish_at']; ?>
+                    </td>
+                    
+                <?php }
+            
+            } ?>
+           
             <td align="center">
                 <?php
                     $op=['view_article'];
@@ -125,7 +179,7 @@ $articles = $db->query("
                         $op=['approve_article'];
                         if (hasPermission($_SESSION['user']['id'],$op)){
                     ?>
-                    <a href="?approve=<?= $a['id'] ?>" ><img src="<?=APP_URL?>assets/icons/icon-approve.svg" class="op-icon" title="<?=lang_btn_approve?>"></a>
+                    <a href="?approve=<?= $a['id'] ?>&publish_at=<?=$publish_at?>" ><img src="<?=APP_URL?>assets/icons/icon-approve.svg" class="op-icon" title="<?=lang_btn_approve?>"></a>
                     <?php } ?>
 
                 <?php else: ?>
@@ -133,7 +187,7 @@ $articles = $db->query("
                         $op=['disable_article'];
                         if (hasPermission($_SESSION['user']['id'],$op)){
                     ?>
-                    <a href="?disable=<?= $a['id'] ?>" onclick="return confirm('<?=lang_art_msg_disable?>')"><img src="<?=APP_URL?>assets/icons/icon-disable.svg" class="op-icon" title="<?=lang_btn_disable?>"></a>
+                    <a href="?disable=<?= $a['id'] ?>" onclick="updateStatus(<?= $a['id'] ?>)"><img src="<?=APP_URL?>assets/icons/icon-disable.svg" class="op-icon" title="<?=lang_btn_disable?>"></a>
 
                     <?php } ?>
                 <?php endif; ?>
@@ -157,6 +211,19 @@ $articles = $db->query("
     </tfoot>
 
 </table>
+<script>
+function changePublishAt(value,articleId) {
+  const encoded = encodeURIComponent(value);
+  const url = `articles.php?action=publish_at&article_id=${articleId}&publish_at=${encoded}`;
+  window.location.href = url;
+}
+
+function updateStatus(articleId) {
+  const encoded = encodeURIComponent(value);
+  const url = `articles.php?disable=${articleId}`;
+  window.location.href = url;
+}
+</script>
 
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

@@ -516,6 +516,15 @@ a:hover {
     border-right: 1px solid #ddd;
 }
 
+.td-hlt {
+    padding: 5px;
+    /*text-align: left;*/
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    color: blue;
+}
+
 .articles-table tbody tr:hover {
     background-color: #f5f2f2;
 }
@@ -1167,8 +1176,17 @@ button[disabled],
     padding: 5px 10px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    vertical-align: center;
 } 
 
+.article-title img {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.article-title span {
+  font-size: 18px;
+}
 
 .article-body {
     flex-grow: 1;
@@ -1452,4 +1470,202 @@ button[disabled],
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.icon-preview {
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
+}
+
+
+.icon-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 220px;
+  font-family: system-ui, sans-serif;
+}
+
+.dropdown-toggle-1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dropdown-toggle-1:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-toggle-1::after {
+  content: '▼';
+  font-size: 12px;
+  margin-left: 10px;
+  color: #555;
+}
+
+.dropdown-menu-1 {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  border: 1px solid #949494;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 0;
+  margin: 2px 0 0;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+}
+
+.dropdown-menu-1 li {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.dropdown-menu-1 li:hover {
+  background-color: #e6f0ff;
+}
+
+.dropdown-menu-1 img {
+  width: 20px;
+  height: 20px;
+}
+
+
+/* style for categories section (categories.php) */
+
+.operations-bar {
+    display: flex;
+    flex-direction: row; /* Așează elementele vertical */
+    /*box-shadow: 0 4px 12px rgba(7, 0, 0, 0.1);*/
+}
+
+
+.category-container {
+  display: flex;
+  flex-direction: column; /* Așează elementele vertical */
+  margin: 0 auto; /* Centrează pe orizontală */
+  gap: 10px; /* Spațiu între elemente */
+  width: 90%;
+  /*border: 1px solid #ccc;*/
+  /*padding: 10px;*/
+}
+
+.category-box {
+  display: flex;
+  flex-direction: column; /* Așează elementele vertical */
+  background-color: rgb(240, 240, 240);
+  /*padding: 15px;*/
+  text-align: center; 
+  border-radius: 5px;
+  border: 1px solid #cfcfcf;
+  margin: 0 auto; /* Centrează pe orizontală */
+}
+
+.category-box-1 {
+  /*background-color: rgb(240, 240, 240);*/
+  /*padding: 15px;*/
+  text-align: center; 
+  border-radius: 5px;
+  margin: 0 auto; /* Centrează pe orizontală */
+
+}
+.form-container-1 {
+    max-width: 100%;
+    /*margin: 0 auto; /* Centrează pe orizontală */
+
+}
+.form-box {
+    background-color: #e9e7e7;
+    /*border: 1px solid #696969;*/
+    margin: 0 auto; 
+    width: 100%;
+    margin: 0 auto; /* Centrează pe orizontală */
+    
+}
+
+.form-box table{
+    margin: 0 auto;
+}
+
+.form-box td {
+    font-family: var(--font-main);
+    padding: 10px;
+}
+.btn-2 {
+
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #f3f8f3;
+    border-color: #f3f8f3;
+    color: rgb(0, 0, 0);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-toggle-form.active-form {
+  background-color: #f8f9fa;
+  border-color: #888888;
+  color: #000;
+  font-weight: 500;
+}
+
+.btn-toggle-form {
+  transition: background-color 0.3s ease;
+}
+
+.active-tabs {
+  background-color: #e1e1e1 !important; /* sau culoarea ta custom */
+}
+
+.btn-flat {
+  background-color: rgb(240, 240, 240); /* culoare neutră, o poți înlocui */
+  color: #333;
+  border: 1px solid transparent;
+  /*border-radius: 4px;*/
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px; 
+  padding: 2px 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  box-shadow: none;
+}
+
+.btn-flat:hover {
+  background-color: #dee2e6; /* ușor mai închis */
+}
+
+/*
+.btn-flat:focus {
+  outline: none;
+  background-color: #d6d8db;
+}
+*/
+
+.btn-flat img {
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+}
+
+.table-form{
+    background-color: #e1e1e1;
+
 }

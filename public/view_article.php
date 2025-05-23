@@ -38,7 +38,7 @@ $db->query("UPDATE articles SET views = views + 1 WHERE id = ?", [$id]);
 
 // Fetch articolul
 $stmt = $db->prepare("
-    SELECT a.*, u.username, c.name AS category
+    SELECT a.*, u.username, c.name AS category, c.icon
     FROM articles a
     JOIN users u ON a.user_id = u.id
     LEFT JOIN categories c ON a.category_id = c.id
@@ -67,7 +67,20 @@ if (!$article) {
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
 <div style="max-width:80%; margin:20px auto;">
-    <h2><?= escape($article['title']) ?></h2>
+    <h2 class="article-title">
+        
+            <?php if (!empty($article['icon'])): ?>
+                <?php if (str_starts_with($article['icon'], 'http') || str_ends_with($article['icon'], '.png') || str_ends_with($article['icon'], '.svg')): ?>
+                <img src="<?=APP_URL?>assets/icons/<?= $article['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;">
+            <?php else: ?>
+                <span class="me-1"><?= htmlspecialchars($article['icon']) ?></span>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <?= htmlspecialchars($article['title']) ?>
+    
+            
+    </h2>
     <p style="color=#"><em>Autor: <?= escape($article['username']) ?> | Categorie: <?= escape($article['category']) ?> | Publicat: <?= formatDate($article['created_at']) ?> | Actualizat: <?= $article['updated_at']?></em></p>
 
     

@@ -31,6 +31,7 @@ if (!$article) {
 }
 
 // Doar autorul sau adminul poate edita
+/*
 if ($_SESSION['user']['id'] !== $article['user_id'] && $_SESSION['user']['role'] !== 'admin') {
 
     logActivity($_SESSION['user']['id'], 'edit_article', 'User '. $_SESSION['user']['username'].'tried to edit an article without permission');
@@ -38,7 +39,7 @@ if ($_SESSION['user']['id'] !== $article['user_id'] && $_SESSION['user']['role']
     die("Nu ai permisiunea să modifici acest articol.");
     
 }
-
+*/
 // Preia categorii
 $db = new Database();
 $categories = $db->query("SELECT * FROM categories")->fetchAll();

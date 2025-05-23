@@ -121,7 +121,7 @@ if (!$isAdmin) {
         
         // Add the username to the first log entry
         if ($user) {
-            echo " User selectat: " . $user['username'];
+            //echo " User selectat: " . $user['username'];
             foreach ($logs as $key => $log) {
                 $log[0]['username'] = $user['username'];
             }    

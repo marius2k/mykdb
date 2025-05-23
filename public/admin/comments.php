@@ -20,6 +20,18 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
 
 $db = new Database();
 
+
+$perPage = 5; // comentarii pe pagină
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $perPage;
+
+// Total comentarii (pt paginare)
+$totalStmt = $db->query("SELECT COUNT(*) FROM article_comments");
+$totalComments = $totalStmt->fetchColumn();
+$totalPages = ceil($totalComments / $perPage);
+
+
+
 //$commentId = (int)$_POST['comment_id'];
 
     if (isset($_GET['approve'])) {
@@ -58,20 +70,25 @@ $stmt=$db->prepare("SELECT
                         JOIN users u ON u.id = c.user_id
                         JOIN articles a ON a.id = c.article_id
                         ORDER BY c.created_at DESC
+                        LIMIT :limit OFFSET :offset
                     ");
 
+//$stmt->execute();
+//$comments = $stmt->fetchAll();
+
+
+$stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
+
 $comments = $stmt->fetchAll();
-
-
-
 
 
 
 ?>
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
-<h2>Administrare comentarii</h2>
+<h2><?=lang_com_admin_comments?></h2>
 
 <?php if (empty($comments)): ?>
   <p><?=lang_com_msg_nocommw?></p>
@@ -147,6 +164,19 @@ $comments = $stmt->fetchAll();
         </tr>
       <?php endforeach; ?>
     </tbody>
+    <tfoot>
+     <tr>
+        <td colspan="6">
+            <div class="pagination-footer">
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <a href="?page=<?= $i ?>" class="<?= $i === $page ? 'active' : '' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
+            </div>
+        </td>
+     </tr>
+    </tfoot>
   </table>
 <?php endif; ?>
 
