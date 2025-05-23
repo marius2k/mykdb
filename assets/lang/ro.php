@@ -89,6 +89,10 @@ define(constant_name:'lang_cat_actions',value:'Actiuni');
 define(constant_name:'lang_cat_msg_delete',value:'Stergi aceasta categorie?');
 define(constant_name:'lang_cat_icon',value:'Pictograma');
 define(constant_name:'lang_cat_icon_label',value:'Eticheta Icon');
+define(constant_name:'lang_cat_select',value:'Alege Categoria');
+define(constant_name:'lang_cat_status',value:'Status');
+define(constant_name:'lang_cat_active',value:'Activa');
+define(constant_name:'lang_cat_inactive',value:'Inactiva');
 
 
 

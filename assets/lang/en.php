@@ -93,6 +93,10 @@ define(constant_name:'lang_cat_actions',value:'Actions');
 define(constant_name:'lang_cat_msg_delete',value:'Remove this category?');
 define(constant_name:'lang_cat_icon',value:'Icon');
 define(constant_name:'lang_cat_icon_label',value:'Icon Label');
+define(constant_name:'lang_cat_select',value:'Select Category');
+define(constant_name:'lang_cat_status',value:'Status');
+define(constant_name:'lang_cat_active',value:'Active');
+define(constant_name:'lang_cat_inactive',value:'Inactive');
 
 
 

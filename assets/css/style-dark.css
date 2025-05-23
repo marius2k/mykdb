@@ -1669,3 +1669,12 @@ button[disabled],
     background-color: #e1e1e1;
 
 }
+
+.select2-container--default .select2-results__option {
+  display: flex;
+  align-items: center;
+}
+
+.select2-option-img {
+  border-radius: 4px;
+}

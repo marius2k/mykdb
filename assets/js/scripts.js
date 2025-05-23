@@ -236,3 +236,8 @@ function toggleAddFormHide(formId, buttonEl) {
 
 
 
+function formatWithIcon(option) {
+  if (!option.id) return option.text;
+  const img = $(option.element).data('img');
+  return $(`<span><img src="${img}" width="20" style="margin-right:8px;" />${option.text}</span>`);
+}

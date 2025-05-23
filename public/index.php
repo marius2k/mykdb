@@ -51,20 +51,22 @@ if ($_GET['category'] == NULL) {
 $db = new Database();
 
 // Fetch categories for dropdown
-$stmt1 = $db->query("SELECT * FROM categories");
+$stmt1 = $db->query("SELECT * FROM categories WHERE is_active = 1");
 //$stmt1 -> execute($params);
 $categories = $stmt1->fetchAll();
 
-// Fetch approved articles
-$stmt = $db->prepare("
-    SELECT a.*, u.username, c.name AS category, c.icon 
+// Fetch approved articles from the active categories
+$stmt = $db->prepare("SELECT a.*, u.username, c.name AS category, c.icon 
     FROM articles a 
     JOIN users u ON a.user_id = u.id 
     LEFT JOIN categories c ON a.category_id = c.id 
     WHERE a.status = 'approved' $filter
     AND (a.publish_at IS NULL OR a.publish_at <= NOW())
+    AND c.is_active = 1
     ORDER BY a.created_at DESC
 ");
+
+
 $stmt->execute($params);
 $articles = $stmt->fetchAll();
 
