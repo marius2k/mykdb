@@ -21,6 +21,11 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
         
 }
 
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
+}
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -134,17 +139,27 @@ $totalPages = ceil($totalUsers / $perPage);
             </tr>
             <?php endforeach; ?>
         </tbody>
+
+        <?php
+        If($totalPages > 1): ?>
+            <tfoot>
+                <tr>
+                    <td colspan="6">
+                        <div id="pagination-results">
+                                    <?php 
+                                        echo renderPagination($page, $totalPages,[]);
+                                                            
+                                    ?>
+                            </div>      
+                    </td>
+
+                </tr>                       
+            </tfoot>
+        <?php endif; ?>
     </table>
 
 </div>
 
-<div class="pagination" style="margin-top: 20px;">
-    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="?page=<?= $i ?>" class="<?= $i === $page ? 'active' : '' ?>">
-            <?= $i ?>
-        </a>
-    <?php endfor; ?>
-</div>
 
 
 <?php include APP_ROOT . '/includes/footer.php'; ?>

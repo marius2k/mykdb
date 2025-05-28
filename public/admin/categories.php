@@ -21,6 +21,10 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
         
 }
 
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
+}
 
 
 $db = new Database();
@@ -520,19 +524,20 @@ $availableCategories = array_map(function($cat) {
                 <?php endforeach; ?>
             </tbody>
 
-            <tfoot>
-            <tr>
-                <td colspan="4">
-                    <div class="pagination-footer">
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <a href="?page=<?= $i ?>" class="<?= $i === $currentPage ? 'active' : '' ?>">
-                                <?= $i ?>
-                            </a>
-                        <?php endfor; ?>
-                    </div>
-                </td>
-            </tr>
-            </tfoot>
+            <?php if ($totalPages > 1): ?>
+                    <tfoot>
+                    <tr>
+                        <td colspan="6">
+                            <div id="pagination-results">
+                                    <?php 
+                                        echo renderPagination($currentPage, $totalPages,[]);
+                                                            
+                                    ?>
+                            </div>      
+                        </td>
+                    </tr>
+                    </tfoot>
+            <?php endif; ?>
 
         </table>
     </div>
@@ -554,7 +559,7 @@ $(document).ready(function () {
 
   // ICON select
   $('#cat_icon_select').select2({
-    placeholder: "Alege icon",
+    placeholder: "<?=lang_cat_select_icon?>",
     templateResult: formatWithIcon,
     templateSelection: formatWithIcon,
     allowClear: true
@@ -562,7 +567,7 @@ $(document).ready(function () {
 
   // Disabled CATEGORY select
   $('#dcategory_select').select2({
-    placeholder: "Alege categorie",
+    placeholder: "<?=lang_cat_select?>",
     templateResult: formatWithIcon,
     templateSelection: formatWithIcon,
     allowClear: true
@@ -570,7 +575,7 @@ $(document).ready(function () {
 
   // Active CATEGORY select
   $('#acategory_select').select2({
-    placeholder: "Alege categorie",
+    placeholder: "<?=lang_cat_select?>",
     templateResult: formatWithIcon,
     templateSelection: formatWithIcon,
     allowClear: true

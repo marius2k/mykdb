@@ -10,26 +10,62 @@ if (session_status() === PHP_SESSION_NONE) {
 //error_reporting(E_ALL);
 
 
+// start treatment of guest user
+
+
+if (!isset($_SESSION['user'])) {
+
+    initGuestSession();
+    
+}
+
+
+// end treatment of guest user
+
 
 
 // Load user settings
-
 
 if (isset($_SESSION['user']) && !isset($_SESSION['settings'])) {
     $db = new Database();
 
     //$_SESSION['user']['id']=2;
+    
+    if ($_SESSION['user']['role'] == 'guest') {
+       
 
-    $userSettings = new UserSettings($db);
-    $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
-    //echo "user: set; settings: not set";
+        // Set default settings for guest user
+        if (!isset($_POST['theme'])){
+            $_SESSION['user']['theme'] = 'light';
+        } else {
+            $_SESSION['user']['theme'] = $_POST['theme'];
+        }
+
+        if (!isset($_POST['lang'])){
+            $_SESSION['user']['lang'] = 'en';
+        } else {
+            $_SESSION['user']['lang'] = $_POST['lang'];
+        }
+        
+        $_SESSION['settings']['theme'] = $_SESSION['user']['theme'];
+        $_SESSION['settings']['language'] = $_SESSION['user']['lang'];
+        
+
+    } else {
+
+        $userSettings = new UserSettings($db);
+        $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
+        
+    }
+
 }
 
 $theme = $_SESSION['settings']['theme'] ?? 'light';
 $lang = $_SESSION['settings']['language'] ?? 'en';
 
 
-//echo "header.php: theme:" . $theme . "language: ".$lang;
+//echo "header.php: Used ID" . $_SESSION['user']['id'] . " Theme: " . $theme . " Lang: " . $lang;
+
 
 
 //echo "<body class='theme-$theme'>";

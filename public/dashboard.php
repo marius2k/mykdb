@@ -22,12 +22,19 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
 $errors = [];
 $userId = $_SESSION['user']['id'];
 $isAdmin = ($_SESSION['user']['role'] === 'admin');
-
+//$currentPage= isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 
 
 $perPage = 10; // randuri pe pagină
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $perPage;
+
+$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+/*
+if ($currentPage > $totalPages) {
+    $currentPage = $totalPages;
+}
+*/
 
 $db = new Database();
 
@@ -227,21 +234,16 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="6">
-                            <div class="pagination-footer">
-                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                    <a href="?page=<?= $i ?>&filterUserId=<?= $filterUserId ?>" class="<?= $i === $page ? 'active' : '' ?>">
-                                        <?= $i ?>
-                                    </a>
-                                <?php endfor; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    </tfoot>
+                   
                 </table>
-
+                    <div id="pagination-results">
+                                <?php 
+                                    //echo $currentPage > 1 ? '<a href="?page=' . ($currentPage - 1) . '&user_id=' . $filterUserId . '">« Previous</a>' : '';
+                                    
+                                    echo renderPagination($currentPage, $totalPages,['filterUserId' => $filterUserId]);
+                                 
+                                ?>
+                    </div>
                 <form method="post" action="export_activity_log.php">
                     <input type="hidden" name="user_id" value="<?= htmlspecialchars($filterUserId) ?>">
                     <button type="submit" class="btn btn-success">Export CSV</button>

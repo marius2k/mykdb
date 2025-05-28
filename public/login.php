@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     //echo "user authenti/cation started...<br>";
-    $userok = authUser($username, $password);
+    $userok = auth_user($username, $password);
 
     //echo "user authentication ended...";
     

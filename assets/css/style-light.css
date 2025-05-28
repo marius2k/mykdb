@@ -711,11 +711,11 @@ a:hover {
     padding: 5px 10px;
     margin-right: 5px;
     border-radius: 4px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     text-decoration: none;
     color: rgb(44, 45, 48);
     flex: 1;
-    width: 90px;
+    /*width: 90px;*/
 }
 
 .btn-view {
@@ -724,9 +724,12 @@ a:hover {
 }
 
 .btn-outline-grey {
+    padding: 5px 10px;
     background-color: #cfcecb;
     color: #020202;
     border: 1px solid #696968;
+    border-radius: 5px;
+    width: 150px;
 }
 
 .btn-outline-grey:hover {
@@ -893,7 +896,7 @@ button[disabled],
 
 .pagination a {
     display: inline-block;
-    padding: 8px 12px;
+    padding: 2px 6px;
     margin: 0 3px;
     background: #f0f0f0;
     color: #333;
@@ -909,7 +912,7 @@ button[disabled],
 .pagination a.active {
     background: #a0a0a0;
     color: white;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .pagination-footer {
@@ -936,7 +939,7 @@ button[disabled],
 .pagination-footer a.active {
     background-color: #a0a0a0;
     color: white;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 /* Formulare */
@@ -1115,7 +1118,8 @@ button[disabled],
     width: 100%;
     display: flex;
     height: auto;
-    border-bottom: #d3d3d3 1px solid;
+    padding-top: 20px;
+    /*border-bottom: #d3d3d3 1px solid;*/
 }
 
 /*setari pentru search box in index.php */
@@ -1130,6 +1134,8 @@ button[disabled],
 /* setari pentru selectorul de categorii din index.php */
 
 .category-box {
+    display: flex; 
+    flex-direction: row;
     width: 50%;
     box-sizing: border-box;
     text-align: left;
@@ -1641,7 +1647,8 @@ button[disabled],
 }
 
 .active-tabs {
-  background-color: #e1e1e1 !important; /* sau culoarea ta custom */
+    background-color: #e9e7e7;
+  /*background-color: #e1e1e1 !important; /* sau culoarea ta custom */
 }
 
 .btn-flat {
@@ -1704,3 +1711,27 @@ button[disabled],
   height: 20px;
 }
 
+.pagination {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.page-link {
+  padding: 4px 8px;
+  border: 1px solid #cccccc;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.page-link.active {
+  background: #04acc2;
+  color: #fff;
+  border-color: #066572;
+}
+
+.dots {
+  padding: 4px 6px;
+  color: #aaa;
+}

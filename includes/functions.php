@@ -38,11 +38,36 @@ function getCategories($pdo) {
 /**
  * Get username from user ID
  */
-function getUserById($pdo, $id) {
-    $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+function getUserById($id) {
+
+    $db = new Database();
+
+    $stmt = $db->prepare("SELECT username FROM users WHERE id = ?");
     $stmt->execute([$id]);
     return $stmt->fetchColumn();
 }
+
+function getUserRoleById(int $userId,): ?string {
+    
+    $db = new Database();
+    
+    $sql = "
+        SELECT r.name as label
+        FROM users u
+        JOIN roles r ON u.role_id = r.id
+        WHERE u.id = :user_id
+        LIMIT 1
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $result['label'] ?? null;
+}
+
 
 function loadConfig(){
 
@@ -55,6 +80,50 @@ function loadConfig(){
     exit;
 
 }
+// Initialize guest session if not already set
+// This function should be called at the start
+//
+function initGuestSession(){
+
+    $db = new Database();
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    
+        // Caută userul guest în DB
+        $stmt = $db->prepare("SELECT id, username, role_id FROM users WHERE username = 'guest' LIMIT 1");
+        $stmt->execute();
+        $guest = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($guest) {
+            $_SESSION['user'] = [
+                'id'       => (int)$guest['id'],
+                'username' => $guest['username'],
+                'first_name' => 'Guest', // Poți seta un nume generic
+                'last_name' => '',
+                'email'    => '', // Email gol pentru guest
+                'role_id'  => (int)$guest['role_id'],
+                'role'     => 'guest' // alternativ: folosește JOIN pe roles
+            ];
+        } else {
+            // fallback în caz că guest nu există în DB
+            $_SESSION['user'] = [
+                'id'       => 0,
+                'username' => 'guest',
+                'role_id'  => null,
+                'role'     => 'guest'
+            ];
+        }
+    
+        echo "Guest session initialized: " . $_SESSION['user']['id']. "<br>";
+
+    // Setări suplimentare default
+    //$_SESSION['language'] ??= 'ro';
+    //$_SESSION['theme']    ??= 'light';
+}
+
 
 function SystemStatus(){
 
@@ -189,7 +258,7 @@ function generateNavBar($role = 'guest') {
                 <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
             break;
 
-        default:
+        case 'guest':
             $nav .= '
                 <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
                 <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang_login.'</a>
@@ -210,12 +279,13 @@ function generateNavBar2($uid) {
 
     $currentPage = basename($_SERVER['SCRIPT_NAME']);
    
-
-
+        
 
     $nav = '';
 
-    if($uid === null){
+    if(($_SESSION['user']['role']=== 'guest')) {
+        // Guest user navigation
+        // If user is not logged in, show only home, login and register links
         $nav .= '
                 <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
                 <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang_login.'</a>
@@ -270,8 +340,7 @@ function generateNavBar2($uid) {
     }
 
     //check users allowed to manage articles
-    $ops = ['view_article',
-            'edit_article',
+    $ops = ['edit_article',
             'create_article',
             'edit_own_article',
             'publish_article',
@@ -296,6 +365,7 @@ function generateNavBar2($uid) {
 
     if (hasPermission($uid,$ops)){
 
+
         $nav.='<a href="'.APP_URL.'public/admin/comments.php"'.($currentPage === 'comments.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_com_comments.'</a>';
     }
 
@@ -309,12 +379,14 @@ function generateNavBar2($uid) {
     }
 
     
-    $ops=['register'
-        ];
+    $ops=['register'];
 
     if(hasPermission($uid,$ops)){
         $nav.= '<a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang_register.'</a>';
     }    
+
+    
+    // menu bar for 'guest' users
 
     $nav.='<a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
 
@@ -326,6 +398,27 @@ function generateAvatarMenu($uid) {
 
     $menu = '';
 
+    $role = getUserRoleById($uid);
+    
+    if ($role == 'guest') {
+        
+        $menu .= '<li>
+                        <a class="dropdown-item" href="' . APP_URL . 'public/register.php">
+                            <i class="bi bi-person-fill me-2"></i>'.lang_register . '</a>
+                    </li>';
+        $menu .='<li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item " href="'.APP_URL.'public/login.php">
+                            <i class="bi bi-box-arrow-right me-2"></i>'.lang_login.'</a>
+                    </li>';
+
+        return $menu;
+
+
+    }
+
+
+    // check if user is allowed to view his profile
     // check if user is allowed to edit his profile;
 
     //$ops = ['modify_own_user'];
@@ -369,10 +462,16 @@ function hasPermission(int $user_id, array $requiredOps): bool {
 
     static $userPermissions = []; // contains the operations allowed to user
 
+    $db=new Database();
+
+   
+    $uid = $user_id;
+   
+
     // Cache per user
-    if (!isset($userPermissions[$user_id])) {
+    if (!isset($userPermissions[$uid])) {
     
-        $db=new Database();
+        
 
         $sql = "
             SELECT o.name
@@ -382,13 +481,13 @@ function hasPermission(int $user_id, array $requiredOps): bool {
             JOIN operations o ON o.id = rp.operation_id
             WHERE u.id = ?
         ";
-        $results = $db->fetchAll($sql, [$user_id]);
+        $results = $db->fetchAll($sql, [$uid]);
         $userPermissions[$user_id] = array_column($results, 'name');
     }
 
     // Verificăm dacă are cel puțin o operație permisă
     foreach ($requiredOps as $op) {
-        if (in_array($op, $userPermissions[$user_id])) {
+        if (in_array($op, $userPermissions[$uid])) {
             return true;
         }
     }
@@ -476,7 +575,7 @@ function renderCategoryIconPreview(string $icon = ''): string {
 function iconExists(string $filename): bool {
 
     $db =new Database(); 
-    
+
     $result = $db->fetchAll(
         "SELECT id FROM categories_icons WHERE filename = ? LIMIT 1",
         [$filename]
@@ -484,3 +583,46 @@ function iconExists(string $filename): bool {
 
     return !empty($result); // returnează true dacă există, false dacă nu
 }
+
+
+function renderPagination(int $currentPage, int $totalPages, array $params = []): string {
+    if ($totalPages <= 1) return ''; // nimic de afișat
+
+    $html = '<div class="pagination">';
+    $queryPrev = http_build_query(array_merge($params, ['page' => max(1, $currentPage - 1)]));
+    $queryNext = http_build_query(array_merge($params, ['page' => min($totalPages, $currentPage + 1)]));
+
+    // Prev
+    if ($currentPage > 1) {
+        $html .= '<a class="page-link prev" href="?' . $queryPrev . '">&laquo; Prev</a>';
+    }
+
+    $dotsShown = false;
+
+    for ($i = 1; $i <= $totalPages; $i++) {
+        $show = (
+            $i <= 1 ||
+            $i > $totalPages - 1 ||
+            abs($i - $currentPage) <= 1
+        );
+
+        if ($show) {
+            $dotsShown = false;
+            $query = http_build_query(array_merge($params, ['page' => $i]));
+            $active = $i === $currentPage ? ' active' : '';
+            $html .= '<a class="page-link' . $active . '" href="?' . $query . '">' . $i . '</a>';
+        } elseif (!$dotsShown) {
+            $html .= '<span class="dots">...</span>';
+            $dotsShown = true;
+        }
+    }
+
+    // Next
+    if ($currentPage < $totalPages) {
+        $html .= '<a class="page-link next" href="?' . $queryNext . '">Next &raquo;</a>';
+    }
+
+    $html .= '</div>';
+    return $html;
+}
+

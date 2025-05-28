@@ -12,6 +12,11 @@ require_once '../config/bootstrap.php';
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
+if (!isset($_SESSION['user'])) {
+
+    initGuestSession();
+    
+}
 
 
 $filter = '';
@@ -20,13 +25,18 @@ $params= [];
 
 // Optional category filter
 if (isset($_GET['category']) && $_GET['category'] !== '') {
-    $filter = "AND category_id = ?";
-    $params[] = $_GET['category'];
-    //echo $_GET['category'];
-    //echo $filter;
+    if ($_GET['category'] <> '0'){
+        $filter = "AND category_id = ?";
+        $params[] = $_GET['category'];
+        $cid = $_GET['category'];
+        //echo $_GET['category'];
+        //echo $filter;
+    }
 }else {
     $filter = '';
     $params = [];
+    $cid= null;
+
 }
 
 //echo "filter: ".$filter;
@@ -56,19 +66,91 @@ $stmt1 = $db->query("SELECT * FROM categories WHERE is_active = 1");
 $categories = $stmt1->fetchAll();
 
 // Fetch approved articles from the active categories
-$stmt = $db->prepare("SELECT a.*, u.username, c.name AS category, c.icon 
-    FROM articles a 
-    JOIN users u ON a.user_id = u.id 
-    LEFT JOIN categories c ON a.category_id = c.id 
-    WHERE a.status = 'approved' $filter
-    AND (a.publish_at IS NULL OR a.publish_at <= NOW())
-    AND c.is_active = 1
-    ORDER BY a.created_at DESC
-");
 
 
-$stmt->execute($params);
-$articles = $stmt->fetchAll();
+
+$filterCatId = $_GET['category'] ?? '0';
+
+//echo "Filter Category ID: " . $filterCatId . "<br>";
+
+
+// Total articles for pagination
+
+$perPage = 4; // articole pe pagină
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $perPage;
+
+$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+
+//$cid= $filterCatId;
+
+
+//echo "CID: ".$cid . "<br>";
+
+
+if (isset($filterCatId) && $filterCatId > 0) {
+
+    $totalStmt = $db->query("SELECT COUNT(*) FROM articles WHERE status = 'approved' AND publish_at <= NOW() AND category_id = ?", [$filterCatId]);
+    $totalRows = $totalStmt->fetchColumn();
+    $totalPages = ceil($totalRows / $perPage);
+
+
+
+    $sql = "SELECT a.*, u.username, c.name AS category, c.icon, c.id AS catid 
+            FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            LEFT JOIN categories c ON a.category_id = c.id 
+            WHERE a.status = 'approved' AND a.category_id = :cid
+            AND (a.publish_at IS NULL OR a.publish_at <= NOW())
+            AND c.is_active = 1
+            ORDER BY a.created_at DESC
+            LIMIT :limit OFFSET :offset";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':cid', $cid, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        
+        
+        $stmt->execute();    
+
+} else {
+
+    $totalStmt = $db->query("SELECT COUNT(*) FROM articles WHERE status = 'approved' AND publish_at <= NOW()");
+    $totalRows = $totalStmt->fetchColumn();
+    $totalPages = ceil($totalRows / $perPage);
+
+    $sql = "SELECT a.*, u.username, c.name AS category, c.icon, c.id AS catid 
+            FROM articles a 
+            JOIN users u ON a.user_id = u.id 
+            LEFT JOIN categories c ON a.category_id = c.id 
+            WHERE a.status = 'approved'
+            AND (a.publish_at IS NULL OR a.publish_at <= NOW())
+            AND c.is_active = 1
+            ORDER BY a.created_at DESC
+            LIMIT :limit OFFSET :offset";
+    
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    
+    
+    $stmt->execute();
+
+}
+
+
+
+
+//echo "SQL: ".$sql;
+
+        
+
+        //$stmt->execute( $params);
+        $articles = $stmt->fetchAll();
+    
+        
+   
 
 if (isset($_SESSION['user']['id'])) {
 
@@ -89,11 +171,6 @@ if (isset($_SESSION['user']['id'])) {
     $lang = 'en';
     $theme = 'light';
 }
-
-
-//echo "index.php: user id: ". $_SESSION['user']['id'];
-
-
 
 
 ?>
@@ -132,7 +209,7 @@ if (isset($_SESSION['user']['id'])) {
     
         <h2><?=lang_articles?></h2>
     <?php if (count($articles) === 0): ?>
-        <p>Niciun articol aprobat momentan.</p>
+        <p><?=lang_no_articles?></p>
     <?php else: ?>
     
     
@@ -162,7 +239,7 @@ if (isset($_SESSION['user']['id'])) {
                             <h3 class="article-title">
                                 <?php if (!empty($a['icon'])): ?>
                                         <?php if (str_starts_with($a['icon'], 'http') || str_ends_with($a['icon'], '.png') || str_ends_with($a['icon'], '.svg')): ?>
-                                            <img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;">
+                                            <a href="index.php?category=<?=$a['catid']?>" title="<?=$a['category']?>"><img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;"></a>
                                             <?php else: ?>
                                             <span class="me-1"><?= htmlspecialchars($a['icon']) ?></span>
                                         <?php endif; ?>
@@ -218,6 +295,14 @@ if (isset($_SESSION['user']['id'])) {
 
 
             <?php endforeach; ?>
+        </div>
+
+        <div id="pagination-results">
+                <?php 
+                // Pagination logic                              
+                    echo renderPagination($currentPage, $totalPages,['category' => $filterCatId]);
+                                 
+                ?>
         </div>
     <?php endif; ?>
     

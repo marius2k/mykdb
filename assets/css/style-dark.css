@@ -1678,3 +1678,28 @@ button[disabled],
 .select2-option-img {
   border-radius: 4px;
 }
+
+.pagination {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.page-link {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.page-link.active {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.dots {
+  padding: 4px 6px;
+  color: #aaa;
+}

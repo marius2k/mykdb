@@ -47,6 +47,7 @@ define(constant_name:'lang_select_language',value:'Limba');
 define(constant_name:'lang_select_theme',value:'Tema');
 define(constant_name:'lang_profile',value:'Profilul meu');
 define(constant_name:'lang_edit_acl',value:'Editeaza ACL');
+define(constant_name:'lang_no_articles',value:'Nici un articol nu a fost gasit');
 
 
 // Define constants for Dashboard (file: dashboard.php)
@@ -93,6 +94,7 @@ define(constant_name:'lang_cat_select',value:'Alege Categoria');
 define(constant_name:'lang_cat_status',value:'Status');
 define(constant_name:'lang_cat_active',value:'Activa');
 define(constant_name:'lang_cat_inactive',value:'Inactiva');
+define(constant_name:'lang_cat_select_icon',value:'Alege Icon');
 
 
 

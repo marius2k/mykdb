@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
     $category_id = (int)$_POST['category_id'];
-
+    $publish_at = $_POST['publish_at'] ?? time();
     if (strlen($title) < 5) {
         $errors[] = 'Titlul trebuie să aibă minim 5 caractere.';
     }
@@ -67,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $clean_content = clean_html($content);
         $clean_content = removeImageCaptionText($clean_content); // dacă ai folosit funcția anterioară
 
-        $stmt = $db->prepare("UPDATE articles SET title = ?, content = ?, category_id = ?, status = 'pending' WHERE id = ?");
-        $stmt->execute([$title, $clean_content, $category_id, $id]);
+        $stmt = $db->prepare("UPDATE articles SET title = ?, content = ?, category_id = ?, status = 'pending', publish_at = ? WHERE id = ?");
+        $stmt->execute([$title, $clean_content, $category_id, $publish_at, $id]);
         
         // Log the edit
         logActivity($_SESSION['user']['id'], 'edit_article', 'User '. $_SESSION['user']['username'].' edited an article');
@@ -114,7 +114,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endforeach; ?>
             </select>
         </div>
-
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+            <label style="width:30%" for="publish_at"><?=lang_art_publish_at?></label>
+            <input style="width:70%" type="datetime-local" name="publish_at" id="publish_at" class="form-control" value="<?= isset($article['publish_at']) ? date('Y-m-d\TH:i', strtotime($article['publish_at'])) : '' ?>">
+        </div>
         <div style="display: flex; gap: 10px;">
             <button type="submit" class="btn-primary">💾 Salvează modificările</button>
             <a href="admin/articles.php" class="btn-secondary">❌ Renunță</a>

@@ -17,6 +17,7 @@ define(constant_name:'lang_search',value:'Search');
 define(constant_name:'lang_search_placeholder',value:'Search articles...');
 define(constant_name:'lang_search_results',value:'Search Results');
 define(constant_name:'lang_edit_acl',value:'Edit ACL');
+define(constant_name:'lang_no_articles',value:'No articles found');
 
 
 // Define constants for Articles
@@ -97,6 +98,7 @@ define(constant_name:'lang_cat_select',value:'Select Category');
 define(constant_name:'lang_cat_status',value:'Status');
 define(constant_name:'lang_cat_active',value:'Active');
 define(constant_name:'lang_cat_inactive',value:'Inactive');
+define(constant_name:'lang_cat_select_icon',value:'Select Icon');
 
 
 

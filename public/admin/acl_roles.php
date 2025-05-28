@@ -1,7 +1,7 @@
 <?php
 require_once '../../config/bootstrap.php';
 
-$op = "edit_acl";
+$op = ["edit_acl"];
 
 if (!hasPermission($_SESSION['user']['id'],$op)) {
     
@@ -10,6 +10,10 @@ if (!hasPermission($_SESSION['user']['id'],$op)) {
 
 }
 
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
+}
 
 
 $db = new Database();
