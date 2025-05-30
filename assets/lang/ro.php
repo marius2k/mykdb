@@ -48,6 +48,12 @@ define(constant_name:'lang_select_theme',value:'Tema');
 define(constant_name:'lang_profile',value:'Profilul meu');
 define(constant_name:'lang_edit_acl',value:'Editeaza ACL');
 define(constant_name:'lang_no_articles',value:'Nici un articol nu a fost gasit');
+define(constant_name:'lang_adv_search',value:'Cautare avansata');
+define(constant_name:'lang_filter',value:'Filtru');
+define(constant_name:'lang_article_top_view',value:'Cele mai vizualizate articole');
+define(constant_name:'lang_article_top_like',value:'Cele mai apreciate articole');
+
+
 
 
 // Define constants for Dashboard (file: dashboard.php)

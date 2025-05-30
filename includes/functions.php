@@ -117,7 +117,7 @@ function initGuestSession(){
             ];
         }
     
-        echo "Guest session initialized: " . $_SESSION['user']['id']. "<br>";
+        //echo "Guest session initialized: " . $_SESSION['user']['id']. "<br>";
 
     // Setări suplimentare default
     //$_SESSION['language'] ??= 'ro';
@@ -626,3 +626,67 @@ function renderPagination(int $currentPage, int $totalPages, array $params = [])
     return $html;
 }
 
+function getTopViewedArticles(int $limit = 5): string {
+    $db = new Database();
+    $sql = "SELECT a.id, a.title, c.icon
+            FROM articles a
+            JOIN categories c ON a.category_id = c.id
+            WHERE a.status = 'approved'
+              AND (a.publish_at IS NULL OR a.publish_at <= NOW())
+              AND c.is_active = 1
+            ORDER BY a.views DESC
+            LIMIT :limit";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    $results = $stmt->fetchAll();
+
+    if (!$results) return '<p>Nicio vizualizare înregistrată.</p>';
+
+    $html = '<ul class="top-articles viewed">';
+    foreach ($results as $row) {
+        $iconPath = APP_URL.'assets/icons/categories/' . $row['icon'];
+        $html .= '<li>
+                    <img src="' . $iconPath . '" class="li-icon" alt="">
+                    <a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($row['title']) . '</a>
+                  </li>';
+    }
+    $html .= '</ul>';
+    return $html;
+}
+
+
+function getTopLikedArticles(int $limit = 5): string {
+    $db = new Database();
+
+    $sql = "SELECT a.id, a.title, c.icon, COUNT(l.id) AS likes
+            FROM articles a
+            JOIN article_likes l ON a.id = l.article_id
+            JOIN categories c ON a.category_id = c.id
+            WHERE l.vote_type = 'like'
+              AND a.status = 'approved'
+              AND (a.publish_at IS NULL OR a.publish_at <= NOW())
+              AND c.is_active = 1
+            GROUP BY a.id
+            ORDER BY likes DESC
+            LIMIT :limit";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    $results = $stmt->fetchAll();
+
+    if (!$results) return '<p>Nu există articole apreciate încă.</p>';
+
+    $html = '<ul class="top-articles liked">';
+    foreach ($results as $row) {
+        $iconPath = APP_URL.'assets/icons/categories/' . $row['icon'];
+        $html .= '<li>
+                    <img src="' . $iconPath . '" class="li-icon" alt="">
+                    <a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($row['title']) . '</a>
+                  </li>';
+    }
+    $html .= '</ul>';
+    return $html;
+}

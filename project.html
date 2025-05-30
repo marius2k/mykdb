@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Milestone Dashboard</title>
+</head>
+<body>
+  <h1>Milestone Progress</h1>
+  <div id="progress"></div>
+  <script>
+    async function fetchMilestone() {
+      // Replace with your repo and milestone number
+      const owner = "marius2k"; const repo = "mykdb"; const milestone_number = 2;
+      const token = "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"; // Store securely in production!
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/milestones/${milestone_number}`, {
+        headers: { Authorization: `token ${token}` }
+      });
+      const data = await res.json();
+      document.getElementById('progress').innerText =
+        `Title: ${data.title}
+        Open: ${data.open_issues}
+        Closed: ${data.closed_issues}
+        Progress: ${(data.closed_issues / (data.closed_issues + data.open_issues) * 100).toFixed(1)}%`;
+    }
+    fetchMilestone();
+  </script>
+</body>
+</html>

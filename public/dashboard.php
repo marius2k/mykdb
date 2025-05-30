@@ -234,19 +234,28 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
-                   
+                   <?php if ($totalPages > 1): ?>
+                        <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                <div id="pagination-results">
+                                        <?php 
+                                            echo renderPagination($currentPage, $totalPages,['filterUserId' => $filterUserId]);
+                                                                
+                                        ?>
+                                </div>      
+                            </td>
+                        </tr>
+                        </tfoot>
+                    <?php endif; ?>
+
                 </table>
-                    <div id="pagination-results">
-                                <?php 
-                                    //echo $currentPage > 1 ? '<a href="?page=' . ($currentPage - 1) . '&user_id=' . $filterUserId . '">« Previous</a>' : '';
-                                    
-                                    echo renderPagination($currentPage, $totalPages,['filterUserId' => $filterUserId]);
-                                 
-                                ?>
-                    </div>
+                   <br><br>
+
+                   
                 <form method="post" action="export_activity_log.php">
                     <input type="hidden" name="user_id" value="<?= htmlspecialchars($filterUserId) ?>">
-                    <button type="submit" class="btn btn-success">Export CSV</button>
+                    <button type="submit" class="btn-sm btn-disabled">Export CSV</button>
                 </form>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

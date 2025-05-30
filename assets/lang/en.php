@@ -18,6 +18,8 @@ define(constant_name:'lang_search_placeholder',value:'Search articles...');
 define(constant_name:'lang_search_results',value:'Search Results');
 define(constant_name:'lang_edit_acl',value:'Edit ACL');
 define(constant_name:'lang_no_articles',value:'No articles found');
+define(constant_name:'lang_adv_search',value:'Advanced Search');
+define(constant_name:'lang_filter',value:'Filter');
 
 
 // Define constants for Articles
@@ -53,6 +55,8 @@ define(constant_name:'lang_select_romanian',value:'Romanian');
 define(constant_name:'lang_select_language',value:'Language');
 define(constant_name:'lang_select_theme',value:'Theme');
 define(constant_name:'lang_profile',value:'My Profile');
+define(constant_name:'lang_article_top_view',value:'Top Viewed Articles');
+define(constant_name:'lang_article_top_like',value:'Top Liked Articles');
 
 
 // Define constants for Dashboard (file: dashboard.php)

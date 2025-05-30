@@ -1,40 +1,4 @@
-const input = document.getElementById('liveSearch');
-const results = document.getElementById('searchResults');
-const defaultContent = document.getElementById('defaultContent');
 
-// Debounce function
-function debounce(func, delay = 300) {
-    let timeout;
-    return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), delay);
-    };
-}
-
-// Search logic
-const searchArticles = async () => {
-    const query = input.value.trim();
-    if (query.length < 2) {
-        results.innerHTML = '';
-        defaultContent.style.display = 'block';
-        return;
-    }
-
-    const res = await fetch('search_articles.php?q=' + encodeURIComponent(query));
-    const data = await res.json();
-
-    defaultContent.style.display = 'none'; // HIDE DEFAULT CONTENT
-
-    results.innerHTML = data.map(article => `
-        <div style="border:1px solid #ccc; padding:10px; margin-bottom:5px;">
-            <h4>${article.title}</h4>
-            <p><em>Autor: ${article.username} | Categorie: ${article.category} | ${new Date(article.created_at).toLocaleDateString()}</em></p>
-            <p>${article.content.substring(0, 200)}...</p>
-        </div>
-    `).join('') || '<p>Nu s-au găsit articole.</p>';
-};
-
-input.addEventListener('input', debounce(searchArticles, 300));
 
 
 function togglePasswordVisibility(inputId,btnVisible) {
@@ -140,37 +104,7 @@ function voteArticle(articleId, voteType, el) {
  
 }
 
-function submitComment() {
-  const articleId = document.getElementById('article_id').value;
-  const content = document.getElementById('comment-content').value.trim();
 
-  if (!content) {
-    alert('Comentariul nu poate fi gol.');
-    return false;
-  }
-
-  fetch('add_comment.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `article_id=${encodeURIComponent(articleId)}&content=${encodeURIComponent(content)}`
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === 'ok') {
-      document.getElementById('comment-feedback').classList.remove('d-none');
-      document.getElementById('comment-content').value = '';
-      updateArticleMeta(articleId); // actualizează contorul 💬
-    } else {
-      alert(data.message || 'Eroare la trimiterea comentariului.');
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('Eroare AJAX!');
-  });
-
-  return false; // prevenim reload
-}
 
 function updateArticleMeta(articleId) {
   fetch('get_article_meta.php?aid=' + articleId)
@@ -187,6 +121,47 @@ function updateArticleMeta(articleId) {
     })
     .catch(err => console.error('Eroare la update meta:', err));
 }
+
+function submitComment() {
+  const articleId = document.getElementById('article_id').value;
+  const content = document.getElementById('comment-content').value.trim();
+
+  if (!content) {
+    alert('Comentariul nu poate fi gol.');
+    return false;
+  }
+
+  const data = new URLSearchParams();
+  data.append('article_id', articleId);
+  data.append('content', content);
+
+  fetch('add_comment.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: data.toString()
+  })
+  .then(res => res.json())
+  .then(json => {
+    if (json.status === 'ok') {
+      document.getElementById('comment-feedback').classList.remove('d-none');
+      document.getElementById('comment-content').value = '';
+      updateArticleMeta(articleId);
+    } else {
+      alert(json.message || 'Eroare la trimiterea comentariului.');
+    }
+  })
+  .catch(() => {
+    alert('Eroare AJAX!');
+  });
+
+  return false; // prevenim reload
+}
+
+
+
+
 
 // face toggle (arata-ascunde) pe un form. Nu tine cont ca in pagina exista un alt form deschis.
 

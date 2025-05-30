@@ -71,7 +71,7 @@ if (!$article) {
         
             <?php if (!empty($article['icon'])): ?>
                 <?php if (str_starts_with($article['icon'], 'http') || str_ends_with($article['icon'], '.png') || str_ends_with($article['icon'], '.svg')): ?>
-                <img src="<?=APP_URL?>assets/icons/<?= $article['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;">
+                <img src="<?=APP_URL?>assets/icons/categories/<?= $article['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;">
             <?php else: ?>
                 <span class="me-1"><?= htmlspecialchars($article['icon']) ?></span>
                 <?php endif; ?>
@@ -156,6 +156,9 @@ if (!$article) {
 </div>
 
 <script>
+
+
+
 
     document.addEventListener('DOMContentLoaded', function() {
     updateArticleMeta(<?= $article['id'] ?>);
