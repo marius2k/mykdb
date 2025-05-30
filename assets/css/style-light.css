@@ -480,7 +480,7 @@ a:hover {
 .btn-secondary {
     background: #ccc;
     color: #333;
-    padding: 12px 20px;
+    padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
     font-size: 1rem;
@@ -494,7 +494,7 @@ a:hover {
 
 
 .articles-table {
-    /*width: 90%;*/
+    width: 100%;
     border-collapse: collapse;
     box-shadow: 0 4px 12px rgba(7, 0, 0, 0.1);
     margin-top: 20px;
@@ -509,6 +509,7 @@ a:hover {
     color: white;
 }
 
+
 .articles-table th,
 .articles-table td {
     padding: 5px;
@@ -518,6 +519,14 @@ a:hover {
     border-right: 1px solid #ddd;
 }
 
+.td-hlt {
+    padding: 5px;
+    /*text-align: left;*/
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    color: blue;
+}
 .articles-table tbody tr:hover {
     background-color: #c9ebf5;
 }
@@ -599,7 +608,7 @@ a:hover {
     /*gap: 10px;*/
     padding: 5px;
     /*max-width: 1200px;*/
-    width: 95%;
+    width: 100%;
     margin: 0 auto;
     align-items: stretch;
 }
@@ -702,11 +711,11 @@ a:hover {
     padding: 5px 10px;
     margin-right: 5px;
     border-radius: 4px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     text-decoration: none;
     color: rgb(44, 45, 48);
     flex: 1;
-    width: 90px;
+    /*width: 90px;*/
 }
 
 .btn-view {
@@ -715,14 +724,17 @@ a:hover {
 }
 
 .btn-outline-grey {
-    background-color: transparent;
-    color: #72716f;
-    border: 1px solid #72716f;
+    padding: 5px 10px;
+    background-color: #cfcecb;
+    color: #020202;
+    border: 1px solid #696968;
+    border-radius: 5px;
+    width: 150px;
 }
 
 .btn-outline-grey:hover {
-    background-color: #cfcecb;
-    color: rgb(5, 5, 5);
+    background-color: #a0a0a0;
+    color: rgb(255, 255, 255);
 }
 
 .btn-edit {
@@ -884,7 +896,7 @@ button[disabled],
 
 .pagination a {
     display: inline-block;
-    padding: 8px 12px;
+    padding: 2px 6px;
     margin: 0 3px;
     background: #f0f0f0;
     color: #333;
@@ -900,7 +912,7 @@ button[disabled],
 .pagination a.active {
     background: #a0a0a0;
     color: white;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .pagination-footer {
@@ -927,7 +939,7 @@ button[disabled],
 .pagination-footer a.active {
     background-color: #a0a0a0;
     color: white;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 /* Formulare */
@@ -1105,23 +1117,74 @@ button[disabled],
 .search-category {
     width: 100%;
     display: flex;
+    flex-direction: column;
     height: auto;
-    border-bottom: #d3d3d3 1px solid;
+    padding-top: 20px;
+    /*border-bottom: #d3d3d3 1px solid;*/
 }
 
 /*setari pentru search box in index.php */
 
 .search-box {
+    display: flex;
+    flex-direction: row;
     width: 50%;
     box-sizing: border-box;
     text-align: right;
     
 }
 
+.search-form{
+
+    border: 1px solid #ccc; 
+    border-radius: 8px;
+    background-color: white;
+    overflow: hidden; /* Asigură că border-radius funcționează */
+    
+}
+
+.search-form-header {
+    background-color: white;
+    padding: 15px;
+    font-weight: bold;
+    font-size: 1.3rem;    
+    color: black;
+   
+
+}
+
+
+.search-box-1 {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    text-align: right;
+    
+}
+
+
+.search-box-2 {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    text-align: right;
+    
+}
+.search-advanced {
+    display: none;
+    padding-bottom: 20px; 
+    padding-left: 20px; 
+    padding-right: 20px;
+    background-color: white;
+}
+
+
 /* setari pentru selectorul de categorii din index.php */
 
 .category-box {
-    width: 50%;
+    display: flex; 
+    flex-direction: row;
+    /*width: 50%;*/
     box-sizing: border-box;
     text-align: left;
 }
@@ -1161,14 +1224,14 @@ button[disabled],
     background: #fff;
     border: 1px solid #ccc;
     border-radius: 8px;
-    /*padding: 16px 20px;*/
+    padding: 10px 15px;
     margin-bottom: 24px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.08);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: auto; /* sau auto dacă vrei dinamic */
-    width: 80%;
+    width: 100%;
 }
 
 .article-title {
@@ -1183,8 +1246,17 @@ button[disabled],
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     font-family: var (--font-main);
+    vertical-align: center;
 } 
 
+.article-title img {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.article-title span {
+  font-size: 18px;
+}
 
 .article-body {
     flex-grow: 1;
@@ -1215,7 +1287,7 @@ button[disabled],
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
+    /*padding-bottom: 10px;*/
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -1498,7 +1570,248 @@ button[disabled],
   }
   .op-icon.active {
     filter: none;
+    background-color: #d3d3d3;
   }
   .op-icon:hover {
     transform: scale(1.2);
   } 
+
+  .icon-preview {
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
+}
+
+
+/* style for categories section (categories.php) */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px 20px;
+  align-items: center;
+  width: 70%;
+  padding: 10px;
+  padding-top: 20px;
+  margin: 0 auto;
+}
+
+.form-row {
+
+    display: contents;
+    width: 70%;
+    padding: 10px;
+    margin: 0 auto;
+}
+
+.form-actions {
+    display: grid; 
+    justify-items: end;
+    grid-column: span 2;
+  /*text-align: right;*/
+}
+
+.operations-bar {
+    display: flex;
+    flex-direction: row; /* Așează elementele vertical */
+    /*box-shadow: 0 4px 12px rgba(7, 0, 0, 0.1);*/
+    width: auto;
+}
+
+
+.category-container {
+  display: flex;
+  flex-direction: column; /* Așează elementele vertical */
+  margin: 0 auto; /* Centrează pe orizontală */
+  gap: 10px; /* Spațiu între elemente */
+  width: 90%;
+  /*border: 1px solid #ccc;*/
+  /*padding: 10px;*/
+}
+
+.category-box-2 {
+  display: flex;
+  flex-direction: column; /* Așează elementele vertical */
+  background-color: rgb(240, 240, 240);
+  /*padding: 15px;*/
+  text-align: center; 
+  border-radius: 5px;
+  border: 1px solid #cfcfcf;
+  margin: 0 auto; /* Centrează pe orizontală */
+}
+
+.category-box-1 {
+  /*background-color: rgb(240, 240, 240);*/
+  /*padding: 15px;*/
+  text-align: center; 
+  border-radius: 5px;
+  margin: 0 auto; /* Centrează pe orizontală */
+
+}
+.form-container-1 {
+    max-width: 100%;
+    /*margin: 0 auto; /* Centrează pe orizontală */
+
+}
+.form-box {
+    background-color: #e9e7e7;
+    /*border: 1px solid #696969;*/
+    margin: 0 auto; 
+    width: 100%;
+    margin: 0 auto; /* Centrează pe orizontală */
+    
+}
+
+.form-box table{
+    margin: 0 auto;
+}
+
+.form-box td {
+    font-family: var(--font-main);
+    padding: 10px;
+}
+.btn-2 {
+
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #f3f8f3;
+    border-color: #f3f8f3;
+    color: rgb(0, 0, 0);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-toggle-form.active-form {
+  background-color: #f8f9fa;
+  border-color: #888888;
+  color: #000;
+  font-weight: 500;
+}
+
+.btn-toggle-form {
+  transition: background-color 0.3s ease;
+}
+
+.active-tabs {
+    background-color: #e9e7e7;
+  /*background-color: #e1e1e1 !important; /* sau culoarea ta custom */
+}
+
+.btn-flat {
+  background-color: rgb(240, 240, 240); /* culoare neutră, o poți înlocui */
+  color: #333;
+  border: 1px solid transparent;
+  /*border-radius: 4px;*/
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px; 
+  padding: 2px 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  box-shadow: none;
+}
+
+.btn-flat:hover {
+  background-color: #dee2e6; /* ușor mai închis */
+}
+
+/*
+.btn-flat:focus {
+  outline: none;
+  background-color: #d6d8db;
+}
+*/
+
+.btn-flat img {
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+}
+
+.table-form{
+    background-color: #e1e1e1;
+
+}
+
+.select2-icon {
+  width: 100%;
+}
+
+/* Icon + text în dropdown */
+.select2-container--default .select2-results__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+}
+
+/* Icon în selecție (preview sus) */
+.select2-container--default .select2-selection__rendered {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.select2-container--default .select2-selection__rendered img {
+  width: 20px;
+  height: 20px;
+}
+
+.pagination {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.page-link {
+  padding: 4px 8px;
+  border: 1px solid #cccccc;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.page-link.active {
+  background: #04acc2;
+  color: #fff;
+  border-color: #066572;
+}
+
+.dots {
+  padding: 4px 6px;
+  color: #aaa;
+}
+
+
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+  padding: 0 2px;
+}
+
+#advancedSearchForm {
+  background: #f9f9f9;
+}
+
+#advancedSearchForm label {
+  font-weight: bold;
+}
+ul.top-articles {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.top-articles li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+ul.top-articles .li-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}

@@ -10,26 +10,62 @@ if (session_status() === PHP_SESSION_NONE) {
 //error_reporting(E_ALL);
 
 
+// start treatment of guest user
+
+
+if (!isset($_SESSION['user'])) {
+
+    initGuestSession();
+    
+}
+
+
+// end treatment of guest user
+
 
 
 // Load user settings
-
 
 if (isset($_SESSION['user']) && !isset($_SESSION['settings'])) {
     $db = new Database();
 
     //$_SESSION['user']['id']=2;
+    
+    if ($_SESSION['user']['role'] == 'guest') {
+       
 
-    $userSettings = new UserSettings($db);
-    $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
-    //echo "user: set; settings: not set";
+        // Set default settings for guest user
+        if (!isset($_POST['theme'])){
+            $_SESSION['user']['theme'] = 'light';
+        } else {
+            $_SESSION['user']['theme'] = $_POST['theme'];
+        }
+
+        if (!isset($_POST['lang'])){
+            $_SESSION['user']['lang'] = 'en';
+        } else {
+            $_SESSION['user']['lang'] = $_POST['lang'];
+        }
+        
+        $_SESSION['settings']['theme'] = $_SESSION['user']['theme'];
+        $_SESSION['settings']['language'] = $_SESSION['user']['lang'];
+        
+
+    } else {
+
+        $userSettings = new UserSettings($db);
+        $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
+        
+    }
+
 }
 
 $theme = $_SESSION['settings']['theme'] ?? 'light';
 $lang = $_SESSION['settings']['language'] ?? 'en';
 
 
-//echo "header.php: theme:" . $theme . "language: ".$lang;
+//echo "header.php: Used ID" . $_SESSION['user']['id'] . " Theme: " . $theme . " Lang: " . $lang;
+
 
 
 //echo "<body class='theme-$theme'>";
@@ -68,6 +104,14 @@ switch ($lang) {
     <link rel="stylesheet" href="<?= APP_URL?>assets/css/style-<?=$theme?>.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.js"></script>
+
+
+    <!-- CSS Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- JS Select2 + jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 </head>
 <body>

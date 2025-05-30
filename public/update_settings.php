@@ -9,30 +9,44 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$userId = $_SESSION['user']['id'] ?? null;
-if (!$userId) {
-    http_response_code(403);
-    exit;
-}
-
-$db = new Database();
-$theme = $_POST['theme'] ?? null;
-$lang = $_POST['lang'] ?? null;
-
-//echo "Tema selectat:".$theme;
-//echo "<br>Limba selectata:".$lang;
+if ($_SESSION['user']['role'] === 'guest') {
+    
+    $_SESSION['settings']['theme'] = $_POST['theme'] ?? null;
+    $_SESSION['settings']['language'] = $_POST['lang'] ?? null;
+    
+    //header("Location:".APP_URL. "public/index.php");
+    //exit;
+    
+} else{
 
 
-$settings = new UserSettings($db);
+        $userId = $_SESSION['user']['id'] ?? null;
+        if (!$userId) {
+            http_response_code(403);
+            exit;
+        }
 
-if ($theme) {
-    $settings->set('theme', $theme, $userId);
-    $_SESSION['settings']['theme'] = $theme;
-}
+        $db = new Database();
+        $theme = $_POST['theme'] ?? null;
+        $lang = $_POST['lang'] ?? null;
 
-if ($lang) {
-    $settings->set('language', $lang, $userId);
-    $_SESSION['settings']['language'] = $lang;
+        //echo "Tema selectat:".$theme;
+        //echo "<br>Limba selectata:".$lang;
+
+
+        $settings = new UserSettings($db);
+
+        if ($theme) {
+            $settings->set('theme', $theme, $userId);
+            $_SESSION['settings']['theme'] = $theme;
+        }
+
+        if ($lang) {
+            $settings->set('language', $lang, $userId);
+            $_SESSION['settings']['language'] = $lang;
+        }
+
+
 }
 
 // După ce am aplicat setările (ex: salvate în DB) ma intorc la pagina de unde am venit

@@ -17,6 +17,9 @@ define(constant_name:'lang_search',value:'Search');
 define(constant_name:'lang_search_placeholder',value:'Search articles...');
 define(constant_name:'lang_search_results',value:'Search Results');
 define(constant_name:'lang_edit_acl',value:'Edit ACL');
+define(constant_name:'lang_no_articles',value:'No articles found');
+define(constant_name:'lang_adv_search',value:'Advanced Search');
+define(constant_name:'lang_filter',value:'Filter');
 
 
 // Define constants for Articles
@@ -52,6 +55,8 @@ define(constant_name:'lang_select_romanian',value:'Romanian');
 define(constant_name:'lang_select_language',value:'Language');
 define(constant_name:'lang_select_theme',value:'Theme');
 define(constant_name:'lang_profile',value:'My Profile');
+define(constant_name:'lang_article_top_view',value:'Top Viewed Articles');
+define(constant_name:'lang_article_top_like',value:'Top Liked Articles');
 
 
 // Define constants for Dashboard (file: dashboard.php)
@@ -91,17 +96,29 @@ define(constant_name:'lang_cat_actions',value:'Actions');
 //define(constant_name:'lang_cat_btn_edit',value:'Edit');
 //define(constant_name:'lang_cat_btn_delete',value:'Delete');
 define(constant_name:'lang_cat_msg_delete',value:'Remove this category?');
+define(constant_name:'lang_cat_icon',value:'Icon');
+define(constant_name:'lang_cat_icon_label',value:'Icon Label');
+define(constant_name:'lang_cat_select',value:'Select Category');
+define(constant_name:'lang_cat_status',value:'Status');
+define(constant_name:'lang_cat_active',value:'Active');
+define(constant_name:'lang_cat_inactive',value:'Inactive');
+define(constant_name:'lang_cat_select_icon',value:'Select Icon');
+
+
+
 
 
 // Define constants for Articles (file: articles.php)
 
-define(constant_name:'lang_art_articles',value:'Articles');
+define(constant_name:'lang_art_articles',value:'Articles Management');
 define(constant_name:'lang_art_title',value:'Title');
 define(constant_name:'lang_art_author',value:'Author');
 define(constant_name:'lang_art_category',value:'Category');
 define(constant_name:'lang_art_status',value:'Status');
 define(constant_name:'lang_art_actions',value:'Actions');
 define(constant_name:'lang_art_msg_disable',value:'Disable this article?');
+define(constant_name:'lang_art_create',value:'Create New Article');
+define(constant_name:'lang_art_publish_at',value:'Publication Date');
 
 
 
@@ -120,6 +137,8 @@ define(constant_name:'lang_com_article',value:'Article');
 define(constant_name:'lang_com_user',value:'User');
 define(constant_name:'lang_com_comm',value:'Comment');
 define(constant_name:'lang_com_data',value:'Date Created');
+define(constant_name:'lang_com_admin_comments',value:'Comments Management');
+
 
 
 

@@ -16,6 +16,11 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
     exit;     
 }
 
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
+}
+
 
 $db = new Database();
 

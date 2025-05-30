@@ -47,6 +47,13 @@ define(constant_name:'lang_select_language',value:'Limba');
 define(constant_name:'lang_select_theme',value:'Tema');
 define(constant_name:'lang_profile',value:'Profilul meu');
 define(constant_name:'lang_edit_acl',value:'Editeaza ACL');
+define(constant_name:'lang_no_articles',value:'Nici un articol nu a fost gasit');
+define(constant_name:'lang_adv_search',value:'Cautare avansata');
+define(constant_name:'lang_filter',value:'Filtru');
+define(constant_name:'lang_article_top_view',value:'Cele mai vizualizate articole');
+define(constant_name:'lang_article_top_like',value:'Cele mai apreciate articole');
+
+
 
 
 // Define constants for Dashboard (file: dashboard.php)
@@ -87,17 +94,27 @@ define(constant_name:'lang_cat_actions',value:'Actiuni');
 //define(constant_name:'lang_cat_btn_edit',value:'Editeaza');
 //define(constant_name:'lang_cat_btn_delete',value:'Sterge');
 define(constant_name:'lang_cat_msg_delete',value:'Stergi aceasta categorie?');
+define(constant_name:'lang_cat_icon',value:'Pictograma');
+define(constant_name:'lang_cat_icon_label',value:'Eticheta Icon');
+define(constant_name:'lang_cat_select',value:'Alege Categoria');
+define(constant_name:'lang_cat_status',value:'Status');
+define(constant_name:'lang_cat_active',value:'Activa');
+define(constant_name:'lang_cat_inactive',value:'Inactiva');
+define(constant_name:'lang_cat_select_icon',value:'Alege Icon');
+
 
 
 // Define constants for Articles (file: articles.php)
 
-define(constant_name:'lang_art_articles',value:'Articole');
+define(constant_name:'lang_art_articles',value:'Administrare Articole');
 define(constant_name:'lang_art_title',value:'Titlu');
 define(constant_name:'lang_art_author',value:'Autor');
 define(constant_name:'lang_art_category',value:'Categorie');
 define(constant_name:'lang_art_status',value:'Stare');
 define(constant_name:'lang_art_actions',value:'Actiuni');
 define(constant_name:'lang_art_msg_disable',value:'Dezactivezi acest articol?');
+define(constant_name:'lang_art_create',value:'Creaza articol nou');
+define(constant_name:'lang_art_publish_at',value:'Data Publicarii');
 
 // Define constants for Comments (file: admin/comments.php)
 
@@ -114,6 +131,7 @@ define(constant_name:'lang_com_article',value:'Articol');
 define(constant_name:'lang_com_user',value:'Utilizator');
 define(constant_name:'lang_com_comm',value:'Commentariu');
 define(constant_name:'lang_com_data',value:'Data creare');
+define(constant_name:'lang_com_admin_comments',value:'Administrare Comentarii');
 
 // Define constants for Buttons in tables
 

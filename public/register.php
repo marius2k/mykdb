@@ -6,28 +6,46 @@ require_once '../config/bootstrap.php';
 
 $ops = ['register'];
 
+
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
     
+
+
     $_SESSION['flash'] = "⚠️ Access Denied";
     $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+    $id = $_SESSION['user']['id'];
 
     echo "<script>
-            alert('⚠️ Access Denied');
+            alert('⚠️ Access Denied User ID: $id');
             window.location.href = '$referer';
         </script>";
     exit;     
 }
 
+
+
 $errors = [];
 
 $db = new Database();
 
+
+$role = $db->fetchSingle("SELECT id FROM roles WHERE name = 'moderator'");
+
+//echo "Role ID for moderator: " . $role['id'] . "<br>";
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // get the role id for moderator - default role used at registration
+    $role = $db->fetchSingle("SELECT id FROM roles WHERE name = 'moderator'");
+
+
+
     $username = trim($_POST['username']);
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $password = $_POST['password'];
-    $role = $_POST['role'];
+    //$role = $_POST['role'];
     $status = 'pending';
     //$confirm = $_POST['confirm'];
 
@@ -50,7 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->fetch()) {
             $errors[] = 'Utilizatorul există deja.';
         } else {
-            //$status = "pending";
+            
+            // by default, the user is registered as "moderator" with status "pending"
+
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $db->prepare("INSERT INTO users (username, first_name, last_name, password, status, role_id) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([$username, $first_name, $last_name, $hash, $status, $role]);
@@ -108,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" name="confirm_password" id="confirm_password" required>
             <small id="password-match-msg" style="color: red; display: none;"><?=lang_reg_pass_nomatch?></small>
         </div>
-        <input type="hidden" name="role" value="3"> <!-- by defaul user is "moderator", user_id=3 -->
+        <input type="hidden" name="role" value="moderator"> <!-- by defaul user is "moderator", user_id=3 -->
         <button type="submit" class="btn-primary full-width" ><?=lang_reg_btn_create?></button>
     </form>
 </div>

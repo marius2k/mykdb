@@ -2,6 +2,11 @@
 require_once '../../config/bootstrap.php';
 require_admin();
 
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
+}
+
 $db = new Database();
 
 

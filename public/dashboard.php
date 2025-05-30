@@ -22,12 +22,19 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
 $errors = [];
 $userId = $_SESSION['user']['id'];
 $isAdmin = ($_SESSION['user']['role'] === 'admin');
-
+//$currentPage= isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 
 
 $perPage = 10; // randuri pe pagină
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $perPage;
+
+$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+/*
+if ($currentPage > $totalPages) {
+    $currentPage = $totalPages;
+}
+*/
 
 $db = new Database();
 
@@ -121,7 +128,7 @@ if (!$isAdmin) {
         
         // Add the username to the first log entry
         if ($user) {
-            echo " User selectat: " . $user['username'];
+            //echo " User selectat: " . $user['username'];
             foreach ($logs as $key => $log) {
                 $log[0]['username'] = $user['username'];
             }    
@@ -227,24 +234,28 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="6">
-                            <div class="pagination-footer">
-                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                    <a href="?page=<?= $i ?>&filterUserId=<?= $filterUserId ?>" class="<?= $i === $page ? 'active' : '' ?>">
-                                        <?= $i ?>
-                                    </a>
-                                <?php endfor; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    </tfoot>
-                </table>
+                   <?php if ($totalPages > 1): ?>
+                        <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                <div id="pagination-results">
+                                        <?php 
+                                            echo renderPagination($currentPage, $totalPages,['filterUserId' => $filterUserId]);
+                                                                
+                                        ?>
+                                </div>      
+                            </td>
+                        </tr>
+                        </tfoot>
+                    <?php endif; ?>
 
+                </table>
+                   <br><br>
+
+                   
                 <form method="post" action="export_activity_log.php">
                     <input type="hidden" name="user_id" value="<?= htmlspecialchars($filterUserId) ?>">
-                    <button type="submit" class="btn btn-success">Export CSV</button>
+                    <button type="submit" class="btn-sm btn-disabled">Export CSV</button>
                 </form>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

@@ -8,8 +8,12 @@ function is_logged_in() {
     return isset($_SESSION['user']);
 }
 
+function is_guest(): bool {
+    return isset($_SESSION['user']) && ($_SESSION['user']['role'] === 'guest');
+}
+
 function is_admin() {
-    return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
+    return isset($_SESSION['user']) && ($_SESSION['user']['role'] === 'admin');
 }
 
 function require_login() {
@@ -26,7 +30,7 @@ function require_admin() {
     }
 }
 
-function authUser($usr, $pass) {
+function auth_user($usr, $pass) {
     
     $db = new Database();
 

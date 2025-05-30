@@ -19,6 +19,12 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
     exit;     
 }
 
+
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
+}
+
 $errors = [];
 $user_id = $_SESSION['user']['id'];
 
@@ -89,7 +95,12 @@ $categories = $db->query("SELECT * FROM categories")->fetchAll();
                         <?php endforeach; ?>
                     </select>
                 </div>
+                <div>
+                    <label for="publish_at"><?=lang_art_publish_at?></label>
+                    <input type="datetime-local" name="publish_at" id="publish_at"
+                        class="form-control" value="<?= isset($article['publish_at']) ? date('Y-m-d\TH:i', strtotime($article['publish_at'])) : '' ?>">
 
+                </div>
                 <button type="submit" class="btn-primary">Trimite spre Aprobare</button>
             </form>
     </div>          

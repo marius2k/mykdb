@@ -1,10 +1,18 @@
 <?php
 require_once '../config/bootstrap.php';
 
+header('Content-Type: application/json');
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
+
 if (!is_logged_in()) {
   echo "<script>alert('Autentificare necesară.'); history.back();</script>";
   exit;
 }
+
 
 $ops=['add_comment'];
 
@@ -20,7 +28,12 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
     exit;     
 }
 
-
+/*
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
+}
+*/
 
 
 $articleId = (int)$_POST['article_id'];
@@ -31,6 +44,17 @@ if ($content === '') {
   echo "<script>alert('Comentariul nu poate fi gol.'); history.back();</script>";
   exit;
 }
+
+
+//debuging AJAX request
+/*
+file_put_contents('debug_comments.log', json_encode([
+  'POST' => $_POST,
+  'RAW' => file_get_contents('php://input'),
+  'SESSION' => $_SESSION ?? 'no session'
+]) . PHP_EOL, FILE_APPEND);
+*/
+
 
 $db = new Database();
 
