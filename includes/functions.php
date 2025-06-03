@@ -23,6 +23,22 @@ function shortenText($text, $max = 200) {
         : $text;
 }
 
+function truncateText($text, $maxChars, $ellipsis = '...') {
+    if (mb_strlen($text) <= $maxChars) {
+        return $text;
+    }
+
+    // Taie textul la ultimul spațiu dinainte de $maxChars
+    $truncated = mb_substr($text, 0, $maxChars);
+    $lastSpace = mb_strrpos($truncated, ' ');
+
+    if ($lastSpace !== false) {
+        $truncated = mb_substr($truncated, 0, $lastSpace);
+    }
+
+    return rtrim($truncated) . $ellipsis;
+}
+
 /**
  * Get all categories as array (id => name)
  */
@@ -509,6 +525,14 @@ function getCommentCount(int $articleId): int {
 
     return (int) $result['COUNT(*)'];
 }
+function getViewsCount(int $articleId): int {
+    global $db;
+
+    $sql = "SELECT views FROM article WHERE article_id = ? AND status = 'approved'";
+    $result = $db->fetchSingle($sql, [$articleId]);
+
+    return (int) $result['views'];
+}
 
 
 function getArticleLikesDislikes(int $aid): array {
@@ -628,7 +652,7 @@ function renderPagination(int $currentPage, int $totalPages, array $params = [])
 
 function getTopViewedArticles(int $limit = 5): string {
     $db = new Database();
-    $sql = "SELECT a.id, a.title, c.icon
+    $sql = "SELECT a.id, a.title, a.views, c.icon
             FROM articles a
             JOIN categories c ON a.category_id = c.id
             WHERE a.status = 'approved'
@@ -646,10 +670,13 @@ function getTopViewedArticles(int $limit = 5): string {
 
     $html = '<ul class="top-articles viewed">';
     foreach ($results as $row) {
+        
         $iconPath = APP_URL.'assets/icons/categories/' . $row['icon'];
-        $html .= '<li>
-                    <img src="' . $iconPath . '" class="li-icon" alt="">
-                    <a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($row['title']) . '</a>
+        $titleShort= truncateText($row['title'], 30, '...');
+        $html .= '<li class="grid-li">
+                    <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
+                    <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
+                    <span class="span-1">('.$row['views'].')</span>
                   </li>';
     }
     $html .= '</ul>';
@@ -682,9 +709,11 @@ function getTopLikedArticles(int $limit = 5): string {
     $html = '<ul class="top-articles liked">';
     foreach ($results as $row) {
         $iconPath = APP_URL.'assets/icons/categories/' . $row['icon'];
-        $html .= '<li>
-                    <img src="' . $iconPath . '" class="li-icon" alt="">
-                    <a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($row['title']) . '</a>
+        $titleShort = truncateText($row['title'], 30, '...');
+        $html .= '<li class="grid-li">
+                    <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
+                    <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
+                    <span class="span-1">('.$row['likes'].')</span>
                   </li>';
     }
     $html .= '</ul>';

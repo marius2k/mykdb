@@ -36,6 +36,20 @@ $db = new Database();
 switch ($_POST['form_id'] ?? null) {
 
     case 'add_article':
+        if (!isset($_POST['action']) || !in_array($_POST['action'], ['draft', 'submit'])) {
+            die('⚠️ Invalid action.');
+        }
+
+        if ($_POST['action'] === 'draft') {
+            // Handle saving as draft
+            $status = 'draft';
+
+        } elseif ($_POST['action'] === 'submit') {
+            // Handle submitting for approval
+            $status = 'pending';
+        }
+
+
         $title = trim($_POST['title']);
         $content = trim($_POST['content']);
         $category_id = $_POST['category_id'];
@@ -49,8 +63,8 @@ switch ($_POST['form_id'] ?? null) {
             $clean_content = clean_html($content);
             $clean_content = removeImageCaptionText($clean_content);
 
-            $stmt = $db->prepare("INSERT INTO articles (title, content, category_id, user_id, publish_at) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$title, $clean_content, $category_id, $user_id, $publish_at]);
+            $stmt = $db->prepare("INSERT INTO articles (title, content, category_id, user_id, status, publish_at) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$title, $clean_content, $category_id, $user_id, $status, $publish_at]);
             // Log the creation
             logActivity($user_id, 'create_article', 'User '. $_SESSION['user']['username'].' created the article:'. $title);
             header('Location: articles.php');
@@ -212,7 +226,11 @@ $articles = $db->query("
                                 </div>
                           
                             <div>        
-                                        <button type="submit" class="btn-sm btn-outline-grey"><?=lang_create_article_submit?></button>
+
+
+                                        <button type="submit" name="action" value="draft" class="btn btn-outline-grey"><?=lang_create_article_draft?></button>
+                                        <button type="submit" name="action" value="submit" class="btn btn-outline-grey"><?=lang_create_article_submit?></button>    
+                                        
                                         <input type="hidden" name="form_id" value="add_article">
                             </div>
                         </div>

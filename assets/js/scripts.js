@@ -216,3 +216,69 @@ function formatWithIcon(option) {
   const img = $(option.element).data('img');
   return $(`<span><img src="${img}" width="20" style="margin-right:8px;" />${option.text}</span>`);
 }
+
+
+function voteComment(commentId, type) {
+  fetch('vote_comment.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `comment_id=${commentId}&type=${type}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      document.getElementById('like-count-' + commentId).textContent = data.likes;
+      document.getElementById('dislike-count-' + commentId).textContent = data.dislikes;
+
+      // aplică stilul
+      document.getElementById('like-icon-' + commentId).classList.toggle('voted', type === 'like');
+      document.getElementById('dislike-icon-' + commentId).classList.toggle('voted', type === 'dislike');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Eroare la vot!');
+  });
+}
+// used to disable a comment in view_article.php
+
+function disableComment(commentId) {
+  if (!confirm('Sigur vrei să dezactivezi comentariul?')) return;
+
+  fetch('manage_comment.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=disable&comment_id=${commentId}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      const commBox = document.getElementById('comment-' + commentId);
+      if (commBox) commBox.remove(); // sau ascunde
+    } else {
+      alert(data.message || 'Eroare la dezactivare.');
+    }
+  });
+}
+
+// used to delete a comment in view_article.php
+
+function deleteComment(commentId) {
+  if (!confirm('Sigur vrei să ștergi comentariul?')) return;
+
+  fetch('manage_comment.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=delete&comment_id=${commentId}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      const commBox = document.getElementById('comment-' + commentId);
+      if (commBox) commBox.remove();
+    } else {
+      alert(data.message || 'Eroare la ștergere.');
+    }
+  });
+}
+

@@ -33,6 +33,23 @@ $db = new Database();
 
 // Handle form submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if (!isset($_POST['action']) || !in_array($_POST['action'], ['submit', 'draft'])) {
+        $errors[] = 'Acțiune necunoscută.';
+    }
+    
+    if ($_POST['action'] === 'submit') {
+       
+        $status = 'pending'; // Set status to pending for approval
+
+    }
+    if ($_POST['action'] === 'draft') {
+        
+        $status = 'draft'; // Set status to draft
+    }
+
+
+
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
     $category_id = $_POST['category_id'];
@@ -43,9 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $clean_content = clean_html($content);
         $clean_content = removeImageCaptionText($clean_content);
+        $updated_at = date('Y-m-d H:i:s');
+        //$status = 'pending'; // Set status to pending for approval
 
-        $stmt = $db->prepare("INSERT INTO articles (title, content, category_id, user_id) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$title, $clean_content, $category_id, $user_id]);
+
+        $stmt = $db->prepare("INSERT INTO articles (title, content, category_id, user_id, status, updated_at) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $clean_content, $category_id, $user_id, $status, $updated_at]);
         // Log the creation
         logActivity($user_id, 'create_article', 'User '. $_SESSION['user']['username'].' created the article:'. $_POST['title']);
         header('Location: dashboard.php');
@@ -101,7 +121,9 @@ $categories = $db->query("SELECT * FROM categories")->fetchAll();
                         class="form-control" value="<?= isset($article['publish_at']) ? date('Y-m-d\TH:i', strtotime($article['publish_at'])) : '' ?>">
 
                 </div>
-                <button type="submit" class="btn-primary">Trimite spre Aprobare</button>
+
+                <button type="submit" name="action" value="draft" class="btn btn-outline-secondary">💾 Salvează ca Draft</button>
+                <button type="submit" name="action" value="submit" class="btn btn-primary">📤 Trimite spre Aprobare</button>
             </form>
     </div>          
 <script>
