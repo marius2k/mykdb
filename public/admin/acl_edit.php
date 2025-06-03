@@ -53,6 +53,29 @@ $roleOps = $db->fetchAll("SELECT operation_id FROM role_permissions WHERE role_i
 $currentOps = array_column($roleOps, 'operation_id');
 
 
+$groupedOps = [];
+
+foreach ($allOps as $op) {
+    // Extragem grupul (tot ce vine după ultimul "_")
+    $parts = explode('_', $op['name']);
+    $group = end($parts); // ex: user, article, category
+
+    // Sau dacă vrei prefix (ex: edit_user → group: user)
+    $group = $parts[count($parts) - 1];
+
+    // Alternativ: extrage prefixul (prima parte) → $parts[0]
+
+    $groupedOps[$group][] = $op;
+}
+
+
+
+
+
+
+
+
+
 //echo "<br> acl_edit.php: Current User Role: ".$currentUserRole;
 
 // Update
@@ -99,15 +122,26 @@ $roles = $db->fetchAll("SELECT id, name, label FROM roles");
   <div class="permissions">
     <form method="post">
       <div class="perm-columns">
-        <?php foreach ($allOps as $op): 
-          $checked = in_array($op['id'], $currentOps) ? 'checked' : '';
-          $disabled = (!$isSuperadmin && in_array($op['name'], $lockedOps)) ? 'disabled' : '';
-        ?>
-          <label>
-            <input type="checkbox" name="operations[]" value="<?= $op['id'] ?>" <?= $checked ?> <?= $disabled ?>>
-            <b><?= htmlspecialchars($op['name']) ?></b> : <?= lang($op['name']) ?? htmlspecialchars($op['description'])?>
-          </label>
-        <?php endforeach; ?>
+        
+              <?php foreach ($groupedOps as $group => $ops): ?>
+                  <div class="custom-box" >
+                          <div class="corner-label">
+                            <?= ucfirst($group) ?>
+                          </div>
+                          <div class="box-content">
+                              <?php foreach ($ops as $op): 
+                                  $checked = in_array($op['id'], $currentOps) ? 'checked' : '';
+                                  $disabled = (!$isSuperadmin && in_array($op['name'], $lockedOps)) ? 'disabled' : '';
+                              ?>
+                                <label style="display:block; margin-left: 10px;">
+                                  <input type="checkbox" name="operations[]" value="<?= $op['id'] ?>" <?= $checked ?> <?= $disabled ?>>
+                                  <b><?= htmlspecialchars($op['name']) ?></b> : <?= lang($op['name']) ?? htmlspecialchars($op['description'])?>
+                                </label>
+                              <?php endforeach; ?>
+                          </div>
+                  </div>
+              <?php endforeach; ?>
+            
       </div>
       <div style="float: right;">    
         <br><br>
@@ -120,3 +154,78 @@ $roles = $db->fetchAll("SELECT id, name, label FROM roles");
 
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>
+<script>
+ function initializeCustomBox(boxElement, pageBgColor) {
+    const cornerLabel = boxElement.querySelector('.corner-label');
+
+    if (!cornerLabel) {
+      console.warn('Element .corner-label not found inside custom-box:', boxElement);
+      return;
+    }
+
+    const actualPageBackgroundColor = pageBgColor || window.getComputedStyle(document.body).backgroundColor;
+    boxElement.style.setProperty('--page-background-color', actualPageBackgroundColor);
+
+    function updateBorderCutout() {
+        const originalDisplay = cornerLabel.style.display;
+        cornerLabel.style.display = 'inline-block';
+        const labelWidth = cornerLabel.offsetWidth; 
+        cornerLabel.style.display = originalDisplay;
+
+        const labelLeftPosition = parseInt(window.getComputedStyle(cornerLabel).left); 
+        const extraPaddingForCutout = 2;
+
+        const cutoutWidth = labelWidth + (2 * extraPaddingForCutout);
+        const cutoutLeft = labelLeftPosition - extraPaddingForCutout;
+
+        boxElement.style.setProperty('--cutout-width', `${cutoutWidth}px`);
+        boxElement.style.setProperty('--cutout-left', `${cutoutLeft}px`);
+
+        const labelHeight = cornerLabel.offsetHeight;
+        const cutoutCenterY = -0.5;
+        cornerLabel.style.top = `${cutoutCenterY - (labelHeight / 2)}px`;
+    }
+
+    updateBorderCutout();
+    // Nu mai adăugăm listener de resize AICI pentru fiecare box,
+    // ci vom reface Masonry layout și vom apela updateBorderCutout pentru toate boxurile după resize.
+  }
+
+
+ 
+  document.addEventListener('DOMContentLoaded', () => {
+    const permColumns = document.querySelector('.permissions .perm-columns');
+    const allCustomBoxes = document.querySelectorAll('.custom-box');
+
+    if (permColumns && allCustomBoxes.length > 0) {
+        // Inițializăm Masonry
+        const msnry = new Masonry(permColumns, {
+            // Options
+            itemSelector: '.custom-box',
+            columnWidth: '.custom-box', // Utilizează lățimea primului item ca lățime de coloană
+            gutter: 20, // Spațiul între coloane și rânduri (20px)
+            percentPosition: true // Asigură că lățimile în % sunt respectate
+            // isFitWidth: true, // Poate fi util dacă vrei să centrezi containerul
+        });
+
+        // Inițializăm fiecare custom-box cu funcția ta
+        allCustomBoxes.forEach(box => {
+            initializeCustomBox(box);
+        });
+
+        // Refacem layout-ul Masonry și actualizăm "tăietura" bordurii la redimensionare
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                msnry.layout(); // Reface layout-ul Masonry
+                allCustomBoxes.forEach(box => {
+                    initializeCustomBox(box); // Re-actualizează tăietura bordurii
+                });
+            }, 100); // Debounce pentru performanță
+        });
+    }
+  });
+
+
+  </script>

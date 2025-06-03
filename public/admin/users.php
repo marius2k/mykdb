@@ -5,6 +5,7 @@ require_once '../../config/bootstrap.php';
 //require_admin();
 
 
+
 $ops = ['edit_user','disable_user','enable_user','delete_user','modify_user','approve_user'];
 
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
@@ -35,16 +36,11 @@ error_reporting(E_ALL);
 
 
 $db = new Database();
-//$pdo = $db->getDatabaseConnection();
 
-/*
-if (isset($_GET['delete'])) {
-    $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
-    $stmt->execute([$_GET['delete']]);
-    header('Location: users.php');
-    exit;
-}
-*/
+
+// Fetch all roles for dropdown
+$roles = $db->fetchAll("SELECT id, label FROM roles ORDER BY label");
+$rolesJson = json_encode($roles);
 
 
 if (isset($_GET['disable']) && is_numeric($_GET['disable'])) {
@@ -63,11 +59,7 @@ if (isset($_GET['disable']) && is_numeric($_GET['disable'])) {
 }
 
 
-$users = $db->query("
-        SELECT u.*, r.name AS role_name, r.label AS role_label
-        FROM users u
-        JOIN roles r ON u.role_id = r.id
-        ")->fetchAll();
+
 
 
 
@@ -81,7 +73,28 @@ $totalStmt = $db->query("SELECT COUNT(*) FROM users");
 $totalUsers = $totalStmt->fetchColumn();
 $totalPages = ceil($totalUsers / $perPage);
 
+
+
+
+
+$stmt = $db->prepare("
+        SELECT u.*, r.name AS role_name, r.label AS role_label
+        FROM users u
+        JOIN roles r ON u.role_id = r.id
+        LIMIT :limit OFFSET :offset
+        ");
+
+
+$stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+
+$users = $stmt->fetchAll();
+
+
 ?>
+
+
 
 <?php include APP_ROOT . '/includes/header.php'; ?>
 
@@ -100,10 +113,10 @@ $totalPages = ceil($totalUsers / $perPage);
         </thead>
         <tbody>
             <?php foreach ($users as $user): ?>
-            <tr>
+            <tr id="user-row-<?= $user['id'] ?>">
                 <td><?= $user['id'] ?></td>
                 <td><?= escape($user['username']) ?></td>
-                <td><?= escape($user['role_label']) ?></td>
+                <td id="role-cell-<?= $user['id'] ?>"><?= escape($user['role_label']) ?></td>
                 <td><?= escape($user['status']) ?></td>
                 <td><?= escape($user['first_name'] . ' ' . $user['last_name']) ?></td>
                 <td align="center">
@@ -113,14 +126,26 @@ $totalPages = ceil($totalUsers / $perPage);
                                 </div>
                         <?php else: ?>
                                 <?php if ($user['status'] === 'disabled'): ?>
-                                    <?php if ($user['role_name'] === 'admin'): ?>
-                                        <div>
+                                    <?php if (($user['role_name'] === 'admin') || ($user['role_name'] === 'superadmin')): ?>
+                                        <span>
                                         <a href="?disable=<?= $user['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-enable.svg" class="op-icon" title="<?=lang_btn_enable?>"></a>
-                                        </div>
+                                        </span>
+                                        <span>
+                                            <!-- Buton schimbare rol -->
+                                            <button class="op-icon" onclick="showRoleDropdownInline(<?= $user['id'] ?>, <?= $user['role_id'] ?>)">
+                                                <img src="<?= APP_URL ?>assets/icons/icon-user-change-role.svg" alt="Change Role" class="op-icon" title="Change Role">
+                                            </button>
+                                        </span>
                                     <?php else: ?>
-                                        <div>
+                                        <span>
                                         <a href="restore_user.php?id=<?= $user['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-enable.svg" class="op-icon" title="<?=lang_btn_enable?>"></a>
-                                        </div>
+                                        </span>
+                                        <span>
+                                            <!-- Buton schimbare rol -->
+                                            <button class="op-icon" onclick="showRoleDropdownInline(<?= $user['id'] ?>, <?= $user['role_id'] ?>)">
+                                                <img src="<?= APP_URL ?>assets/icons/icon-user-change-role.svg" alt="Change Role" class="op-icon" title="Change Role">
+                                            </button>
+                                        </span>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <?php if ($user['role_name'] === 'admin'): ?>
@@ -163,3 +188,66 @@ $totalPages = ceil($totalUsers / $perPage);
 
 
 <?php include APP_ROOT . '/includes/footer.php'; ?>
+
+<script>
+  const allRoles = <?= $rolesJson ?>;
+
+
+
+  function showRoleDropdownInline(userId, currentRoleId) {
+        const cell = document.getElementById('role-cell-' + userId);
+        
+        // Construim dropdown-ul inline
+        const select = document.createElement('select');
+        select.onchange = () => changeUserRoleInline(select, userId);
+
+        allRoles.forEach(role => {
+            const option = document.createElement('option');
+            option.value = role.id;
+            option.textContent = role.label;
+            if (parseInt(role.id) === parseInt(currentRoleId)) {
+            option.selected = true;
+            }
+            select.appendChild(option);
+        });
+
+        // Injectează în celulă
+        cell.innerHTML = '';
+        cell.appendChild(select);
+}
+
+
+
+function changeUserRoleInline(selectEl, userId) {
+  const roleId = selectEl.value;
+
+  fetch('../change_role.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `user_id=${encodeURIComponent(userId)}&role_id=${encodeURIComponent(roleId)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log('[ROLE CHANGE RESPONSE]', data); // 🔍 debug
+
+    if (data.status === 'ok') {
+      const cell = document.getElementById('role-cell-' + userId);
+      const roleLabel = data.new_role_label?.label || data.new_role_label;
+      cell.innerHTML = `<span class="user-role-label">${roleLabel}</span>`;
+    } else {
+      alert(data.message || 'Eroare la salvarea rolului.');
+    }
+  })
+  .catch(err => {
+    console.error('AJAX role change error', err);
+    alert('Eroare la schimbarea rolului (AJAX)');
+  });
+}
+
+
+
+
+
+
+</script>
+

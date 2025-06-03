@@ -282,34 +282,40 @@ if (isset($_SESSION['user']['id'])) {
             <!-- 🔍 SEARCH FORM -->
             <div class="search-form">
                     <div class="search-form-header">
-                    <img src="<?=APP_URL?>assets/icons/icon-search.svg" width="20" height="auto">&nbsp&nbsp; <?= lang_search ?>
+                        <div>
+                          <img src="<?=APP_URL?>assets/icons/icon-search.svg" width="20" height="auto">&nbsp&nbsp; <?= lang_search ?>
+                        </div>
+                        <div class="search-form-header-right">  
+                            <button id="toggleAdvancedBtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                                <img id="icon-search-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
+                                <img id="icon-search-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
+                            </button>
+                        </div>
                     </div>
-                    <div style="display: flex; gap: 6px; align-items: center; padding: 20px;">
-                        <input type="text" id="liveSearch" placeholder="<?= lang_search_placeholder ?>" autocomplete="off" style="flex: 1;">
-                        <button id="toggleAdvancedBtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
-                            <img id="icon-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
-                            <img id="icon-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
-                        </button>
-                    </div>
+                    
 
                     <!-- 🔧 ADVANCED SEARCH -->
-                    <div id="advancedSearchForm" style="display: none; padding: 20px; background-color: white;">
-                        <form id="advancedSearchFields" onsubmit="return triggerAdvancedSearch();">
-                        <label>Autor:</label>
-                        <input type="text" id="searchAuthor" name="author" style="width: 100%;">
+                   <div id="advancedSearchForm" style="display: none; padding: 20px; background-color: white;">
+                          <div style="display: grid; grid-template-columns: 100px 1fr; gap: 12px; align-items: center;">
+                            <!-- Rând 1: Câmpul principal -->
+                            <label for="liveSearch" style="text-align: right;"><?= lang_text?></label>
+                            <input type="text" id="liveSearch" placeholder="<?= lang_search_placeholder ?>" autocomplete="off">
 
-                        <label style="margin-top: 6px;">Categorie:</label>
-                        <select id="searchCategory" name="category" class="select2-category" style="width: 100%;">
-                            <option value=""></option>
-                            <?php foreach ($categories as $cat): ?>
-                            <option value="<?= htmlspecialchars($cat['name']) ?>" data-img="/mykdb/assets/icons/categories/<?= $cat['icon'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                            <!-- Rând 2: Autor -->
+                            <label for="searchAuthor" style="text-align: right;"><?= lang_art_author?>:</label>
+                            <input type="text" id="searchAuthor" name="author">
 
-                        <div style="margin-top: 10px; padding: 20px;">
-                            <button type="submit" class="btn-outline-grey"><?= lang_search ?></button>
-                        </div>
-                        </form>
+                            <!-- Rând 3: Categorie -->
+                            <label for="searchCategory" style="text-align: right;"><?= lang_art_category?>:</label>
+                            <select id="searchCategory" name="category" class="select2-category" style="width: 100%;">
+                              <option value=""></option>
+                              <?php foreach ($categories as $cat): ?>
+                                <option value="<?= htmlspecialchars($cat['name']) ?>" data-img="<?= APP_URL ?>assets/icons/categories/<?= $cat['icon'] ?>">
+                                  <?= htmlspecialchars($cat['name']) ?>
+                                </option>
+                              <?php endforeach; ?>
+                            </select>
+                            </div>
                     </div>
             </div>
 
@@ -317,31 +323,49 @@ if (isset($_SESSION['user']['id'])) {
             <!-- 🧮 FILTER FORM -->
             <div class="search-form">
                 <div class="search-form-header">
+                  <div>
                     <img src="<?=APP_URL?>assets/icons/icon-filter.svg" width="25" height="auto">&nbsp&nbsp; <?=lang_filter?>
+                  </div>
+                  <div class="search-form-header-right">
+                        <button id="toggleFilterBtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                              <img id="icon-filter-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
+                              <img id="icon-filter-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
+                        </button>
+                  </div>
                 </div>
                 <!-- Category filter -->
-                <div style="display: flex; gap: 6px; align-items: center; padding: 20px; width: 100%;">
+                  <div id="advancedFilterForm" style="display: none; padding: 20px; background-color: white;">
                    
-                    <form id="filterOnCategory"  width="100%">
+                    <form id="filterOnCategory" width="100%">
+                        <label for="filterCategory" style="text-align: right;"><?= lang_art_category?>:</label>
                         <select id="filterCategory" name="fcategory" class="select2-category" style="width: 100%">
                             <option value=""></option>
                             <?php foreach ($categories as $cat): ?>
-                                <option value="<?= $cat['id'] ?>" data-img="/mykdb/assets/icons/categories/<?= $cat['icon'] ?>" <?= (isset($_GET['fcategory']) && $_GET['fcategory'] == $cat['id']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($cat['name']) ?>
-                                </option>
+                                <option value="<?= $cat['id'] ?>" data-img="<?= APP_URL ?>assets/icons/categories/<?= $cat['icon'] ?>" <?= (isset($_GET['fcategory']) && $_GET['fcategory'] == $cat['id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars(($cat['name'])) ?>
+                                </option> 
                             <?php endforeach; ?>
                         </select>
                     </form>
-                </div>
+                  </div>
             </div>
             
-            <!-- 🧮 Most viewed articles  -->
+            <!-- 🧮 Most viewed articles (MVA)  -->
             <div class="search-form">
                 <div class="search-form-header">
+                  <div>
                     <img src="<?=APP_URL?>assets/icons/icon-top-view.svg" width="25" height="auto">&nbsp&nbsp; <?=lang_article_top_view?>
+                  </div>
+                  <div class="search-form-header-right">
+                        <button id="toggleMVABtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                              <img id="icon-mva-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
+                              <img id="icon-mva-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
+                        </button>
+
+                  </div>
                 </div>
                 <!-- most viewed articles list -->
-                <div style="display: flex; gap: 6px; align-items: center; padding: 20px; width: 100%;">
+                <div id="advancedMVAForm" style="padding: 20px; background-color: white;">
                    
                     <?php echo getTopViewedArticles(5); ?>
                     
@@ -350,14 +374,23 @@ if (isset($_SESSION['user']['id'])) {
              <!-- 🧮 Top liked articles  -->
             <div class="search-form">
                 <div class="search-form-header">
-                    <img src="<?=APP_URL?>assets/icons/icon-top-like.svg" width="25" height="auto">&nbsp&nbsp; <?=lang_article_top_like?>
+                    <div >
+                        <img src="<?=APP_URL?>assets/icons/icon-top-like.svg" width="25" height="auto">&nbsp&nbsp; <?=lang_article_top_like?>
+                    </div>
+                    <div class="search-form-header-right">
+                          <button id="toggleMLABtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                                <img id="icon-mla-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
+                                <img id="icon-mla-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
+                          </button>
+
+                    </div>
                 </div>
-                <!-- most viewed articles list -->
-                <div style="display: flex; gap: 6px; align-items: center; padding: 20px; width: 100%;">
+                <!-- most liked articles list -->
+              <div id="advancedMLAForm" style="padding: 20px; background-color: white;">
                    
                     <?php echo getTopLikedArticles(5); ?>
                     
-                </div>
+              </div>
             </div>
     </div>
 </div>
@@ -366,36 +399,98 @@ if (isset($_SESSION['user']['id'])) {
 
 <script>
 
+
+        
+
+
 // Initializare Select2 pentru selectoare
 
+
+
 $(document).ready(function () {
-  function formatWithIcon(option) {
-    if (!option.id) return option.text;
+        
+      $('#searchCategory').select2(); // init dacă nu e deja
 
-    const img = $(option.element).data('img');
-    return $(
-      `<span><img src="${img}" class="select2-option-img" width="20" style="margin-right:8px;" />${option.text}</span>`
-    );
-  }
+        
+        
+        function truncateText(text, maxLength = 20) {
+          if (typeof text !== 'string') return '';
+          const trimmed = text.trim();
+          if (trimmed.length === 0) return '';
+          return trimmed.length > maxLength ? trimmed.slice(0, maxLength - 1) + '…' : trimmed;
+        }
 
 
-  // Search by CATEGORY select
-  $('#searchCategory').select2({
-    placeholder: "<?=lang_cat_select?>",
-    templateResult: formatWithIcon,
-    templateSelection: formatWithIcon,
-    allowClear: true
-  });
+        function formatWithIcon(state) {
+          if (!state.id) return '';
 
-  // Filter by CATEGORY select
-  $('#filterCategory').select2({
-    placeholder: "<?=lang_cat_select?>",
-    width: '250px',
-    templateResult: formatWithIcon,
-    templateSelection: formatWithIcon,
-    allowClear: true
-  });
+          const element = state.element;
+          const rawText = (typeof state.text === 'string' && state.text.trim())
+            ? state.text
+            : (element && element.textContent.trim()) || '';
+
+          const label = truncateText(rawText);
+          //const label = rawText;
+          const img = element?.dataset?.img;
+
+          const container = document.createElement('span');
+          container.style.display = 'flex';
+          container.style.alignItems = 'center';
+          container.title = rawText;
+
+          if (img) {
+            const image = document.createElement('img');
+            image.src = img;
+            image.style.width = '20px';
+            image.style.height = '20px';
+            image.style.marginRight = '8px';
+            container.appendChild(image);
+          }
+
+          const textNode = document.createTextNode(label);
+          container.appendChild(textNode);
+
+          return container;
+        }
+
+
+
+        function formatWithIcon2(option) {
+          if (!option.id) return option.text;
+
+          const img = $(option.element).data('img');
+          return $(
+            `<span><img src="${img}" class="select2-option-img" width="20" style="margin-right:8px;" />${option.text}</span>`
+          );
+        }
+
+        
+        // Search by CATEGORY select
+        $('#searchCategory').select2({
+          placeholder: "<?=lang_cat_select?>",
+          allowClear: true,
+          templateResult: formatWithIcon,
+          templateSelection: formatWithIcon          
+        });
+
+        $('#searchCategory').on('change', triggerAdvancedSearch);
+
+        // Filter by CATEGORY select
+        $('#filterCategory').select2({
+          placeholder: "<?=lang_cat_select?>",
+          width: '250px',
+          allowClear: true,
+          templateResult: formatWithIcon,
+          templateSelection: formatWithIcon
+        });
+
+
 });
+
+
+
+// 🔧 Funcția care generează icon + label
+
 
 /*
 $('#filterCategory').on('change', function () {
@@ -411,16 +506,29 @@ $('#filterCategory').on('change', function () {
 */
 
 
-
-
 const input = document.getElementById('liveSearch');
 const results = document.getElementById('searchResults');
 const defaultContent = document.getElementById('defaultContent');
-const advForm = document.getElementById('advancedSearchForm');
-const advToggle = document.getElementById('toggleAdvancedBtn');
-const iconOpen = document.getElementById('icon-open');
-const iconClose = document.getElementById('icon-close');
 
+const advFormSearch = document.getElementById('advancedSearchForm');
+const advToggleSearch = document.getElementById('toggleAdvancedBtn');
+const iconOpenSearch = document.getElementById('icon-search-open');
+const iconCloseSearch = document.getElementById('icon-search-close');
+
+const advFormFilter = document.getElementById('advancedFilterForm');
+const advToggleFilter = document.getElementById('toggleFilterBtn');
+const iconOpenFilter = document.getElementById('icon-filter-open');
+const iconCloseFilter = document.getElementById('icon-filter-close');
+
+const advFormMVA = document.getElementById('advancedMVAForm');
+const advToggleMVA = document.getElementById('toggleMVABtn');
+const iconOpenMVA = document.getElementById('icon-mva-open');
+const iconCloseMVA = document.getElementById('icon-mva-close');
+
+const advFormMLA = document.getElementById('advancedMLAForm');
+const advToggleMLA = document.getElementById('toggleMLABtn');
+const iconOpenMLA = document.getElementById('icon-mla-open');
+const iconCloseMLA = document.getElementById('icon-mla-close');
 
 
 
@@ -477,6 +585,8 @@ function highlightHtmlContent(html, keyword) {
 }
 
 
+
+
 function highlightText(txt, keyword, max = null) {
   if (!keyword) return escapeHtml(txt);
   const safe = escapeHtml(txt);
@@ -511,42 +621,88 @@ const searchArticles = async () => {
 };
 input.addEventListener('input', debounce(searchArticles, 300));
 
-// Toggle advanced
-advToggle.addEventListener('click', () => {
-  const isOpen = advForm.style.display === 'block';
+
+
+
+
+
+
+// Toggle advanced search
+advToggleSearch.addEventListener('click', () => {
+  const isOpenSearch = advFormSearch.style.display === 'block';
 
   //advForm.style.display = isOpen ? 'none' : 'block';
-  iconOpen.style.display = isOpen ? 'inline' : 'none';
-  iconClose.style.display = isOpen ? 'none' : 'inline';
-  advForm.style.display = (advForm.style.display === 'none') ? 'block' : 'none';
+  iconOpenSearch.style.display = isOpenSearch ? 'inline' : 'none';
+  iconCloseSearch.style.display = isOpenSearch ? 'none' : 'inline';
+  advFormSearch.style.display = (advFormSearch.style.display === 'none') ? 'block' : 'none';
 });
+
+// Toggle Filter
+advToggleFilter.addEventListener('click', () => {
+  const isOpenFilter = advFormFilter.style.display === 'block';
+
+  //advForm.style.display = isOpen ? 'none' : 'block';
+  iconOpenFilter.style.display = isOpenFilter ? 'inline' : 'none';
+  iconCloseFilter.style.display = isOpenFilter ? 'none' : 'inline';
+  advFormFilter.style.display = (advFormFilter.style.display === 'none') ? 'block' : 'none';
+});
+
+// Toggle Most Viewed Articles (MVA)
+advToggleMVA.addEventListener('click', () => {
+  const isOpenMVA = advFormMVA.style.display === 'block';
+
+  //advForm.style.display = isOpen ? 'none' : 'block';
+  iconOpenMVA.style.display = isOpenMVA ? 'inline' : 'none';
+  iconCloseMVA.style.display = isOpenMVA ? 'none' : 'inline';
+  advFormMVA.style.display = (advFormMVA.style.display === 'none') ? 'block' : 'none';
+});
+
+// Toggle Most Liked Articles (MLA)
+advToggleMLA.addEventListener('click', () => {
+  const isOpenMLA = advFormMLA.style.display === 'block';
+
+  //advForm.style.display = isOpen ? 'none' : 'block';
+  iconOpenMLA.style.display = isOpenMLA ? 'inline' : 'none';
+  iconCloseMLA.style.display = isOpenMLA ? 'none' : 'inline';
+  advFormMLA.style.display = (advFormMLA.style.display === 'none') ? 'block' : 'none';
+});
+
 
 // Trigger advanced
 function triggerAdvancedSearch() {
-  const q = input.value.trim();
+  const query = document.getElementById('liveSearch').value.trim();
   const author = document.getElementById('searchAuthor').value.trim();
   const category = document.getElementById('searchCategory').value;
 
-  const params = new URLSearchParams({ q, author, category });
+  const hasFilters = query || author || category;
+
+  if (!hasFilters) {
+    // Toate goale ⇒ revenim la conținutul inițial
+    defaultContent.style.display = 'block';
+    searchResults.innerHTML = '';
+    return;
+  }
+
+  const params = new URLSearchParams();
+  if (query) params.append('q', query);
+  if (author) params.append('author', author);
+  if (category) params.append('category', category);
 
   fetch('search_articles.php?' + params.toString())
     .then(res => res.json())
     .then(data => {
       defaultContent.style.display = 'none';
-      results.innerHTML = data.map(article => {
-        const title = highlightText(article.title, q);
-        const content = highlightHtmlContent(article.content, 200);
-
-        return `
-          <div style="border:1px solid #ccc; padding:10px; margin-bottom:5px;">
-            <h4>${title}</h4>
-            <p><em>Autor: ${article.username} | Categorie: ${article.category} | ${new Date(article.created_at).toLocaleDateString()}</em></p>
-            <p>${content}</p>
-          </div>`;
-      }).join('') || '<p>Nu s-au găsit articole.</p>';
+      searchResults.innerHTML = data.map(article => `
+        <div class="article-card">
+          <h4>${highlightQuery(article.title, query)}</h4>
+          <p><em>${article.username} | ${article.category} | ${new Date(article.created_at).toLocaleDateString()}</em></p>
+          <p>${highlightQuery(article.content.substring(0, 200), query)}...</p>
+        </div>
+      `).join('') || '<p>Nu s-au găsit articole pe baza filtrului.</p>';
+    })
+    .catch(err => {
+      console.error('[AJAX ERROR]', err);
     });
-
-  return false;
 }
 
 
@@ -574,8 +730,28 @@ function triggerFilterCategory() {
 }
 
 
+function highlightQuery(text, query) {
+  if (!query) return text;
+  const safe = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(safe, 'gi'), match => `<mark>${match}</mark>`);
+}
+
+
+// event-uri pentru căutare
+document.getElementById('searchAuthor').addEventListener('input', debounce(triggerAdvancedSearch, 300));
+//document.getElementById('searchCategory').addEventListener('change', triggerAdvancedSearch);
+document.getElementById('liveSearch').addEventListener('input', debounce(triggerAdvancedSearch, 300));
+
+
+
+$(document).ready(function () {
+ 
+  
+});
+
 // Event-uri pentru filtrare cu Select2
 
+// Event pentru filtrarea după categorie
 $('#filterCategory').on('change', function () {
   const selectedValue = $(this).val();
 

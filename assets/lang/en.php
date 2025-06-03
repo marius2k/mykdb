@@ -20,6 +20,7 @@ define(constant_name:'lang_edit_acl',value:'Edit ACL');
 define(constant_name:'lang_no_articles',value:'No articles found');
 define(constant_name:'lang_adv_search',value:'Advanced Search');
 define(constant_name:'lang_filter',value:'Filter');
+define(constant_name:'lang_text',value:'Text');
 
 
 // Define constants for Articles
@@ -32,6 +33,9 @@ define(constant_name:'lang_create_article_content',value:'Article Content:');
 define(constant_name:'lang_create_article_category',value:'Categorie articol:');
 define(constant_name:'lang_create_article_submit',value:'Submit Article');
 define(constant_name:'lang_create_article_approve',value:'Submit for Approval');
+define(constant_name:'lang_create_article_draft',value:'Save as Draft');
+
+
 define(constant_name:'lang_create_article_approve_success',value:'Article has been submitted for approval!');
 define(constant_name:'lang_create_article_approve_error',value:'Error submitting article for approval.');
 define(constant_name:'lang_edit_article',value:'Edit Article');
@@ -57,6 +61,7 @@ define(constant_name:'lang_select_theme',value:'Theme');
 define(constant_name:'lang_profile',value:'My Profile');
 define(constant_name:'lang_article_top_view',value:'Top Viewed Articles');
 define(constant_name:'lang_article_top_like',value:'Top Liked Articles');
+define(constant_name:'lang_articles_in_draft',value:'Articles in Draft');
 
 
 // Define constants for Dashboard (file: dashboard.php)
@@ -160,7 +165,9 @@ define(constant_name:'lang_btn_delete',value:'Delete');
 define(constant_name:'lang_btn_save',value:'Save');
 define(constant_name:'lang_btn_edit',value:'Edit');
 define(constant_name:'lang_btn_reject',value:'Reject');
-
+define(constant_name:'lang_btn_change_role',value:'Change Role');
+define(constant_name:'lang_btn_cancel',value:'Cancel');
+define(constant_name:'lang_btn_send_approval',value:'Send for Approval');
 
 // Define constants for User Profile (file: profile.php)
 
@@ -225,7 +232,8 @@ return [
     'backup_data' => 'backup data',
     'edit_acl' => 'modify the access list',
     'register' => 'user registration',
-    'approve_user' => 'approve user in pending'
+    'approve_user' => 'approve user in pending',
+    'reject_comment' => 'reject/disable comment'
   ];
   
 

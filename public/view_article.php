@@ -62,6 +62,7 @@ if (!$article) {
 
 
 
+
 ?>
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
@@ -119,20 +120,91 @@ if (!$article) {
             <?php
 
             $comments = $db->fetchAll("
-            SELECT c.content, c.created_at, u.username 
-            FROM article_comments c
-            JOIN users u ON c.user_id = u.id
-            WHERE c.article_id = ? AND c.status = 'approved'
-            ORDER BY c.created_at DESC
-            ", [$article['id']]);
+                    SELECT c.id, c.content, c.created_at, u.username,
+                        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id AND vote_type = 'like') AS likes,
+                        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id AND vote_type = 'dislike') AS dislikes
+                    FROM article_comments c
+                    JOIN users u ON c.user_id = u.id
+                    WHERE c.article_id = ? AND c.status = 'approved'
+                    ORDER BY c.created_at DESC
+                ", [$article['id']]);
+            
+
+            $commentIds = array_column($comments, 'id');
+            $userVotes = [];
+
+            if (!empty($_SESSION['user']['id']) && count($commentIds)) {
+                $placeholders = implode(',', array_fill(0, count($commentIds), '?'));
+                $voteResults = $db->fetchAll("
+                    SELECT comment_id, vote_type 
+                    FROM comment_likes 
+                    WHERE user_id = ? AND comment_id IN ($placeholders)
+                ", array_merge([$_SESSION['user']['id']], $commentIds));
+                
+                //$likes = $db->fetchAll("SELECT COUNT(*) AS count FROM comment_likes WHERE comment_id = ? AND vote_type = 'like'", [$commentId]);
+                //$dislikes = $db->fetchAll("SELECT COUNT(*) AS count FROM comment_likes WHERE comment_id = ? AND vote_type = 'dislike'", [$commentId]);
+
+                
+                
+                foreach ($voteResults as $vote) {
+                    $userVotes[$vote['comment_id']] = $vote['vote_type'];
+                }
+            }
+
+
 
             if ($comments):
             foreach ($comments as $c):
+                $hasVoted = $userVotes[$c['id']] ?? null;
+
             ?>
-            <div class="comment border rounded p-2 mb-2">
+            <div id="comment-<?= $c['id'] ?>" class="comment border rounded p-2 mb-2">
                 <strong><?= htmlspecialchars($c['username']) ?></strong>
                 <small class="text-muted"><?= date('Y-m-d H:i', strtotime($c['created_at'])) ?></small>
-                <p class="mb-0"><?= nl2br(htmlspecialchars($c['content'])) ?></p>
+                <p class="mb-0" style="padding: 20px;"><?= nl2br(htmlspecialchars($c['content'])) ?></p>
+                <div class="comment-footer" style="display: flex; justyfy-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <!-- like comment -->
+                       <a href="#" onclick="voteComment(<?= $c['id'] ?>, 'like'); return false;">
+                        <img width="20" high="auto" src="<?= APP_URL ?>assets/images/icon-like.png" 
+                            id="like-icon-<?= $c['id'] ?>" 
+                            class="vote-icon <?= $hasVoted === 'like' ? 'voted' : '' ?>" 
+                            title="<?= $hasVoted ? 'Ai votat deja' : 'Like' ?>">
+                        <span class="dislike-count" id="like-count-<?= $c['id'] ?>"><?= $c['likes'] ?? 0 ?></span>
+                        </a>
+                    
+                        <!-- disalike comment -->
+                        <a href="#" onclick="voteComment(<?= $c['id'] ?>, 'dislike'); return false;">
+                        <img width="20" high="auto" src="<?= APP_URL ?>assets/images/icon-dlike.png" 
+                            id="dislike-icon-<?= $c['id'] ?>" 
+                            class="vote-icon <?= $hasVoted === 'dislike' ? 'voted' : '' ?>" 
+                            title="<?= $hasVoted ? 'Ai votat deja' : 'Dislike' ?>">
+                        <span class="dislike-count" id="dislike-count-<?= $c['id'] ?>"><?= $c['dislikes'] ?? 0 ?></span>
+                        </a>
+                    </div>
+
+                    <div style="margin-left: auto;">
+
+                        <!-- Disable comment -->
+                        <?php if (hasPermission($_SESSION['user']['id'], ['reject_comment'])): ?>
+                                <a href="#" onclick="disableComment(<?= $c['id'] ?>, 'like'); return false;">
+                                <img width="20" high="auto" src="<?= APP_URL ?>assets/icons/icon-disable-comm.svg" class="vote-icon" title="Disable Comment">
+                                </a>
+                                <span>&nbsp;</span>
+                        <?php endif; ?>
+
+                        <!-- Delete comment -->
+                        
+                        <?php if (hasPermission($_SESSION['user']['id'], ['delete_comment'])): ?>
+
+                                <a href="#" onclick="deleteComment(<?= $c['id'] ?>, 'like'); return false;">
+                                <img width="20" high="auto" src="<?= APP_URL ?>assets/icons/icon-delete-comm.svg" class="vote-icon" title="Delete Comment">
+                                </a>
+                                <span>&nbsp;</span>
+                        <?php endif; ?>
+                    </div>
+                    
+                </div>
             </div>
             <?php endforeach; else: ?>
             <p>Nu există comentarii aprobate.</p>
