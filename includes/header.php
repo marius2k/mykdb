@@ -23,11 +23,11 @@ if (!isset($_SESSION['user'])) {
 // end treatment of guest user
 
 
-
+$db = new Database();
 // Load user settings
 
 if (isset($_SESSION['user']) && !isset($_SESSION['settings'])) {
-    $db = new Database();
+    
 
     //$_SESSION['user']['id']=2;
     
@@ -90,6 +90,19 @@ switch ($lang) {
         break;
 }
 
+//$userId = $_SESSION['user']['id'];
+//$notifications = $db->fetchAll("SELECT * FROM notifications WHERE user_id = ? AND is_read = 0 ORDER BY created_at DESC LIMIT 5", [$userId]);
+
+$userId = $_SESSION['user']['id'] ?? null;
+$notifCount = 0;
+
+if ($userId) {
+  $notifCount = $db->fetchSingle(
+    "SELECT COUNT(*) as cnt FROM notifications WHERE user_id = ? AND is_read = 0", 
+    [$userId]
+)['cnt'];
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -103,6 +116,7 @@ switch ($lang) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="<?= APP_URL?>assets/css/style-<?=$theme?>.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.js"></script>
 
 
@@ -126,11 +140,22 @@ switch ($lang) {
     <div style="background-image: url('<?=APP_URL?>assets/images/banner-top.png; background-size: cover; background-position: left; background-repeat: no-repeat; background-color: #f0f0f0; width: 100%; height: 400px; width: 100%; display: flex; align-items: center; justify-content: space-between; ">
 -->
     <div class="nav-app-name"><img src="<?=APP_URL?>assets/images/kdb-logo-1.png" style="width: auto; height: 50px;"></div>
-        <div style="float: right;">
+        <div style="float: right; padding: 5px;">
 
             <!-- User Dropdown -->
             <?php if (is_logged_in()) { ?>
                             
+                            <!-- Notifications --> 
+
+                            <div class="notif-bell">
+                                <a href="<?=APP_URL?>public/dashboard.php">
+                                    <img src="<?=APP_URL?>assets/icons/icon-bell.svg" alt="Notificări" width="24" height="auto">
+                                    <?php if ($notifCount > 0): ?>
+                                    <span id="notif-badge" class="notif-badge"><?= $notifCount ?></span>
+                                    <?php endif; ?>
+                                </a>
+                            </div>
+                          
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                                 <div class="me-2 d-none d-md-block text-end">
                                     <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'Guest') ?></div>
@@ -202,3 +227,10 @@ switch ($lang) {
 
 
 <main style="padding:20px;">
+<script>
+
+function toggleNotifications() {
+  const dropdown = document.getElementById('notif-dropdown');
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+</script>

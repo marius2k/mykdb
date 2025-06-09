@@ -29,6 +29,11 @@ if ($existing) {
   $db->query("INSERT INTO article_likes (article_id, user_id, vote_type) VALUES (?, ?, ?)", [$aid, $userId, $vote]);
 }
 
+// send notification
+$uid = getArticleAuthorId($aid);
+sendNotification($uid, 'Article voted','Your <a href="view_article.php?id='.$aid.'">article</a> has been voted with: '. $vote,'info');
+
+
 // Returnăm numerele actualizate
 $votes = getArticleLikesDislikes($aid);
 echo json_encode([

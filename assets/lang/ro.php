@@ -9,11 +9,13 @@ define(constant_name:'lang_login', value:'Autentificare');
 define(constant_name:'lang_logout',value:'Deconectare');
 define(constant_name:'lang_register',value:'Inregistrare');
 define(constant_name:'lang_dashboard',value:'Dashboard');
+define(constant_name:'lang_logs',value:'Logs');
 define(constant_name:'lang_users',value:'Utilizatori');
 define(constant_name:'lang_categories',value:'Categorii');
 define(constant_name:'lang_articles',value:'Articole');
 define(constant_name:'lang_search',value:'Cautare');
 define(constant_name:'lang_text',value:'Text');
+define(constant_name:'lang_notifications',value:'Notificari');
 
 
 define(constant_name:'lang_search_placeholder',value:'Cauta articole...');
@@ -51,7 +53,7 @@ define(constant_name:'lang_select_romanian',value:'Romana');
 define(constant_name:'lang_select_language',value:'Limba');
 define(constant_name:'lang_select_theme',value:'Tema');
 define(constant_name:'lang_profile',value:'Profilul meu');
-define(constant_name:'lang_edit_acl',value:'Editeaza ACL');
+define(constant_name:'lang_edit_acl',value:'ACL');
 define(constant_name:'lang_no_articles',value:'Nici un articol nu a fost gasit');
 define(constant_name:'lang_adv_search',value:'Cautare avansata');
 define(constant_name:'lang_filter',value:'Filtru');
@@ -72,7 +74,20 @@ define(constant_name:'lang_db_log_table_action',value:'Actiune');
 define(constant_name:'lang_db_log_table_agent',value:'Agent');
 define(constant_name:'lang_db_log_table_details',value:'Detalii');
 define(constant_name:'lang_db_log_table_data',value:'Data');
-
+define(constant_name:'lang_db_analytics',value:'Analytics Dashboard');
+define(constant_name:'lang_db_top5_views',value:'Top Vizualizari articole in ');
+define(constant_name:'lang_db_top5_likes',value:'Top Like-uri articole in ');
+define(constant_name:'lang_db_comments_today',value:'Comentarii primite azi ');
+define(constant_name:'lang_db_comments_last7days',value:'Comentarii in ultimele 7 zile ');
+define(constant_name:'lang_db_comments_last_month',value:'Comentarii in ultimele 30 zile ');
+define(constant_name:'lang_db_recent_comments',value:'Comentarii');
+define(constant_name:'lang_db_art_published_last_days',value:'Articole publicate in ultimele ');
+define(constant_name:'lang_db_art_days',value:' zile');
+define(constant_name:'lang_db_articles',value:'Articole');
+define(constant_name:'lang_db_comments_last_days',value:'Comentarii in ultimele ');
+define(constant_name:'lang_db_comments_received',value:'Comentarii primite ');
+define(constant_name:'lang_db_articles_published',value:'Articole publicate ');
+define(constant_name:'lang_db_top5_commented',value:'Cele mai comentate articole in ');
 
 
 // Define constants for Users (file:users.php)
@@ -108,6 +123,13 @@ define(constant_name:'lang_cat_active',value:'Activa');
 define(constant_name:'lang_cat_inactive',value:'Inactiva');
 define(constant_name:'lang_cat_select_icon',value:'Alege Icon');
 
+// Define constants for Logs management
+define(constant_name:'lang_log_delete_selected',value:'Sterge selectate');
+define(constant_name:'lang_log_archive_selected',value:'Arhiveaza selectate');
+define(constant_name:'lang_log_filter_start_date',value:'Data inceput');
+define(constant_name:'lang_log_filter_end_date',value:'Data sfarsit');
+define(constant_name:'lang_log_filter_user',value:'User');
+define(constant_name:'lang_log_filter_reset',value:'Reseteaza filtrul');
 
 
 // Define constants for Articles (file: articles.php)
@@ -152,7 +174,7 @@ define(constant_name:'lang_btn_reject',value:'Respinge');
 define(constant_name:'lang_btn_change_role',value:'Schimbare Rol');
 define(constant_name:'lang_btn_cancel',value:'Renunta');
 define(constant_name:'lang_btn_send_approval',value:'Trimite spre aprobat');
-
+define(constant_name:'lang_btn_filter',value:'Filtreaza');
 
 
 // Define constants for User Profile (file: profile.php)
@@ -214,13 +236,18 @@ return [
     'delete_user' => 'sterge useri',
     'modify_user' => 'modifica toti userii',
     'modify_own_user' => 'modifica info de profil',
-    'view_own_activity' => 'vizualizeaza doar activitatile proprii',
-    'view_all_activity' => 'vizualizeaza toate activitatile',
+    'view_own_logs' => 'vizualizeaza doar activitatile proprii',
+    'view_all_logs' => 'vizualizeaza toate activitatile',
     'backup_data' => 'backup date',
     'edit_acl' => 'modifica lista de access',
     'register' => 'inregistrare user',
     'approve_user' => 'aproba user in pending',
-    'reject_comment' => 'rejecteaza/dezactiveaza commentrii'
+    'reject_comment' => 'rejecteaza/dezactiveaza commentrii',
+    'delete_own_logs' => 'sterge propriile activitati',
+    'archive_own_logs' => 'arhiveaza propriile activitati',
+    'delete_all_logs' => 'sterge toate activitatile',
+    'archive_all_logs' => 'arhiveaza toate activitatile',
+    'view_dashboard' => 'vizualizeaza dashbordul'
   ];
 
 ?>

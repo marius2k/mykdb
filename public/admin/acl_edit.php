@@ -155,43 +155,7 @@ $roles = $db->fetchAll("SELECT id, name, label FROM roles");
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>
 <script>
- function initializeCustomBox(boxElement, pageBgColor) {
-    const cornerLabel = boxElement.querySelector('.corner-label');
-
-    if (!cornerLabel) {
-      console.warn('Element .corner-label not found inside custom-box:', boxElement);
-      return;
-    }
-
-    const actualPageBackgroundColor = pageBgColor || window.getComputedStyle(document.body).backgroundColor;
-    boxElement.style.setProperty('--page-background-color', actualPageBackgroundColor);
-
-    function updateBorderCutout() {
-        const originalDisplay = cornerLabel.style.display;
-        cornerLabel.style.display = 'inline-block';
-        const labelWidth = cornerLabel.offsetWidth; 
-        cornerLabel.style.display = originalDisplay;
-
-        const labelLeftPosition = parseInt(window.getComputedStyle(cornerLabel).left); 
-        const extraPaddingForCutout = 2;
-
-        const cutoutWidth = labelWidth + (2 * extraPaddingForCutout);
-        const cutoutLeft = labelLeftPosition - extraPaddingForCutout;
-
-        boxElement.style.setProperty('--cutout-width', `${cutoutWidth}px`);
-        boxElement.style.setProperty('--cutout-left', `${cutoutLeft}px`);
-
-        const labelHeight = cornerLabel.offsetHeight;
-        const cutoutCenterY = -0.5;
-        cornerLabel.style.top = `${cutoutCenterY - (labelHeight / 2)}px`;
-    }
-
-    updateBorderCutout();
-    // Nu mai adăugăm listener de resize AICI pentru fiecare box,
-    // ci vom reface Masonry layout și vom apela updateBorderCutout pentru toate boxurile după resize.
-  }
-
-
+ 
  
   document.addEventListener('DOMContentLoaded', () => {
     const permColumns = document.querySelector('.permissions .perm-columns');

@@ -72,4 +72,62 @@ May 2025
 
 
 
+Features
+-------------
 
+Users are assigned to roles and roles are assigned to permissions.
+
+
+Roles:
+        superadmin, 
+        admin, 
+        editor, 
+        contributor, 
+        moderator, 
+        guest
+
+
+Operations Management
+---------------------
+    Operations implemented:
+
+    - Article: create_article, approve_article, delete_article, disable_article, edit_article, edit_own_article,
+               enable_article, export_article, publish_article, view_article
+    - Comment: add_comment, edit_comment, delete_comment, reject_comment, 
+    - Category: add_category, edit_category
+    - User: approve_user, delete_user, disable_user, enable_user, modify_own_user, modify_all_users;
+    - Dashboard: view_dashboard
+    - Logs: archive_all_logs, archive_own_logs, delete_all_logs, delete_own_logs, view_all_logs, view_own_logs
+    - Data: backup_data
+    - ACLL edit_acl
+    - Register: register
+    - Search: search
+    
+
+Permissions assigned to Roles:
+
+    superadmin: all excluding: register
+    admin: all excluding: register, backup_data
+    contributor: modify_own_user, view_dashboard, add_comment, view_own_logs, archive_own_logs, delete_own_logs,
+                 create_article, edit_article, edit_own_article, view_article, search
+    editor: create_article, edit_article, edit_own_article, view_article, add_comment, archive_own_logs, 
+                delete_own_logs, view_own_logs, modify_own_user, view_dashboard, search
+    moderator: approve_user, disable_user, enable_user, modify_own_user, view_dashboard, add_comment, approve_comment,
+            delte_comment, edit_comment, reject_comment, view_own_logs, approve_article, create_article, disable_article,
+            edit_own_article, enable_article, publish_article, view_article, search
+    guest: register, view_article,search, add_comment
+
+
+
+ NOTIFICATIONS
+====================================================================================================
+
+
+EVENIMENT | NOTIFICARE SUGERATA
+Articol aprobat | „Articolul tău X a fost aprobat.”
+Articol respins / dezactivat | „Articolul Y a fost dezactivat de un admin.”
+Comentariu nou | „Ai un comentariu nou la articolul Z.”
+Like / dislike | „Articolul tău a primit un like.”
+Feedback pe articol (modificare admin) | „Adminul a editat articolul Q.”
+Cont dezactivat | „Contul tău a fost dezactivat temporar.”
+Setări ACL schimbate | „Rolul tău sau permisiunile au fost modificate.”

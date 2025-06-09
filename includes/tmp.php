@@ -1,3 +1,24 @@
+
+<?php
+
+require_once '../config/bootstrap.php';
+
+$db=new Database();
+
+$contributors = getUserIdByRoleName(('contributor'));
+
+
+foreach ($contributors as $c){
+
+    echo "<br>Contributor ID: ".$c['id'];
+  
+}
+
+?>
+
+
+
+
 <style>
 body {
     background-color: white; /* **IMPORTANT:** Asigură-te că aceasta este culoarea de fundal a paginii tale */
@@ -20,10 +41,11 @@ body {
   padding: 0 5px; /* Padding pentru spațiul de 10px înainte și după text */
   font-weight: bold;
   background: transparent; /* Fundal transparent pentru etichetă */
-  z-index: 2; /* Asigură că eticheta e deasupra elementului care maschează bordura */
+  z-index: 1; /* Asigură că eticheta e deasupra elementului care maschează bordura */
   font-size: 20px;
   font-weight: bold;
   white-space: nowrap;
+  
 }
 
 /* Pseudoelement pentru a "tăia" bordura, având fundalul paginii */
@@ -82,7 +104,7 @@ body {
         
         // paddingAroundText în CSS este `padding: 0 5px;`
         // Dacă vrei 10px în plus înainte și după text, trebuie să adaugi 20px la `labelTextWidth`.
-        const extraPaddingForCutout = 10; // Extra padding de 10px înainte și după text
+        const extraPaddingForCutout = 30; // Extra padding de 10px înainte și după text
 
         // Calculăm lățimea totală a zonei pe care vrem să o "tăiem"
         // `labelTextWidth` include deja padding-ul de 5px de pe `corner-label`.
@@ -138,7 +160,7 @@ body {
 </div>
 
 <div class="custom-box">
-  <span class="corner-label">Text in colt 2 Looooong Text Here</span>
+  <span class="corner-label"><img src="../assets/images/icon-view.png" width="25" height="25">&nbsp;Text in colt 2 Looooong Text Here</span>
   <div class="box-content">
     Continutul boxului 2 cu text mai lung...
   </div>
@@ -150,3 +172,24 @@ body {
     Continutul boxului 3...
   </div>
 </div>
+
+
+<div class="box-content-1" >
+            <ul style="list-style-type: none; width: 100%; padding: 0; margin: 0; text-align: left;padding-top: 10px;">
+                <li class="list-item">
+                    <div><img src="<?= APP_URL ?>assets/icons/icon-cal-today.svg"></div>
+                    <div class="text"><?= lang_db_comments_today ?></div>
+                    <div class="number"><?php echo getTotalComments(24); ?></div>
+                </li>
+                <li class="list-item">
+                    <div><img src="<?= APP_URL ?>assets/icons/icon-cal-week.svg"></div>
+                    <div class="text"><?= lang_db_comments_last7days ?></div>
+                    <div class="number"><?php echo getTotalComments(168); ?></div>
+                </li>
+                <li class="list-item">
+                    <div><img src="<?= APP_URL ?>assets/icons/icon-cal-month.svg"></div>
+                    <div class="text"><?= lang_db_comments_last_month ?></div>
+                    <div class="number"><?php echo getTotalComments(720); ?></div>
+                </li>
+            </ul>
+        </div>  
