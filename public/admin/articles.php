@@ -67,6 +67,14 @@ switch ($_POST['form_id'] ?? null) {
             $stmt->execute([$title, $clean_content, $category_id, $user_id, $status, $publish_at]);
             // Log the creation
             logActivity($user_id, 'create_article', 'User '. $_SESSION['user']['username'].' created the article:'. $title);
+            
+            // get article id already saved in db
+            $aid = getArticleIdByTitle($title);
+
+            // Send notification to moderators and admins
+            sendNotificationToRole('moderator', 'info','Article <a href="view_article.php?id='. $aid.'">'. $title.'</a>'.' has been submitted for approval.');
+            sendNotificationToRole('admin', 'info', 'Article <a href="view_article.php?id='. $aid.'">'. $title.'</a>'.' has been submitted for approval.');
+
             header('Location: articles.php');
             exit;
         }
@@ -115,9 +123,25 @@ if(isset($_GET['action'])){
 
 
 if (isset($_GET['approve'])) {
+
+    $articleId = $_GET['approve'];
     $stmt = $db->prepare("UPDATE articles SET status = 'approved' WHERE id = ?");
-    $stmt->execute([$_GET['approve']]);
+    $stmt->execute([$articleId]);
+    
+    // save activity log
     logActivity($_SESSION['user']['id'], 'article_approved', 'User ' .$_SESSION['user']['username'] .' approved an article');
+
+    // send notification to author
+    $stmt = $db->prepare("SELECT user_id, title FROM articles WHERE id = ?");
+    $stmt->execute([$articleId]);
+    $article = $stmt->fetch();
+    
+    $authorId = $article['user_id'];
+
+    sendNotification($authorId, 'Article Approved','Your article <a href="article.php?id='.$articleId.'">'. $article['title']. '</a> has been approved.','info');
+    header("Location: articles.php");
+    exit;
+
 }
 
 if (isset($_GET['disable'])) {

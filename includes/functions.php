@@ -63,6 +63,28 @@ function getUserById($id) {
     return $stmt->fetchColumn();
 }
 
+// return user_id of all users with a specific role name
+function getUserIdByRoleName(string $role): array {
+    $db = new Database();
+
+    // Obține ID-ul rolului
+    $roleData = $db->fetchSingle("SELECT id FROM roles WHERE name = ?", [$role]);
+    if (!$roleData) {
+        return []; // rolul nu există
+    }
+
+    $roleId = $roleData['id'];
+
+    // Obține toți userii care au acel rol
+    $users = $db->fetchAll("SELECT id FROM users WHERE role_id = ?", [$roleId]);
+
+    // Extragem doar valorile id
+    return array_column($users, 'id');
+}
+
+
+// return role name of a user by user_id
+
 function getUserRoleById(int $userId,): ?string {
     
     $db = new Database();
@@ -84,6 +106,54 @@ function getUserRoleById(int $userId,): ?string {
     return $result['label'] ?? null;
 }
 
+
+// send notification to all users with a specific role
+// returns number of notifications sent
+// Example usage:
+//          $count = sendNotificationToRole('moderator', 'info', 'Un articol nou a fost trimis spre aprobare.');
+//          echo "$count moderatori au primit notificarea.";
+
+function sendNotificationToRole(string $roleName, string $type, string $message): int {
+    $db = new Database();
+
+    // 1. Obține user_id-urile după rol
+    $userIds = getUserIdByRoleName($roleName);
+
+    if (empty($userIds)) {
+        return 0; // nimeni cu rolul respectiv
+    }
+
+    // 2. Pregătim inserția bulk
+    $placeholders = [];
+    $values = [];
+    $now = date('Y-m-d H:i:s');
+
+    foreach ($userIds as $userId) {
+        $placeholders[] = "(?, ?, ?, ?, 0)";
+        $values[] = $userId;
+        $values[] = $type;
+        $values[] = $message;
+        $values[] = $now;
+    }
+
+    $sql = "INSERT INTO notifications (user_id, type, message, created_at, is_read) VALUES " . implode(',', $placeholders);
+    $db->query($sql, $values);
+
+    return count($userIds); // număr notificări trimise
+}
+
+
+// returneaza un array cu toti userii activi
+function getAllActiveUsers():array{
+
+    $db = new Database();
+
+    $stmt = $db->prepare("SELECT * FROM users WHERE status = 'active'");
+    $stmt->execute();
+    $users = $stmt->fetchAll();    
+
+    return $users;
+}
 
 function loadConfig(){
 
@@ -318,14 +388,20 @@ function generateNavBar2($uid) {
         $nav .= '<a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>';
     }
 
-    // check users allowed for view activity logs;
-
-    $ops=['view_own_activity',
-          'view_all_activity'
-        ];
+    $ops=['view_dashboard'];
 
     if (hasPermission($uid,$ops)){
         $nav.='<a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>';
+    }
+
+
+    // check users allowed for view activity logs;
+    $ops=['view_own_logs',
+          'view_all_logs'
+        ];
+
+    if (hasPermission($uid,$ops)){
+        $nav.='<a href="'.APP_URL.'public/view_logs.php"'.($currentPage === 'view_logs.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_logs . '</a>';
     }
 
     // check users allowed for users management (file: admin/users.php);
@@ -468,7 +544,7 @@ function generateAvatarMenu($uid) {
     return $menu;
 }
 
-// Checking if the logged user's role is authorized for $requiredOps
+// Checking if the logged user's role has ONE operation in $requiredOps
 // $requiredOps - array contans all the operation done on a section 
 
 function hasPermission(int $user_id, array $requiredOps): bool {
@@ -510,6 +586,49 @@ function hasPermission(int $user_id, array $requiredOps): bool {
 
     return false;
 }
+
+// check if user has ALL operations in $requiredOps;
+function hasAllPermission(int $user_id, array $requiredOps): bool {
+    
+    if (!$user_id || empty($requiredOps)) return false;
+
+
+    static $userPermissions = []; // contains the operations allowed to user
+
+    $db=new Database();
+
+   
+    $uid = $user_id;
+   
+
+    // Cache per user
+    if (!isset($userPermissions[$uid])) {
+    
+        
+
+        $sql = "
+            SELECT o.name
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            JOIN role_permissions rp ON rp.role_id = r.id
+            JOIN operations o ON o.id = rp.operation_id
+            WHERE u.id = ?
+        ";
+        $results = $db->fetchAll($sql, [$uid]);
+        $userPermissions[$user_id] = array_column($results, 'name');
+    }
+
+    // Verificăm dacă are cel puțin o operație permisă
+    foreach ($requiredOps as $op) {
+        if (!in_array($op, $userPermissions[$uid])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 
 
 function lang(string $key): string {
@@ -555,8 +674,160 @@ function getArticleLikesDislikes(int $aid): array {
 
     return $counts;
 }
+// return number of articles per day for last 7 days
+// return array with date as key and number of articles as value
+// if no articles for a day, set value to 0 (use 0 instead of null)
+// use date('Y-m-d') to format date
+
+function getArticlesByLastDays(int $days): array {
+    $db = new Database();
+
+    $sql = "
+        SELECT DATE(created_at) as date, COUNT(*) as total
+        FROM articles
+        WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL :days DAY)
+        GROUP BY DATE(created_at)
+        ORDER BY date ASC
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $rows = $stmt->fetchAll();
+
+    // inițializare cu 0 pentru toate zilele
+    $data = [];
+    for ($i = $days-1; $i >= 0; $i--) {
+        $day = date('Y-m-d', strtotime("-$i days"));
+        $data[$day] = 0;
+    }
+
+    foreach ($rows as $row) {
+        $data[$row['date']] = (int)$row['total'];
+    }
+
+    return $data;
+}
+
+function getCommentsByLastDays(int $days): array {
+    $db = new Database();
+
+    $sql = "
+        SELECT DATE(created_at) as date, COUNT(*) as total
+        FROM article_comments
+        WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL :days DAY)
+        GROUP BY DATE(created_at)
+        ORDER BY date ASC
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $rows = $stmt->fetchAll();
+
+    // inițializare cu 0 pentru toate zilele
+    $data = [];
+    for ($i = $days-1; $i >= 0; $i--) {
+        $day = date('Y-m-d', strtotime("-$i days"));
+        $data[$day] = 0;
+    }
+
+    foreach ($rows as $row) {
+        $data[$row['date']] = (int)$row['total'];
+    }
+
+    return $data;
+}
+
+// get total comments within a given interval (in hours)
+// ex: getTotalComments(24) - returns total comments from last 24 hours
+
+function getTotalComments(int $interval): int {
+    $db = new Database(); // instanța clasei tale de DB
+
+    $sql = "
+        SELECT COUNT(*) 
+        FROM article_comments 
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL :hours HOUR)
+        AND status = 'approved'
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':hours', $interval, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return (int)$stmt->fetchColumn();
+}
 
 
+// returns total active users within a given interval (in hours)
+// ex: getActiveUsers(24) - returns total users active in last 24 hours
+// 
+// Usage:
+// $activeUsers = getActiveUsers(24); // utilizatori activi în ultimele 24 ore
+// echo "Utilizatori activi (24h): $activeUsers";
+
+function getActiveUsers(int $interval): int {
+    $db = new Database(); // presupune că ai clasa Database deja inclusă
+
+    $sql = "
+        SELECT COUNT(DISTINCT user_id)
+        FROM activity_log
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL :hours HOUR)
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':hours', $interval, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+// returns total success login counts within a given interval (in hours)
+// ex: getLoginCount(24) - returns total logins in last 24 hours
+// 
+// Usage:
+// $loginCount = getLoginSuccessCount(24); // logins within the last 24 hours
+// echo "Logins(24h): $loginCount";
+function getLoginSuccessCount(int $interval): int {
+    $db = new Database(); // instanță a clasei tale de conexiune DB
+
+    $sql = "
+        SELECT COUNT(*) 
+        FROM activity_log
+        WHERE action_type = 'login_success'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL :hours HOUR)
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':hours', $interval, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+// returns total failed login counts within a given interval (in hours)
+// ex: getLoginFailedCount(24) - returns total failed logins in last 24 hours
+// 
+// Usage:
+// $failedLogins = getLoginFailedCount(24); // failed logins within the last 24 hours
+// echo "Failed Logins(24h): $failedLogins";
+function getLoginFailedCount(int $interval): int {
+    $db = new Database(); // instanță a clasei tale de conexiune DB
+
+    $sql = "
+        SELECT COUNT(*) 
+        FROM activity_log
+        WHERE action_type = 'login_failed'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL :hours HOUR)
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':hours', $interval, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
 
 // După ce am aplicat setările (ex: salvate în DB) ma intorc la pagina de unde am venit
 function get_back($redirect){
@@ -575,6 +846,8 @@ function get_back($redirect){
         header("Location: $redirectTo");
         //exit;
 }
+
+
 
 function getUserVote(int $articleId, int $userId): ?string {
     
@@ -650,7 +923,157 @@ function renderPagination(int $currentPage, int $totalPages, array $params = [])
     return $html;
 }
 
-function getTopViewedArticles(int $limit = 5): string {
+
+/**
+ * Generează link-urile de paginare limitate pentru navigare.
+ *
+ * @param int $currentPage Pagina curentă.
+ * @param int $totalPages Numărul total de pagini.
+ * @param array $queryParams Un array de parametri GET suplimentari de menținut în URL.
+ * @return string HTML-ul pentru paginare.
+ */
+function renderPagination2($currentPage, $totalPages, $queryParams = []) {
+    $html = '<nav aria-label="Page navigation example"><ul class="pagination">';
+    $url = basename($_SERVER['PHP_SELF']); // Ia numele scriptului curent (ex: view_logs.php)
+
+    // Colectăm toți parametrii existenți din $_GET pentru a-i menține în link-uri
+    $existingQueryParams = $_GET;
+    unset($existingQueryParams['page']); // Eliminăm parametrul 'page' pentru a-l adăuga corect mai târziu
+
+    // Combinăm parametrii existenți cu cei specifici paginării și filtrelor
+    $allQueryParams = array_merge($existingQueryParams, $queryParams);
+
+    // Numărul de link-uri de pagină de afișat în jurul paginii curente (ex: 1 la stânga, 1 la dreapta)
+    $numLinksAroundCurrent = 1; 
+    // Numărul maxim de pagini afișate în total (inclusiv pagina curentă)
+    $maxPagesToShow = (2 * $numLinksAroundCurrent) + 1; // Va fi 3: [curent-1], [curent], [curent+1]
+
+    // --- Link "Previous" ---
+    if ($currentPage > 1) {
+        $prevPage = $currentPage - 1;
+        $allQueryParams['page'] = $prevPage;
+        $html .= '<li class="page-item"><a class="page-link" href="' . $url . '?' . http_build_query($allQueryParams) . '">Previous</a></li>';
+    } else {
+        $html .= '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>';
+    }
+
+    // --- Logică pentru link-urile de pagină ---
+
+    // Definirea intervalului de pagini de afișat în jurul paginii curente
+    $start_page = max(1, $currentPage - $numLinksAroundCurrent);
+    $end_page = min($totalPages, $currentPage + $numLinksAroundCurrent);
+
+    // Ajustarea intervalului dacă se află la început sau la sfârșit, pentru a menține $maxPagesToShow total
+    if ($start_page == 1) {
+        $end_page = min($totalPages, $maxPagesToShow);
+    }
+    if ($end_page == $totalPages) {
+        $start_page = max(1, $totalPages - $maxPagesToShow + 1);
+    }
+
+    // Întotdeauna afișăm pagina 1, dacă nu este deja în intervalul nostru central
+    if ($start_page > 1) {
+        $allQueryParams['page'] = 1;
+        $html .= '<li class="page-item ' . (($currentPage == 1) ? 'active' : '') . '"><a class="page-link" href="' . $url . '?' . http_build_query($allQueryParams) . '">1</a></li>';
+        // Afișăm elipsis dacă există un "salt" între pagina 1 și prima pagină din intervalul central
+        if ($start_page > 2) {
+            $html .= '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">...</a></li>';
+        }
+    }
+
+    // Generăm link-uri pentru paginile din intervalul determinat (ex: c-1, c, c+1)
+    for ($i = $start_page; $i <= $end_page; $i++) {
+        // Asigurăm că nu afișăm pagina 1 din nou dacă a fost deja afișată explicit
+        if ($i == 1 && $start_page > 1) continue; 
+        // Asigurăm că nu afișăm ultima pagină din nou dacă va fi afișată explicit
+        if ($i == $totalPages && $end_page < $totalPages) continue;
+
+        $allQueryParams['page'] = $i;
+        $activeClass = ($i == $currentPage) ? 'active' : '';
+        $html .= '<li class="page-item ' . $activeClass . '"><a class="page-link" href="' . $url . '?' . http_build_query($allQueryParams) . '">' . $i . '</a></li>';
+    }
+
+    // Întotdeauna afișăm ultima pagină, dacă nu este deja în intervalul nostru central
+    if ($end_page < $totalPages) {
+        // Afișăm elipsis dacă există un "salt" între ultima pagină din intervalul central și ultima pagină
+        if ($end_page < $totalPages - 1) {
+            $html .= '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">...</a></li>';
+        }
+        $allQueryParams['page'] = $totalPages;
+        $html .= '<li class="page-item ' . (($currentPage == $totalPages) ? 'active' : '') . '"><a class="page-link" href="' . $url . '?' . http_build_query($allQueryParams) . '">' . $totalPages . '</a></li>';
+    }
+
+    // --- Link "Next" ---
+    if ($currentPage < $totalPages) {
+        $nextPage = $currentPage + 1;
+        $allQueryParams['page'] = $nextPage;
+        $html .= '<li class="page-item"><a class="page-link" href="' . $url . '?' . http_build_query($allQueryParams) . '">Next</a></li>';
+    } else {
+        $html .= '<li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a></li>';
+    }
+
+    $html .= '</ul></nav>';
+    return $html;
+}
+
+// retrieve top 5 viewed articles from the database
+// @param int $days - last days
+// @return HTML string
+function getTop5ViewedArticles(int $days): string 
+{
+    if ($days <= 0) {
+        return '<p>⚠️ Parametrul trebuie să fie un număr pozitiv de zile.</p>';
+    }
+
+    $db = new Database();
+
+    $sql = "SELECT a.id, a.title, c.icon, COUNT(v.id) AS views
+            FROM articles a
+            JOIN article_views v ON a.id = v.article_id
+            JOIN categories c ON a.category_id = c.id
+            WHERE v.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
+              AND a.status = 'approved'
+              AND (a.publish_at IS NULL OR a.publish_at <= NOW())
+              AND c.is_active = 1
+            GROUP BY a.id
+            ORDER BY views DESC
+            LIMIT 5";
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll();
+
+        if (!$results) return '<p>📭 Nu există articole vizualizate în ultimele ' . $days . ' zile.</p>';
+
+        $html = '<ul class="top-articles viewed">';
+        foreach ($results as $row) {
+            $iconPath = APP_URL . 'assets/icons/categories/' . htmlspecialchars($row['icon']);
+            $titleShort = truncateText($row['title'], 30, '...');
+            $html .= '<li class="grid-li">
+                        <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
+                        <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
+                        <span class="span-1">(' . $row['views'] . ' 👁️)</span>
+                      </li>';
+        }
+        $html .= '</ul>';
+        return $html;
+
+    } catch (PDOException $e) {
+        return '<p>🔥 Eroare la interogarea articolelor vizualizate: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+}
+
+// returns a list of top viewed articles
+// @param int $limit - number of articles to return
+function getTopViewedArticles(int $limit = 5): string 
+{
+
+    if ($limit <= 0) {
+        return '<p>Parameter must be a positive integer.</p>';
+    }
+
     $db = new Database();
     $sql = "SELECT a.id, a.title, a.views, c.icon
             FROM articles a
@@ -661,30 +1084,137 @@ function getTopViewedArticles(int $limit = 5): string {
             ORDER BY a.views DESC
             LIMIT :limit";
 
-    $stmt = $db->prepare($sql);
-    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-    $stmt->execute();
-    $results = $stmt->fetchAll();
+    try{
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll();
 
-    if (!$results) return '<p>Nicio vizualizare înregistrată.</p>';
+        if (!$results) return '<p>Nicio vizualizare înregistrată.</p>';
 
-    $html = '<ul class="top-articles viewed">';
-    foreach ($results as $row) {
-        
-        $iconPath = APP_URL.'assets/icons/categories/' . $row['icon'];
-        $titleShort= truncateText($row['title'], 30, '...');
-        $html .= '<li class="grid-li">
-                    <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
-                    <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
-                    <span class="span-1">('.$row['views'].')</span>
-                  </li>';
+        $html = '<ul class="top-articles viewed">';
+        foreach ($results as $row) {
+            
+            $iconPath = APP_URL.'assets/icons/categories/' . $row['icon'];
+            $titleShort= truncateText($row['title'], 30, '...');
+            $html .= '<li class="grid-li">
+                        <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
+                        <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
+                        <span class="span-1">('.$row['views'].')</span>
+                    </li>';
+        }
+        $html .= '</ul>';
+        return $html;
+    } catch (PDOException $e) {
+            return '<p>Error: ' . $e->getMessage() . '</p>';    
     }
-    $html .= '</ul>';
-    return $html;
+}
+// returns the top 5 most commented articles in the last $days days
+// returns an HTML string with the list of articles
+function getTop5CommentedArticles(int $days): string 
+{
+    if ($days <= 0) {
+        return '<p>Days must be a positive integer.</p>';
+    }
+
+    $db = new Database();
+    $sql = "SELECT a.id, a.title, c.icon, COUNT(ac.id) AS comment_count
+            FROM articles a
+            JOIN article_comments ac ON a.id = ac.article_id
+            JOIN categories c ON a.category_id = c.id
+            WHERE ac.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
+            AND ac.status = 'approved'
+            AND a.status = 'approved'
+            GROUP BY a.id, a.title, c.icon
+            ORDER BY comment_count DESC
+            LIMIT 5";
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll();
+
+        if (!$results) return '<p>No comments in this period.</p>';
+
+        $html = '<ul class="top-articles commented">';
+        foreach ($results as $article) {
+            $titleShort = truncateText($article['title'], 30, '...');
+            $icon  = htmlspecialchars($article['icon']);
+            $id    = (int)$article['id'];
+            $count = (int)$article['comment_count'];
+
+            $html .= '<li class="grid-li">
+                        <span><img src="'.APP_URL."assets/icons/categories/". $icon . '" class="li-icon" alt=""></span>
+                        <span><a href="view_article.php?id=' . $id. '">' . htmlspecialchars($titleShort) . '</a></span>
+                        <span class="span-1">(' . $count . ')</span>
+                      </li>';
+        }
+        $html .= '</ul>';
+        return $html;
+
+    } catch (PDOException $e) {
+        return '<p>Error fetching top commented articles: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
 }
 
+// returns the top 5 most liked articles in the last $days days
+// returns an HTML string with the list of articles
+function getTop5LikedArticles(int $days): string 
+{
+    if ($days <= 0) {
+        return '<p>Parameter must be a positive integer.</p>';
+    }
 
-function getTopLikedArticles(int $limit = 5): string {
+    $db = new Database();
+
+    $sql = "SELECT a.id, a.title, c.icon, COUNT(l.id) AS likes
+            FROM articles a
+            JOIN article_likes l ON a.id = l.article_id
+            JOIN categories c ON a.category_id = c.id
+            WHERE l.vote_type = 'like'
+              AND l.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
+              AND a.status = 'approved'
+              AND (a.publish_at IS NULL OR a.publish_at <= NOW())
+              AND c.is_active = 1
+            GROUP BY a.id
+            ORDER BY likes DESC
+            LIMIT 5";
+
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll();
+
+        if (!$results) return '<p>No liked articles found in the last ' . $days . ' zile.</p>';
+
+        $html = '<ul class="top-articles liked">';
+        foreach ($results as $row) {
+            $iconPath = APP_URL . 'assets/icons/categories/' . htmlspecialchars($row['icon']);
+            $titleShort = truncateText($row['title'], 30, '...');
+            $html .= '<li class="grid-li">
+                        <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
+                        <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
+                        <span class="span-1">(' . $row['likes'] . ')</span>
+                      </li>';
+        }
+        $html .= '</ul>';
+        return $html;
+
+    } catch (PDOException $e) {
+        return '<p>Error fetching top liked articles: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+}
+
+// returns the top $limit most liked articles
+// returns an HTML string with the list of 
+// articles or an error message if something goes wrong 
+function getTopLikedArticles(int $limit = 5): string 
+{
+     if ($limit <= 0) {
+        return '<p>Parameter must be a positive integer.</p>';
+    }
     $db = new Database();
 
     $sql = "SELECT a.id, a.title, c.icon, COUNT(l.id) AS likes
@@ -699,6 +1229,7 @@ function getTopLikedArticles(int $limit = 5): string {
             ORDER BY likes DESC
             LIMIT :limit";
 
+try {
     $stmt = $db->prepare($sql);
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
@@ -718,4 +1249,220 @@ function getTopLikedArticles(int $limit = 5): string {
     }
     $html .= '</ul>';
     return $html;
+    } catch (PDOException $e) {
+        return '<p>Error fetching top liked articles: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+    
+}
+
+
+// Adaugă notificare pentru un user
+function sendNotification($userId, $title, $message, $type = 'info') {
+    $db = new Database();
+    $db->query("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)", [
+        $userId, $title, $message, $type
+    ]);
+}
+
+// Marcare ca citită
+function markNotificationRead($notifId, $userId) {
+    $db = new Database();
+    $db->query("UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?", [$notifId, $userId]);
+}
+
+// returnează ID-ul autorului unui comentariu
+function getCommentAuthorId(int $commentId): ?int {
+    $db = new Database();
+
+    $sql = "SELECT user_id FROM article_comments WHERE id = ?";
+    $result = $db->fetchSingle($sql, [$commentId]);
+
+    return $result ? (int)$result['user_id'] : null;
+}
+
+function getArticleAuthorId(int $aid): ?int {
+    $db = new Database();
+
+    $sql = "SELECT user_id FROM articles WHERE id = ?";
+    $result = $db->fetchSingle($sql, [$aid]);
+
+    return $result['user_id'] ?? null;
+}
+
+// returns the ID of an article by its title
+function getArticleIdByTitle(int $title): ?int {
+    $db = new Database();
+
+    $sql = "SELECT id FROM articles WHERE title = ?";
+    $result = $db->fetchSingle($sql, [$title]);
+
+    return $result['id'] ?? null;
+}
+
+// get all unread notifications for a user (uid)
+function getUnreadNotifications($uid) {
+    // Crează o instanță a clasei Database
+    $db = new Database();
+
+    // Pregătește interogarea SQL pentru a obține notificările necitite
+    $query = "SELECT * FROM notifications WHERE user_id = :uid AND is_read = 0 ORDER BY created_at DESC";
+    
+    // Execută interogarea
+    $stmt = $db->prepare($query);
+    $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
+    $stmt->execute();
+
+    // Obține rezultatele
+    $unreadNotifications = $stmt->fetchAll();
+
+    return $unreadNotifications;
+}
+
+function getDraftsArticles($uid):array {
+    $db = new Database();
+
+    $query = "SELECT * FROM articles WHERE user_id = :uid AND status = 'draft' ORDER BY created_at DESC";
+
+    $stmt = $db->prepare($query);
+    $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $draftsArticles = $stmt->fetchAll();
+
+    return $draftsArticles;
+}
+
+
+// Return HTML output for notifications
+// @Param: $notifications - array of notifications with attributes: id, type, message, created_at, and is_read 
+// @Return: HTML string
+
+function renderNotifications(array $notifications): string {
+    // Verifică dacă array-ul de notificări este gol
+    if (empty($notifications)) {
+        return '
+        <div class="custom-box-1">
+            <span class="corner-label-1">' . lang_notifications . ' (0)</span>
+            <div class="box-content-1">
+                <ul class="list-group">
+                    No Notifications
+                </ul>
+            </div>
+        </div>';
+    } else {
+        // Începe generarea HTML-ului pentru notificări
+        $html = '<div class="custom-box-1">
+                    <span class="corner-label-1">' . lang_notifications . ' (' . count($notifications) . ')</span>
+                    <div class="box-content-1" style="padding: 20px;">
+                        <table width="100%">
+                            <thead>
+                                <tr>
+                                    <th>type</th>
+                                    <th>message</th>
+                                    <th>date</th>
+                                    <th>actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+
+        // Parcurge notificările și generează rândurile tabelului
+        foreach ($notifications as $n) {
+            $color = '';
+
+            // Determină culoarea în funcție de tipul notificării
+            switch ($n['type']) {
+                case 'info':
+                    $color = 'blue';
+                    break;
+                case 'success':
+                    $color = 'green';
+                    break;
+                case 'warning':
+                    $color = 'orange';
+                    break;
+                case 'error':
+                    $color = 'red';
+                    break;
+                default:
+                    $color = 'black';
+            }
+
+            // Adaugă rândul pentru notificare
+            $html .= '<tr id="notif-' . $n['id'] . '" style="color: ' . $color . ';">
+                        <td>' . htmlspecialchars($n['type']) . '</td>
+                        <td>' . htmlspecialchars($n['message']) . '</td>
+                        <td>' . date('Y-m-d H:i', strtotime($n['created_at'])) . '</td>
+                        <td>';
+
+            // Afișează acțiunile pentru notificare
+            if (!$n['is_read']) {
+                $html .= '<a href="#" title="Marchează ca citit" onclick="markRead(' . $n['id'] . '); return false;">
+                            <img src="' . APP_URL . 'assets/icons/icon-mark-read.svg" class="op-icon">
+                          </a>';
+            }
+            $html .= '<a href="#" title="Șterge notificarea" onclick="deleteNotif(' . $n['id'] . '); return false;">
+                        <img src="' . APP_URL . 'assets/icons/icon-delete.svg" class="op-icon">
+                      </a>
+                      </td>
+                      </tr>';
+        }
+
+        // Încheie tabelul și div-ul
+        $html .= '</tbody>
+                  </table>
+                  </div>
+                  </div>';
+
+        return $html;
+    }
+}
+
+// display articles in draft
+// @Param: $drafts - array of draft articles with atributesid, title, and created_at.
+// @Return: HTML string
+
+function renderDrafts(array $drafts): string {
+    // Verifică dacă array-ul de drafturi este gol
+    if (empty($drafts)) {
+        return '
+        <div class="custom-box-1">
+            <span class="corner-label-1">' . lang_articles_in_draft . '</span>
+            <div class="box-content-1">
+                <ul class="list-group">
+                    No Articles in draft
+                </ul>
+            </div>
+        </div>';
+    } else {
+        // Începe generarea HTML-ului pentru drafturi
+        $html = '<div class="custom-box-1">
+                    <span class="corner-label-1">' . lang_articles_in_draft . ' (' . count($drafts) . ')</span>
+                    <div class="box-content-1" style="padding: 15px;">
+                        <ul class="list-group">';
+
+        // Parcurge drafturile și generează elementele listei
+        foreach ($drafts as $draft) {
+            $html .= '<li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>' . htmlspecialchars($draft['title']) . '</strong><br>
+                            <small class="text-muted">creat la ' . date('Y-m-d H:i', strtotime($draft['created_at'])) . '</small>
+                        </div>
+                        <div class="btn-group">
+                            <a href="edit_article.php?id=' . $draft['id'] . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . lang_btn_edit . '">
+                            </a>
+                            <a href="submit_article.php?article_id=' . $draft['id'] . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-send-approval.svg" class="op-icon" title="' . lang_btn_send_approval . '">
+                            </a>
+                        </div>
+                    </li>';
+        }
+
+        // Încheie lista și div-ul
+        $html .= '</ul>
+                  </div>
+                  </div>';
+
+        return $html;
+    }
 }

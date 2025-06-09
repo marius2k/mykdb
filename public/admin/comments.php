@@ -42,7 +42,16 @@ $totalPages = ceil($totalComments / $perPage);
     if (isset($_GET['approve'])) {
         $stmt = $db->prepare("UPDATE article_comments SET status = 'approved' WHERE id = ?");
         $stmt->execute([$_GET['approve']]);
+        
+        // log the activity
         logActivity($_SESSION['user']['id'], 'approve_comment', 'User ' .$_SESSION['user']['username'] .' approved a comment');
+
+        // send notification to the user
+        //sendNotification($comment['user_id'], 'Your comment has been approved');
+        $userId = getCommentAuthorId($_GET['approve']);
+        sendNotification($userId,'info', 'Your comment has been approved');  
+        sendNotificationToRole('admin','info','A comment has been approved');
+
         header("Location: comments.php");
         exit;
     }

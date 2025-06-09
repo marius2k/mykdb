@@ -47,13 +47,13 @@ if ($content === '') {
 
 
 //debuging AJAX request
-/*
+
 file_put_contents('debug_comments.log', json_encode([
   'POST' => $_POST,
   'RAW' => file_get_contents('php://input'),
   'SESSION' => $_SESSION ?? 'no session'
 ]) . PHP_EOL, FILE_APPEND);
-*/
+
 
 
 $db = new Database();

@@ -10,17 +10,19 @@ define(constant_name: 'lang_login', value: 'Login');
 define(constant_name:'lang_logout',value:'Logout');
 define(constant_name:'lang_register',value:'Register');
 define(constant_name:'lang_dashboard',value:'Dashboard');
+define(constant_name:'lang_logs',value:'Logs');
 define(constant_name:'lang_users',value:'Users');
 define(constant_name:'lang_categories',value:'Categories');
 define(constant_name:'lang_articles',value:'Articles');
 define(constant_name:'lang_search',value:'Search');
 define(constant_name:'lang_search_placeholder',value:'Search articles...');
 define(constant_name:'lang_search_results',value:'Search Results');
-define(constant_name:'lang_edit_acl',value:'Edit ACL');
+define(constant_name:'lang_edit_acl',value:'ACL');
 define(constant_name:'lang_no_articles',value:'No articles found');
 define(constant_name:'lang_adv_search',value:'Advanced Search');
 define(constant_name:'lang_filter',value:'Filter');
 define(constant_name:'lang_text',value:'Text');
+define(constant_name:'lang_notifications',value:'Notifications');
 
 
 // Define constants for Articles
@@ -74,6 +76,20 @@ define(constant_name:'lang_db_log_table_action',value:'Action');
 define(constant_name:'lang_db_log_table_agent',value:'Agent');
 define(constant_name:'lang_db_log_table_details',value:'Details');
 define(constant_name:'lang_db_log_table_data',value:'Date');
+define(constant_name:'lang_db_analytics',value:'Analytics Dashboard');
+define(constant_name:'lang_db_top5_views',value:'Top Viewed Articles in ');
+define(constant_name:'lang_db_top5_likes',value:'Top Liked Articles in ');
+define(constant_name:'lang_db_comments_today',value:'Comments recived today');
+define(constant_name:'lang_db_comments_last7days',value:'Comments within last 7 days');
+define(constant_name:'lang_db_comments_last_month',value:'Comments within last 30 days');
+define(constant_name:'lang_db_recent_comments',value:'Comments');
+define(constant_name:'lang_db_art_published_last_days',value:'Articles published in last ');
+define(constant_name:'lang_db_art_days',value:' days');
+define(constant_name:'lang_db_articles',value:'Articles');
+define(constant_name:'lang_db_comments_last_days',value:'Comments in last ');
+define(constant_name:'lang_db_comments_received',value:'Comments Received ');
+define(constant_name:'lang_db_articles_published',value:'Articles Published ');
+define(constant_name:'lang_db_top5_commented',value:'Top Commented Articles in ');
 
 
 // Define constants for Users (file: users.php)
@@ -110,7 +126,14 @@ define(constant_name:'lang_cat_inactive',value:'Inactive');
 define(constant_name:'lang_cat_select_icon',value:'Select Icon');
 
 
+// Define constants for Logs management
 
+define(constant_name:'lang_log_delete_selected',value:'Delete Selected');
+define(constant_name:'lang_log_archive_selected',value:'Archive Selected');
+define(constant_name:'lang_log_filter_start_date',value:'Start Date');
+define(constant_name:'lang_log_filter_end_date',value:'End Date');
+define(constant_name:'lang_log_filter_user',value:'User');
+define(constant_name:'lang_log_filter_reset',value:'Reset Filter');
 
 
 // Define constants for Articles (file: articles.php)
@@ -168,6 +191,7 @@ define(constant_name:'lang_btn_reject',value:'Reject');
 define(constant_name:'lang_btn_change_role',value:'Change Role');
 define(constant_name:'lang_btn_cancel',value:'Cancel');
 define(constant_name:'lang_btn_send_approval',value:'Send for Approval');
+define(constant_name:'lang_btn_filter',value:'Filter');
 
 // Define constants for User Profile (file: profile.php)
 
@@ -207,7 +231,7 @@ return [
     'search' => 'search info in articles',
     'view_article' => 'view all published articles',
     'create_article' => 'create an article',
-    'edit_own_article' => 'modify the articles created by himself',
+    'edit_own_article' => 'modify own articles',
     'edit_article' => 'edit all articles',
     'publish_article' => 'publish an article',
     'disable_article' => 'disable an article',
@@ -227,13 +251,19 @@ return [
     'delete_user' => 'remove an existing user',
     'modify_user' => 'modify all users',
     'modify_own_user' => 'modify own info (profile)',
-    'view_own_activity' => 'view only his own activity logs',
-    'view_all_activity' => 'view all activity logs',
+    'view_own_logs' => 'view only his own activity logs',
+    'view_all_logs' => 'view all activity logs',
     'backup_data' => 'backup data',
     'edit_acl' => 'modify the access list',
     'register' => 'user registration',
     'approve_user' => 'approve user in pending',
-    'reject_comment' => 'reject/disable comment'
+    'reject_comment' => 'reject/disable comment',
+    'delete_own_logs' => 'delete own activity logs',
+    'archive_own_logs' => 'archive own activity logs',
+    'delete_all_logs' => 'delete all activity logs',
+    'archive_all_logs' => 'archive all activity logs',
+    'view_dashboard' => 'view own dashboard'
+
   ];
   
 

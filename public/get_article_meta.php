@@ -15,7 +15,7 @@ $db = new Database();
 $article = $db->fetchSingle("SELECT views FROM articles WHERE id = ?", [$aid]);
 
 // comments
-$comments = $db->fetchAll("SELECT COUNT(*) AS total FROM article_comments WHERE article_id = ? AND status = 'approved'", [$aid]);
+$comments = $db->fetchSingle("SELECT COUNT(*) AS total FROM article_comments WHERE article_id = ? AND status = 'approved'", [$aid]);
 
 echo json_encode([
   'views' => (int) $article['views'],

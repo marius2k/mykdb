@@ -30,5 +30,18 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     logActivity($_GET['id'], 'user_approved', 'User approved: ' . $_SESSION['user']['username']);
 }
 
+// creez o inregistrate in tabela user_configuration folosita pentru sistemul de notificari
+
+$userId = getUserById($_GET['id']);
+
+ // Creare înregistrare în user_configuration
+    $stmt = $db->prepare("
+        INSERT INTO user_configuration (user_id, last_processed_activity_log_id)
+        VALUES (:user_id, NULL)
+    ");
+
+    $stmt->execute([':user_id' => $userId]);
+
+
 header('Location: users.php');
 exit;

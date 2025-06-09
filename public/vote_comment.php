@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 $userId = $_SESSION['user']['id'] ?? 0;
 $commentId = (int)($_POST['comment_id'] ?? 0);
 $type = $_POST['type'] ?? ''; // 'like' sau 'dislike'
+$authorId = getCommentAuthorId($commentId);
 
 if (!$userId || !$commentId || !in_array($type, ['like', 'dislike'])) {
     echo json_encode(['status' => 'error', 'message' => 'Invalid data']);
@@ -27,11 +28,18 @@ if ($existingVote) {
         // 🔄 Schimbă votul (ex: like -> dislike)
         $stmt = $db-> prepare("UPDATE comment_likes SET vote_type = ? WHERE user_id = ? AND comment_id = ?");
         $stmt->execute([$type, $userId, $commentId]);
+
+        // 📢 Notifică autorul comentariului
+        
+        sendNotification($authorId, 'Comment voted','Your comment has been voted '.$type,'info');
     }
 } else {
     // ➕ Adăugăm vot nou
     $stmt = $db->prepare("INSERT INTO comment_likes (user_id, comment_id, vote_type) VALUES (?, ?, ?)");
     $stmt->execute([$userId, $commentId, $type]);
+
+     // 📢 Notifică autorul comentariului
+    sendNotification($authorId, 'Comment voted','Your comment has been voted '.$type,'info');
 }
 
 // ♻️ Recalculăm voturile

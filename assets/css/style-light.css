@@ -730,7 +730,7 @@ a:hover {
     color: #020202;
     border: 1px solid #696968;
     border-radius: 5px;
-    width: 150px;
+    width: 170px;
 }
 
 .btn-outline-grey:hover {
@@ -1820,6 +1820,8 @@ ul.top-articles .li-icon {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 5px;
+  font-size: 0.9rem;
+  margin-bottom: 5px
 }
 
 .span-1{
@@ -1901,4 +1903,172 @@ ul.top-articles .li-icon {
 .box-content {
   color: #555;
   line-height: 1.5;
+}
+
+.custom-box-1 {
+  width: 95%;
+  position: relative;
+  background:rgba(255, 255, 255, 0.8); /* Fundalul boxului */
+  border: 1px solid rgb(184, 184, 184); /* Bordura completă */
+  border-radius: 8px; /* Menținem colțurile rotunde */
+  padding: 5px 10px;
+  margin: 10px;
+  
+}
+
+.corner-label-1 {
+  position: absolute;
+  top: -25px; /* Poziționează eticheta deasupra bordurii */
+  left: 25px; /* Poziția etichetei de la stânga boxului */
+  padding: 0 5px; /* Padding pentru spațiul de 10px înainte și după text */
+  font-weight: bold;
+  background: transparent; /* Fundal transparent pentru etichetă */
+  z-index: 1; /* Asigură că eticheta e deasupra elementului care maschează bordura */
+  font-size: 18px;
+  font-weight: bold;
+  white-space: nowrap;
+  
+}
+
+/* Pseudoelement pentru a "tăia" bordura, având fundalul paginii */
+.custom-box-1::before {
+  content: "";
+  position: absolute;
+  top: -1px; /* La nivelul bordurii de sus */
+  height: 1px; /* Suficient de înalt cât să acopere bordura și puțin deasupra */
+  background: var(--page-background-color, white); /* **Aici este cheia:** Culoarea fundalului paginii */
+  z-index: 1; /* Sub corner-label, dar deasupra bordurii */
+  
+  /* Lățimea și poziția vor fi setate de JavaScript prin variabile CSS */
+  width: var(--cutout-width);
+  left: var(--cutout-left);
+}
+.box-content-1 {
+  /*color: #555;*/
+  line-height: 1.5;
+  padding: 2px;
+  text-align: left;
+  font-size: 12px;
+  
+}
+
+
+.custom-box-2 {
+  width: 95%;
+  position: relative;
+  background:rgba(255, 255, 255, 0.8); /* Fundalul boxului */
+  border: 1px solid rgb(184, 184, 184); /* Bordura completă */
+  border-radius: 8px; /* Menținem colțurile rotunde */
+  padding: 5px 20px;
+  margin: 20px;
+  
+}
+
+.corner-label-2 {
+  position: absolute;
+  top: -20px; /* Poziționează eticheta deasupra bordurii */
+  left: 25px; /* Poziția etichetei de la stânga boxului */
+  padding: 0 5px; /* Padding pentru spațiul de 10px înainte și după text */
+  font-weight: bold;
+  background: transparent; /* Fundal transparent pentru etichetă */
+  z-index: 1; /* Asigură că eticheta e deasupra elementului care maschează bordura */
+  font-size: 20px;
+  font-weight: bold;
+  white-space: nowrap;
+  
+}
+
+/* Pseudoelement pentru a "tăia" bordura, având fundalul paginii */
+.custom-box-2::before {
+  content: "";
+  position: absolute;
+  top: -1px; /* La nivelul bordurii de sus */
+  height: 1px; /* Suficient de înalt cât să acopere bordura și puțin deasupra */
+  background: var(--page-background-color, white); /* **Aici este cheia:** Culoarea fundalului paginii */
+  z-index: 2; /* Sub corner-label, dar deasupra bordurii */
+  
+  /* Lățimea și poziția vor fi setate de JavaScript prin variabile CSS */
+  width: var(--cutout-width);
+  left: var(--cutout-left);
+}
+.box-content-2 {
+  /*color: #555;*/
+  line-height: 1.5;
+  padding: 5px;
+  align-items: left;
+}
+
+
+.notif-bell {
+  position: relative;
+  /*display: inline-block;*/
+  margin-left: 0;
+  background: white;
+  border-radius: 50%;
+  float: right;
+  padding: 3px;
+}
+
+.notif-bell img {
+  vertical-align: middle;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+
+.dashboard-wrapper {
+ 
+  display: flex;
+  gap: 1px;
+  padding: 1px;
+}
+
+/* Coloana 1 – Drafts + Notificări */
+.dashboard-left {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 1px ;
+}
+
+/* Coloana 2 – Grid de statistici */
+.dashboard-right {
+  width: 50%;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+}
+
+.list-item {
+    display: flex; /* Asigură-te că elementele sunt flexibile */
+    align-items: center; /* Aliniază vertical elementele */
+    justify-content: flex-start; /* Aliniază elementele la stânga */
+    width: 100%;
+}
+
+.list-item img {
+    width: 20px; /* Lățimea imaginii */
+}
+
+.list-item .text {
+    flex-basis: 70%; /* Sau width: 70%; */
+    padding-left: 10px;
+
+}
+
+.list-item .number {
+    flex: 1; /* Permite numărului să ocupe restul spațiului */
+    text-align: right; /* Aliniază numărul la dreapta */
 }
