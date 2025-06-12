@@ -72,22 +72,11 @@ $lang = $_SESSION['settings']['language'] ?? 'en';
 //echo "Settings->Theme: ".$theme;
 //echo " Settings->Lang: ".$lang;
 
-switch ($lang) {
-    case 'ro':
-        //require_once APP_ROOT . 'assets/lang/ro.php';
-        $langFile = APP_ROOT . 'assets/lang/ro.php';
-        $translations = file_exists($langFile) ? include $langFile : [];
-        break;
-    case 'en':
-        //require_once APP_ROOT . 'assets/lang/en.php';
-        $langFile = APP_ROOT . 'assets/lang/en.php';
-        $translations = file_exists($langFile) ? include $langFile : [];
-        break;
-    default:
-        //require_once APP_ROOT . 'assets/lang/en.php';
-        $langFile = APP_ROOT . 'assets/lang/en.php';
-        $translations = file_exists($langFile) ? include $langFile : [];
-        break;
+$langFile = APP_ROOT . "assets/lang/{$lang}.php";
+if (file_exists($langFile)) {
+    $translations = include $langFile;
+} else {
+    $translations = include APP_ROOT . "assets/lang/en.php";
 }
 
 //$userId = $_SESSION['user']['id'];
@@ -185,7 +174,7 @@ if ($userId) {
 
                                 <a class="nav-link" href="<?php APP_URL ?>login.php">
                                     <i class="bi bi-box-arrow-in-right fs-4"></i>
-                                    <div style="color: white; font-size: 15px;"><?=lang_login?></div>
+                                    <div style="color: white; font-size: 15px;"><?= lang('lang_login') ?></div>
                                 </a>
             <?php } ?> 
            
@@ -207,15 +196,15 @@ if ($userId) {
             <div style="float: right; padding-right: 10px; padding-top: 5px; justify-content: space-between;">
 
                 <form id="user-settings-form" method="post" action="<?=APP_URL?>public/update_settings.php">
-                    <em class="settings-bar-text"><?=lang_select_theme?></em>
+                    <em class="settings-bar-text"><?= lang('lang_select_theme') ?></em>
                     <select name="theme" onchange="this.form.submit()" class="settings-dropdown">
                         <option value="light" <?= $theme === 'light' ? 'selected' : '' ?>>Light</option>
                         <option value="dark" <?= $theme === 'dark' ? 'selected' : '' ?>>Dark</option>
                     </select>
-                    <em class="settings-bar-text"><?=lang_select_language?></em>
+                    <em class="settings-bar-text"><?=lang('lang_select_language') ?></em>
                     <select name="lang" onchange="this.form.submit()" class="settings-dropdown">
-                        <option value="en" <?= $lang === 'en' ? 'selected' : '' ?>><?=lang_select_english?></option>
-                        <option value="ro" <?= $lang === 'ro' ? 'selected' : '' ?>><?=lang_select_romanian?></option>
+                        <option value="en" <?= $lang === 'en' ? 'selected' : '' ?>><?= lang('lang_select_english') ?></option>
+                        <option value="ro" <?= $lang === 'ro' ? 'selected' : '' ?>><?= lang('lang_select_romanian') ?></option>
                         <!-- adaugă alte limbi dacă e cazul -->
                     </select>
                     <input type="hidden" name="redirect_back" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">

@@ -1,5 +1,10 @@
 <?php
 
+// language translation
+function lang($key) {
+    global $translations;
+    return $translations[$key] ?? $key;
+}
 /**
  * Escape HTML special characters
  */
@@ -54,7 +59,7 @@ function getCategories($pdo) {
 /**
  * Get username from user ID
  */
-function getUserById($id) {
+function getUserNameById($id) {
 
     $db = new Database();
 
@@ -373,9 +378,9 @@ function generateNavBar2($uid) {
         // Guest user navigation
         // If user is not logged in, show only home, login and register links
         $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
-                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang_login.'</a>
-                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang_register.'</a>';
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang('lang_home').'</a>
+                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang('lang_login').'</a>
+                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang('lang_register').'</a>';
         return $nav;
     }
 
@@ -385,13 +390,13 @@ function generateNavBar2($uid) {
         ];
 
     if(hasPermission($uid,$ops)){
-        $nav .= '<a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>';
+        $nav .= '<a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang('lang_home') .'</a>';
     }
 
     $ops=['view_dashboard'];
 
     if (hasPermission($uid,$ops)){
-        $nav.='<a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>';
+        $nav.='<a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang('lang_dashboard') . '</a>';
     }
 
 
@@ -401,7 +406,7 @@ function generateNavBar2($uid) {
         ];
 
     if (hasPermission($uid,$ops)){
-        $nav.='<a href="'.APP_URL.'public/view_logs.php"'.($currentPage === 'view_logs.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_logs . '</a>';
+        $nav.='<a href="'.APP_URL.'public/logs.php"'.($currentPage === 'logs.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang('lang_logs') . '</a>';
     }
 
     // check users allowed for users management (file: admin/users.php);
@@ -416,7 +421,7 @@ function generateNavBar2($uid) {
     
     if(hasPermission($uid,$ops)){
 
-        $nav.='<a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang_users. '</a>';
+        $nav.='<a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang('lang_users'). '</a>';
     }
 
     //check users allowed to manage categories (file: admin/categories.php)
@@ -427,7 +432,7 @@ function generateNavBar2($uid) {
 
     if (hasPermission($uid,$ops)){
 
-        $nav.='<a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang_categories.'</a>';
+        $nav.='<a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang('lang_categories').'</a>';
 
     }
 
@@ -445,7 +450,7 @@ function generateNavBar2($uid) {
 
     if (hasPermission($uid,$ops)){
 
-        $nav.='<a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>';
+        $nav.='<a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang('lang_articles').'</a>';
     }
 
     // check users allowed to manage comments
@@ -458,7 +463,7 @@ function generateNavBar2($uid) {
     if (hasPermission($uid,$ops)){
 
 
-        $nav.='<a href="'.APP_URL.'public/admin/comments.php"'.($currentPage === 'comments.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_com_comments.'</a>';
+        $nav.='<a href="'.APP_URL.'public/admin/comments.php"'.($currentPage === 'comments.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang('lang_com_comments').'</a>';
     }
 
 
@@ -467,20 +472,20 @@ function generateNavBar2($uid) {
     $ops=['edit_acl'];
 
     if(hasPermission($uid,$ops)){
-        $nav.='<a href="'.APP_URL.'public/admin/acl_edit.php"'.($currentPage === 'acl_edit.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_edit_acl.'</a>';
+        $nav.='<a href="'.APP_URL.'public/admin/acl_edit.php"'.($currentPage === 'acl_edit.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang('lang_edit_acl').'</a>';
     }
 
     
     $ops=['register'];
 
     if(hasPermission($uid,$ops)){
-        $nav.= '<a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang_register.'</a>';
+        $nav.= '<a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang('lang_register').'</a>';
     }    
 
     
     // menu bar for 'guest' users
 
-    $nav.='<a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
+    $nav.='<a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang('lang_logout') .'('.escape($_SESSION['user']['username']).')</a>';
 
     return $nav;
 }
@@ -496,12 +501,12 @@ function generateAvatarMenu($uid) {
         
         $menu .= '<li>
                         <a class="dropdown-item" href="' . APP_URL . 'public/register.php">
-                            <i class="bi bi-person-fill me-2"></i>'.lang_register . '</a>
+                            <i class="bi bi-person-fill me-2"></i>'.lang('lang_register') . '</a>
                     </li>';
         $menu .='<li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item " href="'.APP_URL.'public/login.php">
-                            <i class="bi bi-box-arrow-right me-2"></i>'.lang_login.'</a>
+                            <i class="bi bi-box-arrow-right me-2"></i>'.lang('lang_login').'</a>
                     </li>';
 
         return $menu;
@@ -518,7 +523,7 @@ function generateAvatarMenu($uid) {
 
         $menu .= '<li>
                         <a class="dropdown-item" href="' . APP_URL . 'public/profile.php">
-                            <i class="bi bi-person-fill me-2"></i>'.lang_profile . '</a>
+                            <i class="bi bi-person-fill me-2"></i>'.lang('lang_profile').'</a>
                     </li>';
     }
 
@@ -530,7 +535,7 @@ function generateAvatarMenu($uid) {
      
             $menu .='<li>
                         <a class="dropdown-item" href="'.APP_URL.'public/admin/acl_edit.php">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>'.lang_edit_acl.'</a>
+                            <i class="bi bi-box-arrow-in-right me-2"></i>'.lang('lang_edit_acl').'</a>
                     </li>';
     }
 
@@ -538,7 +543,7 @@ function generateAvatarMenu($uid) {
             $menu .='<li><hr class="dropdown-divider"></li>
                     <li>
                         <a class="dropdown-item text-danger" href="'.APP_URL.'public/logout.php">
-                            <i class="bi bi-box-arrow-right me-2"></i>'.lang_logout.'</a>
+                            <i class="bi bi-box-arrow-right me-2"></i>'.lang('lang_logout').'</a>
                     </li>';
 
     return $menu;
@@ -628,13 +633,6 @@ function hasAllPermission(int $user_id, array $requiredOps): bool {
     return true;
 }
 
-
-
-
-function lang(string $key): string {
-    global $translations;
-    return $translations[$key] ?? $key;
-}
 
 function getCommentCount(int $articleId): int {
     global $db;
@@ -1299,6 +1297,64 @@ function getArticleIdByTitle(int $title): ?int {
     return $result['id'] ?? null;
 }
 
+
+// returns an array of articles with status "pending"
+function getPendingArticles(): array {
+
+    // create a db instance
+    $db = new Database();
+
+
+    try {
+        // Pregătește interogarea SQL pentru a obține articolele cu status "pending"
+        $stmt = $db->prepare("
+            SELECT a.*, u.username, c.name AS category
+            FROM articles a
+            JOIN users u ON a.user_id = u.id
+            LEFT JOIN categories c ON a.category_id = c.id
+            WHERE a.status = 'pending'
+            ORDER BY a.created_at DESC
+        ");
+
+        // Execută interogarea
+        $stmt->execute();
+
+        // Returnează rezultatele ca un array asociativ
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Tratează eroarea și returnează un mesaj de eroare
+        return ['error' => 'Error in fetching pending articles: ' . $e->getMessage()];
+    }
+}
+
+// returns an array of comments with status "pending"
+function getPendingComments(): array {
+     
+    // Crează o instanță a clasei Database
+     $db=new Database();
+
+    try {
+        // Pregătește interogarea SQL pentru a obține comentariile cu status "pending"
+        $stmt = $db->prepare("
+            SELECT c.*, u.username, a.title AS article_title
+            FROM article_comments c
+            JOIN users u ON c.user_id = u.id
+            JOIN articles a ON c.article_id = a.id
+            WHERE c.status = 'pending'
+            ORDER BY c.created_at DESC
+        ");
+
+        // Execută interogarea
+        $stmt->execute();
+
+        // Returnează rezultatele ca un array asociativ
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Tratează eroarea și returnează un mesaj de eroare
+        return ['error' => 'Error in fetching pending comments: ' . $e->getMessage()];
+    }
+}
+
 // get all unread notifications for a user (uid)
 function getUnreadNotifications($uid) {
     // Crează o instanță a clasei Database
@@ -1332,17 +1388,17 @@ function getDraftsArticles($uid):array {
     return $draftsArticles;
 }
 
-
+//************************************************************************************************************* */
 // Return HTML output for notifications
 // @Param: $notifications - array of notifications with attributes: id, type, message, created_at, and is_read 
 // @Return: HTML string
-
+//************************************************************************************************************* */
 function renderNotifications(array $notifications): string {
     // Verifică dacă array-ul de notificări este gol
     if (empty($notifications)) {
         return '
         <div class="custom-box-1">
-            <span class="corner-label-1">' . lang_notifications . ' (0)</span>
+            <span class="corner-label-1">' . lang('lang_notifications') . ' (0)</span>
             <div class="box-content-1">
                 <ul class="list-group">
                     No Notifications
@@ -1352,8 +1408,8 @@ function renderNotifications(array $notifications): string {
     } else {
         // Începe generarea HTML-ului pentru notificări
         $html = '<div class="custom-box-1">
-                    <span class="corner-label-1">' . lang_notifications . ' (' . count($notifications) . ')</span>
-                    <div class="box-content-1" style="padding: 20px;">
+                    <span class="corner-label-1">' . lang('lang_notifications') . ' (' . count($notifications) . ')</span>
+                    <div class="box-content-1" style="padding: 20px; font-size: 14px;">
                         <table width="100%">
                             <thead>
                                 <tr>
@@ -1388,9 +1444,9 @@ function renderNotifications(array $notifications): string {
             }
 
             // Adaugă rândul pentru notificare
-            $html .= '<tr id="notif-' . $n['id'] . '" style="color: ' . $color . ';">
+            $html .= '<tr id="notif-' . $n['id'] . '" style="color: ' . $color . '; font-size: 14px;" >
                         <td>' . htmlspecialchars($n['type']) . '</td>
-                        <td>' . htmlspecialchars($n['message']) . '</td>
+                        <td>' . $n['message'] . '</td>
                         <td>' . date('Y-m-d H:i', strtotime($n['created_at'])) . '</td>
                         <td>';
 
@@ -1416,17 +1472,17 @@ function renderNotifications(array $notifications): string {
         return $html;
     }
 }
-
+// ***********************************************************************************************
 // display articles in draft
 // @Param: $drafts - array of draft articles with atributesid, title, and created_at.
 // @Return: HTML string
-
+// ***********************************************************************************************
 function renderDrafts(array $drafts): string {
     // Verifică dacă array-ul de drafturi este gol
     if (empty($drafts)) {
         return '
         <div class="custom-box-1">
-            <span class="corner-label-1">' . lang_articles_in_draft . '</span>
+            <span class="corner-label-1">' . lang('lang_articles_in_draft') . '</span>
             <div class="box-content-1">
                 <ul class="list-group">
                     No Articles in draft
@@ -1436,23 +1492,23 @@ function renderDrafts(array $drafts): string {
     } else {
         // Începe generarea HTML-ului pentru drafturi
         $html = '<div class="custom-box-1">
-                    <span class="corner-label-1">' . lang_articles_in_draft . ' (' . count($drafts) . ')</span>
+                    <span class="corner-label-1">' . lang('lang_articles_in_draft') . ' (' . count($drafts) . ')</span>
                     <div class="box-content-1" style="padding: 15px;">
                         <ul class="list-group">';
 
         // Parcurge drafturile și generează elementele listei
         foreach ($drafts as $draft) {
-            $html .= '<li class="list-group-item d-flex justify-content-between align-items-center">
+            $html .= '<li class="list-group-item d-flex justify-content-between align-items-center" style="padding: 10px; font-size: 14px;">
                         <div>
                             <strong>' . htmlspecialchars($draft['title']) . '</strong><br>
                             <small class="text-muted">creat la ' . date('Y-m-d H:i', strtotime($draft['created_at'])) . '</small>
                         </div>
                         <div class="btn-group">
                             <a href="edit_article.php?id=' . $draft['id'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . lang_btn_edit . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . lang('lang_btn_edit') . '">
                             </a>
                             <a href="submit_article.php?article_id=' . $draft['id'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-send-approval.svg" class="op-icon" title="' . lang_btn_send_approval . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-send-approval.svg" class="op-icon" title="' . lang('lang_btn_send_approval') . '">
                             </a>
                         </div>
                     </li>';
@@ -1465,4 +1521,374 @@ function renderDrafts(array $drafts): string {
 
         return $html;
     }
+}
+
+// ***********************************************************************************************
+// display pending articles
+// @Param: $pendingArticles - array of pending articles with atributesid, title, and created_at.
+// @Return: HTML string
+// ***********************************************************************************************
+function renderPendingArticles(array $pendingArticles): string {
+
+    
+    // Verifică dacă array-ul de articole este gol
+    if (empty($pendingArticles)) {
+        return '
+        <div class="custom-box-1">
+            <span class="corner-label-1">'.lang('lang_articles_in_pending').'</span>
+            <div class="box-content-1">
+                <ul class="list-group">
+                    '.lang('lang_no_articles_in_pending').'.
+                </ul>
+            </div>
+        </div>';
+    } else {
+        // Începe generarea HTML-ului pentru articolele în așteptare
+        $html = '<div class="custom-box-1">
+                    <span class="corner-label-1">'.lang('lang_articles_in_pending').' (' . count($pendingArticles) . ')</span>
+                    <div class="box-content-1" style="padding: 15px;">
+                        <ul class="list-group">';
+
+        // Parcurge articolele și generează elementele listei
+        foreach ($pendingArticles as $article) {
+            $html .= '<li class="list-group-item d-flex justify-content-between align-items-center" style="padding: 10px; font-size: 14px;">
+                        <div style="align-items: left;">
+                            <a href="view_article.php?id='.$article['id'].'">' . htmlspecialchars($article['title']) . '</a><br>
+                            <small class="text-muted">Autor: ' . htmlspecialchars($article['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($article['created_at'])) . '</small>
+                        </div>
+                        <div style="align-items: right;">
+                            
+                            <a href="approve_article.php?id=' . $article['id'] . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="'.lang('lang_article_approve').'">
+                            </a>
+                            <a href="reject_article.php?id=' . $article['id'] . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="'.lang('lang_article_reject').'">
+                            </a>
+                        </div>
+                    </li>';
+        }
+
+        // Încheie lista și div-ul
+        $html .= '</ul>
+                  </div>
+                  </div>';
+
+        return $html;
+    }
+}
+
+// ***********************************************************************************************
+// return html for pending comments
+// @Param: $pendingComments - array of pending comments 
+// @Return: HTML string
+// ***********************************************************************************************
+function renderPendingComments(array $pendingComments): string {
+    
+    global $csrf_token;
+
+    // Verifică dacă array-ul de comentarii este gol
+    if (empty($pendingComments)) {
+        return '
+        <div class="custom-box-1">
+            <span class="corner-label-1">'.lang('lang_com_in_pending').'</span>
+            <div class="box-content-1">
+                <ul class="list-group">
+                 '.lang('lang_no_com_in_pending').'   
+                </ul>
+            </div>
+        </div>';
+    } else {
+        // Începe generarea HTML-ului pentru comentariile în așteptare
+        $html = '<div class="custom-box-1">
+                    <span class="corner-label-1">'.lang('lang_com_in_pending').' (' . count($pendingComments) . ')</span>
+                    <div class="box-content-1" style="padding: 15px;">
+                        <ul class="list-group">';
+
+        // Parcurge comentariile și generează elementele listei
+        foreach ($pendingComments as $comment) {
+            $html .= '<li class="list-group-item d-flex justify-content-between align-items-center" style="padding: 10px; font-size: 14px;">
+                        <div>
+                            <a href="view_comment.php?id=' . $comment['id'] . '">' . truncateText($comment['content'],80) . '</a><br>
+                            <small style="font-size: 12px;">Autor: ' . htmlspecialchars($comment['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($comment['created_at'])) . '</small>
+                        </div>
+                        <div style="align-items: right;">
+                            <form action="comment_action.php" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="'.$comment['id'].'">
+                                <input type="hidden" name="user_id" value="'.$comment['user_id'].'">
+                                <input type="hidden" name="csrf_token" value="'.$csrf_token.'">
+                                <input type="hidden" name="redirect_to" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.lang('lang_com_approve').'" style="width:24;height:auto;"></button>
+                            </form>
+                            <form action="comment_action.php" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="'.$comment['id'].'">
+                                <input type="hidden" name="user_id" value="'.$comment['user_id'].'">
+                                <input type="hidden" name="csrf_token" value="'.$csrf_token.'">
+                                <input type="hidden" name="redirect_to" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
+                                <input type="hidden" name="action" value="delete">
+                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.lang('lang_com_delete').'" style="width:24;height:auto;"></button>
+                            </form>
+                           
+                        </div>
+                    </li>';
+        }
+
+        // Încheie lista și div-ul
+        $html .= '</ul>
+                  </div>
+                  </div>';
+
+        return $html;
+    }
+}
+
+
+
+
+// @Return: HTML string generating the dashboard for super admins
+
+function renderSuperAdminDashboard(): string {
+    // Declară variabilele globale
+    global $drafts, $notifications;
+
+    // Începe generarea HTML-ului pentru dashboard
+    $html = '<div class="dashboard-wrapper">';
+
+    // Coloana stânga
+    $html .= '<div class="dashboard-left">';
+
+    // Afișează drafturile
+    $html .= renderDrafts($drafts);
+
+    // Afișează notificările
+    $html .= renderNotifications($notifications);
+
+    $html .= '</div>'; // Încheie coloana stânga
+
+    // Coloana dreapta
+    $html .= '<div class="dashboard-right">';
+
+    // Top 5 articole cele mai vizualizate
+    $artViewDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_views') . $artViewDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTopViewedArticles(5) . '
+                </div>
+              </div>';
+
+    // Top 5 articole cele mai apreciate
+    $artLikeDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_likes') . $artLikeDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTop5LikedArticles($artLikeDays) . '
+                </div>
+              </div>';
+
+    // Top 5 articole cele mai comentate
+    $artCommDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_commented') . $artCommDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTop5CommentedArticles($artCommDays) . '
+                </div>
+              </div>';
+
+    // Grafice pentru articole
+    $html .= '<div class="custom-box-1" style="padding: 10px; gap: 0px;">
+                <span class="corner-label-1">' . lang('lang_db_articles') . '</span>
+                <div class="box-content-1" style="padding: 10px; width:100%; max-width:400px; height:auto; position:relative; margin: 0 auto;">
+                    <canvas id="articlesChart" height="130"></canvas>
+                </div>
+              </div>';
+
+    // Grafice pentru comentarii
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_recent_comments') . '</span>
+                <div class="box-content-1" style="padding:10px; width:100%; max-width:400px; height:auto; position:relative; margin: 0 auto;">
+                    <canvas id="commentsChart" height="130"></canvas>
+                </div>
+              </div>';
+
+    // Operațiuni
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">Operatiuni</span>
+                <ul>
+                  <li>18 create</li>
+                  <li>7 editate</li>
+                  <li>2 șterse</li>
+                </ul>
+              </div>';
+
+    // Loguri
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">Loguri</span>
+                <ul>
+                  <li>104 azi</li>
+                  <li>7 arhivate</li>
+                  <li>3 șterse</li>
+                </ul>
+              </div>';
+
+    // Exporturi
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">Exporturi</span>
+                <ul>
+                  <li>1 CSV azi</li>
+                  <li>3 backup-uri</li>
+                  <li>Ultimul: 2024-05-01</li>
+                </ul>
+              </div>';
+
+    $html .= '</div>'; // Încheie coloana dreapta
+    $html .= '</div>'; // Încheie wrapper-ul dashboard
+
+    return $html;
+}
+
+// @Return: HTML string generating the dashboard for admins
+function renderAdminDashboard(): string {
+    // Declară variabilele globale
+    global $drafts, $notifications;
+
+    // Începe generarea HTML-ului pentru dashboard
+    $html = '<div class="dashboard-wrapper">';
+
+    // Coloana stânga
+    $html .= '<div class="dashboard-left">';
+
+    // Afișează drafturile
+    $html .= renderDrafts($drafts);
+
+    // Afișează notificările
+    $html .= renderNotifications($notifications);
+
+    $html .= '</div>'; // Încheie coloana stânga
+
+    // Coloana dreapta
+    $html .= '<div class="dashboard-right">';
+
+    // Top 5 articole cele mai vizualizate
+    $artViewDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_views') . $artViewDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTopViewedArticles(5) . '
+                </div>
+              </div>';
+
+    // Top 5 articole cele mai apreciate
+    $artLikeDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_likes') . $artLikeDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTop5LikedArticles($artLikeDays) . '
+                </div>
+              </div>';
+
+    // Top 5 articole cele mai comentate
+    $artCommDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_commented') . $artCommDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTop5CommentedArticles($artCommDays) . '
+                </div>
+              </div>';
+
+    // Grafice pentru articole
+    $html .= '<div class="custom-box-1" style="padding: 10px; gap: 0px;">
+                <span class="corner-label-1">' . lang('lang_db_articles') . '</span>
+                <div class="box-content-1" style="padding: 10px; width:100%; max-width:400px; height:auto; position:relative; margin: 0 auto;">
+                    <canvas id="articlesChart" height="130"></canvas>
+                </div>
+              </div>';
+
+    // Grafice pentru comentarii
+    $html .= '<div class="custom-box-1">  
+                <span class="corner-label-1">' . lang('lang_db_recent_comments') . '</span>
+                <div class="box-content-1" style="padding:10px; width:100%; max-width:400px; height:auto; position:relative; margin: 0 auto;">
+                    <canvas id="commentsChart" height="130"></canvas>
+                </div>
+              </div>';
+
+    $html .= '</div>'; // Încheie coloana dreapta
+    $html .= '</div>'; // Încheie wrapper-ul dashboard
+
+    return $html;
+}
+
+
+// @Return: HTML string generating the dashboard for admins
+function renderModeratorDashboard(): string {
+    // Declară variabilele globale
+    global $pendingArticles, $pendingComments, $notifications;
+
+    // Începe generarea HTML-ului pentru dashboard
+    $html = '<div class="dashboard-wrapper">';
+
+    // Coloana stânga
+    $html .= '<div class="dashboard-left">';
+
+    // Afișează articolele în așteptare
+    $html .= renderPendingArticles($pendingArticles);
+
+    // Afișează comentariile în așteptare
+    $html .= renderPendingComments($pendingComments);
+
+    // Afiseaza notificarile
+    $html .= renderNotifications($notifications);
+
+    $html .= '</div>'; // Încheie coloana stânga
+
+    // Coloana dreapta
+    $html .= '<div class="dashboard-right">';
+
+    // Top 5 articole cele mai vizualizate
+    $artViewDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_views') . $artViewDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTopViewedArticles(5) . '
+                </div>
+              </div>';
+
+    // Top 5 articole cele mai apreciate
+    $artLikeDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_likes') . $artLikeDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTop5LikedArticles($artLikeDays) . '
+                </div>
+              </div>';
+
+    // Top 5 articole cele mai comentate
+    $artCommDays = 30;
+    $html .= '<div class="custom-box-1">
+                <span class="corner-label-1">' . lang('lang_db_top5_commented') . $artCommDays . lang('lang_db_art_days') . '</span>
+                <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
+                    ' . getTop5CommentedArticles($artCommDays) . '
+                </div>
+              </div>';
+
+    // Grafice pentru articole
+    $html .= '<div class="custom-box-1" style="padding: 10px; gap: 0px;">
+                <span class="corner-label-1">' . lang('lang_db_articles') . '</span>
+                <div class="box-content-1" style="padding: 10px; width:100%; max-width:400px; height:auto; position:relative; margin: 0 auto;">
+                    <canvas id="articlesChart" height="130"></canvas>
+                </div>
+              </div>';
+
+    // Grafice pentru comentarii
+    $html .= '<div class="custom-box-1">  
+                <span class="corner-label-1">' . lang('lang_db_recent_comments') . '</span>
+                <div class="box-content-1" style="padding:10px; width:100%; max-width:400px; height:auto; position:relative; margin: 0 auto;">
+                    <canvas id="commentsChart" height="130"></canvas>
+                </div>
+              </div>';
+
+    $html .= '</div>'; // Încheie coloana dreapta
+    $html .= '</div>'; // Încheie wrapper-ul dashboard
+
+    return $html;
 }

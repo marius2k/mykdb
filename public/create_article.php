@@ -116,7 +116,7 @@ $categories = $db->query("SELECT * FROM categories")->fetchAll();
                     </select>
                 </div>
                 <div>
-                    <label for="publish_at"><?=lang_art_publish_at?></label>
+                    <label for="publish_at"><?= lang('lang_art_publish_at') ?></label>
                     <input type="datetime-local" name="publish_at" id="publish_at"
                         class="form-control" value="<?= isset($article['publish_at']) ? date('Y-m-d\TH:i', strtotime($article['publish_at'])) : '' ?>">
 

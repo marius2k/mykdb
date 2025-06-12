@@ -175,7 +175,7 @@ if (isset($_SESSION['user']['id'])) {
                 
                 
                 <?php if (count($articles) === 0): ?>
-                        <p><?=lang_no_articles?></p>
+                        <p><?= lang('lang_no_articles') ?></p>
                 <?php else: ?>
                     
                     
@@ -211,21 +211,21 @@ if (isset($_SESSION['user']['id'])) {
                                                         <?php endif; ?>
                                                 <?php endif; ?><?= escape($a['title']) ?></h3>
                                             <div class="article-body" id="article<?=$a['id']?>">
-                                                <p><?= nl2br(escape($shortText)) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="<?= lang_read_more; ?>"> </a></p>
+                                                <p><?= nl2br(escape($shortText)) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="<?= lang('lang_read_more') ?>"> </a></p>
                                             </div>
                                             
                                             <div class="article-footer">
                                                 <div>
-                                                    <span class="article-meta"><?=lang_article_author?>:<?=escape($a['username']) ?> | <?=lang_article_category?>:<?=escape($a['category']) ?> | <?=lang_article_published?>:<?=formatDate($a['created_at']) ?>| <?=lang_article_updated?>:<?=formatDate($a['updated_at'])?></span>
+                                                    <span class="article-meta"><?= lang('lang_article_author') ?>:<?=escape($a['username']) ?> | <?= lang('lang_article_category') ?>:<?=escape($a['category']) ?> | <?= lang('lang_article_published') ?>:<?=formatDate($a['created_at']) ?>| <?= lang('lang_article_updated') ?>:<?=formatDate($a['updated_at'])?></span>
                                                 </div>
                                                 <div class="vote-buttons-container"> 
                                                             <div class="vote-buttons" id="meta-<?=$a['id']?>">
                                                                 <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>">
-                                                                <img src="<?=APP_URL?>assets/images/icon-view.png" title="<?=lang_article_views?>" class="vote-icon"></a>
+                                                                <img src="<?=APP_URL?>assets/images/icon-view.png" title="<?= lang('lang_article_views') ?>" class="vote-icon"></a>
                                                                 <span class="view-count"><?= escape($a['views']) ?></span>
 
                                                                 <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>#comments">
-                                                                <img src="<?=APP_URL?>assets/images/icon-comm.png" title="<?=lang_article_add_comments?>" class="vote-icon"></a>
+                                                                <img src="<?=APP_URL?>assets/images/icon-comm.png" title="<?= lang('lang_article_add_comments') ?>" class="vote-icon"></a>
                                                                 <span class="comments-count"><?=getCommentCount($a['id'])?></span>
                                                             </div>
                                                             
@@ -240,13 +240,13 @@ if (isset($_SESSION['user']['id'])) {
 
                                                                 <!-- LIKE -->
                                                                 <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'like', this); return false; updateArticleMeta(<?=$a['id']?>);">
-                                                                    <img src="<?=APP_URL?>assets/images/icon-like.png" class="vote-icon <?= $currentVote === 'like' ? 'active' : '' ?>" width="20" high="auto" title="<?=lang_article_like?>">  
+                                                                    <img src="<?=APP_URL?>assets/images/icon-like.png" class="vote-icon <?= $currentVote === 'like' ? 'active' : '' ?>" width="20" high="auto" title="<?= lang('lang_article_like') ?>">  
                                                                 </a>
                                                                 <span class="like-count"><?= $votes['like'] ?></span>
                                                                 
                                                                 <!-- DISLIKE -->
                                                                 <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'dislike', this); return false; updateArticleMeta(<?=$a['id']?>);">
-                                                                    <img src="<?=APP_URL?>assets/images/icon-dlike.png" class="vote-icon <?= $currentVote === 'dislike' ? 'active' : '' ?>" width="20" height="auto" title="<?=lang_article_dislike?>">    
+                                                                    <img src="<?=APP_URL?>assets/images/icon-dlike.png" class="vote-icon <?= $currentVote === 'dislike' ? 'active' : '' ?>" width="20" height="auto" title="<?= lang('lang_article_dislike') ?>">    
                                                                 
                                                                 </a>
                                                                 <span class="dislike-count"><?= $votes['dislike'] ?></span>
@@ -283,10 +283,10 @@ if (isset($_SESSION['user']['id'])) {
             <div class="search-form">
                     <div class="search-form-header">
                         <div>
-                          <img src="<?=APP_URL?>assets/icons/icon-search.svg" width="20" height="auto">&nbsp&nbsp; <?= lang_search ?>
+                          <img src="<?=APP_URL?>assets/icons/icon-search.svg" width="20" height="auto">&nbsp&nbsp; <?= lang('lang_search') ?>
                         </div>
                         <div class="search-form-header-right">  
-                            <button id="toggleAdvancedBtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                            <button id="toggleAdvancedBtn" title="<?= lang('lang_adv_search') ?>" style="background: none; border: none;">
                                 <img id="icon-search-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
                                 <img id="icon-search-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
                             </button>
@@ -298,15 +298,15 @@ if (isset($_SESSION['user']['id'])) {
                    <div id="advancedSearchForm" style="display: none; padding: 20px; background-color: white;">
                           <div style="display: grid; grid-template-columns: 100px 1fr; gap: 12px; align-items: center;">
                             <!-- Rând 1: Câmpul principal -->
-                            <label for="liveSearch" style="text-align: right;"><?= lang_text?></label>
-                            <input type="text" id="liveSearch" placeholder="<?= lang_search_placeholder ?>" autocomplete="off">
+                            <label for="liveSearch" style="text-align: right;"><?= lang('lang_text') ?></label>
+                            <input type="text" id="liveSearch" placeholder="<?= lang('lang_search_placeholder') ?>" autocomplete="off">
 
                             <!-- Rând 2: Autor -->
-                            <label for="searchAuthor" style="text-align: right;"><?= lang_art_author?>:</label>
+                            <label for="searchAuthor" style="text-align: right;"><?= lang('lang_art_author') ?>:</label>
                             <input type="text" id="searchAuthor" name="author">
 
                             <!-- Rând 3: Categorie -->
-                            <label for="searchCategory" style="text-align: right;"><?= lang_art_category?>:</label>
+                            <label for="searchCategory" style="text-align: right;"><?= lang('lang_art_category') ?>:</label>
                             <select id="searchCategory" name="category" class="select2-category" style="width: 100%;">
                               <option value=""></option>
                               <?php foreach ($categories as $cat): ?>
@@ -324,10 +324,10 @@ if (isset($_SESSION['user']['id'])) {
             <div class="search-form">
                 <div class="search-form-header">
                   <div>
-                    <img src="<?=APP_URL?>assets/icons/icon-filter.svg" width="25" height="auto">&nbsp&nbsp; <?=lang_filter?>
+                    <img src="<?=APP_URL?>assets/icons/icon-filter.svg" width="25" height="auto">&nbsp&nbsp; <?= lang('lang_filter') ?>
                   </div>
                   <div class="search-form-header-right">
-                        <button id="toggleFilterBtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                        <button id="toggleFilterBtn" title="<?= lang('lang_adv_search') ?>" style="background: none; border: none;">
                               <img id="icon-filter-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
                               <img id="icon-filter-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
                         </button>
@@ -337,7 +337,7 @@ if (isset($_SESSION['user']['id'])) {
                   <div id="advancedFilterForm" style="display: none; padding: 20px; background-color: white;">
                    
                     <form id="filterOnCategory" width="100%">
-                        <label for="filterCategory" style="text-align: right;"><?= lang_art_category?>:</label>
+                        <label for="filterCategory" style="text-align: right;"><?= lang('lang_art_category') ?>:</label>
                         <select id="filterCategory" name="fcategory" class="select2-category" style="width: 100%">
                             <option value=""></option>
                             <?php foreach ($categories as $cat): ?>
@@ -354,10 +354,10 @@ if (isset($_SESSION['user']['id'])) {
             <div class="search-form">
                 <div class="search-form-header">
                   <div>
-                    <img src="<?=APP_URL?>assets/icons/icon-top-view.svg" width="25" height="auto">&nbsp&nbsp; <?=lang_article_top_view?>
+                    <img src="<?=APP_URL?>assets/icons/icon-top-view.svg" width="25" height="auto">&nbsp&nbsp; <?= lang('lang_article_top_view') ?>
                   </div>
                   <div class="search-form-header-right">
-                        <button id="toggleMVABtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                        <button id="toggleMVABtn" title="<?= lang('lang_adv_search') ?>" style="background: none; border: none;">
                               <img id="icon-mva-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
                               <img id="icon-mva-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
                         </button>
@@ -375,10 +375,10 @@ if (isset($_SESSION['user']['id'])) {
             <div class="search-form">
                 <div class="search-form-header">
                     <div >
-                        <img src="<?=APP_URL?>assets/icons/icon-top-like.svg" width="25" height="auto">&nbsp&nbsp; <?=lang_article_top_like?>
+                        <img src="<?=APP_URL?>assets/icons/icon-top-like.svg" width="25" height="auto">&nbsp&nbsp; <?= lang('lang_article_top_like') ?>
                     </div>
                     <div class="search-form-header-right">
-                          <button id="toggleMLABtn" title="<?= lang_adv_search ?>" style="background: none; border: none;">
+                          <button id="toggleMLABtn" title="<?= lang('lang_adv_search') ?>" style="background: none; border: none;">
                                 <img id="icon-mla-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
                                 <img id="icon-mla-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
                           </button>
@@ -467,7 +467,7 @@ $(document).ready(function () {
         
         // Search by CATEGORY select
         $('#searchCategory').select2({
-          placeholder: "<?=lang_cat_select?>",
+          placeholder: "<?= lang('lang_cat_select') ?>",
           allowClear: true,
           templateResult: formatWithIcon,
           templateSelection: formatWithIcon          
@@ -477,7 +477,7 @@ $(document).ready(function () {
 
         // Filter by CATEGORY select
         $('#filterCategory').select2({
-          placeholder: "<?=lang_cat_select?>",
+          placeholder: "<?= lang('lang_cat_select') ?>",
           width: '250px',
           allowClear: true,
           templateResult: formatWithIcon,

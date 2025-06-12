@@ -178,17 +178,17 @@ body {
             <ul style="list-style-type: none; width: 100%; padding: 0; margin: 0; text-align: left;padding-top: 10px;">
                 <li class="list-item">
                     <div><img src="<?= APP_URL ?>assets/icons/icon-cal-today.svg"></div>
-                    <div class="text"><?= lang_db_comments_today ?></div>
+                    <div class="text"><?= lang('lang_db_comments_today') ?></div>
                     <div class="number"><?php echo getTotalComments(24); ?></div>
                 </li>
                 <li class="list-item">
                     <div><img src="<?= APP_URL ?>assets/icons/icon-cal-week.svg"></div>
-                    <div class="text"><?= lang_db_comments_last7days ?></div>
+                    <div class="text"><?= lang('lang_db_comments_last7days') ?></div>
                     <div class="number"><?php echo getTotalComments(168); ?></div>
                 </li>
                 <li class="list-item">
                     <div><img src="<?= APP_URL ?>assets/icons/icon-cal-month.svg"></div>
-                    <div class="text"><?= lang_db_comments_last_month ?></div>
+                    <div class="text"><?= lang('lang_db_comments_last_month') ?></div>
                     <div class="number"><?php echo getTotalComments(720); ?></div>
                 </li>
             </ul>

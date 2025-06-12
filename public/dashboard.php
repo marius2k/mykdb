@@ -18,6 +18,12 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
     exit;     
 }
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
+
 $db = new Database();
 
 $userId = $_SESSION['user']['id'];
@@ -32,7 +38,7 @@ $drafts = $db->fetchAll("
 */
 
 
-$drafts=getDraftsArticles($userId);
+$drafts = getDraftsArticles($userId);
 
 
 // Fetch notifications for current user
@@ -81,108 +87,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_all_read'])) {
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
 
+<?php
 
-<div class="dashboard-wrapper">
+    $userRole = $_SESSION['user']['role'];
 
-  <!-- 🧩 Coloana stânga -->
-  <div class="dashboard-left">
+    //echo "Role: ".$userRole;
 
-        <!-- Drafts -->
- 
-    <?php
-      echo renderDrafts(($drafts));
-    ?>
-
-    <!-- Notifications -->
-    <?php
-      
-      echo renderNotifications(($notifications));
-
-    ?>
-
-  </div>
-
-
-
-
-  <!-- 🧠 Coloana dreapta -->
-  <div class="dashboard-right">
-
-    <div class="custom-box-1">
-      <?php
-            $artViewDays = 30;
-        ?>
-        <span class="corner-label-1"><?php echo lang_db_top5_views . $artViewDays . lang_db_art_days; ?></span>
-        <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
-                    <?php echo getTopViewedArticles(5); ?>
-        </div>
-    </div>
-    <div class="custom-box-1">
-      <?php
-            $artLikeDays = 30;
-        ?>
-        <span class="corner-label-1"><?php echo lang_db_top5_likes . $artLikeDays . lang_db_art_days; ?></span>
-        <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
-            <?php echo getTop5LikedArticles($artLikeDays); ?>
-        </div>
-    </div>
-    <div class="custom-box-1">
-        <?php
-            $artCommDays = 30;
-        ?>
-         <span class="corner-label-1"><?php echo lang_db_top5_commented . $artCommDays . lang_db_art_days; ?></span>
-        <div class="box-content-1" style="padding-top: 20px; gap: 0px;">
-            <?php
+    switch ($userRole) {
+            case 'superadmin':
+                echo renderSuperAdminDashboard();
+                break;
+            case 'admin':
+                echo renderAdminDashboard();
+                break;
+            case 'editor':
+                //renderEditorDashboard();
+                break;
+            case 'moderator':
+                $pendingArticles = getPendingArticles();
+                $pendingComments = getPendingComments();
+                $notifications = getUnreadNotifications($userId);
                 
-                echo getTop5CommentedArticles($artCommDays); 
-                
-            ?>
-        </div>
-    </div>
-    <div class="custom-box-1" style="padding: 10px; gap: 0px;">
-        <span class="corner-label-1"><?=lang_db_articles?></span>
-        <div class="box-content-1" style = "padding: 10px; width:100%; max-width;400px; height:auto; position:relative; margin: 0 auto;">
-            <canvas id="articlesChart" height="130"></canvas>
-        </div>
-        
-        
-    </div>
-    <div class="custom-box-1">  
-        <span class="corner-label-1"><?=lang_db_recent_comments?></span>
-        <div class="box-content-1" style = "padding:10px; width:100%; max-width;400px; height:auto; position:relative; margin: 0 auto;">
-            <canvas id="commentsChart" height="130"></canvas>
-        </div>
-    </div>
-    
-    <div class="custom-box-1">
-        <span class="corner-label-1">Operatiuni</span>
-        <ul>
-          <li>18 create</li>
-          <li>7 editate</li>
-          <li>2 șterse</li>
-        </ul>
-    </div>
-    <div class="custom-box-1">
-        <span class="corner-label-1">Loguri</span>
-        <ul>
-          <li>104 azi</li>
-          <li>7 arhivate</li>
-          <li>3 șterse</li>
-        </ul>
-    </div>
-    <div class="custom-box-1">
-        <span class="corner-label-1">Exporturi</span>
-        <ul>
-          <li>1 CSV azi</li>
-          <li>3 backup-uri</li>
-          <li>Ultimul: 2024-05-01</li>
-        </ul>
-    </div>
+                echo renderModeratorDashboard();
+                break;
+            case 'contributor':
+                //renderContributorDashboard();
+                break;
+            default:
+                echo '<p>Rol necunoscut.</p>';
+                break;
+        }
 
-  </div>
 
-</div>
 
+?>
 
 
 
@@ -200,7 +138,7 @@ new Chart(ctx1, {
     data: {
         labels: dataLabels1,
         datasets: [{
-            label: '<?=lang_db_articles_published?>',
+            label: '<?= lang('lang_db_articles_published') ?>',
             data: dataValues1,
             backgroundColor: 'rgba(54, 162, 235, 0.6)',
             borderColor: 'rgba(54, 162, 235, 1)',
@@ -214,7 +152,7 @@ new Chart(ctx1, {
             legend: { display: false },
             title: {
                 display: true,
-                text: '<?php echo lang_db_art_published_last_days.$days.lang_db_art_days ?> (<?=$totalArticles?>)'
+                text: '<?php echo lang('lang_db_art_published_last_days').$days.lang('lang_db_art_days') ?> (<?=$totalArticles?>)'
             }
         },
         scales: {
@@ -251,7 +189,7 @@ new Chart(ctx2, {
     data: {
         labels: dataLabels2,
         datasets: [{
-            label: '<?= lang_db_comments_received ?>',
+            label: '<?= lang('lang_db_comments_received') ?>',
             data: dataValues2,
             backgroundColor: 'rgba(54, 162, 235, 0.6)',
             borderColor: 'rgba(54, 162, 235, 1)',
@@ -265,7 +203,7 @@ new Chart(ctx2, {
             legend: { display: false },
             title: {
                 display: true,
-                text: '<?php echo lang_db_comments_last_days.$days.lang_db_art_days ?> (<?=$totalComments?>)'
+                text: '<?php echo lang('lang_db_comments_last_days').$days.lang('lang_db_art_days') ?> (<?=$totalComments?>)'
             }
         },
         scales: {

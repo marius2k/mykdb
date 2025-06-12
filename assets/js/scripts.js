@@ -1,5 +1,11 @@
 
-
+function escapeHtml(text) {
+    if (typeof text !== 'string') return '';
+    var map = {
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
 
 function togglePasswordVisibility(inputId,btnVisible) {
     const passwordInput = document.getElementById(inputId);
@@ -122,7 +128,7 @@ function updateArticleMeta(articleId) {
     .catch(err => console.error('Eroare la update meta:', err));
 }
 
-function submitComment() {
+function submitComment1() {
   const articleId = document.getElementById('article_id').value;
   const content = document.getElementById('comment-content').value.trim();
 
@@ -218,7 +224,7 @@ function formatWithIcon(option) {
 }
 
 
-function voteComment(commentId, type) {
+function voteComment1(commentId, type) {
   fetch('vote_comment.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -242,7 +248,7 @@ function voteComment(commentId, type) {
 }
 // used to disable a comment in view_article.php
 
-function disableComment(commentId) {
+function disableComment1(commentId) {
   if (!confirm('Sigur vrei să dezactivezi comentariul?')) return;
 
   fetch('manage_comment.php', {
@@ -263,7 +269,7 @@ function disableComment(commentId) {
 
 // used to delete a comment in view_article.php
 
-function deleteComment(commentId) {
+function deleteComment1(commentId) {
   if (!confirm('Sigur vrei să ștergi comentariul?')) return;
 
   fetch('manage_comment.php', {
@@ -283,7 +289,7 @@ function deleteComment(commentId) {
 }
 
 
-function archiveLog(logId) {
+function archiveLog1(logId) {
   if (!confirm('Arhivezi acest log?')) return;
 
   fetch('log_action.php', {
@@ -296,7 +302,7 @@ function archiveLog(logId) {
   });
 }
 
-function deleteLog(logId) {
+function deleteLog1(logId) {
   if (!confirm('Sigur vrei să ștergi acest log?')) return;
 
   fetch('log_action.php', {
@@ -314,7 +320,7 @@ function toggleAllLogs(master) {
   checkboxes.forEach(cb => cb.checked = master.checked);
 }
 
-function submitBulkLogs(action) {
+function submitBulkLogs1(action) {
   const selected = [...document.querySelectorAll('input[name="log_ids[]"]:checked')]
                    .map(cb => cb.value);
 
