@@ -1,21 +1,62 @@
 <?php
+
 require_once '../../config/bootstrap.php';
-include APP_ROOT . 'includes/header.php';
+include APP_ROOT. 'includes/header.php'; 
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
 ?>
+
+
+
 
 <script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
 
 <div class="category-container">
     <div class="category-box-2" style="width: fit-content">
         <div class="operations-bar">
-            <button class="btn-flat" onclick="openArticleModal()" title="Add Article">
-                <img src="../../assets/icons/icon-create-article.svg" alt="Add Article" class="op-icon">
-                <?= lang('lang_create_article') ?>
-            </button>
+            <div>
+                <button  class="btn-flat btn-toggle-form" onclick="toggleAddFormHide2('form-add-article',this)" title="Add Article">
+                    <img id="toggle-arrow-icon" src="../../assets/icons/icon-arrow-down.svg" alt="Add Article" class="op-icon">
+                    <?= lang('lang_create_article') ?>&nbsp;&nbsp;      
+                </button>
+            </div>
+        </div>
+        <div class="form-container-1">
+            <div id="form-add-article" class="form-box" style="display: none; width: 100%; padding: 30px;">
+                <form id="add_article" class="article-form">
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="form-group" style="display: flex;">
+                            <label for="title" style=" width: 30%;"><?= lang('lang_art_title') ?>:</label>
+                            <input style="width: 70%" type="text" id="title" name="title" placeholder="<?= lang('lang_art_title') ?>" required>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div class="form-group" style="display: flex; flex-direction: row;">
+                                <label style="width: 30%" for="category"><?= lang('lang_article_category') ?>:</label>
+                                <select name="category_id" id="add_category_select" class="select2-icon" style="width:70%" required>
+                                    <option value="">--<?= lang('lang_cat_select') ?> --</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; flex-direction: row; gap: 10px;">
+                                <label style="width:30%" for="publish_at"><?= lang('lang_art_publish_at') ?>:</label>
+                                <input style="width:70%" type="datetime-local" name="publish_at" id="publish_at" class="form-control">
+                            </div>
+                        </div>
+                        <div style="padding: 20px" class="form-group">
+                            <label style="align: left;" for="content"><?= lang('lang_create_article_content') ?></label>
+                            <input id="content" type="hidden" name="content">
+                            <trix-editor input="content"></trix-editor>
+                        </div>
+                        <div>
+                            <button type="button" onclick="submitArticle('draft')" class="btn btn-outline-grey"><?= lang('lang_create_article_draft') ?></button>
+                            <button type="button" onclick="submitArticle('submit')" class="btn btn-outline-grey"><?= lang('lang_create_article_submit') ?></button>    
+                        </div>
+                    </div>
+                </form>
+                <div id="article-feedback" class="mt-2 text-success d-none"></div>
+            </div>
         </div>
     </div>
 
@@ -44,54 +85,15 @@ if (empty($_SESSION['csrf_token'])) {
     </div>
 </div>
 
-<!-- Modal Create Article -->
-<div id="modal-add-article" class="modal" style="display:none;">
-  <div class="modal-content" style="max-width:600px;margin:auto;position:relative;">
-    <span class="close" onclick="closeArticleModal()" style="position:absolute;top:10px;right:20px;font-size:2em;cursor:pointer;">&times;</span>
-    <h4><?= lang('lang_create_article') ?></h4>
-    <form id="add_article" class="article-form" autocomplete="off">
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <div class="form-group" style="display: flex;">
-                <label for="title" style=" width: 30%;"><?= lang('lang_art_title') ?>:</label>
-                <input style="width: 70%" type="text" id="title" name="title" placeholder="<?= lang('lang_art_title') ?>" required>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="form-group" style="display: flex; flex-direction: row;">
-                    <label style="width: 30%" for="category"><?= lang('lang_article_category') ?>:</label>
-                    <select name="category_id" id="add_category_select" class="select2-icon" style="width:70%" required>
-                        <option value="">--<?= lang('lang_cat_select') ?> --</option>
-                    </select>
-                </div>
-                <div style="display: flex; flex-direction: row; gap: 10px;">
-                    <label style="width:30%" for="publish_at"><?= lang('lang_art_publish_at') ?>:</label>
-                    <input style="width:70%" type="datetime-local" name="publish_at" id="publish_at" class="form-control">
-                </div>
-            </div>
-            <div style="padding: 20px" class="form-group">
-                <label style="align: left;" for="content"><?= lang('lang_create_article_content') ?></label>
-                <input id="content" type="hidden" name="content">
-                <trix-editor input="content"></trix-editor>
-            </div>
-            <div>
-                <button type="button" onclick="submitArticle2('draft')" class="btn btn-outline-grey"><?= lang('lang_create_article_draft') ?></button>
-                <button type="button" onclick="submitArticle2('submit')" class="btn btn-outline-grey"><?= lang('lang_create_article_submit') ?></button>
-            </div>
-        </div>
-    </form>
-    <div id="article-feedback" class="mt-2 text-success d-none"></div>
-  </div>
-</div>
-
-<style>
-
-</style>
-
 <script>
 let currentPage = 1;
 let totalPages = 1;
 let categories = [];
 
-
+function escapeHtml(text) {
+    var map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
 
 function loadCategories() {
     fetch('../api/bkd_select_categories.php')
@@ -109,8 +111,7 @@ function loadCategories() {
                     placeholder: "<?= lang('lang_cat_select') ?>",
                     templateResult: formatWithIcon2,
                     templateSelection: formatWithIcon2,
-                    allowClear: true,
-                    dropdownParent: $('#modal-add-article')
+                    allowClear: true
                 });
             }
         });
@@ -206,14 +207,8 @@ function renderPagination(page, totalPages) {
     document.getElementById('pagination-results').innerHTML = html;
 }
 
-function submitArticle2(submitType) {
+function submitArticle(submitType) {
     const form = document.getElementById('add_article');
-    // Forțează sincronizarea trix-editor → input hidden
-    const trixInput = form.querySelector('input[name="content"]');
-    const trixEditor = form.querySelector('trix-editor');
-    if (trixInput && trixEditor) {
-        trixInput.value = trixEditor.innerHTML;
-    }
     const formData = new FormData(form);
     formData.append('action', 'add_article');
     formData.append('submit_type', submitType);
@@ -229,7 +224,6 @@ function submitArticle2(submitType) {
             document.getElementById('article-feedback').textContent = 'Articolul a fost salvat!';
             document.getElementById('article-feedback').classList.remove('d-none');
             form.reset();
-            setTimeout(closeArticleModal, 1200);
             loadArticles(currentPage);
         } else {
             document.getElementById('article-feedback').textContent = data.error || 'Eroare la salvare!';
@@ -268,28 +262,18 @@ function articleAction(action, articleId, publishAt = '') {
     });
 }
 
-// Modal logic
-function openArticleModal() {
-    document.getElementById('modal-add-article').style.display = 'block';
-    setTimeout(() => {
-        const firstInput = document.getElementById('modal-add-article').querySelector('input,textarea,select');
-        if (firstInput) firstInput.focus();
-    }, 200);
-}
-function closeArticleModal() {
-    document.getElementById('modal-add-article').style.display = 'none';
-    document.getElementById('add_article').reset();
-    document.getElementById('article-feedback').classList.add('d-none');
-    // Reset Select2
-    if (window.$ && $('#add_category_select').select2) {
-        $('#add_category_select').val('').trigger('change');
+function toggleAddFormHide2(formId, btn) {
+    const form = document.getElementById(formId);
+    const arrow = btn.querySelector('#toggle-arrow-icon');
+    if (form.style.display === 'none' || form.style.display === '') {
+        form.style.display = 'block';
+        if (arrow) arrow.src = '../../assets/icons/icon-arrow-up.svg';
+        form.scrollIntoView({behavior: "smooth"});
+    } else {
+        form.style.display = 'none';
+        if (arrow) arrow.src = '../../assets/icons/icon-arrow-down.svg';
     }
 }
-window.onclick = function(event) {
-    const modal = document.getElementById('modal-add-article');
-    if (event.target === modal) closeArticleModal();
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     loadCategories();
     loadArticles();

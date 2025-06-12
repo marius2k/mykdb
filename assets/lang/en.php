@@ -1,233 +1,192 @@
 <?php
-
-
-
-define(constant_name:'lang_home',value:'Home');
-define(constant_name:'lang_about',value:'About');
-define(constant_name:'lang_contact',value:'Contact');
-define(constant_name:'lang_privacy',value:'Privacy Policy');
-define(constant_name: 'lang_login', value: 'Login');    
-define(constant_name:'lang_logout',value:'Logout');
-define(constant_name:'lang_register',value:'Register');
-define(constant_name:'lang_dashboard',value:'Dashboard');
-define(constant_name:'lang_logs',value:'Logs');
-define(constant_name:'lang_users',value:'Users');
-define(constant_name:'lang_categories',value:'Categories');
-define(constant_name:'lang_articles',value:'Articles');
-define(constant_name:'lang_search',value:'Search');
-define(constant_name:'lang_search_placeholder',value:'Search articles...');
-define(constant_name:'lang_search_results',value:'Search Results');
-define(constant_name:'lang_edit_acl',value:'ACL');
-define(constant_name:'lang_no_articles',value:'No articles found');
-define(constant_name:'lang_adv_search',value:'Advanced Search');
-define(constant_name:'lang_filter',value:'Filter');
-define(constant_name:'lang_text',value:'Text');
-define(constant_name:'lang_notifications',value:'Notifications');
-
-
-// Define constants for Articles
-
-define(constant_name:'lang_create_article',value:'Create Article');
-define(constant_name:'lang_create_article_success',value:'Article created successfully!');
-define(constant_name:'lang_create_article_error',value:'Error creating article.');
-define(constant_name:'lang_create_article_title',value:'Article Title:');
-define(constant_name:'lang_create_article_content',value:'Article Content:');
-define(constant_name:'lang_create_article_category',value:'Categorie articol:');
-define(constant_name:'lang_create_article_submit',value:'Submit Article');
-define(constant_name:'lang_create_article_approve',value:'Submit for Approval');
-define(constant_name:'lang_create_article_draft',value:'Save as Draft');
-
-
-define(constant_name:'lang_create_article_approve_success',value:'Article has been submitted for approval!');
-define(constant_name:'lang_create_article_approve_error',value:'Error submitting article for approval.');
-define(constant_name:'lang_edit_article',value:'Edit Article');
-define(constant_name:'lang_edit_article_success',value:'Article edited successfully!');
-define(constant_name:'lang_edit_article_error',value:'Error editing article.');
-define(constant_name:'lang_settings',value:'Settings');
-define(constant_name:'lang_read_more',value:'Read more');
-define(constant_name:'lang_article_author',value:'Author');
-define(constant_name:'lang_article_category',value:'Category');
-define(constant_name:'lang_article_published',value:'Published');
-define(constant_name:'lang_article_approved',value:'Approved');
-define(constant_name:'lang_all_categories',value:' All Categories ');
-define(constant_name:'lang_article_updated',value:'Updated');
-define(constant_name:'lang_article_created',value:'Created');
-define(constant_name:'lang_article_views',value:'Views');
-define(constant_name:'lang_article_like',value:'Like');
-define(constant_name:'lang_article_dislike',value:'Dislike');
-define(constant_name:'lang_article_add_comments',value:'Comments');
-define(constant_name:'lang_select_english',value:'English');
-define(constant_name:'lang_select_romanian',value:'Romanian');
-define(constant_name:'lang_select_language',value:'Language');
-define(constant_name:'lang_select_theme',value:'Theme');
-define(constant_name:'lang_profile',value:'My Profile');
-define(constant_name:'lang_article_top_view',value:'Top Viewed Articles');
-define(constant_name:'lang_article_top_like',value:'Top Liked Articles');
-define(constant_name:'lang_articles_in_draft',value:'Articles in Draft');
-
-
-// Define constants for Dashboard (file: dashboard.php)
-
-define(constant_name:'lang_db_activity_log',value:'Activity Logs');
-define(constant_name:'lang_db_filter_by_user',value:'Filter by User:');
-define(constant_name:'lang_db_filter_all_users',value:'All Users');
-define(constant_name:'lang_db_log_table_user',value:'User');
-define(constant_name:'lang_db_log_table_action',value:'Action');
-define(constant_name:'lang_db_log_table_agent',value:'Agent');
-define(constant_name:'lang_db_log_table_details',value:'Details');
-define(constant_name:'lang_db_log_table_data',value:'Date');
-define(constant_name:'lang_db_analytics',value:'Analytics Dashboard');
-define(constant_name:'lang_db_top5_views',value:'Top Viewed Articles in ');
-define(constant_name:'lang_db_top5_likes',value:'Top Liked Articles in ');
-define(constant_name:'lang_db_comments_today',value:'Comments recived today');
-define(constant_name:'lang_db_comments_last7days',value:'Comments within last 7 days');
-define(constant_name:'lang_db_comments_last_month',value:'Comments within last 30 days');
-define(constant_name:'lang_db_recent_comments',value:'Comments');
-define(constant_name:'lang_db_art_published_last_days',value:'Articles published in last ');
-define(constant_name:'lang_db_art_days',value:' days');
-define(constant_name:'lang_db_articles',value:'Articles');
-define(constant_name:'lang_db_comments_last_days',value:'Comments in last ');
-define(constant_name:'lang_db_comments_received',value:'Comments Received ');
-define(constant_name:'lang_db_articles_published',value:'Articles Published ');
-define(constant_name:'lang_db_top5_commented',value:'Top Commented Articles in ');
-
-
-// Define constants for Users (file: users.php)
-
-define(constant_name:'lang_users_users',value:'Users');
-define(constant_name:'lang_users_username',value:'Username');
-define(constant_name:'lang_users_role',value:'Role');
-define(constant_name:'lang_users_status',value:'Status');
-define(constant_name:'lang_users_name',value:'First and Last Name');
-define(constant_name:'lang_users_actions',value:'Actions');
-//define(constant_name:'lang_users_btn_disable',value:'Disable');
-//define(constant_name:'lang_users_btn_enable',value:'Enable');
-//define(constant_name:'lang_users_btn_approve',value:'Approve');
-define(constant_name:'lang_users_msg_disable',value:'Are you sure to disable user ');
-
-
-// Define constants for Categories (file: categories.php)
-
-define(constant_name:'lang_cat_categories',value:'Categories');
-define(constant_name:'lang_cat_category',value:'Category');
-define(constant_name:'lang_cat_name',value:'Name');
-define(constant_name:'lang_cat_description',value:'Description');
-define(constant_name:'lang_cat_actions',value:'Actions');
-//define(constant_name:'lang_cat_btn_save',value:'Save');
-//define(constant_name:'lang_cat_btn_edit',value:'Edit');
-//define(constant_name:'lang_cat_btn_delete',value:'Delete');
-define(constant_name:'lang_cat_msg_delete',value:'Remove this category?');
-define(constant_name:'lang_cat_icon',value:'Icon');
-define(constant_name:'lang_cat_icon_label',value:'Icon Label');
-define(constant_name:'lang_cat_select',value:'Select Category');
-define(constant_name:'lang_cat_status',value:'Status');
-define(constant_name:'lang_cat_active',value:'Active');
-define(constant_name:'lang_cat_inactive',value:'Inactive');
-define(constant_name:'lang_cat_select_icon',value:'Select Icon');
-
-
-// Define constants for Logs management
-
-define(constant_name:'lang_log_delete_selected',value:'Delete Selected');
-define(constant_name:'lang_log_archive_selected',value:'Archive Selected');
-define(constant_name:'lang_log_filter_start_date',value:'Start Date');
-define(constant_name:'lang_log_filter_end_date',value:'End Date');
-define(constant_name:'lang_log_filter_user',value:'User');
-define(constant_name:'lang_log_filter_reset',value:'Reset Filter');
-
-
-// Define constants for Articles (file: articles.php)
-
-define(constant_name:'lang_art_articles',value:'Articles Management');
-define(constant_name:'lang_art_title',value:'Title');
-define(constant_name:'lang_art_author',value:'Author');
-define(constant_name:'lang_art_category',value:'Category');
-define(constant_name:'lang_art_status',value:'Status');
-define(constant_name:'lang_art_actions',value:'Actions');
-define(constant_name:'lang_art_msg_disable',value:'Disable this article?');
-define(constant_name:'lang_art_create',value:'Create New Article');
-define(constant_name:'lang_art_publish_at',value:'Publication Date');
-
-
-
-// Define constants for Comments (file: admin/comments.php)
-
-define(constant_name:'lang_com_comments',value:'Comments');
-define(constant_name:'lang_com_title',value:'Title');
-define(constant_name:'lang_com_author',value:'Author');
-define(constant_name:'lang_com_category',value:'Category');
-define(constant_name:'lang_com_status',value:'Status');
-define(constant_name:'lang_com_actions',value:'Actions');
-define(constant_name:'lang_com_msg_disable',value:'Disable this comment?');
-define(constant_name:'lang_com_msg_nocommw',value:'No Comments in Waiting');
-define(constant_name:'lang_com_msg_nocomm',value:'No Comments in Waiting');
-define(constant_name:'lang_com_article',value:'Article');
-define(constant_name:'lang_com_user',value:'User');
-define(constant_name:'lang_com_comm',value:'Comment');
-define(constant_name:'lang_com_data',value:'Date Created');
-define(constant_name:'lang_com_admin_comments',value:'Comments Management');
-
-
-
-
-
-
-//define(constant_name:'lang_art_btn_view',value:'View');
-//define(constant_name:'lang_art_btn_edit',value:'Edit');
-//define(constant_name:'lang_art_btn_disable',value:'View');
-
-
-
-// Define constants for Buttons in tables
-
-define(constant_name:'lang_btn_view',value:'View');
-define(constant_name:'lang_btn_approve',value:'Approve');
-define(constant_name:'lang_btn_enable',value:'Enable');
-define(constant_name:'lang_btn_disable',value:'Disable');
-define(constant_name:'lang_btn_delete',value:'Delete');
-define(constant_name:'lang_btn_save',value:'Save');
-define(constant_name:'lang_btn_edit',value:'Edit');
-define(constant_name:'lang_btn_reject',value:'Reject');
-define(constant_name:'lang_btn_change_role',value:'Change Role');
-define(constant_name:'lang_btn_cancel',value:'Cancel');
-define(constant_name:'lang_btn_send_approval',value:'Send for Approval');
-define(constant_name:'lang_btn_filter',value:'Filter');
-
-// Define constants for User Profile (file: profile.php)
-
-define(constant_name:'lang_prof_msg_top_info',value:'Modify Profile Info');
-define(constant_name:'lang_prof_lname',value:'Last Name');
-define(constant_name:'lang_prof_fname',value:'First Name');
-define(constant_name:'lang_prof_email',value:'E-mail');
-define(constant_name:'lang_prof_photo',value:'Profile Photo:');
-define(constant_name:'lang_prof_photo_change',value:'Change Photo:');
-define(constant_name:'lang_prof_btn_save',value:'Update Profile');
-define(constant_name:'lang_prof_msg_top_pass',value:'Change Password');
-define(constant_name:'lang_prof_pass_crt',value:'Current Password');
-define(constant_name:'lang_prof_pass_new',value:'New Password');
-define(constant_name:'lang_prof_pass_confirm',value:'Confirm Password');
-define(constant_name:'lang_prof_btn_pass',value:'Change Password');
-define(constant_name:'lang_prof_pass_nomatch',value:'Passwords not matching');
-
-
-// Define constants for Registration (file:register.php)
-
-define(constant_name:'lang_reg_msg_top',value:'New Account Registration');
-define(constant_name:'lang_reg_fname',value:'First Name');
-define(constant_name:'lang_reg_lname',value:'Last Name');
-define(constant_name:'lang_reg_username',value:'Username');
-define(constant_name:'lang_reg_email',value:'Email');
-define(constant_name:'lang_reg_pass',value:'Password');
-define(constant_name:'lang_reg_pass_confirm',value:'Confirm Password');
-define(constant_name:'lang_reg_btn_create',value:'Create Account');
-define(constant_name:'lang_reg_pass_nomatch',value:'Passwords not matching');
-define(constant_name:'lang_reg_pass_ok',value:'Passwords matching !');
-define(constant_name:'lang_reg_pass_nok',value:'Passwords not matching !');
-
-
-
-// lang/en.php
 return [
+    'lang_home' => 'Home',
+    'lang_about' => 'About',
+    'lang_contact' => 'Contact',
+    'lang_privacy' => 'Privacy Policy',
+    'lang_login' => 'Login',
+    'lang_logout' => 'Logout',
+    'lang_register' => 'Register',
+    'lang_dashboard' => 'Dashboard',
+    'lang_logs' => 'Logs',
+    'lang_users' => 'Users',
+    'lang_categories' => 'Categories',
+    'lang_articles' => 'Articles',
+    'lang_search' => 'Search',
+    'lang_search_placeholder' => 'Search articles...',
+    'lang_search_results' => 'Search Results',
+    'lang_edit_acl' => 'ACL',
+    'lang_no_articles' => 'No articles found',
+    'lang_adv_search' => 'Advanced Search',
+    'lang_filter' => 'Filter',
+    'lang_text' => 'Text',
+    'lang_notifications' => 'Notifications',
+    'lang_create_article' => 'Create Article',
+    'lang_create_article_success' => 'Article created successfully!',
+    'lang_create_article_error' => 'Error creating article.',
+    'lang_create_article_title' => 'Article Title:',
+    'lang_create_article_content' => 'Article Content:',
+    'lang_create_article_category' => 'Categorie articol:',
+    'lang_create_article_submit' => 'Submit Article',
+    'lang_create_article_approve' => 'Submit for Approval',
+    'lang_create_article_draft' => 'Save as Draft',
+    'lang_create_article_approve_success' => 'Article has been submitted for approval!',
+    'lang_create_article_approve_error' => 'Error submitting article for approval.',
+    'lang_edit_article' => 'Edit Article',
+    'lang_article_approve' => 'Approve Article',
+    'lang_edit_article_success' => 'Article edited successfully!',
+    'lang_edit_article_error' => 'Error editing article.',
+    'lang_settings' => 'Settings',
+    'lang_read_more' => 'Read more',
+    'lang_article_author' => 'Author',
+    'lang_article_category' => 'Category',
+    'lang_article_published' => 'Published',
+    'lang_article_approved' => 'Approved',
+    'lang_all_categories' => ' All Categories ',
+    'lang_article_updated' => 'Updated',
+    'lang_article_created' => 'Created',
+    'lang_article_views' => 'Views',
+    'lang_article_like' => 'Like',
+    'lang_article_dislike' => 'Dislike',
+    'lang_article_add_comments' => 'Comments',
+    'lang_select_english' => 'English',
+    'lang_select_romanian' => 'Romanian',
+    'lang_select_language' => 'Language',
+    'lang_select_theme' => 'Theme',
+    'lang_profile' => 'My Profile',
+    'lang_article_top_view' => 'Top Viewed Articles',
+    'lang_article_top_like' => 'Top Liked Articles',
+    'lang_articles_in_draft' => 'Articles in Draft',
+    'lang_article_reject' => 'Reject Article',
+    'lang_articles_in_pending' => 'Articles in Pending for Approval',
+    'lang_no_articles_in_pending' => 'No Articles in Pending for Approval',
+    'lang_db_activity_log' => 'Activity Logs',
+    'lang_db_filter_by_user' => 'Filter by User:',
+    'lang_db_filter_all_users' => 'All Users',
+    'lang_db_log_table_user' => 'User',
+    'lang_db_log_table_action' => 'Action',
+    'lang_db_log_table_agent' => 'Agent',
+    'lang_db_log_table_details' => 'Details',
+    'lang_db_log_table_data' => 'Date',
+    'lang_db_analytics' => 'Analytics Dashboard',
+    'lang_db_top5_views' => 'Top Viewed Articles in ',
+    'lang_db_top5_likes' => 'Top Liked Articles in ',
+    'lang_db_comments_today' => 'Comments recived today',
+    'lang_db_comments_last7days' => 'Comments within last 7 days',
+    'lang_db_comments_last_month' => 'Comments within last 30 days',
+    'lang_db_recent_comments' => 'Comments',
+    'lang_db_art_published_last_days' => 'Articles published in last ',
+    'lang_db_art_days' => ' days',
+    'lang_db_articles' => 'Articles',
+    'lang_db_comments_last_days' => 'Comments in last ',
+    'lang_db_comments_received' => 'Comments Received ',
+    'lang_db_articles_published' => 'Articles Published ',
+    'lang_db_top5_commented' => 'Top Commented Articles in ',
+    'lang_users_users' => 'Users',
+    'lang_users_username' => 'Username',
+    'lang_users_role' => 'Role',
+    'lang_users_status' => 'Status',
+    'lang_users_name' => 'First and Last Name',
+    'lang_users_actions' => 'Actions',
+    'lang_users_btn_disable' => 'Disable',
+    'lang_users_btn_enable' => 'Enable',
+    'lang_users_btn_approve' => 'Approve',
+    'lang_users_msg_disable' => 'Are you sure to disable user ',
+    'lang_cat_categories' => 'Categories',
+    'lang_cat_category' => 'Category',
+    'lang_cat_name' => 'Name',
+    'lang_cat_description' => 'Description',
+    'lang_cat_actions' => 'Actions',
+    'lang_cat_btn_save' => 'Save',
+    'lang_cat_btn_edit' => 'Edit',
+    'lang_cat_btn_delete' => 'Delete',
+    'lang_cat_msg_delete' => 'Remove this category?',
+    'lang_cat_icon' => 'Icon',
+    'lang_cat_icon_label' => 'Icon Label',
+    'lang_cat_select' => 'Select Category',
+    'lang_cat_status' => 'Status',
+    'lang_cat_active' => 'Active',
+    'lang_cat_inactive' => 'Inactive',
+    'lang_cat_select_icon' => 'Select Icon',
+    'lang_log_delete_selected' => 'Delete Selected',
+    'lang_log_archive_selected' => 'Archive Selected',
+    'lang_log_filter_start_date' => 'Start Date',
+    'lang_log_filter_end_date' => 'End Date',
+    'lang_log_filter_user' => 'User',
+    'lang_log_filter_reset' => 'Reset Filter',
+    'lang_art_articles' => 'Articles Management',
+    'lang_art_title' => 'Title',
+    'lang_art_author' => 'Author',
+    'lang_art_category' => 'Category',
+    'lang_art_status' => 'Status',
+    'lang_art_actions' => 'Actions',
+    'lang_art_msg_disable' => 'Disable this article?',
+    'lang_art_create' => 'Create New Article',
+    'lang_art_publish_at' => 'Publication Date',
+    'lang_com_comments' => 'Comments',
+    'lang_com_title' => 'Title',
+    'lang_com_author' => 'Author',
+    'lang_com_category' => 'Category',
+    'lang_com_status' => 'Status',
+    'lang_com_actions' => 'Actions',
+    'lang_com_msg_disable' => 'Disable this comment?',
+    'lang_com_msg_nocommw' => 'No Comments in Waiting',
+    'lang_com_msg_nocomm' => 'No Comments in Waiting',
+    'lang_com_article' => 'Article',
+    'lang_com_user' => 'User',
+    'lang_com_comm' => 'Comment',
+    'lang_com_data' => 'Date Created',
+    'lang_com_admin_comments' => 'Comments Management',
+    'lang_com_in_pending' => 'Comments in Pending for Approval',
+    'lang_no_com_in_pending' => 'No Comments in Pending for Approval',
+    'lang_com_approve' => 'Approve Comment',
+    'lang_com_delete' => 'Delete Comment',
+    'lang_com_reject' => 'Reject Comment',
+    'lang_com_approved' => 'Your comment has been approved!',
+    'lang_com_op_approved' => 'Comment Approval',
+    'lang_com_deleted' => 'Your comment has been deleted!',
+    'lang_com_op_deleted' => 'Comment Deletion',
+    'lang_com_rejected' => 'Your comment has been rejected!',
+    'lang_com_op_rejected' => 'Comment Rejection',
+    'lang_art_btn_view' => 'View',
+    'lang_art_btn_edit' => 'Edit',
+    'lang_art_btn_disable' => 'View',
+    'lang_btn_view' => 'View',
+    'lang_btn_approve' => 'Approve',
+    'lang_btn_enable' => 'Enable',
+    'lang_btn_disable' => 'Disable',
+    'lang_btn_delete' => 'Delete',
+    'lang_btn_save' => 'Save',
+    'lang_btn_edit' => 'Edit',
+    'lang_btn_reject' => 'Reject',
+    'lang_btn_change_role' => 'Change Role',
+    'lang_btn_cancel' => 'Cancel',
+    'lang_btn_send_approval' => 'Send for Approval',
+    'lang_btn_filter' => 'Filter',
+    'lang_prof_msg_top_info' => 'Modify Profile Info',
+    'lang_prof_lname' => 'Last Name',
+    'lang_prof_fname' => 'First Name',
+    'lang_prof_email' => 'E-mail',
+    'lang_prof_photo' => 'Profile Photo:',
+    'lang_prof_photo_change' => 'Change Photo:',
+    'lang_prof_btn_save' => 'Update Profile',
+    'lang_prof_msg_top_pass' => 'Change Password',
+    'lang_prof_pass_crt' => 'Current Password',
+    'lang_prof_pass_new' => 'New Password',
+    'lang_prof_pass_confirm' => 'Confirm Password',
+    'lang_prof_btn_pass' => 'Change Password',
+    'lang_prof_pass_nomatch' => 'Passwords not matching',
+    'lang_reg_msg_top' => 'New Account Registration',
+    'lang_reg_fname' => 'First Name',
+    'lang_reg_lname' => 'Last Name',
+    'lang_reg_username' => 'Username',
+    'lang_reg_email' => 'Email',
+    'lang_reg_pass' => 'Password',
+    'lang_reg_pass_confirm' => 'Confirm Password',
+    'lang_reg_btn_create' => 'Create Account',
+    'lang_reg_pass_nomatch' => 'Passwords not matching',
+    'lang_reg_pass_ok' => 'Passwords matching !',
+    'lang_reg_pass_nok' => 'Passwords not matching !',
     'search' => 'search info in articles',
     'view_article' => 'view all published articles',
     'create_article' => 'create an article',
@@ -262,10 +221,8 @@ return [
     'archive_own_logs' => 'archive own activity logs',
     'delete_all_logs' => 'delete all activity logs',
     'archive_all_logs' => 'archive all activity logs',
-    'view_dashboard' => 'view own dashboard'
+    'view_dashboard' => 'view own dashboard',
+    'view_comment' => 'view a comment',
+    'lang_publish_at' => 'Scheduled for publish'
 
-  ];
-  
-
-
-?>
+];

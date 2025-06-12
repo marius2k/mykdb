@@ -1918,7 +1918,7 @@ ul.top-articles .li-icon {
 
 .corner-label-1 {
   position: absolute;
-  top: -25px; /* Poziționează eticheta deasupra bordurii */
+  top: -15px; /* Poziționează eticheta deasupra bordurii */
   left: 25px; /* Poziția etichetei de la stânga boxului */
   padding: 0 5px; /* Padding pentru spațiul de 10px înainte și după text */
   font-weight: bold;
@@ -1948,7 +1948,7 @@ ul.top-articles .li-icon {
   line-height: 1.5;
   padding: 2px;
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   
 }
 
@@ -1960,7 +1960,7 @@ ul.top-articles .li-icon {
   border: 1px solid rgb(184, 184, 184); /* Bordura completă */
   border-radius: 8px; /* Menținem colțurile rotunde */
   padding: 5px 20px;
-  margin: 20px;
+  margin: 10px;
   
 }
 
@@ -1968,7 +1968,7 @@ ul.top-articles .li-icon {
   position: absolute;
   top: -20px; /* Poziționează eticheta deasupra bordurii */
   left: 25px; /* Poziția etichetei de la stânga boxului */
-  padding: 0 5px; /* Padding pentru spațiul de 10px înainte și după text */
+  padding: 0 10px; /* Padding pentru spațiul de 10px înainte și după text */
   font-weight: bold;
   background: transparent; /* Fundal transparent pentru etichetă */
   z-index: 1; /* Asigură că eticheta e deasupra elementului care maschează bordura */
@@ -1985,7 +1985,7 @@ ul.top-articles .li-icon {
   top: -1px; /* La nivelul bordurii de sus */
   height: 1px; /* Suficient de înalt cât să acopere bordura și puțin deasupra */
   background: var(--page-background-color, white); /* **Aici este cheia:** Culoarea fundalului paginii */
-  z-index: 2; /* Sub corner-label, dar deasupra bordurii */
+  z-index: 1; /* Sub corner-label, dar deasupra bordurii */
   
   /* Lățimea și poziția vor fi setate de JavaScript prin variabile CSS */
   width: var(--cutout-width);
@@ -1996,6 +1996,7 @@ ul.top-articles .li-icon {
   line-height: 1.5;
   padding: 5px;
   align-items: left;
+  font-size: 14px;
 }
 
 
@@ -2072,3 +2073,14 @@ ul.top-articles .li-icon {
     flex: 1; /* Permite numărului să ocupe restul spațiului */
     text-align: right; /* Aliniază numărul la dreapta */
 }
+
+.modal {
+  display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+  overflow: auto; background: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background: #fff; margin: 5% auto; padding: 20px; border-radius: 8px; position: relative;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+.modal .close { color: #888; }
+.modal .close:hover { color: #e74c3c; }

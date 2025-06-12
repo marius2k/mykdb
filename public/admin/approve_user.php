@@ -32,7 +32,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 // creez o inregistrate in tabela user_configuration folosita pentru sistemul de notificari
 
-$userId = getUserById($_GET['id']);
+$userId = getUserNameById($_GET['id']);
 
  // Creare înregistrare în user_configuration
     $stmt = $db->prepare("

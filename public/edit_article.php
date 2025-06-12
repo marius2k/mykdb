@@ -135,14 +135,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </select>
         </div>
         <div style="display: flex; flex-direction: row; gap: 10px;">
-            <label style="width:30%" for="publish_at"><?=lang_art_publish_at?></label>
+            <label style="width:30%" for="publish_at"><?= lang('lang_art_publish_at') ?></label>
             <input style="width:70%" type="datetime-local" name="publish_at" id="publish_at" class="form-control" value="<?= isset($article['publish_at']) ? date('Y-m-d\TH:i', strtotime($article['publish_at'])) : '' ?>">
         </div>
         <div style="display: flex; gap: 10px;">
 
-            <button type="submit" name="action" value="draft" class="btn btn-outline-grey"><?=lang_create_article_draft?></button>
-            <button type="submit" name="action" value="submit" class="btn btn-outline-grey"><?=lang_create_article_submit?></button>
-            <button type="submit" name="action" value="cancel" class="btn btn-outline-grey"><?=lang_btn_cancel?></button>
+            <button type="submit" name="action" value="draft" class="btn btn-outline-grey"><?= lang('lang_create_article_draft') ?></button>
+            <button type="submit" name="action" value="submit" class="btn btn-outline-grey"><?= lang('lang_create_article_submit') ?></button>
+            <button type="submit" name="action" value="cancel" class="btn btn-outline-grey"><?= lang('lang_btn_cancel') ?></button>
 
         </div>
     </form>

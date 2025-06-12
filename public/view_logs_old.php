@@ -209,9 +209,9 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
                 <div class="box-content-1" >
                     <form id="logFilterForm" method="get" class="mb-3" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
                             <div>
-                                <label><?=lang_log_filter_user?></label><br>
+                                <label><?= lang('lang_log_filter_user') ?></label><br>
                                 <select id="filterUserId" name="user_id" onchange="triggerLogFilter()">
-                                <option value="0">-- <?= lang_db_filter_all_users ?> --</option>
+                                <option value="0">-- <?= lang('lang_db_filter_all_users') ?> --</option>
                                 <?php foreach ($users as $u): ?>
                                     <option value="<?= $u['id'] ?>" <?= $filterUserId == $u['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($u['username']) ?>
@@ -221,21 +221,21 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
                             </div>
 
                             <div>
-                                <label for="start_date"><?= lang_log_filter_start_date ?? 'De la data' ?></label><br>
+                                <label for="start_date"><?= lang('lang_log_filter_start_date') ?? 'De la data' ?></label><br>
                                 <input type="datetime-local" id="start_date" name="start_date"
                                 value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>"
                                 onchange="triggerLogFilter()">
                             </div>
 
                             <div>
-                                <label for="end_date"><?= lang_log_filter_end_date ?? 'Până la data' ?></label><br>
+                                <label for="end_date"><?= lang('lang_log_filter_end_date') ?? 'Până la data' ?></label><br>
                                 <input type="datetime-local" id="end_date" name="end_date"
                                 value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>"
                                 onchange="triggerLogFilter()">
                             </div>
                             <div>
                                     <a href="#" id="resetFiltersLink">
-                                        <img src="<?=APP_URL?>assets/icons/icon-reset.svg" title="<?=lang_log_filter_reset?>" alt="Reset Filters" style="width: 25px; height: auto;">
+                                        <img src="<?=APP_URL?>assets/icons/icon-reset.svg" title="<?= lang('lang_log_filter_reset') ?>" alt="Reset Filters" style="width: 25px; height: auto;">
                                     </a>                            
                             </div>
                     </form>
@@ -251,11 +251,11 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="checkAll" onclick="toggleAllLogs(this)"></th>
-                            <th><?=lang_db_log_table_user?></th>
-                            <th><?=lang_db_log_table_action?></th>
-                            <th><?=lang_db_log_table_agent?></th>
-                            <th><?=lang_db_log_table_details?></th>
-                            <th><?=lang_db_log_table_data?></th>
+                            <th><?= lang('lang_db_log_table_user') ?></th>
+                            <th><?= lang('lang_db_log_table_action') ?></th>
+                            <th><?= lang('lang_db_log_table_agent') ?></th>
+                            <th><?= lang('lang_db_log_table_details') ?></th>
+                            <th><?= lang('lang_db_log_table_data') ?></th>
                             <th width="100px">Archive/Delete</th>
                         </tr>
                     </thead>
@@ -312,8 +312,8 @@ $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
 
                 <br><br>
                 <div style="margin-top: 10px;">
-                    <button type="button" class="btn btn-outline-grey" onclick="submitBulkLogs('archive')"><?=lang_log_archive_selected?></button>&nbsp;&nbsp;
-                    <button type="button" class="btn btn-outline-grey" onclick="submitBulkLogs('delete')"><?=lang_log_delete_selected?></button>
+                    <button type="button" class="btn btn-outline-grey" onclick="submitBulkLogs('archive')"><?= lang('lang_log_archive_selected') ?></button>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-outline-grey" onclick="submitBulkLogs('delete')"><?= lang('lang_log_delete_selected') ?></button>
                 </div>
             </form>
 

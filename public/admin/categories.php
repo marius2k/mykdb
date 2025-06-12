@@ -325,7 +325,7 @@ $availableCategories = array_map(function($cat) {
                                     <label for="cat_icon">Icon:</label>
                                 </div>
                                 <div class="dropdown-wrapper" data-type="icon">
-                                    <select name="cat_icon" id="cat_icon_select" class="select2-icon" style="width:100%" placeholder="<?=lang_cat_select?>">
+                                    <select name="cat_icon" id="cat_icon_select" class="select2-icon" style="width:100%" placeholder="<?= lang('lang_cat_select') ?>">
                                     <option></option>
                                     <?php foreach ($availableIcons as $icon): ?>
                                         <option value="<?= $icon['value'] ?>" data-img="/mykdb/assets/icons/categories/<?= $icon['value'] ?>">
@@ -338,18 +338,18 @@ $availableCategories = array_map(function($cat) {
 
                             <div class="form-row">
                                 <label for="cat_name">Category Name:</label>
-                                <input type="text" name="cat_name" id="cat_name" placeholder="<?=lang_cat_category?>" required>
+                                <input type="text" name="cat_name" id="cat_name" placeholder="<?= lang('lang_cat_category') ?>" required>
                             </div>
 
                             <div class="form-row">
                                 <label for="cat_description">Category Description:</label>
-                                <input type="text" name="cat_description" id="cat_description" placeholder="<?=lang_cat_description?>">
+                                <input type="text" name="cat_description" id="cat_description" placeholder="<?= lang('lang_cat_description') ?>">
                             </div>
 
                             <div class="form-row form-actions">
-                                <button type="submit" name="save_category" class="btn-sm btn-outline-grey"><?=lang_btn_save?>
+                                <button type="submit" name="save_category" class="btn-sm btn-outline-grey"><?= lang('lang_btn_save') ?>
                                 <!--
-                                <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?=lang_btn_save?>">
+                                <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
                                 -->
                                 </button>
                             </div>
@@ -371,7 +371,7 @@ $availableCategories = array_map(function($cat) {
                                     <table><tr><td align="right">
                                         Label:
                                     </td><td align="left">
-                                        <input type="text" name="icon_label" placeholder="<?=lang_cat_icon_label?>" required>
+                                        <input type="text" name="icon_label" placeholder="<?= lang('lang_cat_icon_label') ?>" required>
                                     </td></tr>
                                     <tr><td align="right">
                                         Filename:
@@ -379,9 +379,9 @@ $availableCategories = array_map(function($cat) {
                                         <input type="file" name="icon_filename" accept="image/*">
                                     </td></tr>
                                     <tr><td align="right" colspan="2" style="padding: 10px; ">
-                                        <button type="submit" name="save_icon" class="btn-sm btn-outline-grey"><?=lang_btn_save?>
+                                        <button type="submit" name="save_icon" class="btn-sm btn-outline-grey"><?= lang('lang_btn_save') ?>
                                         <!--
-                                        <button type="submit" name="save_icon" class="btn-plus-icon"><img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?=lang_btn_save?>">
+                                        <button type="submit" name="save_icon" class="btn-plus-icon"><img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
                                         -->
                                         </button>
                                     </td></tr>
@@ -404,7 +404,7 @@ $availableCategories = array_map(function($cat) {
                                         <label for="category">Disabled Categories:</label>
                                     </div>  
                                     <div class="dropdown-wrapper" data-type="category">
-                                        <select name="category_id" id="dcategory_select" class="select2-category" style="width:100%" placeholder="<?=lang_cat_select?>">
+                                        <select name="category_id" id="dcategory_select" class="select2-category" style="width:100%" placeholder="<?= lang('lang_cat_select') ?>">
                                         <option></option>
                                         <?php foreach ($disabledCategories as $dc): ?>
                                             <option value="<?= $dc['id'] ?>" data-img="/mykdb/assets/icons/categories/<?= $dc['icon'] ?>">
@@ -417,10 +417,10 @@ $availableCategories = array_map(function($cat) {
 
                                 
                                 <div class="form-row form-actions">
-                                    <button type="submit" name="enable_category" class="btn-sm btn-outline-grey"><?=lang_btn_enable?>
+                                    <button type="submit" name="enable_category" class="btn-sm btn-outline-grey"><?= lang('lang_btn_enable') ?>
                                     <!--
                                     <button type="submit" name="enable_category" class="btn-plus-icon">
-                                    <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?=lang_btn_save?>">
+                                    <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
                                     -->
                                     </button>
                                 </div>
@@ -440,7 +440,7 @@ $availableCategories = array_map(function($cat) {
                                         <label for="category">Active Categories:</label>
                                     </div>  
                                     <div class="dropdown-wrapper" data-type="category">
-                                        <select name="category_id" id="acategory_select" class="select2-category" style="width:100%" placeholder="<?=lang_cat_select?>">
+                                        <select name="category_id" id="acategory_select" class="select2-category" style="width:100%" placeholder="<?= lang('lang_cat_select') ?>">
                                         <option></option>
                                         <?php foreach ($activeCategories as $ac): ?>
                                             <option value="<?= $ac['id'] ?>" data-img="/mykdb/assets/icons/categories/<?= $ac['icon'] ?>">
@@ -453,10 +453,10 @@ $availableCategories = array_map(function($cat) {
 
                                 
                                 <div class="form-row form-actions">
-                                    <button type="submit" name="disable_category" class="btn-sm btn-outline-grey"><?=lang_btn_disable?>
+                                    <button type="submit" name="disable_category" class="btn-sm btn-outline-grey"><?= lang('lang_btn_disable') ?>
                                     <!--
                                     <button type="submit" name="disable_category" class="btn-plus-icon">
-                                    <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?=lang_btn_save?>">
+                                    <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
                                     -->
                                     </button>
                                 </div>
@@ -486,11 +486,11 @@ $availableCategories = array_map(function($cat) {
                     </button>
                     -->
                     </th>
-                    <th><?=lang_cat_icon?></th>
-                    <th><?=lang_cat_name?></th>
-                    <th><?=lang_cat_description?></th>
-                    <th><?=lang_cat_status?></th>
-                    <th align="center"><?=lang_cat_actions?></th>
+                    <th><?= lang('lang_cat_icon') ?></th>
+                    <th><?= lang('lang_cat_name') ?></th>
+                    <th><?= lang('lang_cat_description') ?></th>
+                    <th><?= lang('lang_cat_status') ?></th>
+                    <th align="center"><?= lang('lang_cat_actions') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -509,15 +509,15 @@ $availableCategories = array_map(function($cat) {
                         <td><?= escape($c['description']) ?></td>
                         <td>
                             <?php if ($c['is_active'] == '1'): ?>
-                                <span class=""><?=lang_cat_active?></span>
+                                <span class=""><?= lang('lang_cat_active') ?></span>
                             <?php else: ?>
-                                <span class="text-primary"><?=lang_cat_inactive?></span>
+                                <span class="text-primary"><?= lang('lang_cat_inactive') ?></span>
                             <?php endif; ?>
                         </td>
                         <td align="center">
                             <div>
-                                <a href="edit_category.php?id=<?= $c['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-edit.svg" class="op-icon" title="<?=lang_btn_edit?>"></a>
-                                <a href="delete_category.php?id=<?= $c['id'] ?>" onclick="return confirm('<?=lang_cat_msg_delete?>')"><img src="<?=APP_URL?>assets/icons/icon-delete.svg" class="op-icon" title="<?=lang_btn_delete?>"></a>
+                                <a href="edit_category.php?id=<?= $c['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-edit.svg" class="op-icon" title="<?= lang('lang_btn_edit') ?>"></a>
+                                <a href="delete_category.php?id=<?= $c['id'] ?>" onclick="return confirm('<?= lang('lang_cat_msg_delete') ?>')"><img src="<?=APP_URL?>assets/icons/icon-delete.svg" class="op-icon" title="<?= lang('lang_btn_delete') ?>"></a>
                             </div>
                         </td>
                     </tr>
@@ -559,7 +559,7 @@ $(document).ready(function () {
 
   // ICON select
   $('#cat_icon_select').select2({
-    placeholder: "<?=lang_cat_select_icon?>",
+    placeholder: "<?= lang('lang_cat_select_icon') ?>",
     templateResult: formatWithIcon,
     templateSelection: formatWithIcon,
     allowClear: true
@@ -567,7 +567,7 @@ $(document).ready(function () {
 
   // Disabled CATEGORY select
   $('#dcategory_select').select2({
-    placeholder: "<?=lang_cat_select?>",
+    placeholder: "<?= lang('lang_cat_select') ?>",
     templateResult: formatWithIcon,
     templateSelection: formatWithIcon,
     allowClear: true
@@ -575,7 +575,7 @@ $(document).ready(function () {
 
   // Active CATEGORY select
   $('#acategory_select').select2({
-    placeholder: "<?=lang_cat_select?>",
+    placeholder: "<?= lang('lang_cat_select') ?>",
     templateResult: formatWithIcon,
     templateSelection: formatWithIcon,
     allowClear: true
