@@ -1624,7 +1624,7 @@ button[disabled],
   flex-direction: column; /* Așează elementele vertical */
   margin: 0 auto; /* Centrează pe orizontală */
   gap: 10px; /* Spațiu între elemente */
-  width: 90%;
+  width: 100%;
   /*border: 1px solid #ccc;*/
   /*padding: 10px;*/
 }
@@ -1924,7 +1924,7 @@ ul.top-articles .li-icon {
   font-weight: bold;
   background: transparent; /* Fundal transparent pentru etichetă */
   z-index: 1; /* Asigură că eticheta e deasupra elementului care maschează bordura */
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   white-space: nowrap;
   
@@ -1952,28 +1952,26 @@ ul.top-articles .li-icon {
   
 }
 
-
 .custom-box-2 {
   width: 95%;
   position: relative;
   background:rgba(255, 255, 255, 0.8); /* Fundalul boxului */
   border: 1px solid rgb(184, 184, 184); /* Bordura completă */
   border-radius: 8px; /* Menținem colțurile rotunde */
-  padding: 5px 20px;
+  padding: 5px 10px;
   margin: 10px;
   
 }
 
 .corner-label-2 {
   position: absolute;
-  top: -20px; /* Poziționează eticheta deasupra bordurii */
+  top: -15px; /* Poziționează eticheta deasupra bordurii */
   left: 25px; /* Poziția etichetei de la stânga boxului */
-  padding: 0 10px; /* Padding pentru spațiul de 10px înainte și după text */
+  padding: 0 5px; /* Padding pentru spațiul de 10px înainte și după text */
   font-weight: bold;
   background: transparent; /* Fundal transparent pentru etichetă */
   z-index: 1; /* Asigură că eticheta e deasupra elementului care maschează bordura */
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 16px;
   white-space: nowrap;
   
 }
@@ -1994,10 +1992,12 @@ ul.top-articles .li-icon {
 .box-content-2 {
   /*color: #555;*/
   line-height: 1.5;
-  padding: 5px;
-  align-items: left;
+  padding: 2px;
+  text-align: left;
   font-size: 14px;
+  
 }
+
 
 
 .notif-bell {
@@ -2084,3 +2084,671 @@ ul.top-articles .li-icon {
 }
 .modal .close { color: #888; }
 .modal .close:hover { color: #e74c3c; }
+
+.dataTables_length {
+    float: left;
+    margin-bottom: 5px; /* spațiu sub "Show entries" */
+}
+
+.dataTables_filter {
+    float: right;
+    margin-bottom: 10px; /* spațiu sub search box */
+    margin-top: -5px
+}
+
+#modalOverlay {
+    position: fixed;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.28);
+    z-index: 9998;
+}
+#roleModal {
+    position: fixed;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 18px;
+    min-width: 350px;
+    max-width: 95vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    z-index: 9999;
+    font-family: inherit;
+    animation: modalPop 0.18s cubic-bezier(.4,1.6,.6,1) 1;
+    display: flex;
+    flex-direction: column;
+}
+@keyframes modalPop {
+    0% { transform: translate(-50%, -60%) scale(0.95);}
+    100% { transform: translate(-50%, -50%) scale(1);}
+}
+.modal-header-1 {
+    display: flex;
+    align-items: left;
+    justify-content: space-between;
+    padding: 10px 18px 0 18px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+}
+.modal-title-1 {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #222;
+    height: 10px;
+}
+.modal-close-1 {
+    font-size: 1.7em;
+    color: #d4d4d4;
+    cursor: pointer;
+    padding: 0 6px;
+    transition: background 0.15s;
+}
+.modal-close-1:hover {
+    background: #ffffff;
+    transform: scale(1.2);
+    color: black;
+}
+.modal-content-1 {
+    padding: 18px 28px 0 28px;
+    
+}
+#modalUserInfo {
+    margin-bottom: 18px;
+    font-size: 1.08em;
+    color: #444;
+    background: #ffffff;
+    border-radius: 8px;
+    border-color: #ecebebcc ;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+#modalUserInfo img {
+    width: 32px;
+    opacity: 0.7;
+}
+.modal-row-1 {
+    margin-bottom: 18px;
+}
+#modalRoleSelect {
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 7px;
+    border: 1px solid #bbb;
+    font-size: 1em;
+    background: #fafbfc;
+}
+.modal-footer-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background: #fff;
+}
+.modal-btn {
+    padding: 8px 22px;
+    border: none;
+    border-radius: 7px;
+    background: #3a7afe;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.modal-btn.cancel {
+    background: #d4d4d4;
+    color: #444;
+}
+.modal-btn:hover:not(.cancel) {
+    background: #245edb;
+}
+.modal-btn.cancel:hover {
+    background: #e0e0e0;
+}
+.modal-header-modern {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 15px 0 25px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+}
+.modal-title-modern {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #222;
+}
+.modal-close-modern {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #444;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #f7f7fa;
+    border: 1px solid #bfc7d1;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+.modal-close-modern:hover {
+    background: #ececec;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.modal-content-modern {
+    padding: 18px 32px 0 32px;
+    flex: 1 1 auto;
+}
+.modal-userinfo-modern {
+    margin-bottom: 18px;
+    font-size: 1.08em;
+    color: #444;
+    background: #f7f7fa;
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.modal-row-modern {
+    margin-bottom: 18px;
+}
+.modal-label-modern {
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+}
+.modal-input-modern {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 7px;
+    border: 1px solid #bbb;
+    font-size: 1em;
+    background: #fafbfc;
+    margin-top: 4px;
+}
+.modal-footer-modern {
+    display: flex;
+    justify-content: center;      /* centrează butoanele */
+    align-items: center;
+    gap: 18px;                    /* spațiu între butoane */
+    padding: 22px 32px 22px 32px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background: #f2f2f3;
+    margin-top: 18px;
+}
+
+.modal-btn-modern {
+    flex: 1 1 0;                  /* butoane egale */
+    min-width: 120px;             /* lățime minimă pentru aspect plăcut */
+    max-width: 180px;
+    justify-content: center;      /* text și icon centrate */
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #c9c8c8;
+    color: #444;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.modal-btn-modern img{
+    width: 20px;
+    height: 20px;
+    filter: grayscale(100%);
+    transition: filter 0.15s;
+}
+
+.modal-btn-modern.primary {
+    background: #4e9faa;
+    color: #fff;
+}
+.modal-btn-modern.primary:hover {
+    background: #408188;
+}
+.modal-btn-modern.remove:hover {
+    background: #a3a3a3;
+}
+
+
+
+/* Overlay pentru fundal */
+#modalOverlayComment {
+    position: fixed;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.28);
+    z-index: 9998;
+}
+
+/* Modal principal */
+#viewCommentModal {
+    position: fixed;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 18px;
+    min-width: 350px;
+    max-width: 95vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    z-index: 9999;
+    font-family: inherit;
+    animation: modalPop 0.18s cubic-bezier(.4,1.6,.6,1) 1;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes modalPop {
+    0% { transform: translate(-50%, -60%) scale(0.95);}
+    100% { transform: translate(-50%, -50%) scale(1);}
+}
+
+.modal-header-comments {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 15px 0 25px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+}
+.modal-title-comments {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #222;
+}
+.modal-close-comments {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #444;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #f7f7fa;
+    border: 1px solid #bfc7d1;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+.modal-close-comments:hover {
+    background: #ececec;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.modal-content-comments {
+    padding: 18px 32px 0 32px;
+    flex: 1 1 auto;
+}
+.modal-userinfo-comments {
+    margin-bottom: 18px;
+    font-size: 1.08em;
+    color: #444;
+    background: #ffffff;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+}
+.modal-row-comments {
+    margin-bottom: 0px;
+}
+.modal-label-comments {
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+}
+.modal-input-comments {
+    width: 100%;
+    padding: 5px 10px 5px 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: 1px solid #d8d8d8;
+    font-size: 1em;
+    background: #ffffff;
+    margin-top: 4px;
+    min-height: 60px;
+    white-space: pre-line;
+    word-break: break-word;
+
+}
+.modal-footer-comments {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 32px 22px 32px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background: #f2f2f3;
+    margin-top: 18px;
+}
+.modal-btn-comments {
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 180px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #c9c8c8;
+    color: #444;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+
+.modal-btn-comments.primary {
+    background: #4e9faa;
+    color: #fff;
+}
+.modal-btn-comments.primary:hover {
+    background: #408188;
+}
+.modal-btn-comments.cancel {
+    background: #d4d4d4;
+    color: #444;
+}
+.modal-btn-comments.cancel:hover {
+    background: #e0e0e0;
+}
+
+
+/* Modal overlay pentru categories */
+#modalOverlayCategory {
+    position: fixed;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.28);
+    z-index: 9998;
+}
+
+/* Modal principal pentru categories */
+#modalAddCategory, #modalAddIcon, #modalEnableCategory, #modalDisableCategory {
+    position: fixed;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 18px;
+    min-width: 450px;
+    max-width: 100vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    z-index: 9999;
+    font-family: inherit;
+    animation: modalPop 0.18s cubic-bezier(.4,1.6,.6,1) 1;
+    display: none;
+    flex-direction: column;
+}
+
+@keyframes modalPop {
+    0% { transform: translate(-50%, -60%) scale(0.95);}
+    100% { transform: translate(-50%, -50%) scale(1);}
+}
+.modal-header-category {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 15px 0 25px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+}
+.modal-title-category {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #222;
+}
+.modal-close-category {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #444;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #f7f7fa;
+    border: 1px solid #bfc7d1;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+.modal-close-category:hover {
+    background: #ececec;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.modal-content-category {
+    padding: 50px 30px 50px 30px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+.modal-footer-category {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 30px 22px 30px 22px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background: #f2f2f3;
+    margin-top: 18px;
+}
+.modal-btn-category {
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 180px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #c9c8c8;
+    color: #444;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+.modal-btn-category.primary {
+    background: #4e9faa;
+    color: #fff;
+}
+.modal-btn-category.primary:hover {
+    background: #408188;
+}
+
+
+.modal-btn-category.cancel {
+    background: #d4d4d4;
+    color: #444;
+}
+.modal-btn-category.cancel:hover {
+    background: #e0e0e0;
+}
+.modal-label-category {
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+}
+.modal-input-category {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 7px;
+    border: 1px solid #bbb;
+    font-size: 1em;
+    background: #fafbfc;
+    margin-top: 4px;
+    min-height: 30px;
+    white-space: pre-line;
+    word-break: break-word;
+}
+
+#modalAddCategory input[type="text"],
+#modalAddCategory .select2-container--default .select2-selection--single {
+    width: 220px; /* sau cât ai la input */
+    min-height: 32px;
+    height: 32px;
+    box-sizing: border-box;
+    border-radius: 7px;
+    border: 1px solid #bbb;
+    font-size: 1em;
+    background: #fafbfc;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center; /* Aliniază conținutul vertical */
+}
+
+#modalAddCategory .select2-container {
+    width: 220px !important; /* la fel ca inputul */
+}
+
+#modalAddCategory .select2-selection__rendered {
+    line-height: 24px !important;
+    padding-left: 8px !important;
+}
+
+#modalAddCategory .select2-selection__arrow {
+    height: 32px !important;
+}
+
+#modalAddCategory .select2-container {
+    min-height: 32px !important;
+}
+
+#modalAddIcon input[type="file"] {
+    min-height: 32px;
+    height: 40px;
+    padding: 4px 8px;
+    font-size: 1em;
+    /*border-radius: 6px;*/
+    /*border: 1px solid #bbb;*/
+    /*background: #fafbfc;*/
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+#modalAddIcon .modal-content-category > div {
+    display: flex;
+    align-items: center !important;
+    gap: 10px;
+    justify-content: flex-start;   
+    width: auto;                  
+}
+#modalAddIcon label {
+    min-width: 120px; /* sau cât vrei tu */
+    margin-right: 8px;
+    text-align: left;
+}
+
+#modalAddIcon input[type="text"] {
+    flex: unset;
+    width: 200px;
+    min-width: 0;
+}
+
+#modalEnableCategory input[type="text"],
+#modalEnableCategory .select2-container--default .select2-selection--single {
+    width: 220px; /* sau cât ai la input */
+    min-height: 32px;
+    height: 32px;
+    box-sizing: border-box;
+    border-radius: 7px;
+    border: 1px solid #bbb;
+    font-size: 1em;
+    background: #fafbfc;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center; /* Aliniază conținutul vertical */
+}
+
+#modalEnableCategory .select2-container {
+    width: 220px !important; /* la fel ca inputul */
+}
+
+#modalEnableCategory .select2-selection__rendered {
+    line-height: 24px !important;
+    padding-left: 8px !important;
+}
+
+#modalEnableCategory .select2-selection__arrow {
+    height: 32px !important;
+}
+
+#modalEnableCategory .select2-container {
+    min-height: 32px !important;
+}
+
+
+#modalDisableCategory input[type="text"],
+#modalDisableCategory .select2-container--default .select2-selection--single {
+    width: 250px; /* sau cât ai la input */
+    min-height: 32px;
+    height: 32px;
+    box-sizing: border-box;
+    border-radius: 7px;
+    border: 1px solid #bbb;
+    font-size: 1em;
+    background: #fafbfc;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center; /* Aliniază conținutul vertical */
+}
+
+#modalDisableCategory .select2-container {
+    width: 250px !important; /* la fel ca inputul */
+}
+
+#modalDisableCategory .select2-selection__rendered {
+    line-height: 24px !important;
+    padding-left: 8px !important;
+}
+
+#modalDisableCategory .select2-selection__arrow {
+    height: 32px !important;
+}
+
+#modalDisableCategory .select2-container {
+    min-height: 32px !important;
+}

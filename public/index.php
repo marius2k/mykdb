@@ -194,8 +194,8 @@ if (isset($_SESSION['user']['id'])) {
                                     $textOnly = strip_tags($content);
                                     
                                     // Scurtăm textul
-                                    $shortText = shortenText($textOnly, 500);
-                                    
+                                    //$shortText = shortenText($textOnly, 500);
+                                    $shortText = shortenText(strip_tags(html_entity_decode($a['content'])), 500);
 
                                     $preview = truncateHtmlWithImages($a['content'], 100);
                                     ?>
@@ -211,7 +211,9 @@ if (isset($_SESSION['user']['id'])) {
                                                         <?php endif; ?>
                                                 <?php endif; ?><?= escape($a['title']) ?></h3>
                                             <div class="article-body" id="article<?=$a['id']?>">
-                                                <p><?= nl2br(escape($shortText)) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="<?= lang('lang_read_more') ?>"> </a></p>
+
+                                            
+                                                <p><?= nl2br($shortText) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="<?= lang('lang_read_more') ?>"> </a></p>                                            
                                             </div>
                                             
                                             <div class="article-footer">
@@ -222,7 +224,7 @@ if (isset($_SESSION['user']['id'])) {
                                                             <div class="vote-buttons" id="meta-<?=$a['id']?>">
                                                                 <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>">
                                                                 <img src="<?=APP_URL?>assets/images/icon-view.png" title="<?= lang('lang_article_views') ?>" class="vote-icon"></a>
-                                                                <span class="view-count"><?= escape($a['views']) ?></span>
+                                                                <span class="view-count"><?= getArticleViewsCount($a['id']) ?></span>
 
                                                                 <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>#comments">
                                                                 <img src="<?=APP_URL?>assets/images/icon-comm.png" title="<?= lang('lang_article_add_comments') ?>" class="vote-icon"></a>

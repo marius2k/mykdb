@@ -5,6 +5,15 @@ include APP_ROOT . 'includes/header.php';
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
+$lang = $_SESSION['settings']['language'];
+
+// Mapare rapidă dacă ai coduri locale
+if ($lang === 'ro') $lang = 'ro';
+if ($lang === 'en') $lang = 'en-GB';
+
+//error_log('Language: ' . var_export($lang, true));
+
 ?>
 <script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
 
@@ -16,10 +25,10 @@ if (empty($_SESSION['csrf_token'])) {
                     </div>
     </div>
 </div>
-
+<br>
 
 <form id="bulkLogForm">
-    <table class="articles-table">
+    <table id="logsTable" class="articles-table">
         <thead>
             <tr>
                 <th><input type="checkbox" id="checkAll" onclick="toggleAllLogs(this)"></th>
@@ -32,11 +41,7 @@ if (empty($_SESSION['csrf_token'])) {
             </tr>
         </thead>
         <tbody id="logs-table-body"></tbody>
-        <tfoot>
-            <tr>
-                <td colspan="7"><div id="pagination-results"></div></td>
-            </tr>
-        </tfoot>
+        
     </table>
     <div style="margin-top: 10px;">
         <button type="button" class="btn btn-outline-grey" onclick="submitBulkLogs('archive')"><?= lang('lang_log_archive_selected') ?></button>
@@ -45,33 +50,139 @@ if (empty($_SESSION['csrf_token'])) {
 </form>
 
 <script>
-let allLogs = [];
-let allUsers = [];
+//let allLogs = [];
+//let allUsers = [];
 let isAdmin = false;
 let currentUserId = null;
+let isSuperAdmin = false;
 
+
+/*
 let filterUserId = 0;
 let filterStart = '';
 let filterEnd = '';
 let currentPage = 1;
+*/
 
-function escapeHtml(text) {
-    var map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
 
+// DataTables initialization with AJAX
+$(document).ready(function() {
+   
+
+    // DataTables init
+    const table = $('#logsTable').DataTable({
+        ajax: {
+            url: 'api/bkd_logs.php',
+            data: function(d) {
+                // Add filter params to AJAX request
+                d.user_id = $('#filterUserId').val() || '';
+                d.start_date = $('#start_date').val() || '';
+                d.end_date = $('#end_date').val() || '';
+            },
+            dataSrc: 'logs'
+        },
+        columns: [
+            { 
+                data: 'id',
+                orderable: false,
+                render: function(data, type, row) {
+                    return `<input type="checkbox" name="log_ids[]" value="${data}">`;
+                }
+            },
+            { data: 'username' },
+            { data: 'action_type' },
+            { 
+                data: 'user_agent',
+                render: function(data) {
+                    return $('<div>').text(data).html().substring(0,70);
+                }
+            },
+            { 
+                data: 'details',
+                render: function(data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        if (typeof parsed === 'object') {
+                            let html = '';
+                            for (const k in parsed) {
+                                html += `<strong>${$('<div>').text(k).html()}:</strong> ${$('<div>').text(parsed[k]).html()}<br>`;
+                            }
+                            return html;
+                        }
+                    } catch { }
+                    return $('<div>').text(data).html();
+                }
+            },
+            { data: 'created_at' },
+            { 
+                data: null,
+                orderable: false,
+                render: function(data, type, row) {
+                    let html = '';
+                    if (row.user_id == currentUserId || isAdmin) {
+                        html += `<a href="#" onclick="archiveLog(${row.id});return false;"><img src="<?= APP_URL?>assets/icons/icon-archive.svg" width="25"></a>&nbsp;`;
+                        html += `<a href="#" onclick="deleteLog(${row.id});return false;"><img src="<?= APP_URL?>assets/icons/icon-delete.svg" width="25"></a>`;
+                    }
+                    return html;
+                }
+            }
+        ],
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
+        },
+        serverSide: true, // Set true if you implement server-side paging
+        processing: true
+    });
+
+    // Filter events
+    $(document).on('change', '#filterUserId, #start_date, #end_date', function() {
+        table.ajax.reload();
+    });
+    $(document).on('click', '#resetFiltersLink', function(e) {
+        e.preventDefault();
+        $('#filterUserId').val('');
+        $('#start_date').val('');
+        $('#end_date').val('');
+        table.ajax.reload();
+    });
+
+    // Get user info for action buttons
+    $.getJSON('api/bkd_logs.php?userinfo=1', function(data) {
+        isAdmin = data.isAdmin;
+        currentUserId = data.userId;
+        isSuperAdmin = data.isSuperAdmin;
+
+
+         // Optionally, fetch users for filters
+        $.getJSON('api/bkd_logs.php?users=1', function(data) {
+            renderFilters(data.users || []);
+        });
+    });
+
+    
+});
+
+
+// Render filters (users dropdown and date pickers)
 function renderFilters(users) {
-    let html = `<form id="logFilterForm" class="mb-3" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
-        <div>
+    // Ascunde filtrul de user dacă nu e admin/superadmin
+    let showUserFilter = (typeof isAdmin !== 'undefined' && (isAdmin || isSuperAdmin));
+
+    let html = `<form id="logFilterForm" class="mb-3" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; justify-content: flex-end;padding-right:10px">`;
+
+    if (showUserFilter) {
+        html += `<div>
             <label><?= lang('lang_log_filter_user') ?></label><br>
             <select id="filterUserId" name="user_id">
-                <option value="0">-- <?= lang('lang_db_filter_all_users') ?> --</option>`;
-    users.forEach(u => {
-        html += `<option value="${u.id}">${escapeHtml(u.username)}</option>`;
-    });
-    html += `</select>
-        </div>
-        <div>
+                <option value="">-- <?= lang('lang_db_filter_all_users') ?> --</option>`;
+        users.forEach(u => {
+            html += `<option value="${u.id}">${escapeHtml(u.username)}</option>`;
+        });
+        html += `</select>
+        </div>`;
+    }
+
+    html += `<div>
             <label for="start_date"><?= lang('lang_log_filter_start_date') ?? 'De la data' ?></label><br>
             <input type="datetime-local" id="start_date" name="start_date">
         </div>
@@ -86,29 +197,8 @@ function renderFilters(users) {
         </div>
     </form>`;
     document.getElementById('logs-filters').innerHTML = html;
-
-    document.getElementById('filterUserId').onchange = function() {
-        filterUserId = this.value;
-        loadLogs(1);
-    };
-    document.getElementById('start_date').onchange = function() {
-        filterStart = this.value;
-        loadLogs(1);
-    };
-    document.getElementById('end_date').onchange = function() {
-        filterEnd = this.value;
-        loadLogs(1);
-    };
-
-    document.getElementById('resetFiltersLink').onclick = function(e) {
-        e.preventDefault();
-        filterUserId = 0;
-        filterStart = '';
-        filterEnd = '';
-        loadLogs(1);
-    };
 }
-
+/*
 function renderLogsTable(logs) {
     let html = '';
     logs.forEach(log => {
@@ -140,8 +230,12 @@ function renderLogsTable(logs) {
         html += `</td></tr>`;
     });
     document.getElementById('logs-table-body').innerHTML = html;
-}
 
+    
+}
+*/
+
+/*
 function renderPagination(page, totalPages) {
     if (totalPages <= 1) return;
     let html = '<ul class="pagination" style="justify-content:center;">';
@@ -189,7 +283,9 @@ function renderPagination(page, totalPages) {
     html += '</ul>';
     document.getElementById('pagination-results').innerHTML = html;
 }
+*/
 
+/*
 function loadLogs(page = currentPage) {
     // Folosește valorile globale
     const params = new URLSearchParams();
@@ -216,7 +312,10 @@ function loadLogs(page = currentPage) {
             document.getElementById('checkAll').checked = false;
         });
 }
+*/
 
+
+// Bulk actions and single actions
 function archiveLog(logId) {
     fetch('api/bkd_logs.php', {
         method: 'POST',
@@ -225,13 +324,12 @@ function archiveLog(logId) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) loadLogs(currentPage);
+        if (data.success) $('#logsTable').DataTable().ajax.reload();
         else alert(data.error || 'Eroare la arhivare!');
     });
 }
 
 function deleteLog(logId) {
-    
     fetch('api/bkd_logs.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -239,7 +337,7 @@ function deleteLog(logId) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) loadLogs(currentPage);
+        if (data.success) $('#logsTable').DataTable().ajax.reload();
         else alert(data.error || 'Eroare la ștergere!');
     });
 }
@@ -254,7 +352,7 @@ function submitBulkLogs(action) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) loadLogs(currentPage);
+        if (data.success) $('#logsTable').DataTable().ajax.reload();
         else alert(data.error || 'Eroare la acțiunea bulk!');
     });
 }
@@ -263,17 +361,15 @@ function toggleAllLogs(checkbox) {
     document.querySelectorAll('input[name="log_ids[]"]').forEach(cb => cb.checked = checkbox.checked);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    window.currentPage = 1;
-    loadLogs();
-});
-
+// Inițializează custom boxes dacă ai nevoie
 document.addEventListener('DOMContentLoaded', () => {
     const allCustomBoxes = document.querySelectorAll('.custom-box-1');
     allCustomBoxes.forEach(box => {
       initializeCustomBox1(box);
     });
 });
+
 </script>
+
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

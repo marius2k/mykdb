@@ -1,95 +1,139 @@
 <?php
-
+// filepath: /home/marius/work/projects/mykdb/public/api/bkd_users.php
 require_once '../../config/bootstrap.php';
 header('Content-Type: application/json');
 
-$ops = ['edit_user','disable_user','enable_user','delete_user','modify_user','approve_user'];
-if (!hasPermission($_SESSION['user']['id'],$ops)) {
+require_login();
+$db = new Database();
+
+// Restricționează accesul doar pentru admin și superadmin
+$role = $_SESSION['user']['role'] ?? '';
+if (!in_array($role, ['admin', 'superadmin'])) {
     http_response_code(403);
     echo json_encode(['error' => 'Access denied']);
     exit;
 }
 
-$db = new Database();
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $perPage = 5;
-    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-    $offset = ($page - 1) * $perPage;
-
-    $totalStmt = $db->query("SELECT COUNT(*) FROM users");
-    $totalUsers = $totalStmt->fetchColumn();
-    $totalPages = ceil($totalUsers / $perPage);
-
-    $stmt = $db->prepare("
-        SELECT u.*, r.name AS role_name, r.label AS role_label
-        FROM users u
-        JOIN roles r ON u.role_id = r.id
-        LIMIT :limit OFFSET :offset
-    ");
-    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-    $stmt->execute();
-    $users = $stmt->fetchAll();
-
-    // Toate rolurile pentru dropdown
-    $roles = $db->fetchAll("SELECT id, label FROM roles ORDER BY label");
-
-    echo json_encode([
-        'users' => $users,
-        'roles' => $roles,
-        'page' => $page,
-        'totalPages' => $totalPages
-    ]);
+// Helper: return JSON and exit
+function json_response($data) {
+    header('Content-Type: application/json');
+    echo json_encode($data);
     exit;
 }
 
-// POST pentru acțiuni
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // CSRF check
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        http_response_code(403);
-        echo json_encode(['error' => 'CSRF token invalid']);
-        exit;
+// Acțiuni AJAX: enable, disable, change_role
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'], $_POST['csrf_token'])) {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        json_response(['success' => false, 'error' => 'CSRF invalid!']);
     }
-
-
-    $action = $_POST['action'] ?? '';
-    $userId = (int)($_POST['user_id'] ?? 0);
-
-    if (!$userId || !in_array($action, ['disable', 'enable', 'change_role'])) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Date lipsă sau acțiune invalidă']);
-        exit;
-    }
+    $userId = (int)$_POST['user_id'];
+    $action = $_POST['action'];
 
     if ($action === 'disable') {
-        if ($_SESSION['user']['id'] === $userId) {
-            echo json_encode(['error' => 'Nu poți dezactiva propriul cont!']);
-            exit;
+        $stmt = $db->prepare("UPDATE users SET status='disabled' WHERE id=:id");
+        $stmt->execute([':id' => $userId]);
+        json_response(['success' => true]);
+    } elseif (($action === 'enable') || ($action === 'approve')) {
+        $stmt = $db->prepare("UPDATE users SET status='active' WHERE id=:id");
+        $stmt->execute([':id' => $userId]);
+        json_response(['success' => true]);
+    } elseif ($action === 'change_role' && isset($_POST['role_id'])) {
+        $roleId = (int)$_POST['role_id'];
+        if (!$roleId || !$userId) {
+            json_response(['success' => false, 'error' => 'ID invalid!']);
         }
-        $db->query("UPDATE users SET status = 'disabled' WHERE id = ?", [$userId]);
-        logActivity($userId, 'user_disabled', 'User disabled: ' . $_SESSION['user']['username']);
-        echo json_encode(['success' => true]);
-        exit;
+        // Verifică dacă role_id există în tabela roles
+        $check = $db->prepare("SELECT COUNT(*) FROM roles WHERE id = :id");
+        $check->execute([':id' => $roleId]);
+        if (!$check->fetchColumn()) {
+            json_response(['success' => false, 'error' => 'Rol invalid!']);
+        }
+        $stmt = $db->prepare("UPDATE users SET role_id=:role_id WHERE id=:id");
+        $stmt->execute([':role_id' => $roleId, ':id' => $userId]);
+        json_response(['success' => true]);
     }
-
-    if ($action === 'enable') {
-        $db->query("UPDATE users SET status = 'active' WHERE id = ?", [$userId]);
-        logActivity($userId, 'user_enabled', 'User enabled: ' . $_SESSION['user']['username']);
-        echo json_encode(['success' => true]);
-        exit;
-    }
-
-    if ($action === 'change_role') {
-        $roleId = (int)($_POST['role_id'] ?? 0);
-        $db->query("UPDATE users SET role_id = ? WHERE id = ?", [$roleId, $userId]);
-        $role = $db->fetchSingle("SELECT label FROM roles WHERE id = ?", [$roleId]);
-        echo json_encode(['success' => true, 'new_role_label' => $role['label']]);
-        exit;
-    }
+    json_response(['success' => false, 'error' => 'Acțiune necunoscută!']);
 }
 
-http_response_code(405);
-echo json_encode(['error' => 'Method Not Allowed']);
+// DataTables server-side
+$draw = intval($_GET['draw'] ?? 1);
+$start = intval($_GET['start'] ?? 0);
+$length = intval($_GET['length'] ?? 10);
+$search = trim($_GET['search']['value'] ?? '');
+$orderCol = $_GET['order'][0]['column'] ?? 1;
+$orderDir = $_GET['order'][0]['dir'] ?? 'asc';
+
+// Coloane pentru sortare (trebuie să corespundă cu coloanele din DataTables)
+$columns = [
+    0 => 'u.id',
+    1 => 'u.username',
+    2 => 'u.email',
+    3 => 'r.name',
+    4 => 'u.status',
+    5 => 'u.created_at'
+];
+
+// Filtre custom
+$where = [];
+$params = [];
+
+// Filtru rol (din dropdown)
+if (!empty($_GET['role'])) {
+    $where[] = 'r.name = :role';
+    $params[':role'] = $_GET['role'];
+}
+
+// Filtru căutare globală
+if ($search) {
+    $where[] = '(u.username LIKE :search1 OR u.email LIKE :search2 OR r.name LIKE :search3 OR r.label LIKE :search4)';
+    $params=[
+            ':search1' => "%$search%",
+            ':search2' => "%$search%",
+            ':search3' => "%$search%",
+            ':search4' => "%$search%"
+    ];
+}
+
+$whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+// Total fără filtru
+$totalRecords = $db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+
+// Total cu filtru
+$stmt = $db->prepare("SELECT COUNT(*) FROM users u LEFT JOIN roles r ON u.role_id = r.id $whereSql");
+
+
+foreach ($params as $k => $v) {
+    $stmt->bindValue($k, $v);
+}
+$stmt->execute($params);
+$recordsFiltered = $stmt->fetchColumn();
+
+// Query date paginată
+$orderBy = $columns[$orderCol] ?? 'u.id';
+$orderDir = ($orderDir === 'asc') ? 'ASC' : 'DESC';
+
+$sql = "
+    SELECT u.id, u.username, u.email, u.role_id, u.created_at, u.status, r.name AS role, r.label AS role_label
+    FROM users u
+    LEFT JOIN roles r ON u.role_id = r.id
+    $whereSql
+    ORDER BY $orderBy $orderDir
+    LIMIT :limit OFFSET :offset
+";
+$stmt = $db->prepare($sql);
+foreach ($params as $k => $v) {
+    $stmt->bindValue($k, $v);
+}
+$stmt->bindValue(':limit', $length, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $start, PDO::PARAM_INT);
+$stmt->execute();
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Returnează datele în format DataTables
+json_response([
+    'draw' => $draw,
+    'recordsTotal' => (int)$totalRecords,
+    'recordsFiltered' => (int)$recordsFiltered,
+    'data' => $users
+]);

@@ -18,38 +18,86 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
 
 $db = new Database();
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Paginare
-    $perPage = 5;
-    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-    $offset = ($page - 1) * $perPage;
+// get article by ID used to load it in the editor (summernote)
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get_article') {
+    $articleId = (int)($_GET['id'] ?? 0);
+    $article = $db->fetchSingle("SELECT * FROM articles WHERE id = ?", [$articleId]);
+    if (!$article) {
+        echo json_encode(['error' => 'Articol inexistent']);
+        exit;
+    }
+    echo json_encode(['success' => true, 'article' => $article]);
+    exit;
+}
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // DataTables params
+    $draw = intval($_GET['draw'] ?? 1);
+    $start = intval($_GET['start'] ?? 0);
+    $length = intval($_GET['length'] ?? 10);
+    $searchValue = $_GET['search']['value'] ?? '';
+
+    // Căutare
+    $where = '';
+    $params = [];
+    if ($searchValue) {
+        $where = "WHERE a.title LIKE :search1 OR u.username LIKE :search2 OR c.name LIKE :search3";
+        $params =[
+                ':search1' => "%$searchValue%",
+                ':search2' => "%$searchValue%",
+                ':search3' => "%$searchValue%"
+        
+        ];
+    }
+
+    // Total articole
     $totalStmt = $db->query("SELECT COUNT(*) FROM articles");
     $totalArticles = $totalStmt->fetchColumn();
-    $totalPages = ceil($totalArticles / $perPage);
 
+    // Total filtrat
+    $filteredStmt = $db->prepare("
+        SELECT COUNT(*) FROM articles a
+        JOIN users u ON a.user_id = u.id
+        LEFT JOIN categories c ON a.category_id = c.id
+        $where
+    ");
+    foreach ($params as $k => $v){
+        $filteredStmt->bindValue($k, $v);
+    }
+    $filteredStmt->execute($params);
+    $filtered = $filteredStmt->fetchColumn();
+
+    // Date paginare
     $stmt = $db->prepare("
         SELECT a.*, u.username, c.name AS category
         FROM articles a
         JOIN users u ON a.user_id = u.id
         LEFT JOIN categories c ON a.category_id = c.id
+        $where
         ORDER BY a.created_at DESC
         LIMIT :limit OFFSET :offset
     ");
-    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+    $stmt->bindValue(':limit', $length, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $start, PDO::PARAM_INT);
     $stmt->execute();
-    $articles = $stmt->fetchAll();
+    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Adaugă rownum pentru indexare
+    $rownum = $start + 1;
+    foreach ($articles as &$a) {
+        $a['rownum'] = $rownum++;
+    }
 
     echo json_encode([
-        'articles' => $articles,
-        'page' => $page,
-        'totalPages' => $totalPages,
-        'user_id' => $_SESSION['user']['id'],
-        'role' => $_SESSION['user']['role']
+        "draw" => $draw,
+        "recordsTotal" => $totalArticles,
+        "recordsFiltered" => $filtered,
+        "data" => $articles
     ]);
     exit;
 }
+
 
 // POST: creare articol sau acțiuni
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -61,6 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $action = $_POST['action'] ?? '';
+
+    // adăugare articol
+
     if ($action === 'add_article') {
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
@@ -89,6 +140,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Editare articol
+
+    if ($action === 'edit_article') {
+        $articleId = (int)($_POST['article_id'] ?? 0);
+        $title = trim($_POST['title'] ?? '');
+        $content = trim($_POST['content'] ?? '');
+        $category_id = $_POST['category_id'] ?? '';
+        $publish_at = $_POST['publish_at'] ?? null;
+        $status = $_POST['submit_type'] === 'draft' ? 'draft' : 'pending';
+        $user_id = $_SESSION['user']['id'];
+        $updated_at=date('Y-m-d H:i:s');
+
+        if (!$title || !$content || !$category_id) {
+            echo json_encode(['error' => 'Toate câmpurile sunt obligatorii.']);
+            exit;
+        }
+
+        $clean_content = clean_html($content);
+        $clean_content = removeImageCaptionText($clean_content);
+
+        $stmt = $db->prepare("UPDATE articles SET title=?, content=?, category_id=?, publish_at=?, status=?, updated_at=? WHERE id=?");
+        $stmt->execute([$title, $clean_content, $category_id, $publish_at, $status, $updated_at, $articleId]);
+
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+
     // Acțiuni pe articol
     $articleId = (int)($_POST['article_id'] ?? 0);
 
@@ -99,6 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         $db->query("UPDATE articles SET publish_at = ? WHERE id = ?", [$publishAt ?: null, $articleId]);
+        sendNotification($article['user_id'], 'Article Publication','Your article <a href="article.php?id='.$articleId.'">'. truncateText($article['title'],30). '</a> is published at ' .$publishAt,'info');
         echo json_encode(['success' => true]);
         exit;
     }
@@ -116,6 +196,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newDate = date('Y-m-d H:i:s');
         $db->query("UPDATE articles SET status='pending', publish_at = ? WHERE id=?", [$newDate, $articleId]);
         logActivity($_SESSION['user']['id'], 'article_disabled', 'User ' .$_SESSION['user']['username'] .' disabled an article');
+        sendNotification($article['user_id'], 'Article Disabled','Your article <a href="article.php?id='.$articleId.'">'. truncateText($article['title'],30). '</a> has been disabled.','warning');
+
         echo json_encode(['success' => true]);
         exit;
     }

@@ -4,123 +4,184 @@ require_once '../../config/bootstrap.php';
 header('Content-Type: application/json');
 
 require_login();
-
-$userId = $_SESSION['user']['id'];
-$isAdmin = ($_SESSION['user']['role'] === 'admin') || ($_SESSION['user']['role'] === 'superadmin');
-
-$perPage = 10;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $perPage;
-
-$filterUserId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
-$start = isset($_GET['start_date']) && !empty($_GET['start_date']) ? date('Y-m-d H:i:s', strtotime($_GET['start_date'])) : '2000-01-01 00:00:00';
-$end = isset($_GET['end_date']) && !empty($_GET['end_date']) ? date('Y-m-d H:i:s', strtotime($_GET['end_date'])) : date('Y-m-d H:i:s');
-
 $db = new Database();
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Filtrare și paginare
-    if (!$isAdmin) {
-        $sql = "SELECT l.*, u.username
-                FROM activity_log l
-                JOIN users u ON l.user_id = u.id
-                WHERE l.archived = 0 AND l.user_id = :uid AND l.created_at BETWEEN :startd AND :endd
-                ORDER BY l.created_at DESC
-                LIMIT :limit OFFSET :offset";
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':uid', $userId, PDO::PARAM_INT);
-        $stmt->bindValue(':startd', $start, PDO::PARAM_STR);
-        $stmt->bindValue(':endd', $end, PDO::PARAM_STR);
-        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $logs = $stmt->fetchAll();
-
-        $totalStmt = $db->prepare("SELECT COUNT(*) FROM activity_log WHERE user_id = :uid AND archived = 0 AND created_at BETWEEN :startd AND :endd");
-        $totalStmt->bindValue(':uid', $userId, PDO::PARAM_INT);
-        $totalStmt->bindValue(':startd', $start, PDO::PARAM_STR);
-        $totalStmt->bindValue(':endd', $end, PDO::PARAM_STR);
-        $totalStmt->execute();
-        $totalRows = $totalStmt->fetchColumn();
-    } else {
-        $where = "WHERE l.archived = 0 AND l.created_at BETWEEN :startd AND :endd";
-        if ($filterUserId) {
-            $where .= " AND l.user_id = :filterUserId";
-        }
-        $sql = "SELECT l.*, u.username
-                FROM activity_log l
-                JOIN users u ON l.user_id = u.id
-                $where
-                ORDER BY l.created_at DESC
-                LIMIT :limit OFFSET :offset";
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':startd', $start, PDO::PARAM_STR);
-        $stmt->bindValue(':endd', $end, PDO::PARAM_STR);
-        if ($filterUserId) $stmt->bindValue(':filterUserId', $filterUserId, PDO::PARAM_INT);
-        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $logs = $stmt->fetchAll();
-
-        $countSql = "SELECT COUNT(*) FROM activity_log l $where";
-        $totalStmt = $db->prepare($countSql);
-        $totalStmt->bindValue(':startd', $start, PDO::PARAM_STR);
-        $totalStmt->bindValue(':endd', $end, PDO::PARAM_STR);
-        if ($filterUserId) $totalStmt->bindValue(':filterUserId', $filterUserId, PDO::PARAM_INT);
-        $totalStmt->execute();
-        $totalRows = $totalStmt->fetchColumn();
-    }
-
-    $totalPages = ceil($totalRows / $perPage);
-
-    // Pentru dropdown useri (doar la GET)
-    $users = $db->fetchAll("SELECT id, username FROM users ORDER BY username");
-
-    echo json_encode([
-        'logs' => $logs,
-        'users' => $users,
-        'page' => $page,
-        'totalPages' => $totalPages,
-        'isAdmin' => $isAdmin,
-        'userId' => $userId
-    ]);
+// Helper: return JSON and exit
+function json_response($data) {
+    header('Content-Type: application/json');
+    echo json_encode($data);
     exit;
 }
 
-// POST pentru acțiuni (archive/delete, bulk)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        http_response_code(403);
-        echo json_encode(['error' => 'CSRF token invalid']);
-        exit;
-    }
-
-    $action = $_POST['action'] ?? '';
-    $logIds = isset($_POST['log_ids']) ? $_POST['log_ids'] : [];
-    if (!is_array($logIds)) $logIds = [$logIds];
-
-    if (!in_array($action, ['archive', 'delete'])) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Acțiune invalidă']);
-        exit;
-    }
-
-    foreach ($logIds as $logId) {
-        $logId = (int)$logId;
-        // Verifică permisiunea pentru fiecare log
-        $log = $db->fetchSingle("SELECT * FROM activity_log WHERE id = ?", [$logId]);
-        if (!$log) continue;
-        if (!$isAdmin && $log['user_id'] != $userId) continue;
-
-        if ($action === 'archive') {
-            $db->query("UPDATE activity_log SET archived = 1 WHERE id = ?", [$logId]);
-        } elseif ($action === 'delete') {
-            $db->query("DELETE FROM activity_log WHERE id = ?", [$logId]);
-        }
-    }
-    echo json_encode(['success' => true]);
-    exit;
+// Return users for filters
+if (isset($_GET['users'])) {
+    $users = $db->query("SELECT id, username FROM users ORDER BY username")->fetchAll(PDO::FETCH_ASSOC);;
+    json_response(['users' => $users]);
 }
 
-http_response_code(405);
-echo json_encode(['error' => 'Method Not Allowed']);
+// Return user info for JS (admin, superadmin, current user)
+if (isset($_GET['userinfo'])) {
+    $isSuperAdmin = ($_SESSION['user']['role'] ?? '') === 'superadmin';
+    $isAdmin = ($_SESSION['user']['role'] ?? '') === 'admin';
+    $userId = $_SESSION['user']['id'] ?? 0;
+    
+    // debugging    
+    //error_log('isAdmin: ' . var_export($isAdmin, true));
+    //error_log('isSuperAdmin: ' . var_export($isSuperAdmin, true));
+
+    json_response(['isAdmin' => $isAdmin, 'userId' => $userId, 'isSuperAdmin' => $isSuperAdmin]);
+}
+
+// Bulk actions: archive/delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['log_ids'], $_POST['csrf_token'])) {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        json_response(['success' => false, 'error' => 'CSRF invalid!']);
+    }
+    $ids = array_map('intval', $_POST['log_ids']);
+    if (!count($ids)) json_response(['success' => false, 'error' => 'Nicio selecție!']);
+    $action = $_POST['action'];
+    if ($action === 'archive') {
+        $stmt = $db->prepare("UPDATE activity_log SET archived=1 WHERE id IN (" . implode(',', $ids) . ")");
+        $stmt->execute();
+        json_response(['success' => true]);
+    } elseif ($action === 'delete') {
+        $stmt = $db->prepare("DELETE FROM activity_log WHERE id IN (" . implode(',', $ids) . ")");
+        $stmt->execute();
+        json_response(['success' => true]);
+    }
+    json_response(['success' => false, 'error' => 'Acțiune necunoscută!']);
+}
+
+// DataTables server-side
+// Parametri DataTables
+$draw = intval($_GET['draw'] ?? 1);
+$start = intval($_GET['start'] ?? 0);
+$length = intval($_GET['length'] ?? 10);
+$search = trim($_GET['search']['value'] ?? '');
+$orderCol = $_GET['order'][0]['column'] ?? 1;
+$orderDir = $_GET['order'][0]['dir'] ?? 'desc';
+
+// Coloane pentru sortare (trebuie să corespundă cu coloanele din DataTables)
+$columns = [
+    0 => 'id',
+    1 => 'username',
+    2 => 'action_type',
+    3 => 'user_agent',
+    4 => 'details',
+    5 => 'created_at',
+    6 => 'id'
+];
+
+// Filtre custom
+$where = [];
+$params = [];
+
+// Determină rolul și user_id-ul curent
+$role = $_SESSION['user']['role'] ?? '';
+$currentUserId = $_SESSION['user']['id'] ?? 0;
+
+// Restricționează accesul la loguri pentru non-admin/superadmin
+if (!in_array($role, ['admin', 'superadmin'])) {
+    $where[] = 'l.user_id = :current_user_id';
+    $params[':current_user_id'] = $currentUserId;
+}
+
+// Filtru user
+if (!empty($_GET['user_id'])) {
+    $where[] = 'l.user_id = :user_id';
+    $params[':user_id'] = (int)$_GET['user_id'];
+}
+
+// Filtru dată start
+if (!empty($_GET['start_date'])) {
+    $where[] = 'l.created_at >= :start_date';
+    $params[':start_date'] = $_GET['start_date'];
+}
+
+// Filtru dată end
+if (!empty($_GET['end_date'])) {
+    $where[] = 'l.created_at <= :end_date';
+    $params[':end_date'] = $_GET['end_date'];
+}
+
+// Filtru căutare globală
+if ($search) {
+    $where[] = '(u.username LIKE :search1 OR l.action_type LIKE :search2 OR l.details LIKE :search3 OR l.user_agent LIKE :search4)';
+    
+    $params [':search1']= "%$search%";
+    $params [':search2']= "%$search%";
+    $params [':search3']= "%$search%";
+    $params [':search4']= "%$search%";
+    
+}
+
+$whereSql = $where ? 'WHERE l.archived = 0 AND ' . implode(' AND ', $where) : 'WHERE l.archived = 0';
+
+// debugging    
+    //error_log('Where clause: ' . var_export($whereSql, true));
+    //error_log('isSuperAdmin: ' . var_export($isSuperAdmin, true));
+    //error_log('params: ' . var_export($params, true));
+
+
+// Total fără filtru
+$totalRecords = $db->query("SELECT COUNT(*) FROM activity_log WHERE archived = 0")->fetchColumn();
+
+
+
+// Total cu filtru
+$stmt = $db->prepare("
+    SELECT COUNT(*) FROM activity_log l
+    LEFT JOIN users u ON l.user_id = u.id
+    $whereSql
+");
+
+foreach ($params as $k => $v) {
+    $stmt->bindValue($k, $v);
+}
+$stmt->execute($params);
+$recordsFiltered = $stmt->fetchColumn();
+
+    //error_log('records filtered: ' . var_export($recordsFiltered, true));
+
+
+// Query date paginată
+$orderBy = $columns[$orderCol] ?? 'created_at';
+$orderDir = ($orderDir === 'asc') ? 'ASC' : 'DESC';
+
+$sql = "
+    SELECT l.*, u.username 
+    FROM activity_log l
+    LEFT JOIN users u ON l.user_id = u.id
+    $whereSql
+    ORDER BY $orderBy $orderDir
+    LIMIT :limit OFFSET :offset
+";
+    //debugging
+    //error_log('sql: ' . var_export($sql, true));
+    //error_log('search: ' . var_export($search, true));
+
+
+$stmt = $db->prepare($sql);
+foreach ($params as $k => $v) {
+    $stmt->bindValue($k, $v);
+}
+$stmt->bindValue(':limit', $length, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $start, PDO::PARAM_INT);
+
+$stmt->execute();
+$logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Completează cu user_id pentru acțiuni
+foreach ($logs as &$log) {
+    $log['user_id'] = $log['user_id'] ?? null;
+}
+unset($log);
+
+// Returnează datele în format DataTables
+json_response([
+    'draw' => $draw,
+    'recordsTotal' => (int)$totalRecords,
+    'recordsFiltered' => (int)$recordsFiltered,
+    'logs' => $logs
+]);
+?>

@@ -160,6 +160,16 @@ function getAllActiveUsers():array{
     return $users;
 }
 
+// get all roles from DB
+// returns an array with all roles
+function getAllRoles(): array {
+    $db = new Database();
+    $stmt = $db->prepare("SELECT * FROM roles");
+    $stmt->execute();
+    $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $roles;
+}
+
 function loadConfig(){
 
     if (!defined('APP_ROOT')) {
@@ -215,6 +225,20 @@ function initGuestSession(){
     //$_SESSION['theme']    ??= 'light';
 }
 
+
+// log article views in db
+function logArticleView($articleId) {
+
+    $db = new Database();
+    $userId = $_SESSION['user']['id'] ?? null;
+    $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+    $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
+
+    $db->query(
+        "INSERT INTO article_views (article_id, user_id, ip_address, user_agent) VALUES (?, ?, ?, ?)",
+        [$articleId, $userId, $ip, $ua]
+    );
+}
 
 function SystemStatus(){
 
@@ -642,6 +666,19 @@ function getCommentCount(int $articleId): int {
 
     return (int) $result['COUNT(*)'];
 }
+
+/**
+ * Returnează numărul de vizualizări pentru un articol
+ * @param int $articleId
+ * @return int
+ */
+function getArticleViewsCount(int $articleId): int
+{
+    $db = new Database();
+    $stmt = $db->prepare("SELECT COUNT(*) FROM article_views WHERE article_id = ?");
+    $stmt->execute([$articleId]);
+    return (int)$stmt->fetchColumn();
+}
 function getViewsCount(int $articleId): int {
     global $db;
 
@@ -1029,7 +1066,7 @@ function getTop5ViewedArticles(int $days): string
             FROM articles a
             JOIN article_views v ON a.id = v.article_id
             JOIN categories c ON a.category_id = c.id
-            WHERE v.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
+            WHERE v.viewed_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
               AND a.status = 'approved'
               AND (a.publish_at IS NULL OR a.publish_at <= NOW())
               AND c.is_active = 1
@@ -1048,11 +1085,11 @@ function getTop5ViewedArticles(int $days): string
         $html = '<ul class="top-articles viewed">';
         foreach ($results as $row) {
             $iconPath = APP_URL . 'assets/icons/categories/' . htmlspecialchars($row['icon']);
-            $titleShort = truncateText($row['title'], 30, '...');
+            $titleShort = truncateText($row['title'], 35, '...');
             $html .= '<li class="grid-li">
                         <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
                         <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
-                        <span class="span-1">(' . $row['views'] . ' 👁️)</span>
+                        <span class="span-1">(' . $row['views'] . ')</span>
                       </li>';
         }
         $html .= '</ul>';
@@ -1063,26 +1100,30 @@ function getTop5ViewedArticles(int $days): string
     }
 }
 
-// returns a list of top viewed articles
-// @param int $limit - number of articles to return
+/**
+ * Returnează topul celor mai vizualizate articole all time.
+ * @param int $limit Numărul de articole dorit în top (ex: 5, 10)
+ * @return string HTML cu lista articolelor
+ */
 function getTopViewedArticles(int $limit = 5): string 
 {
-
     if ($limit <= 0) {
         return '<p>Parameter must be a positive integer.</p>';
     }
 
     $db = new Database();
-    $sql = "SELECT a.id, a.title, a.views, c.icon
+    $sql = "SELECT a.id, a.title, c.icon, COUNT(v.id) AS views
             FROM articles a
+            LEFT JOIN article_views v ON a.id = v.article_id
             JOIN categories c ON a.category_id = c.id
             WHERE a.status = 'approved'
               AND (a.publish_at IS NULL OR a.publish_at <= NOW())
               AND c.is_active = 1
-            ORDER BY a.views DESC
+            GROUP BY a.id, a.title, c.icon
+            ORDER BY views DESC
             LIMIT :limit";
 
-    try{
+    try {
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
@@ -1092,21 +1133,22 @@ function getTopViewedArticles(int $limit = 5): string
 
         $html = '<ul class="top-articles viewed">';
         foreach ($results as $row) {
-            
-            $iconPath = APP_URL.'assets/icons/categories/' . $row['icon'];
-            $titleShort= truncateText($row['title'], 30, '...');
+            $iconPath = APP_URL . 'assets/icons/categories/' . htmlspecialchars($row['icon']);
+            $titleShort = truncateText($row['title'], 30, '...');
             $html .= '<li class="grid-li">
                         <span><img src="' . $iconPath . '" class="li-icon" alt=""></span>
                         <span><a href="view_article.php?id=' . $row['id'] . '">' . htmlspecialchars($titleShort) . '</a></span>
-                        <span class="span-1">('.$row['views'].')</span>
-                    </li>';
+                        <span class="span-1">(' . $row['views'] . ')</span>
+                      </li>';
         }
         $html .= '</ul>';
         return $html;
+
     } catch (PDOException $e) {
-            return '<p>Error: ' . $e->getMessage() . '</p>';    
+        return '<p>Error: ' . htmlspecialchars($e->getMessage()) . '</p>';
     }
 }
+
 // returns the top 5 most commented articles in the last $days days
 // returns an HTML string with the list of articles
 function getTop5CommentedArticles(int $days): string 
@@ -1390,33 +1432,32 @@ function getDraftsArticles($uid):array {
 
 //************************************************************************************************************* */
 // Return HTML output for notifications
-// @Param: $notifications - array of notifications with attributes: id, type, message, created_at, and is_read 
+// @Param: $notifications - array of notifications with attributes: id, type, message, created_at, and is_read
+// @Param: $t - translation string for the title 
 // @Return: HTML string
 //************************************************************************************************************* */
-function renderNotifications(array $notifications): string {
+function renderNotifications(array $notifications,array $t ): string {
     // Verifică dacă array-ul de notificări este gol
     if (empty($notifications)) {
         return '
         <div class="custom-box-1">
-            <span class="corner-label-1">' . lang('lang_notifications') . ' (0)</span>
-            <div class="box-content-1">
-                <ul class="list-group">
-                    No Notifications
-                </ul>
+            <span class="corner-label-1">' . $t['lang_db_notif'] . ' (0)</span>
+            <div class="box-content-1" style="color: #888; padding: 20px;">
+                <ul class="list-group">'. $t['lang_db_no_notif'].'</ul>
             </div>
         </div>';
     } else {
         // Începe generarea HTML-ului pentru notificări
         $html = '<div class="custom-box-1">
-                    <span class="corner-label-1">' . lang('lang_notifications') . ' (' . count($notifications) . ')</span>
-                    <div class="box-content-1" style="padding: 20px; font-size: 14px;">
+                    <span class="corner-label-1">' . $t['lang_db_notif'] . ' (' . count($notifications) . ')</span>
+                    <div class="box-content-1" style="color: #888; padding: 20px;">
                         <table width="100%">
                             <thead>
-                                <tr>
-                                    <th>type</th>
-                                    <th>message</th>
-                                    <th>date</th>
-                                    <th>actions</th>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <th style="padding: 5px;">'.$t['lang_db_notif_type'].'</th>
+                                    <th style="padding: 5px;">'.$t['lang_db_notif_message'].'</th>
+                                    <th style="padding: 5px;">'.$t['lang_db_notif_date'].'</th>
+                                    <th style="padding: 5px;">'.$t['lang_db_notif_actions'].'</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -1444,7 +1485,7 @@ function renderNotifications(array $notifications): string {
             }
 
             // Adaugă rândul pentru notificare
-            $html .= '<tr id="notif-' . $n['id'] . '" style="color: ' . $color . '; font-size: 14px;" >
+            $html .= '<tr id="notif-' . $n['id'] . '" style="color: ' . $color . '; font-size: 12px;border-bottom: 1px solid #ddd;" >
                         <td>' . htmlspecialchars($n['type']) . '</td>
                         <td>' . $n['message'] . '</td>
                         <td>' . date('Y-m-d H:i', strtotime($n['created_at'])) . '</td>
@@ -1452,11 +1493,11 @@ function renderNotifications(array $notifications): string {
 
             // Afișează acțiunile pentru notificare
             if (!$n['is_read']) {
-                $html .= '<a href="#" title="Marchează ca citit" onclick="markRead(' . $n['id'] . '); return false;">
+                $html .= '<a href="#" title="'.$t['lang_db_notif_mark_as_read'].'" onclick="markRead(' . $n['id'] . '); return false;">
                             <img src="' . APP_URL . 'assets/icons/icon-mark-read.svg" class="op-icon">
                           </a>';
             }
-            $html .= '<a href="#" title="Șterge notificarea" onclick="deleteNotif(' . $n['id'] . '); return false;">
+            $html .= '<a href="#" title="'. $t['lang_db_notif_delete'].'" onclick="deleteNotif(' . $n['id'] . '); return false;">
                         <img src="' . APP_URL . 'assets/icons/icon-delete.svg" class="op-icon">
                       </a>
                       </td>
@@ -1475,24 +1516,27 @@ function renderNotifications(array $notifications): string {
 // ***********************************************************************************************
 // display articles in draft
 // @Param: $drafts - array of draft articles with atributesid, title, and created_at.
+// @Param: $t[] - translation strings for the title and other labels
 // @Return: HTML string
 // ***********************************************************************************************
-function renderDrafts(array $drafts): string {
+function renderDraftsArticles(array $drafts, array $t): string {
+    
+
+    
     // Verifică dacă array-ul de drafturi este gol
     if (empty($drafts)) {
         return '
         <div class="custom-box-1">
-            <span class="corner-label-1">' . lang('lang_articles_in_draft') . '</span>
-            <div class="box-content-1">
-                <ul class="list-group">
-                    No Articles in draft
+            <span class="corner-label-1">' . $t['lang_articles_in_draft'] . '</span>
+            <div class="box-content-1" style="color: #888; padding: 20px;">
+                <ul class="list-group">' . $t['lang_no_articles_in_draft'] . '
                 </ul>
             </div>
         </div>';
     } else {
         // Începe generarea HTML-ului pentru drafturi
         $html = '<div class="custom-box-1">
-                    <span class="corner-label-1">' . lang('lang_articles_in_draft') . ' (' . count($drafts) . ')</span>
+                    <span class="corner-label-1">' . $t['lang_articles_in_draft']. ' (' . count($drafts) . ')</span>
                     <div class="box-content-1" style="padding: 15px;">
                         <ul class="list-group">';
 
@@ -1505,10 +1549,10 @@ function renderDrafts(array $drafts): string {
                         </div>
                         <div class="btn-group">
                             <a href="edit_article.php?id=' . $draft['id'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . lang('lang_btn_edit') . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . $t['lang_btn_edit']. '">
                             </a>
                             <a href="submit_article.php?article_id=' . $draft['id'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-send-approval.svg" class="op-icon" title="' . lang('lang_btn_send_approval') . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-send-approval.svg" class="op-icon" title="' . $t['lang_btn_send_approval'] . '">
                             </a>
                         </div>
                     </li>';
@@ -1528,24 +1572,24 @@ function renderDrafts(array $drafts): string {
 // @Param: $pendingArticles - array of pending articles with atributesid, title, and created_at.
 // @Return: HTML string
 // ***********************************************************************************************
-function renderPendingArticles(array $pendingArticles): string {
+function renderPendingArticles(array $pendingArticles,array $t): string {
 
     
     // Verifică dacă array-ul de articole este gol
     if (empty($pendingArticles)) {
         return '
         <div class="custom-box-1">
-            <span class="corner-label-1">'.lang('lang_articles_in_pending').'</span>
-            <div class="box-content-1">
+            <span class="corner-label-1" >'.$t['lang_articles_in_pending'].'</span>
+            <div class="box-content-1" style="color: #888; padding: 20px;">
                 <ul class="list-group">
-                    '.lang('lang_no_articles_in_pending').'.
+                    '.$t['lang_no_articles_in_pending'].'.
                 </ul>
             </div>
         </div>';
     } else {
         // Începe generarea HTML-ului pentru articolele în așteptare
         $html = '<div class="custom-box-1">
-                    <span class="corner-label-1">'.lang('lang_articles_in_pending').' (' . count($pendingArticles) . ')</span>
+                    <span class="corner-label-1">'.$t['lang_articles_in_pending'].' (' . count($pendingArticles) . ')</span>
                     <div class="box-content-1" style="padding: 15px;">
                         <ul class="list-group">';
 
@@ -1559,10 +1603,10 @@ function renderPendingArticles(array $pendingArticles): string {
                         <div style="align-items: right;">
                             
                             <a href="approve_article.php?id=' . $article['id'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="'.lang('lang_article_approve').'">
+                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_btn_send_approval'].'">
                             </a>
                             <a href="reject_article.php?id=' . $article['id'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="'.lang('lang_article_reject').'">
+                                <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="'.$t['lang_article_reject'].'">
                             </a>
                         </div>
                     </li>';
@@ -1582,7 +1626,7 @@ function renderPendingArticles(array $pendingArticles): string {
 // @Param: $pendingComments - array of pending comments 
 // @Return: HTML string
 // ***********************************************************************************************
-function renderPendingComments(array $pendingComments): string {
+function renderPendingComments(array $pendingComments,array $t): string {
     
     global $csrf_token;
 
@@ -1590,17 +1634,17 @@ function renderPendingComments(array $pendingComments): string {
     if (empty($pendingComments)) {
         return '
         <div class="custom-box-1">
-            <span class="corner-label-1">'.lang('lang_com_in_pending').'</span>
-            <div class="box-content-1">
+            <span class="corner-label-1">'.$t['lang_com_in_pending'].'</span>
+            <div class="box-content-1" style="color: #888; padding: 20px;">
                 <ul class="list-group">
-                 '.lang('lang_no_com_in_pending').'   
+                 '.$t['lang_no_pending_comments'].'   
                 </ul>
             </div>
         </div>';
     } else {
         // Începe generarea HTML-ului pentru comentariile în așteptare
         $html = '<div class="custom-box-1">
-                    <span class="corner-label-1">'.lang('lang_com_in_pending').' (' . count($pendingComments) . ')</span>
+                    <span class="corner-label-1">'.$t['lang_com_in_pending'].' (' . count($pendingComments) . ')</span>
                     <div class="box-content-1" style="padding: 15px;">
                         <ul class="list-group">';
 
@@ -1618,7 +1662,7 @@ function renderPendingComments(array $pendingComments): string {
                                 <input type="hidden" name="csrf_token" value="'.$csrf_token.'">
                                 <input type="hidden" name="redirect_to" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
                                 <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.lang('lang_com_approve').'" style="width:24;height:auto;"></button>
+                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_com_approve'].'" style="width:24;height:auto;"></button>
                             </form>
                             <form action="comment_action.php" method="post" style="display:inline;">
                                 <input type="hidden" name="id" value="'.$comment['id'].'">
@@ -1626,7 +1670,7 @@ function renderPendingComments(array $pendingComments): string {
                                 <input type="hidden" name="csrf_token" value="'.$csrf_token.'">
                                 <input type="hidden" name="redirect_to" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
                                 <input type="hidden" name="action" value="delete">
-                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.lang('lang_com_delete').'" style="width:24;height:auto;"></button>
+                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.$t['lang_com_reject'].'" style="width:24;height:auto;"></button>
                             </form>
                            
                         </div>
@@ -1658,10 +1702,10 @@ function renderSuperAdminDashboard(): string {
     $html .= '<div class="dashboard-left">';
 
     // Afișează drafturile
-    $html .= renderDrafts($drafts);
+    //$html .= renderDrafts($drafts,'');
 
     // Afișează notificările
-    $html .= renderNotifications($notifications);
+    //$html .= renderNotifications($notifications);
 
     $html .= '</div>'; // Încheie coloana stânga
 
@@ -1759,10 +1803,10 @@ function renderAdminDashboard(): string {
     $html .= '<div class="dashboard-left">';
 
     // Afișează drafturile
-    $html .= renderDrafts($drafts);
+    //$html .= renderDrafts($drafts,'');
 
     // Afișează notificările
-    $html .= renderNotifications($notifications);
+    //$html .= renderNotifications($notifications);
 
     $html .= '</div>'; // Încheie coloana stânga
 
@@ -1831,13 +1875,13 @@ function renderModeratorDashboard(): string {
     $html .= '<div class="dashboard-left">';
 
     // Afișează articolele în așteptare
-    $html .= renderPendingArticles($pendingArticles);
+    //$html .= renderPendingArticles($pendingArticles);
 
     // Afișează comentariile în așteptare
-    $html .= renderPendingComments($pendingComments);
+    //$html .= renderPendingComments($pendingComments);
 
     // Afiseaza notificarile
-    $html .= renderNotifications($notifications);
+    //$html .= renderNotifications($notifications);
 
     $html .= '</div>'; // Încheie coloana stânga
 
@@ -1892,3 +1936,69 @@ function renderModeratorDashboard(): string {
 
     return $html;
 }
+
+
+
+function renderDashboardBox($box, $data) {
+
+    switch ($box) {
+        case 'drafts':
+            
+            $lang_text = [
+                'lang_no_articles_in_draft' => lang('lang_no_articles_in_draft'),
+                'lang_articles_in_draft' => lang('lang_articles_in_draft'),
+                'lang_btn_edit' => lang('lang_btn_edit'),
+                'lang_btn_send_approval' => lang('lang_btn_send_approval')
+            ];
+            return renderDraftsArticles($data['drafts'],$lang_text);
+        case 'notifications':
+            $lang_text = [
+                'lang_db_notif' => lang('lang_db_notif'),
+                'lang_db_no_notif' => lang('lang_db_no_notif'),
+                'lang_db_notif_type' => lang('lang_db_notif_type'),
+                'lang_db_notif_message' => lang('lang_db_notif_message'),
+                'lang_db_notif_date' => lang('lang_db_notif_date'),
+                'lang_db_notif_actions' => lang('lang_db_notif_actions'),
+                'lang_db_notif_mark_as_read' => lang('lang_db_notif_mark_as_read'),
+                'lang_db_notif_delete' => lang('lang_db_notif_delete'),
+                'lang_db_no_notifications' => lang('lang_db_no_notifications')
+            ];
+           
+            return renderNotifications($data['notifications'],$lang_text);
+        case 'pendingArticles':
+            $lang_text = [
+                'lang_articles_in_pending' => lang('lang_articles_in_pending'),
+                'lang_no_articles_in_pending' => lang('lang_no_articles_in_pending'),
+                'lang_article_approve' => lang('lang_article_approve'),
+                'lang_article_reject' => lang('lang_article_reject')
+            ];
+            return renderPendingArticles($data['pendingArticles'], $lang_text);
+        case 'pendingComments':
+            $lang_text = [
+                'lang_com_in_pending' => lang('lang_com_in_pending'),
+                'lang_no_com_in_pending' => lang('lang_no_com_in_pending'),
+                'lang_com_approve' => lang('lang_com_approve'),
+                'lang_com_reject' => lang('lang_com_reject')
+            ];
+            return renderPendingComments($data['pendingComments'],$lang_text);
+        case 'topViewed':
+            return '<div class="custom-box-1"><span class="corner-label-1" id="art_top_view"></span><div class="box-content-1" style="padding-top:20px;">'.$data['topViewed'].'</div></div>';
+        case 'topLiked':
+            return '<div class="custom-box-1"><span class="corner-label-1" id="art_top_like"></span><div class="box-content-1" style="padding-top:20px;">'.$data['topLiked'].'</div></div>';
+        case 'topCommented':
+            return '<div class="custom-box-1"><span class="corner-label-1" id="art_top_com"></span><div class="box-content-1" style="padding-top:20px;">'.$data['topCommented'].'</div></div>';
+        case 'articlesChart':
+            return '<div class="custom-box-1"><span class="corner-label-1">Articole</span><div class="box-content-1"><canvas id="articlesChart" height="130"></canvas></div></div>';
+        case 'commentsChart':
+            return '<div class="custom-box-1"><span class="corner-label-1">Comentarii</span><div class="box-content-1"><canvas id="commentsChart" height="130"></canvas></div></div>';
+        case 'operations':
+            return '<div class="custom-box-1"><span class="corner-label-1">Operațiuni</span><ul><li>18 create</li><li>7 editate</li><li>2 șterse</li></ul></div>';
+        case 'logs':
+            return '<div class="custom-box-1"><span class="corner-label-1">Loguri</span><ul><li>104 azi</li><li>7 arhivate</li><li>3 șterse</li></ul></div>';
+        case 'exports':
+            return '<div class="custom-box-1"><span class="corner-label-1">Exporturi</span><ul><li>1 CSV azi</li><li>3 backup-uri</li><li>Ultimul: 2024-05-01</li></ul></div>';
+        default:
+            return '';
+    }
+}
+

@@ -1,9 +1,10 @@
 <?php
-
 require_once '../../config/bootstrap.php';
+include APP_ROOT . 'includes/header.php';
 
-
-//require_admin();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 $ops = ['add_category','edit_category'];
 
@@ -26,573 +27,366 @@ if ($_SESSION['user']['role'] === 'guest') {
     exit;
 }
 
+// mapping local language codes for DataTables
 
-$db = new Database();
-
-
-
-switch ($_POST['form_id'] ?? null) {
-
-    case 'add_category':
-    
-                $name = trim($_POST['cat_name']);
-                $description = trim($_POST['cat_description'] ?? '');
-                $icon = trim($_POST['cat_icon']);
-            
-                // check if category already exists
-                    
-                $existing = $db->fetchSingle("SELECT id FROM categories WHERE LOWER(name) = LOWER(?)", [$name]);
-
-                if ($existing) {
-                    $error = "Categoria „{$name}” există deja.";
-                } else {
-
-                    if (strlen($name) >= 2) {
-                        $stmt = $db->prepare("INSERT INTO categories (name, icon, description) VALUES (?, ?, ?)");
-                        $stmt->execute([$name, $icon, $description]);
-                        header("Location: categories.php");
-                        exit;
-                    } else {
-                        echo "<p style='color:red; text-align:center;'>Numele trebuie să aibă cel puțin 2 caractere.</p>";
-                    }
-                }    
-                
-                break;
-
-    case 'disable_category':
-
-                if (!empty($_POST['category_id'])) {
-                
-                    echo "cat id:". $_POST['category_id'];
-
-                    $cid = trim($_POST['category_id']);
-
-
-                } else {
-                    echo "<script>
-                        alert(' No Category selected to disable!');
-                        window.location.href = 'categories.php';
-                        </script>";
-                
-                    exit;
-                }
-                
-                $cid = trim($_POST['category_id']);
-                $stmt = $db->prepare("UPDATE categories SET is_active = '0' WHERE id = ?");
-                $stmt->execute([$cid]);
-                header("Location: categories.php");
-                //logActivity($_SESSION['user']['id'], 'category_disabled', 'User'.$_SESSION['user']['username']. ' enabled category : ' . $cname);
-
-                break;
-
-    case 'enable_category':
-        
-
-                if (!empty($_POST['category_id'])) {
-                
-                    echo "cat id:". $_POST['category_id'];
-
-                    $cid = trim($_POST['category_id']);
-
-
-                } else {
-                    echo "<script>
-                        alert(' No Category selected to enable!');
-                        window.location.href = 'categories.php';
-                        </script>";
-                
-                    exit;
-                }
-                
-                $cid = trim($_POST['category_id']);
-                $stmt = $db->prepare("UPDATE categories SET is_active = '1' WHERE id = ?");
-                $stmt->execute([$cid]);
-                header("Location: categories.php");
-                //logActivity($_SESSION['user']['id'], 'category_enabled', 'User'.$_SESSION['user']['username']. ' enabled category : ' . $cname);
-
-                break;
-    case 'add_icon':
-
-            if (isset($_FILES['icon_filename']['name'])) {
-
-                    $file = $_FILES['icon_filename'];
-
-                    if($file['error'] === UPLOAD_ERR_OK){
-                        //echo "filename:".$file;
-
-                        $iconLabel = $_POST['icon_label']; 
-                        $iconFile = $file['name'];
-
-                        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-                        $allowed = ['jpg', 'jpeg', 'png', 'gif','svg'];
-                        if (in_array($ext, $allowed)) {
-                                $filen = $iconFile;
-                                $parentDir = dirname(__DIR__, 2);
-                                echo "parent dir: ".$parentDir;
-                                $dest = $parentDir.'/assets/icons/categories/' . $filen;
-
-                                if (!is_dir($parentDir.'/assets/icons/categories/')) {
-                                    mkdir($parentDir.'/assets/icons/categories/',0777, true);
-                                }
-                                //echo "Destinatia: " . $dest . "<br>";
-                                //echo "Numele fișierului: " . $file . "<br>";
-
-
-                                move_uploaded_file($file['tmp_name'], $dest);
-                                if (!iconExists($filen)){
-                                    $stmt = $db->prepare("INSERT INTO categories_icons (filename, label) VALUES (?, ?)");
-                                    $stmt->execute([$filen, $iconLabel]);
-                                    header('Location: categories.php');
-                                    exit;
-                                }else{
-
-                                    echo "<script>
-                                            alert('⚠️ Icon is already in DB');
-                                            window.location.href = 'categories.php';
-                                            </script>";
-                
-                                    exit;
-                                }
-
-
-
-                        }
-                }
-            }else{
-                echo "<script>
-                        alert('⚠️ Icon is not selected');
-                        window.location.href = 'categories.php';
-                        </script>";
-                exit;
-            }
-
-        break;
-    default:
-        // fallback
-}
-
-
-
-
-
-
-// delete category
-
-if (isset($_GET['delete'])) {
-    $stmt = $db->prepare("DELETE FROM categories WHERE id = ?");
-    $stmt->execute([$_GET['delete']]);
-    
-    // Log the deletion
-    logActivity($_SESSION['user']['id'], 'category_deleted', 'User'.$_SESSION['user']['username']. ' deleted category : ' . $_GET['delete']);
-  
-    header('Location: categories.php');
-    exit;
-}
-
-
-
-// paginate categories
-
-$perPage = 5;
-$totalStmt = $db->query("SELECT COUNT(*) FROM categories");
-$totalCategories = $totalStmt->fetchColumn();
-$totalPages = ceil($totalCategories / $perPage);
-
-$currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($currentPage - 1) * $perPage;
-
-// fetch all categories
-$stmt = $db->prepare("SELECT * FROM categories LIMIT :limit OFFSET :offset");
-$stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-
-$allCategories = $stmt->fetchAll();
-
-
-// fetch active categories
-$stmt = $db->prepare("SELECT * FROM categories WHERE is_active = '1' LIMIT :limit OFFSET :offset");
-$stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-
-$activeCategories = $stmt->fetchAll();
-
-
-// fetch disabled categories
-$stmt = $db->prepare("SELECT * FROM categories WHERE is_active = '0' LIMIT :limit OFFSET :offset");
-$stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
-
-$disabledCategories = $stmt->fetchAll();
-
-
-
-  // extragem toate icon-urile disponibile
-$allIcons = $db->fetchAll("SELECT filename, label FROM categories_icons");
-
-// extragem toate icon-urile deja folosite în categorii
-$usedIcons = $db->fetchAll("SELECT icon FROM categories WHERE icon IS NOT NULL");
-
-// convertim într-un array simplu
-$usedFilenames = array_column($usedIcons, 'icon');
-
-// filtrăm iconurile disponibile
-$availableIcons = array_filter($allIcons, function($icon) use ($usedFilenames) {
-    return !in_array($icon['filename'], $usedFilenames);
-});
-
-$availableIcons = array_map(function($icon) {
-    return [
-        'value' => $icon['filename'],
-        'label' => $icon['label']
-    ];
-}, array_filter($allIcons, function($icon) use ($usedFilenames) {
-    return !in_array($icon['filename'], $usedFilenames);
-}));
-
-/*
-$availableIcons = [
-  ['value' => 'icon-howto.svg', 'label' => 'HOWTOs'],
-  ['value' => 'icon-install.svg', 'label' => 'Install and Config'],
-  ['value' => 'icon-user-guide.svg', 'label' => 'User Guides'],
-  ['value' => 'icon-design.svg', 'label' => 'Design'],
-  ['value' => 'icon-docs.svg', 'label' => 'Documentation'],
-  ['value' => 'icon-idea.svg', 'label' => 'Ideas']
-];
-*/
-//echo "icons".$availableIcons['filename'];
-
-/*
-$availableCategories = array_map(function($cat) {
-    return [
-        'name' => $cat['name'],
-        'icon' => $cat['icon']
-    ];
-}, $categories);
-*/
-
-
-//$class = $isFuture ? 'text-primary' : '';
+$lang = $_SESSION['settings']['language'] ?? 'en';
+if ($lang === 'ro') $lang = 'ro';
+if ($lang === 'en') $lang = 'en-GB';
 
 ?>
 
-<?php include APP_ROOT . 'includes/header.php'; ?>
-
-<div class="category-container" >
-
-        <div class="category-box-2" style="width: fit-content">
-            <div class="operations-bar">
-                <div>
-                    <button class="btn-flat btn-toggle-form" onclick="toggleAddFormHide('form-category',this)" title="Adaugă categorie">
-                    <img src="../../assets/icons/icon-add-category.svg" alt="Add Category" class="op-icon">
-                     Add Category&nbsp;&nbsp;      
-                    </button>
-                </div>
-                <div>
-                    <button class="btn-flat btn-toggle-form" onclick="toggleAddFormHide('form-icons',this)" title="Adaugă categorie">
-                    <img src="../../assets/icons/icon-add-icons.svg" alt="Add Category" class="op-icon">
-                    Add Icons &nbsp;&nbsp; 
-                    </button>
-                    
-                </div>
-                <div>
-                    <button class="btn-flat btn-toggle-form" onclick="toggleAddFormHide('form-enable',this)" title="Adaugă categorie">
-                    <img src="../../assets/icons/icon-enable-cat.svg" alt="Add Category" class="op-icon">
-                    Enable Category &nbsp;&nbsp; 
-                    </button>
-                    
-                </div>
-                <div>
-                    <button class="btn-flat btn-toggle-form" onclick="toggleAddFormHide('form-disable',this)" title="Adaugă categorie">
-                    <img src="../../assets/icons/icon-disable-cat.svg" alt="Add Category" class="op-icon">
-                    Disable Category &nbsp;&nbsp; 
-                    </button>
-                    
-                </div>
-            </div>
-            <div class="form-container-1">
-                
-            
-                <!-- BEGIN: Formular de adăugare categorie -->
-
-                <div id="form-category" class="form-box" style="display: none; width: 100%;">
-                    <form name="new_category" method="POST" class="form-grid">
-
-                            <div class="form-row">
-                                <div >
-                                    <label for="cat_icon">Icon:</label>
-                                </div>
-                                <div class="dropdown-wrapper" data-type="icon">
-                                    <select name="cat_icon" id="cat_icon_select" class="select2-icon" style="width:100%" placeholder="<?= lang('lang_cat_select') ?>">
-                                    <option></option>
-                                    <?php foreach ($availableIcons as $icon): ?>
-                                        <option value="<?= $icon['value'] ?>" data-img="/mykdb/assets/icons/categories/<?= $icon['value'] ?>">
-                                        <?= htmlspecialchars($icon['label']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <label for="cat_name">Category Name:</label>
-                                <input type="text" name="cat_name" id="cat_name" placeholder="<?= lang('lang_cat_category') ?>" required>
-                            </div>
-
-                            <div class="form-row">
-                                <label for="cat_description">Category Description:</label>
-                                <input type="text" name="cat_description" id="cat_description" placeholder="<?= lang('lang_cat_description') ?>">
-                            </div>
-
-                            <div class="form-row form-actions">
-                                <button type="submit" name="save_category" class="btn-sm btn-outline-grey"><?= lang('lang_btn_save') ?>
-                                <!--
-                                <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
-                                -->
-                                </button>
-                            </div>
-                            <input type="hidden" name="form_id" value="add_category">                       
-                    </form>
-                </div>
-
-                <!-- END: formular de adăugare categorie -->
+<script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
+<link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 
 
-
-                
-                <!-- BEGIN: Formular de adăugare icon -->
-
-                <div id="form-icons" class="form-box" style="display: none; width: 100%;">
-                
-                            <form name="new_icon" method="POST" enctype="multipart/form-data">
-                                <div class="dropdown-wrapper">
-                                    <table><tr><td align="right">
-                                        Label:
-                                    </td><td align="left">
-                                        <input type="text" name="icon_label" placeholder="<?= lang('lang_cat_icon_label') ?>" required>
-                                    </td></tr>
-                                    <tr><td align="right">
-                                        Filename:
-                                    </td><td align="left">
-                                        <input type="file" name="icon_filename" accept="image/*">
-                                    </td></tr>
-                                    <tr><td align="right" colspan="2" style="padding: 10px; ">
-                                        <button type="submit" name="save_icon" class="btn-sm btn-outline-grey"><?= lang('lang_btn_save') ?>
-                                        <!--
-                                        <button type="submit" name="save_icon" class="btn-plus-icon"><img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
-                                        -->
-                                        </button>
-                                    </td></tr>
-                                    </table>
-                                </div>
-                                <input type="hidden" name="form_id" value="add_icon">
-                            </form>
-                </div>
-                <!-- END: formular de adăugare icon -->
-
-                
-
-                <!-- BEGIN: Formular de activare categorie -->
-                
-                <div id="form-enable" class="form-box" style="display: none; width: 100%;">
-                            <form name="enable_category" method="POST" enctype="multipart/form-data" class="form-grid">
-
-                                <div class="form-row">
-                                    <div>
-                                        <label for="category">Disabled Categories:</label>
-                                    </div>  
-                                    <div class="dropdown-wrapper" data-type="category">
-                                        <select name="category_id" id="dcategory_select" class="select2-category" style="width:100%" placeholder="<?= lang('lang_cat_select') ?>">
-                                        <option></option>
-                                        <?php foreach ($disabledCategories as $dc): ?>
-                                            <option value="<?= $dc['id'] ?>" data-img="/mykdb/assets/icons/categories/<?= $dc['icon'] ?>">
-                                            <?= htmlspecialchars($dc['name']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                
-                                <div class="form-row form-actions">
-                                    <button type="submit" name="enable_category" class="btn-sm btn-outline-grey"><?= lang('lang_btn_enable') ?>
-                                    <!--
-                                    <button type="submit" name="enable_category" class="btn-plus-icon">
-                                    <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
-                                    -->
-                                    </button>
-                                </div>
-                                <input type="hidden" name="form_id" value="enable_category">
-                            </form>
-                </div>
-
-                <!-- END: formular de activare categorie -->
-
-              <!-- BEGIN: Formular de dezactivare categorie -->
-                
-                <div id="form-disable" class="form-box" style="display: none; width: 100%;">
-                            <form name="disable_category" method="POST" enctype="multipart/form-data" class="form-grid">
-
-                                <div class="form-row">
-                                    <div>
-                                        <label for="category">Active Categories:</label>
-                                    </div>  
-                                    <div class="dropdown-wrapper" data-type="category">
-                                        <select name="category_id" id="acategory_select" class="select2-category" style="width:100%" placeholder="<?= lang('lang_cat_select') ?>">
-                                        <option></option>
-                                        <?php foreach ($activeCategories as $ac): ?>
-                                            <option value="<?= $ac['id'] ?>" data-img="/mykdb/assets/icons/categories/<?= $ac['icon'] ?>">
-                                            <?= htmlspecialchars($ac['name']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                
-                                <div class="form-row form-actions">
-                                    <button type="submit" name="disable_category" class="btn-sm btn-outline-grey"><?= lang('lang_btn_disable') ?>
-                                    <!--
-                                    <button type="submit" name="disable_category" class="btn-plus-icon">
-                                    <img src="<?=APP_URL?>assets/icons/icon-save.svg" class="op-icon" title="<?= lang('lang_btn_save') ?>">
-                                    -->
-                                    </button>
-                                </div>
-                                <input type="hidden" name="form_id" value="disable_category">
-                            </form>
-                </div>
-
-                <!-- END: formular de dezactivare categorie -->
-
-                               
-
-
-            </div>
-        
+<div class="category-container">
+    <div class="category-box-2" style="width: fit-content">
+        <div class="operations-bar">
+            <button class="btn-flat" onclick="openCategoryModal('add')" title="Add Category">
+                <img src="../../assets/icons/icon-add-category.svg" class="op-icon">
+                Add Category
+            </button>
+            <button class="btn-flat" onclick="openCategoryModal('icon')" title="Add Icon">
+                <img src="../../assets/icons/icon-add-icons.svg" class="op-icon">
+                Add Icon
+            </button>
+            <button class="btn-flat" onclick="openCategoryModal('enable')" title="Enable Category">
+                <img src="../../assets/icons/icon-enable-cat.svg" class="op-icon">
+                Enable Category
+            </button>
+            <button class="btn-flat" onclick="openCategoryModal('disable')" title="Disable Category">
+                <img src="../../assets/icons/icon-disable-cat.svg" class="op-icon">
+                Disable Category
+            </button>
         </div>
-
-
+    </div>
 
     <div class="category-box-1" style="width: 80%;">
-        <table class="articles-table" id="categories-table" >
+        <table id="categoriesTable" class="articles-table" width="100%">
             <thead>
                 <tr>
-                    <th width="50px" align="center">
-                    <!--
-                    <button class="btn-plus-icon" onclick="toggleAddFormHide('add-form-row')" title="Adaugă categorie">
-                    <img src="../../assets/icons/icon-add.svg" alt="Add Category" class="op-icon">
-                    </button>
-                    -->
-                    </th>
+                    <th>#</th>
                     <th><?= lang('lang_cat_icon') ?></th>
                     <th><?= lang('lang_cat_name') ?></th>
                     <th><?= lang('lang_cat_description') ?></th>
                     <th><?= lang('lang_cat_status') ?></th>
-                    <th align="center"><?= lang('lang_cat_actions') ?></th>
+                    <th><?= lang('lang_cat_actions') ?></th>
                 </tr>
             </thead>
-            <tbody>
-                
-                <!-- Formular de adăugare, ascuns -->
-                <tr style="display: none; ">
-                
-                </tr>
-
-                <!-- Rânduri existente -->
-                <?php foreach ($allCategories as $c): ?>
-                    <tr>
-                        <td align="center"><?= $c['id'] ?></td>
-                        <td align="center"><a href="#" name="icon" ><img src="<?=APP_URL?>assets/icons/categories/<?=$c['icon']?>" width="35" height="auto" ></a></td>
-                        <td><?= escape($c['name']) ?></td>
-                        <td><?= escape($c['description']) ?></td>
-                        <td>
-                            <?php if ($c['is_active'] == '1'): ?>
-                                <span class=""><?= lang('lang_cat_active') ?></span>
-                            <?php else: ?>
-                                <span class="text-primary"><?= lang('lang_cat_inactive') ?></span>
-                            <?php endif; ?>
-                        </td>
-                        <td align="center">
-                            <div>
-                                <a href="edit_category.php?id=<?= $c['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-edit.svg" class="op-icon" title="<?= lang('lang_btn_edit') ?>"></a>
-                                <a href="delete_category.php?id=<?= $c['id'] ?>" onclick="return confirm('<?= lang('lang_cat_msg_delete') ?>')"><img src="<?=APP_URL?>assets/icons/icon-delete.svg" class="op-icon" title="<?= lang('lang_btn_delete') ?>"></a>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-
-            <?php if ($totalPages > 1): ?>
-                    <tfoot>
-                    <tr>
-                        <td colspan="6">
-                            <div id="pagination-results">
-                                    <?php 
-                                        echo renderPagination($currentPage, $totalPages,[]);
-                                                            
-                                    ?>
-                            </div>      
-                        </td>
-                    </tr>
-                    </tfoot>
-            <?php endif; ?>
-
+            <tbody></tbody>
         </table>
     </div>
 </div>
 
+
+<!-- Overlay pentru fundal -->
+<div id="modalOverlayCategory" style="display:none;"></div>
+
+
+<!-- Modal Add Category -->
+<div id="modalAddCategory" style="display:none; ">
+    <form id="formAddCategory">
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <div class="modal-header-category" >
+            <span class="modal-title-category"><?=lang('lang_cat_add')?></span>
+            <span class="modal-close-category" onclick="closeCategoryModal('add')">&times;</span>
+        </div>
+        <div class="modal-content-category" >
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <label><?= lang('lang_cat_name') ?></label>
+                <input type="text" name="cat_name" required>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">    
+                <label><?= lang('lang_cat_description') ?></label>
+                <input type="text" name="cat_description">
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;gap: 10px;">
+                <label><?= lang('lang_cat_icon') ?></label>
+                <select name="cat_icon" id="cat_icon_select" style="width:100%"></select>
+            </div>    
+        </div>
+        <div class="modal-footer-category">
+            <button class="modal-btn-category cancel" type="button" onclick="closeCategoryModal('add')"><?= lang('lang_btn_cancel') ?></button>
+            <button class="modal-btn-category primary" type="submit"><?= lang('lang_btn_save') ?></button>
+        </div>
+    </form>
+</div>
+
+
+
+
+<!-- Modal Add Icon -->
+<div id="modalAddIcon" style="display:none;">
+    <form id="formAddIcon" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <div class="modal-header-category ">
+            <span class="modal-title-category"><?= lang('lang_cat_add_icon') ?></span>
+            <span class="modal-close-category" onclick="closeCategoryModal('icon')">&times;</span>
+        </div>
+        <div class="modal-content-category" ">
+            <div style="display: flex; align-items: center; ">
+                <label><?= lang('lang_cat_icon_label') ?></label>
+                <input type="text" name="icon_label" style="width: 160px;" required>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <label><?= lang('lang_cat_select_icon') ?></label>  
+                <input type="file" name="icon_filename" accept="image/*" required>
+            </div>
+            
+        </div>
+        <div class="modal-footer-category">
+            <button class="modal-btn-category cancel" type="button" onclick="closeCategoryModal('icon')"><?= lang('lang_btn_cancel') ?></button>
+            <button class="modal-btn-category primary" type="submit"><?= lang('lang_btn_save') ?></button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal Enable Category -->
+<div id="modalEnableCategory" style="display:none;">
+    <form id="formEnableCategory" enctype="multipart/form-data">
+         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <div class="modal-header-category">
+            <span class="modal-title-category"><?= lang('lang_cat_enable') ?></span>
+            <span class="modal-close-category" onclick="closeCategoryModal('enable')">&times;</span>
+        </div>
+        <div class="modal-content-category">
+                <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                   
+                    <label><?= lang('lang_cat_select') ?></label>
+                    <select name="category_id" id="enable_category_select" style="width:100%"></select>
+                </div>
+        </div>
+        <div class="modal-footer-category">
+                <button class="modal-btn-category cancel" type="button" onclick="closeCategoryModal('enable')"><?= lang('lang_btn_cancel') ?></button>
+                <button class="modal-btn-category primary" type="submit"><?= lang('lang_btn_enable') ?></button>
+        </div>
+         </div>
+    </form>
+</div>
+
+
+<!-- Modal Disable Category -->
+<div id="modalDisableCategory" style="display:none;">
+    <form id="formDisableCategory" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <div class="modal-header-category">
+            <span class="modal-title-category"><?= lang('lang_cat_disable') ?></span>
+            <span class="modal-close-category" onclick="closeCategoryModal('disable')">&times;</span>
+        </div>
+        <div class="modal-content-category">
+            <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                <label><?= lang('lang_cat_select') ?></label>
+                <select name="category_id" id="disable_category_select" style="width:100%"></select>
+            </div>
+        </div>
+        <div class="modal-footer-category">
+                <button class="modal-btn-category cancel" type="button" onclick="closeCategoryModal('disable')"><?= lang('lang_btn_cancel') ?></button>
+                <button class="modal-btn-category primary" type="submit"><?= lang('lang_btn_disable') ?></button>
+        </div>
+    </form>
+</div>
+
 <script>
-
-// Initializare Select2 pentru selectoare
-
 $(document).ready(function () {
-  function formatWithIcon(option) {
-    if (!option.id) return option.text;
+    // DataTables pentru categorii
+    const table = $('#categoriesTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '../api/bkd_categories.php',
+            type: 'GET'
+        },
+        columns: [
+            { data: 'id', orderable: false, searchable: false },
+            { data: 'icon', orderable: false, render: function(data) {
+                return data ? `<img src="<?=APP_URL?>assets/icons/categories/${data}" width="35">` : '';
+            }},
+            { data: 'name', orderable: true, searchable: true },
+            { data: 'description', orderable: false, searchable: true },
+            { data: 'is_active', orderable: true, render: function(data) {
+                return data == 1 ? '<span><?=lang('lang_cat_active')?></span>' : '<span class="text-primary"><?=lang('lang_cat_inactive')?></span>';
+            }},
+            { data: null, orderable: false, render: function(data, type, row) {
+                return `
+                    <a href="edit_category.php?id=${row.id}"><img src="<?=APP_URL?>assets/icons/icon-edit.svg" class="op-icon" title="<?= lang('lang_btn_edit') ?>"></a>
+                    <a href="#" onclick="deleteCategory(${row.id});return false;"><img src="<?=APP_URL?>assets/icons/icon-delete.svg" class="op-icon" title="<?= lang('lang_btn_delete') ?>"></a>
+                `;
+            }}
+        ],
+        order: [[0, 'desc']],
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/<?=lang($lang)?>.json"
+        }
+    });
+    window.reloadCategoriesTable = () => table.ajax.reload(null, false);
 
-    const img = $(option.element).data('img');
-    return $(
-      `<span><img src="${img}" class="select2-option-img" width="20" style="margin-right:8px;" />${option.text}</span>`
-    );
-  }
 
-  // ICON select
-  $('#cat_icon_select').select2({
-    placeholder: "<?= lang('lang_cat_select_icon') ?>",
-    templateResult: formatWithIcon,
-    templateSelection: formatWithIcon,
-    allowClear: true
-  });
+    function formatWithIcon(option) {
+        if (!option.id) return option.text;
+        const img = $(option.element).data('img');
+        if (!img) return option.text;
+        return $(
+            `<span><img src="${img}" class="select2-option-img" width="20" style="margin-right:8px;" />${option.text}</span>`
+        );
+    }   
+    // Populate selects for enable/disable/icon modals (AJAX)
+    function loadCategorySelects() {
+    $.get('../api/bkd_categories.php?action=selects', function(data) {
+        $('#cat_icon_select').html(data.icons).select2({
+            dropdownParent: $('#modalAddCategory'),
+            placeholder: '<?=lang(('lang_icon_select'))?>',
+            templateResult: formatWithIcon,
+            templateSelection: formatWithIcon,
+            allowClear: true
+        });
+        $('#enable_category_select').html(data.disabled).select2({
+            dropdownParent: $('#modalEnableCategory'),
+            placeholder: '<?=lang('lang_cat_select_category')?>',
+            templateResult: formatWithIcon,
+            templateSelection: formatWithIcon,
+            allowClear: true
+        });
+        $('#disable_category_select').html(data.enabled).select2({
+            dropdownParent: $('#modalDisableCategory'),
+            placeholder: '<?=lang('lang_cat_select_category')?>',
+            templateResult: formatWithIcon,
+            templateSelection: formatWithIcon,
+            allowClear: true
+        });
+    }, 'json');
+}
 
-  // Disabled CATEGORY select
-  $('#dcategory_select').select2({
-    placeholder: "<?= lang('lang_cat_select') ?>",
-    templateResult: formatWithIcon,
-    templateSelection: formatWithIcon,
-    allowClear: true
-  });
+    // Modal logic
+    window.openCategoryModal = function(type) {
+        
+        // reset forms
+        if (type === 'add') {
+            $('#formAddCategory')[0].reset(); // <-- Resetează formularul
+            // Dacă folosești Select2, resetează și selectul:
+            $('#cat_icon_select').val(null).trigger('change');
+        }   
+        if (type === 'icon') {
+            $('#formAddIcon')[0].reset();
+        }
+        if (type === 'enable') {
+            $('#formEnableCategory')[0].reset();
+            $('#enable_category_select').val(null).trigger('change');
+        }
+        if (type === 'disable') {
+            $('#formDisableCategory')[0].reset();
+            $('#disable_category_select').val(null).trigger('change');
+        }
 
-  // Active CATEGORY select
-  $('#acategory_select').select2({
-    placeholder: "<?= lang('lang_cat_select') ?>",
-    templateResult: formatWithIcon,
-    templateSelection: formatWithIcon,
-    allowClear: true
-  });
+        loadCategorySelects();
+        
+        $('#modalAddCategory, #modalAddIcon, #modalEnableCategory, #modalDisableCategory').hide();
+        $('#modalOverlayCategory').show();
+        if (type === 'add') $('#modalAddCategory').show();
+        if (type === 'icon') $('#modalAddIcon').show();
+        if (type === 'enable') $('#modalEnableCategory').show();
+        if (type === 'disable') $('#modalDisableCategory').show();
+    }
+    window.closeCategoryModal = function(type) {
+        if (type === 'add') $('#modalAddCategory').hide();
+        if (type === 'icon') $('#modalAddIcon').hide();
+        if (type === 'enable') $('#modalEnableCategory').hide();
+        if (type === 'disable') $('#modalDisableCategory').hide();
+        $('#modalOverlayCategory').hide();
+    }
+
+    // Add Category
+    $('#formAddCategory').on('submit', function(e) {
+        e.preventDefault();
+        $.post('../api/bkd_categories.php', $(this).serialize() + '&action=add_category&csrf_token=' + window.CSRF_TOKEN, function(resp) {
+            if (resp.success) {
+                closeCategoryModal('add');
+                reloadCategoriesTable();
+            } else {
+                alert(resp.error || 'Eroare!');
+            }
+        }, 'json');
+    });
+
+    // Add Icon
+    $('#formAddIcon').on('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        formData.append('action', 'add_icon');
+        formData.append('csrf_token', window.CSRF_TOKEN);
+        $.ajax({
+            url: '../api/bkd_categories.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(resp) {
+                if (resp.success) {
+                    closeCategoryModal('icon');
+                    reloadCategoriesTable();
+                } else {
+                    alert(resp.error || 'Eroare!');
+                }
+            }
+        });
+    });
+
+    // Enable Category
+    $('#formEnableCategory').on('submit', function(e) {
+        e.preventDefault();
+        $.post('../api/bkd_categories.php', $(this).serialize() + '&action=enable_category&csrf_token=' + window.CSRF_TOKEN, function(resp) {
+            if (resp.success) {
+                closeCategoryModal('enable');
+                reloadCategoriesTable();
+            } else {
+                alert(resp.error || 'Eroare!');
+            }
+        }, 'json');
+    });
+
+    // Disable Category
+    $('#formDisableCategory').on('submit', function(e) {
+        e.preventDefault();
+        $.post('../api/bkd_categories.php', $(this).serialize() + '&action=disable_category&csrf_token=' + window.CSRF_TOKEN, function(resp) {
+            if (resp.success) {
+                closeCategoryModal('disable');
+                reloadCategoriesTable();
+            } else {
+                alert(resp.error || 'Eroare!');
+            }
+        }, 'json');
+    });
 });
 
+// Delete Category
+function deleteCategory(id) {
+    if (!confirm('<?=lang('lang_cat_msg_delete')?>')) return;
+    $.post('../api/bkd_categories.php', {action: 'delete_category', category_id: id, csrf_token: window.CSRF_TOKEN}, function(resp) {
+        if (resp.success) reloadCategoriesTable();
+        else alert(resp.error || 'Eroare!');
+    }, 'json');
+}
 
 
+document.getElementById('modalOverlayCategory').onclick = function(e) {
 
-
-
-
+    if ($('#modalAddCategory').is(':visible')) {
+        closeCategoryModal('add');
+    }
+    if ($('#modalAddIcon').is(':visible')) {
+        closeCategoryModal('icon');
+    }
+    if ($('#modalEnableCategory').is(':visible')) {
+        closeCategoryModal('enable');
+    }
+    if ($('#modalDisableCategory').is(':visible')) {
+        closeCategoryModal('disable');
+    }
+    
+};
 
 
 </script>
-
-
-
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>
