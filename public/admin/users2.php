@@ -2,24 +2,6 @@
 include_once '../../config/bootstrap.php';
 include APP_ROOT . 'includes/header.php';
 
-
-
-$ops = ['edit_user','disable_user','enable_user','delete_user','modify_user','approve_user'];
-
-if (!hasPermission($_SESSION['user']['id'],$ops)) {
-    
-    $_SESSION['flash'] = "⚠️ Access Denied";
-    $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
-
-    echo "<script>
-            alert('⚠️ Access Denied');
-            window.location.href = '$referer';
-        </script>";
-    
-    exit;
-        
-}
-
 if (!in_array($_SESSION['user']['role'] ?? '', ['admin', 'superadmin'])) {
     header('Location: /');
     exit;
@@ -41,7 +23,7 @@ $allRoles = getAllRoles();
 
 <div style="display: flex; width: 20%;">
     <div class="custom-box-1">
-        <div class="corner-label-1"><?=lang('lang_users_filter_by')?></div>
+        <div class="corner-label-1">Filter by</div>
         <div id="users-filters" class="box-content-1" style="justify-content: flex-end;">
             <!-- JS: renderUserFilters() -->
         </div>
@@ -68,25 +50,22 @@ $allRoles = getAllRoles();
 <!-- Overlay pentru fundal -->
 <div id="modalOverlay" style="display:none;"></div>
 
-<!-- Modal modern -->
+<!-- Modal centrat și stilizat -->
 <div id="roleModal" style="display:none;">
-    <div class="modal-header-modern">
-        <span class="modal-title-modern"><?= lang('lang_users_change_role_title') ?></span>
-        <span class="modal-close-modern" onclick="closeRoleModal()">&times;</span>
+    <div class="modal-header-1">
+        
+        <span class="modal-title-1"><img src="<?=APP_URL?>assets/icons/icon-user.svg" width="30" height="auto"> <?= lang('lang_users_change_role_title') ?></span>
+        <span class="modal-close-1" onclick="closeRoleModal()">&times;</span>
     </div>
-    <div class="modal-content-modern">
-        <div id="modalUserInfo" class="modal-userinfo-modern"></div>
-        <div class="modal-row-modern">
-            <select id="modalRoleSelect" class="modal-input-modern"></select>
+    <div class="modal-content-1">
+        <div id="modalUserInfo" style="display:flex; align-items: center;"></div>
+        <div class="modal-row-1">
+            <select id="modalRoleSelect"></select>
         </div>
     </div>
-    <div class="modal-footer-modern">
-        <button class="modal-btn-modern remove" onclick="closeRoleModal()">
-            <img src="<?=APP_URL?>assets/icons/icon-cancel.svg" style="width:18px;vertical-align:middle;margin-right:6px;"> <?= lang('lang_btn_cancel') ?>
-        </button>
-        <button class="modal-btn-modern primary" onclick="saveRoleChange()">
-            <img src="<?=APP_URL?>assets/icons/icon-save.svg" style="width:18px;vertical-align:middle;margin-right:6px;"> <?= lang('lang_btn_save') ?>
-        </button>
+    <div class="modal-footer-1">
+        <button class="modal-btn cancel" onclick="closeRoleModal()"><img src="<?=APP_URL?>assets/icons/icon-cancel.svg" style="width:25px; padding-right: 5px"><?= lang('lang_btn_cancel') ?></button>
+        <button class="modal-btn" onclick="saveRoleChange()"><img src="<?=APP_URL?>assets/icons/icon-save.svg" style="width: 25px;px; padding-right: 5px"><?= lang('lang_btn_save') ?></button>
     </div>
 </div>
 
@@ -101,7 +80,7 @@ const allRoles = <?= json_encode($allRoles) ?>;
 
 $(document).ready(function() {
     renderUserFilters();
-    
+
     const table = $('#usersTable').DataTable({
         ajax: {
             url: '../api/bkd_users.php',
@@ -208,7 +187,7 @@ function saveRoleChange() {
 
 // Enable/Disable user
 function disableUser(userId) {
-    //if (!confirm('Disable this user?')) return;
+    if (!confirm('Disable this user?')) return;
     $.post('../api/bkd_users.php', { action: 'disable', user_id: userId, csrf_token: window.CSRF_TOKEN }, function(resp) {
         if (resp.success) $('#usersTable').DataTable().ajax.reload();
         else alert(resp.error || 'Error!');
@@ -216,7 +195,7 @@ function disableUser(userId) {
 }
 
 function enableUser(userId) {
-    //if (!confirm('Enable this user?')) return;
+    if (!confirm('Enable this user?')) return;
     $.post('../api/bkd_users.php', { action: 'enable', user_id: userId, csrf_token: window.CSRF_TOKEN }, function(resp) {
         if (resp.success) $('#usersTable').DataTable().ajax.reload();
         else alert(resp.error || 'Error!');
@@ -225,9 +204,9 @@ function enableUser(userId) {
 
 
 
-// Approve user 
+// Approve user (dacă ai această funcție)
 function approveUser(userId) {
-    //`if (!confirm('Approve this user?')) return;
+    if (!confirm('Approve this user?')) return;
     $.post('../api/bkd_users.php', { action: 'approve', user_id: userId, csrf_token: window.CSRF_TOKEN }, function(resp) {
         if (resp.success) $('#usersTable').DataTable().ajax.reload();
         else alert(resp.error || 'Error!');
@@ -237,8 +216,8 @@ function approveUser(userId) {
 // Render filters (dropdown rol)
 function renderUserFilters() {
     let html = `<form id="userFilterForm" class="mb-3" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; justify-content: flex-end;padding-right:10px">
-        <div style="padding-top:15px;gap:20px;">
-            <label style="padding-right:10px; color: #000000; font-size: 14px" for="filterRole"><?= lang('lang_users_role') ?>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <div>
+            <label for="filterRole"><?= lang('lang_users_role') ?></label><br>
             <select id="filterRole" name="role">
                 <option value="">-- <?= lang('lang_users_all_roles') ?> --</option>
                 <?php foreach ($allRoles as $role): ?>
@@ -248,17 +227,7 @@ function renderUserFilters() {
         </div>
     </form>`;
     document.getElementById('users-filters').innerHTML = html;
-
-    
-
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const allCustomBoxes = document.querySelectorAll('.custom-box-1');
-    allCustomBoxes.forEach(box => {
-      initializeCustomBox1(box);
-    });
-    
-});
 </script>
 <?php include APP_ROOT . 'includes/footer.php'; ?>

@@ -448,3 +448,66 @@ function initializeCustomBox(boxElement, pageBgColor) {
     window.addEventListener('resize', updateBorderCutout1);
   }
 
+/**
+   * Inițializează un box personalizat cu o etichetă în colț care întrerupe bordura.
+   * @param {HTMLElement} boxElement Elementul .custom-box.
+   * @param {string} [pageBgColor] Culoarea de fundal a paginii (opțional).
+   * Dacă nu este specificată, se va prelua de la document.body.
+   */
+  function initializeCustomBox2(boxElement, pageBgColor) {
+    const cornerLabel = boxElement.querySelector('.corner-label-2');
+
+    if (!cornerLabel) {
+      console.warn('Element .corner-label-2 not found inside custom-box:', boxElement);
+      return; // Ieși dacă eticheta nu există
+    }
+
+    // Obținem culoarea de fundal a paginii, fie din argument, fie de la body
+    const actualPageBackgroundColor = pageBgColor || window.getComputedStyle(document.body).backgroundColor;
+
+    // Setăm o variabilă CSS pe custom-box care să conțină culoarea fundalului paginii
+    boxElement.style.setProperty('--page-background-color', actualPageBackgroundColor);
+
+    function updateBorderCutout2() {
+        // Asigurăm că label-ul este vizibil (chiar dacă este transparent) pentru a calcula lățimea sa
+        // Setăm direct display none/block pentru a evita reflow-uri vizuale în timpul calculului
+        const originalDisplay = cornerLabel.style.display;
+        cornerLabel.style.display = 'inline-block'; // Asigură că primește lățimea corectă
+        const labelWidth = cornerLabel.offsetWidth; // Lățimea reală a textului cu padding
+        cornerLabel.style.display = originalDisplay; // Restabilim display-ul original
+
+
+        const labelLeftPosition = parseInt(window.getComputedStyle(cornerLabel).left); // Poziția "left" a etichetei
+        
+        // paddingAroundText în CSS este `padding: 0 5px;`
+        // Dacă vrei 10px în plus înainte și după text, trebuie să adaugi 20px la `labelTextWidth`.
+        const extraPaddingForCutout = 1; // Extra padding de 10px înainte și după text
+
+        // Calculăm lățimea totală a zonei pe care vrem să o "tăiem"
+        // `labelTextWidth` include deja padding-ul de 5px de pe `corner-label`.
+        // Deci, `cutoutWidth` va fi lățimea etichetei + 2 * `extraPaddingForCutout`
+        const cutoutWidth = labelWidth + (2 * extraPaddingForCutout);
+
+        // Calculăm poziția de la care începe "tăietura"
+        const cutoutLeft = labelLeftPosition - extraPaddingForCutout;
+
+        // Setăm variabilele CSS pe boxElement, pe care pseudoelementul ::before le va folosi
+        boxElement.style.setProperty('--cutout-width', `${cutoutWidth}px`);
+        boxElement.style.setProperty('--cutout-left', `${cutoutLeft}px`);
+
+        // Ajustăm poziția top a etichetei pentru a o centra pe "tăietură"
+        // `height` pentru `::before` este 1px.
+        // `top` pentru `::before` este -1px.
+        // Centrul vertical al `::before` este la `-1px + (1px / 2) = -0.5px`.
+        // Vrem ca centrul vertical al etichetei să fie la această poziție.
+        const labelHeight = cornerLabel.offsetHeight;
+        const cutoutCenterY = -0.5; // Centrul vertical al pseudoelementului de mascare
+        cornerLabel.style.top = `${cutoutCenterY - (labelHeight / 2)}px`;
+    }
+
+    // Apelăm funcția de update inițial
+    updateBorderCutout2();
+
+    // Apelăm funcția și la redimensionarea ferestrei
+    window.addEventListener('resize', updateBorderCutout2);
+  }

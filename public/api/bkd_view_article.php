@@ -21,7 +21,10 @@ $id = (int)$_GET['id'];
 $db = new Database();
 
 // Increment view counter
-$db->query("UPDATE articles SET views = views + 1 WHERE id = ?", [$id]);
+//$db->query("UPDATE articles SET views = views + 1 WHERE id = ?", [$id]);
+if (isset($_GET['id'])) {
+    logArticleView((int)$_GET['id']);
+}
 
 // Fetch article + voturi articol
 $stmt = $db->prepare("

@@ -26,19 +26,9 @@ if ($_SESSION['user']['role'] === 'guest') {
     exit;
 }
 
-
-$lang = $_SESSION['settings']['language'] ?? 'en';
-// Mapare rapidă dacă ai coduri locale
-if ($lang === 'ro') $lang = 'ro';
-if ($lang === 'en') $lang = 'en-GB';
-
-
 ?>
 
 <script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
-
-<link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 
 <div class="category-container">
     <div class="category-box-2" style="width: fit-content">
@@ -50,20 +40,27 @@ if ($lang === 'en') $lang = 'en-GB';
         </div>
     </div>
 
-    <div class="category-box-1" style="width: 100%;">
-        <table id="articlesTable" class="articles-table" width="100%">
+    <div class="category-box-1" style="width: 80%;">
+        <table class="articles-table" width="80%">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th align="center">#</th>
                     <th><?= lang('lang_art_title') ?></th>
                     <th><?= lang('lang_art_author') ?></th>
                     <th><?= lang('lang_art_category') ?></th>
                     <th><?= lang('lang_art_status') ?></th>
                     <th><?= lang('lang_art_publish_at') ?></th>
-                    <th><?= lang('lang_art_actions') ?></th>
+                    <th align="center"><?= lang('lang_art_actions') ?></th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="articles-table-body"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7">
+                        <div id="pagination-results"></div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
@@ -118,65 +115,11 @@ if ($lang === 'en') $lang = 'en-GB';
   </div>
 </div>
 
+<style>
+
+</style>
 
 <script>
-
-$(document).ready(function() {
-    const table = $('#articlesTable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '../api/bkd_articles.php',
-            type: 'GET'
-        },
-        columns: [
-            { data: 'rownum', orderable: false },
-            { data: 'title' },
-            { data: 'username' },
-            { data: 'category' },
-            { data: 'status' },
-            { 
-                data: 'publish_at',
-                render: function(data, type, row) {
-                    if (row.status === 'approved' && data) {
-                        const pubDate = new Date(data.replace(' ', 'T'));
-                        const now = new Date();
-                        if (pubDate > now) {
-                            return `<span style="color: #e67e22;" title="<?=lang('lang_publish_at')?>">${data}</span>`;
-                        } else {
-                            return `<span>${data}</span>`;
-                        }
-                    } else if (row.status === 'pending') {
-                        return `<input type="datetime-local" value="${data ? data.replace(' ', 'T') : ''}" onchange="changePublishAt(this.value, ${row.id})">`;
-                    } else {
-                        return `<span>${data || ''}</span>`;
-                    }
-                }
-            },
-            { 
-                data: null,
-                orderable: false,
-                render: function(data, type, row) {
-                    let html = '';
-                    html += `<a href="../view_article.php?id=${row.id}"><img src="<?=APP_URL?>assets/icons/icon-view.svg" class="op-icon" title="<?= lang('lang_btn_view') ?>"></a> `;
-                    html += `<a href="#" onclick="openEditArticleModal(${row.id});return false;"><img src="<?=APP_URL?>assets/icons/icon-edit.svg" class="op-icon" title="<?= lang('lang_btn_edit') ?>"></a> `;
-                    if (row.status === 'pending') {
-                        html += `<a href="#" onclick="articleAction('approve', ${row.id}, '${row.publish_at}');return false;"><img src="<?=APP_URL?>assets/icons/icon-approve.svg" class="op-icon" title="<?= lang('lang_btn_approve') ?>"></a>`;
-                    } else {
-                        html += `<a href="#" onclick="articleAction('disable', ${row.id});return false;"><img src="<?=APP_URL?>assets/icons/icon-disable.svg" class="op-icon" title="<?= lang('lang_btn_disable') ?>"></a>`;
-                    }
-                    return html;
-                }
-            }
-        ],
-        order: [[0, 'asc']],
-        language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
-        }
-    });
-    window.reloadArticlesTable = () => table.ajax.reload(null, false);
-});
-
 let currentPage = 1;
 let totalPages = 1;
 let categories = [];
@@ -343,11 +286,10 @@ function changePublishAt(value, articleId) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) reloadArticlesTable();
+        if (data.success) loadArticles(currentPage);
         else alert(data.error || 'Eroare la schimbarea datei!');
     });
 }
-
 
 function articleAction(action, articleId, publishAt = '') {
     let body = `action=${encodeURIComponent(action)}&article_id=${encodeURIComponent(articleId)}&csrf_token=${encodeURIComponent(window.CSRF_TOKEN)}`;
@@ -361,7 +303,7 @@ function articleAction(action, articleId, publishAt = '') {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) reloadArticlesTable();
+        if (data.success) loadArticles(currentPage);
         else alert(data.error || 'Eroare la acțiune!');
     });
 }
@@ -398,7 +340,10 @@ function openArticleModal() {
 }
 
 function openEditArticleModal(articleId) {
-
+    
+    
+    
+    
     //console.log('openEditArticleModal', articleId);
     // open modal
 
@@ -406,14 +351,14 @@ function openEditArticleModal(articleId) {
     document.getElementById('modal-title').textContent = '<?=lang('lang_edit_article')?>';
     // fetch article data
 
-    fetch(`../api/bkd_articles.php?action=get_article&id=${articleId}`)
+    fetch(`../api/bkd_articles.php?id=${articleId}`)
         .then(res => res.json())
         .then(data => {
             // Completează câmpurile formularului cu datele articolului
-            document.getElementById('title').value = data.article.title;
-            $('#add_category_select').val(data.article.category_id).trigger('change');
-            document.getElementById('publish_at').value = data.article.publish_at ? data.article.publish_at.replace(' ', 'T') : '';
-            $('#summernote').summernote('code', data.article.content);
+            document.getElementById('title').value = data.title;
+            $('#add_category_select').val(data.category_id).trigger('change');
+            document.getElementById('publish_at').value = data.publish_at ? data.publish_at.replace(' ', 'T') : '';
+            $('#summernote').summernote('code', data.content);
 
             // Marchează formularul ca "edit"
             document.getElementById('add_article').setAttribute('data-edit-id', articleId);
@@ -444,12 +389,11 @@ window.onclick = function(event) {
     if (event.target === modal) closeArticleModal();
 }
 
-/*
 document.addEventListener('DOMContentLoaded', function() {
     loadCategories();
     loadArticles();
 });
-*/
+
 /*
 document.addEventListener('DOMContentLoaded', () => {
     const allCustomBoxes = document.querySelectorAll('.custom-box-1');
