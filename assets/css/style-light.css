@@ -2752,3 +2752,201 @@ ul.top-articles .li-icon {
 #modalDisableCategory .select2-container {
     min-height: 32px !important;
 }
+
+
+#modalOverlayRegister {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+    display: none;
+}
+
+/* Modalul principal */
+.modal-register {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  min-width: 600px;
+  max-width: 95vw;
+  max-height: 95vh;
+  height: auto;         
+  overflow-y: auto;
+  display: none;
+  
+}
+
+#registerForm.form-styled {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header, content, footer */
+.modal-header-register {
+  padding: 1em 1.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-content-register {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.modal-body-register {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.modal-footer-register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 30px 20px 20px 22px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background: #f2f2f3;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+/* Rânduri și inputuri */
+.modal-row-register {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.modal-label-register {
+  min-width: 150px;
+  text-align: right;
+  margin-bottom: 0;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+}
+.modal-input-register {
+  width: 250px;
+  min-height: 32px;
+  min-width: 0;
+  height: 32px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  font-size: 1em;
+  background: #fafbfc;
+  margin: 0;
+  padding: 4px 8px;
+}
+
+/* Password wrapper */
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  width: 250px;
+  position: relative;
+}
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding-right: 40px;
+  box-sizing: border-box;
+  padding-right: 36px; 
+}
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #888;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mesajul de potrivire parolă sub input */
+#password-match-msg {
+  display: block;
+  font-size: 0.97em;
+  margin-left: 150px; /* la fel ca min-width label */
+  margin-top: 4px;
+  color: red;
+}
+
+.modal-title-register {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #222;
+}
+.modal-close-register {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #444;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #f7f7fa;
+    border: 1px solid #bfc7d1;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+.modal-close-register:hover {
+    background: #ececec;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.modal-btn-register {
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 180px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #c9c8c8;
+    color: #444;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+.modal-btn-register.primary {
+    background: #4e9faa;
+    color: #fff;
+}
+.modal-btn-register.primary:hover {
+    background: #408188;
+}
+
+
+.modal-btn-register.cancel {
+    background: #d4d4d4;
+    color: #444;
+}
+.modal-btn-register.cancel:hover {
+    background: #e0e0e0;
+}

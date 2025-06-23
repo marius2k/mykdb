@@ -404,7 +404,7 @@ function generateNavBar2($uid) {
         $nav .= '
                 <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang('lang_home').'</a>
                 <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang('lang_login').'</a>
-                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang('lang_register').'</a>';
+                <a href="#" id="openRegisterModal1" class="openRegisterModal bi bi-r-square-fill me-2"> '.lang('lang_register').'</a>';
         return $nav;
     }
 
@@ -503,7 +503,7 @@ function generateNavBar2($uid) {
     $ops=['register'];
 
     if(hasPermission($uid,$ops)){
-        $nav.= '<a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang('lang_register').'</a>';
+        $nav.= '<a href="#" id="openRegisterModal" class="bi bi-r-square-fill me-2">'.lang('lang_register').'</a>';
     }    
 
     
@@ -524,12 +524,12 @@ function generateAvatarMenu($uid) {
     if ($role == 'guest') {
         
         $menu .= '<li>
-                        <a class="dropdown-item" href="' . APP_URL . 'public/register.php">
+                        <a class="openRegisterModal dropdown-item" href="#" id="openRegisterModal2">
                             <i class="bi bi-person-fill me-2"></i>'.lang('lang_register') . '</a>
                     </li>';
         $menu .='<li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="dropdown-item " href="'.APP_URL.'public/login.php">
+                        <a class="dropdown-item" href="'.APP_URL.'public/login.php">
                             <i class="bi bi-box-arrow-right me-2"></i>'.lang('lang_login').'</a>
                     </li>';
 

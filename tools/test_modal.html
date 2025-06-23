@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    html, body { margin: 0; padding: 0; }
+    .modal-register {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border-radius: 10px;
+      min-width: 600px;
+      max-width: 95vw;
+      max-height: 95vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      z-index: 999;
+      border: 2px solid blue;
+      height: auto !important;
+      min-height: 0 !important;
+    }
+    .modal-header-register { background: yellow; padding: 1em; }
+    .modal-body-register { background: green; padding: 30px; }
+    .modal-footer-register { background: red; padding: 30px 22px; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="modal-register" style="display:block;">
+    <form>
+      <div class="modal-header-register">Header</div>
+      <div class="modal-body-register">Body</div>
+      <div class="modal-footer-register">Footer</div>
+    </form>
+  </div>
+</main>
+</body>
+</html>
