@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 20, 2025 at 04:19 PM
+-- Generation Time: Jun 23, 2025 at 05:49 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -726,7 +726,28 @@ INSERT INTO `activity_log` (`id`, `user_id`, `action_type`, `ip_address`, `user_
 (744, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-20 11:10:08', 0),
 (745, 7, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inmarius\"', '2025-06-20 11:10:14', 0),
 (746, 7, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-20 12:23:45', 0),
-(747, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-06-20 12:23:50', 0);
+(747, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-06-20 12:23:50', 0),
+(748, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-22 20:21:50', 0),
+(749, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-06-23 08:49:18', 0),
+(750, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 08:56:32', 0),
+(751, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-06-23 09:56:46', 0),
+(752, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 10:00:42', 0),
+(753, 9, 'register_user', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User registered: user3\"', '2025-06-23 14:17:09', 0),
+(754, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-06-23 14:17:25', 0),
+(755, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 14:18:32', 0),
+(756, 9, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inuser3\"', '2025-06-23 14:18:45', 0),
+(757, 9, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 14:19:20', 0),
+(758, 4, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inuser2\"', '2025-06-23 14:19:47', 0),
+(759, 4, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 14:46:20', 0),
+(760, 9, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inuser3\"', '2025-06-23 14:46:29', 0),
+(761, 9, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 14:47:43', 0),
+(762, 8, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 14:57:46', 0),
+(763, 9, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inuser3\"', '2025-06-23 15:10:32', 0),
+(764, 9, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 15:10:42', 0),
+(765, 2, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inadmin\"', '2025-06-23 15:17:27', 0),
+(766, 2, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 15:18:03', 0),
+(767, 4, 'login_success', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged inuser2\"', '2025-06-23 15:21:29', 0),
+(768, 4, 'logout', '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', '\"User logged out\"', '2025-06-23 15:22:11', 0);
 
 -- --------------------------------------------------------
 
@@ -1258,7 +1279,8 @@ INSERT INTO `users` (`id`, `username`, `first_name`, `last_name`, `email`, `pass
 (5, 'mihai', 'Mihai', 'Dragulescu', 'mihaid2002@yahoo.com', '$2y$10$WdXQXrY/Lmnu526H1i75Xu7KXlIK8b5MKCbfTHkfrWy/Xatey57Pu', '2025-05-01 12:38:22', 'active', 'mihai.png', 2),
 (6, 'corny', 'Cornelia', 'Buse', '', '$2y$10$JKXBLX2EUgS/KjC2wgY2Eul8RqBMdZMuD3OrNbMQ75AKKLHAQcA46', '2025-05-05 13:33:26', 'active', 'user_6_682c24869ddbe.jpeg', 3),
 (7, 'marius', 'Marius', 'Dragulescu', 'mariusdragulescu@gmail.com', '$2y$10$422zXDULi727g6bu/.4sDu4ZCA1UvbF4A6p7sSk9RW7MkNH/90pf2', '2025-05-15 12:58:28', 'active', 'user_7_682e15830159d.png', 5),
-(8, 'guest', 'Guest', NULL, 'guest@mykdb.local', '', '2025-05-26 11:31:02', 'active', NULL, 6);
+(8, 'guest', 'Guest', NULL, 'guest@mykdb.local', '', '2025-05-26 11:31:02', 'active', NULL, 6),
+(9, 'user3', 'George', 'Toader', NULL, '$2y$10$pFBfk0Q6/yU0ZrGx06kwpOZa69iA2DlQtZz7T..CGAqMbVK3ABlfa', '2025-06-23 14:17:09', 'active', NULL, 4);
 
 -- --------------------------------------------------------
 
@@ -1311,8 +1333,10 @@ INSERT INTO `user_settings` (`id`, `user_id`, `setting_key`, `setting_value`, `u
 (6, 7, 'language', 'en', '2025-05-23 15:17:07'),
 (7, 3, 'theme', 'light', '2025-06-02 07:22:00'),
 (8, 3, 'language', 'ro', '2025-06-02 07:22:00'),
-(9, 4, 'theme', 'light', '2025-06-10 13:47:37'),
-(10, 4, 'language', 'en', '2025-06-20 07:09:42');
+(9, 4, 'theme', 'light', '2025-06-23 15:22:08'),
+(10, 4, 'language', 'ro', '2025-06-23 15:22:04'),
+(11, 9, 'theme', 'light', '2025-06-23 14:46:57'),
+(12, 9, 'language', 'en', '2025-06-23 14:46:59');
 
 --
 -- Indexes for dumped tables
@@ -1436,7 +1460,7 @@ ALTER TABLE `user_settings`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=748;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=769;
 
 --
 -- AUTO_INCREMENT for table `articles`
@@ -1502,13 +1526,13 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `user_settings`
 --
 ALTER TABLE `user_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
