@@ -146,19 +146,19 @@ if ($userId) {
         <div style="float: right; padding: 5px;">
 
             <!-- User Dropdown -->
-            <?php if (is_logged_in()) { ?>
+            <?php if (($_SESSION['user']['role'] <> 'guest') || !isset($_SESSION['user'])) { ?>
                             
                             <!-- Notifications --> 
-
-                            <div class="notif-bell">
-                                <a href="<?=APP_URL?>public/dashboard.php">
-                                    <img src="<?=APP_URL?>assets/icons/icon-bell.svg" alt="Notificări" width="24" height="auto">
-                                    <?php if ($notifCount > 0): ?>
-                                    <span id="notif-badge" class="notif-badge"><?= $notifCount ?></span>
-                                    <?php endif; ?>
-                                </a>
-                            </div>
-                          
+                            
+                                <div class="notif-bell">
+                                    <a href="<?=APP_URL?>public/dashboard.php">
+                                        <img src="<?=APP_URL?>assets/icons/icon-bell.svg" alt="Notificări" width="24" height="auto">
+                                        <?php if ($notifCount > 0): ?>
+                                        <span id="notif-badge" class="notif-badge"><?= $notifCount ?></span>
+                                        <?php endif; ?>
+                                    </a>
+                                </div>
+                           
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                                 <div class="me-2 d-none d-md-block text-end">
                                     <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'Guest') ?></div>
@@ -186,10 +186,33 @@ if ($userId) {
             <?php } else { ?>
 
 
-                                <a class="nav-link" href="<?php APP_URL ?>login.php">
-                                    <i class="bi bi-box-arrow-in-right fs-4"></i>
-                                    <div style="color: white; font-size: 15px;"><?= lang('lang_login') ?></div>
+                                
+
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                        <div class="me-2 d-none d-md-block text-end">
+                                            <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'Guest') ?></div>
+                                            <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role_label'] ?? 'Guest') ?></div>
+                                        </div>
+                                <?php
+                                       if (isset($_SESSION['user']['profile_picture']) && $_SESSION['user']['profile_picture'] != '') {
+                                            $profilePicture = APP_URL . 'uploads/profile_pics/' . $_SESSION['user']['profile_picture'];
+                                            echo '<img src="'. htmlspecialchars($profilePicture) . '" class="avatar" alt="Avatar" width="60" height="60">';
+                                        } else {
+                                            $profilePicture = APP_URL . 'uploads/profile_pics/default-profile.png';
+                                            echo '<img src="'. htmlspecialchars($profilePicture) . '" class="avatar" alt="Avatar" width="60" height="60">';
+                                        }
+                                ?>
+
+
                                 </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <?php
+                                        //echo "header.php: User Role;" . $_SESSION['user']['role'];
+                                        $aMenu = generateAvatarMenu($_SESSION['user']['id']);
+                                        echo $aMenu;
+                                    ?>
+                                </ul>
+
             <?php } ?> 
            
         </div>
@@ -229,11 +252,198 @@ if ($userId) {
         
 
 
-<main style="padding:20px;">
-<script>
+<main style="padding: 20px;">
 
-function toggleNotifications() {
-  const dropdown = document.getElementById('notif-dropdown');
-  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-}
-</script>
+
+<?php if (($_SESSION['user']['role']=== 'guest') || !isset($_SESSION['user'])) : ?>
+        <!-- Overlay pentru fundal -->
+        <div id="modalOverlayRegister" style="display:none;"></div>
+
+        <!-- Modalul de înregistrare  -->
+
+        <div id="registerModal" class="modal-register" style="display:none;">
+        <form id="registerForm" method="POST" autocomplete="off" >
+            <div id="register-errors" style="display:none; color: red; margin-bottom: 10px;"></div>
+            <div class="modal-header-register" >
+            <span class="modal-title-register"><?= lang('lang_reg_msg_top') ?></span>
+            <span class="modal-close-register" id="closeRegisterModal">&times;</span>
+            </div>
+            <div class="modal-content-register" >
+            <div class="modal-body-register" >
+                <div class="modal-row-register">
+                <label class="modal-label-register" for="first_name"><?= lang('lang_reg_fname') ?></label>
+                <input class="modal-input-register" type="text" name="first_name" id="first_name" required>
+                </div>
+                <div class="modal-row-register">
+                <label class="modal-label-register" for="last_name"><?= lang('lang_reg_lname') ?></label>
+                <input class="modal-input-register" type="text" name="last_name" id="last_name" required>
+                </div>
+                <div class="modal-row-register">
+                <label class="modal-label-register" for="username"><?= lang('lang_reg_username') ?></label>
+                <input class="modal-input-register" type="text" name="username" id="username" required>
+                </div>
+                <div class="modal-row-register">
+                <label class="modal-label-register" for="password"><?= lang('lang_reg_pass') ?></label>
+                <div class="password-wrapper">
+                    <input class="modal-input-register" type="password" name="password" id="password" required>
+                    <button type="button" id="btn-password" class="toggle-password" onclick="togglePasswordVisibility('password','btn-password')">👁️</button>
+                </div>
+                </div>
+                <div class="modal-row-register" >
+                
+                    <label class="modal-label-register" for="confirm_password"><?= lang('lang_reg_pass_confirm') ?></label>
+                    <input class="modal-input-register" type="password" name="confirm_password" id="confirm_password" required>
+                </div>
+                <small id="password-match-msg" style="color: red; display: none; margin-left: 150px; margin-top: 4px;">
+                    <?= lang('lang_reg_pass_nomatch') ?>
+                </small>
+                
+            </div>
+            <div class="modal-footer-register" >
+                <button class="modal-btn-register cancel" type="button" id="cancelRegisterModal"><?= lang('lang_btn_cancel') ?></button>
+                <button type="submit" class="modal-btn-register primary"><?= lang('lang_reg_btn_create') ?></button>
+            </div>
+            </div>
+        </form>
+        </div>
+
+        <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+                // Modal logic
+                const modal = document.getElementById('registerModal');
+                
+                const closeBtn = document.getElementById('closeRegisterModal');
+                const cancelBtn = document.getElementById('cancelRegisterModal');
+
+
+                const openBtns = document.querySelectorAll('.openRegisterModal');
+                openBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    modal.style.display = "block";
+                    overlay.style.display = "block";
+                    });
+                });
+
+
+                function resetRegisterForm() {
+                    document.getElementById('registerForm').reset();
+                    const message = document.getElementById('password-match-msg');
+                    if (message) {
+                        message.style.display = "none";
+                        message.textContent = "";
+                    }
+                    const errorsDiv = document.getElementById('register-errors');
+                    if (errorsDiv) {
+                        errorsDiv.style.display = "none";
+                        errorsDiv.innerHTML = "";
+                    }
+                }
+
+
+
+                // Password validation
+                const password = document.getElementById('password');
+                const confirmPassword = document.getElementById('confirm_password');
+                const overlay = document.getElementById('modalOverlayRegister');
+                const message = document.getElementById('password-match-msg');
+                const submitBtn = document.querySelector('#registerForm button[type="submit"]');
+
+                function validatePasswords() {
+                    if (confirmPassword.value.length === 0) {
+                        message.style.display = "none";
+                        submitBtn.disabled = false;
+                        return;
+                    }
+                    if (password.value !== confirmPassword.value) {
+                        message.style.display = "block";
+                        message.textContent = "<?= lang('lang_reg_pass_nok') ?>";
+                        message.style.color = "red";
+                        submitBtn.disabled = true;
+                    } else {
+                        message.style.display = "block";
+                        message.textContent = "<?= lang('lang_reg_pass_ok') ?> ✔️";
+                        message.style.color = "green";
+                        submitBtn.disabled = false;
+                    }
+                }
+                password.addEventListener('input', validatePasswords);
+                confirmPassword.addEventListener('input', validatePasswords);
+
+
+
+
+
+                // AJAX submit
+                document.getElementById('registerForm').onsubmit = async function(e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const data = new FormData(form);
+                    const errorsDiv = document.getElementById('register-errors');
+                    errorsDiv.style.display = "none";
+                    errorsDiv.innerHTML = "";
+
+                    const response = await fetch('<?=APP_URL?>public/api/bkd_register.php', {
+                        method: 'POST',
+                        body: data
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        modal.style.display = "none";
+                        alert("Account sent to admin for approval! You can log in once approved.");
+                        window.location.href = "index.php";
+                    } else {
+                        errorsDiv.style.display = "block";
+                        errorsDiv.innerHTML = result.errors.map(e => `<p>${e}</p>`).join('');
+                    }
+                };
+
+                function closeRegisterModal() {
+                    //resetRegisterForm();
+                    modal.style.display = "none";
+                    overlay.style.display = "none";
+                    
+                }
+
+
+
+
+                window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
+
+                // X-ul de sus
+                if(closeBtn) closeBtn.onclick = closeRegisterModal;
+
+                if(cancelBtn) cancelBtn.onclick = closeRegisterModal
+
+                // Overlay click
+                window.onclick = (event) => {
+                    if (event.target == overlay) {
+                        closeRegisterModal();
+                    }
+                };
+
+
+                if(openBtn) openBtn.onclick = () => {
+                    resetRegisterForm();
+                    modal.style.display = "block";
+                    overlay.style.display = "block";
+                };
+
+                if(closeBtn) closeBtn.onclick = () => {
+                    resetRegisterForm
+                    modal.style.display = "none";
+                    overlay.style.display = "none";
+                };
+
+
+                // toggle notification visibility
+
+                function toggleNotifications() {
+                const dropdown = document.getElementById('notif-dropdown');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+        </script>
+
+<?php endif; //end if ?>
