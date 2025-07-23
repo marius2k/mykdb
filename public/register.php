@@ -94,8 +94,12 @@ if (!hasPermission($_SESSION['user']['id'], $ops)) {
 const modal = document.getElementById('registerModal');
 const openBtn = document.getElementById('openRegisterModal');
 const closeBtn = document.getElementById('closeRegisterModal');
-openBtn.onclick = () => modal.style.display = "block";
-closeBtn.onclick = () => modal.style.display = "none";
+if (openBtn) {
+  openBtn.onclick = () => modal.style.display = "block";
+}
+if (closeBtn) {
+  closeBtn.onclick = () => modal.style.display = "none";
+}
 window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
 // Password validation
@@ -133,7 +137,7 @@ document.getElementById('registerForm').onsubmit = async function(e) {
     errorsDiv.style.display = "none";
     errorsDiv.innerHTML = "";
 
-    const response = await fetch('register_backend.php', {
+    const response = await fetch('api/bkd_register.php', {
         method: 'POST',
         body: data
     });

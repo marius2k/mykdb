@@ -213,6 +213,8 @@ return [
     'lang_reg_pass_nomatch' => 'Parolele nu se potrivesc',
     'lang_reg_pass_ok' => 'Parolele coincid !',
     'lang_reg_pass_nok' => 'Parolele nu conincid !',
+    'lang_login_username' => 'Username',
+    'lang_login_password' => 'Password',
     'search' => 'cauta info in articole',
     'view_article' => 'vizualizeaza toate articolel publicate',
     'create_article' => 'creaza un articol',

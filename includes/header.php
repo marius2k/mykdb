@@ -115,7 +115,9 @@ if ($userId) {
     <!-- Summernote CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.js"></script>
-   
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.min.js"></script>
 
     <!-- CSS Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -265,8 +267,8 @@ if ($userId) {
         <form id="registerForm" method="POST" autocomplete="off" >
             <div id="register-errors" style="display:none; color: red; margin-bottom: 10px;"></div>
             <div class="modal-header-register" >
-            <span class="modal-title-register"><?= lang('lang_reg_msg_top') ?></span>
-            <span class="modal-close-register" id="closeRegisterModal">&times;</span>
+                <span class="modal-title-register"><?= lang('lang_reg_msg_top') ?></span>
+                <span class="modal-close-register" id="closeRegisterModal">&times;</span>
             </div>
             <div class="modal-content-register" >
             <div class="modal-body-register" >
@@ -424,7 +426,7 @@ if ($userId) {
                 };
 
 
-                if(openBtn) openBtn.onclick = () => {
+                if(openBtns) openBtns.onclick = () => {
                     resetRegisterForm();
                     modal.style.display = "block";
                     overlay.style.display = "block";

@@ -12,5 +12,5 @@ if (session_status() === PHP_SESSION_NONE) {
 logActivity($_SESSION['user']['id'] ?? null, 'logout', 'User logged out');
 session_destroy();
 
-header('Location: login.php');
+header('Location: index.php');
 exit;

@@ -36,7 +36,7 @@ $role = $user['role_name'];
 $picture = $user['profile_picture'] ?? null;
 
 //echo "Role: " . $role . "<br>";
-echo "Picture name: " . $_FILES['profile_picture']['name'] ?? "no picture selected <br>";
+//echo "Picture name: " . $_FILES['profile_picture']['name'] ?? "no picture selected <br>";
 
 
 // schimbare poza de profil

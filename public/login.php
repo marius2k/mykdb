@@ -1,141 +1,106 @@
 <?php
-
-//loadConfig();
-
-require_once '../config/bootstrap.php';
-//require_once APP_ROOT.'config/config.php';
-//require_once APP_ROOT.'config/db.php';
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-
-$error = '';
-
-
-//echo "App ROOT" . APP_ROOT;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
-
-    //echo "user authenti/cation started...<br>";
-    $userok = auth_user($username, $password);
-
-    //echo "user authentication ended...";
-    
-    //$stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-    //$stmt->execute([$username]);
-    //$user = $stmt->fetch();
-
-    if (($userok) && $userok['status'] == 'active'){
-        
-        //Authentificare reușită
-        $userId = $userok['id'];
-        //echo "UID: ".$userId;
-
-        $db = new Database();
-
-        $sql = "SELECT u.*, r.name AS role_name, r.label AS role_label, r.id AS role_id
-                FROM users u
-                JOIN roles r ON u.role_id = r.id
-                WHERE u.id = ?";
-        
-        //echo "SQL: ". $sql;
-
-        $user = $db->fetchSingle($sql, [$userId]);
-        
-        
-        
-        $_SESSION['user'] = [
-            'id' => $user['id'],
-            'first_name' => $user['first_name'],
-            'last_name' => $user['last_name'],
-            'username' => $user['username'],
-            'email' => $user['email'],
-            'role' => $user['role_name'],     // ex: 'admin'
-            'role_id' => $user['role_id'],
-            'role_label' => $user['role_label'], // ex: 'Administrator'
-            'profile_picture' => $user['profile_picture'],
-            'status' => $user['status']
-        ];
-
-        //echo "User ID: ". $_SESSION['user']['id'];
-        header('Location: index.php');
-        logActivity($user['id'], 'login_success', 'User logged in'.$username);
-
-        $db = new Database();
-        
-        // Load user settings
-        $userSettings = new UserSettings($db);
-        $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
-
-        //echo "User Settings: ". $_SESSION['settings']['language'];
-
-        exit;
-
-    }elseif($user['status'] == 'disabled' || $user['status'] == 'pending'){
-            $error = 'Contul tău este dezactivat sau în așteptare de aprobare.';
-            logActivity($user['id'], 'login_failed','Login attempt for a disabled or inactive user: ' . $username);
-            //exit;
-            //$_SESSION['user']['role']=$user['role'];            
-        
-    } else {
-        $error = 'Date incorecte.';
-        logActivity($_SESSION['user']['id'] ?? null, 'login_failed', 'Failed login attempt for username: ' . $username);
-        //exit;
-    }
-}
-
-
-
-
-
+require_once '../config/bootstrap.php'; 
+include APP_ROOT . 'includes/header.php'; 
 ?>
 
-<?php include APP_ROOT . 'includes/header.php'; ?>
+<!-- Overlay pentru login -->
+<div id="modalOverlayLogin" class="modal-overlay" style="display:block;"></div>
 
-
-<!-- search results -->
-<div id="searchResults" style="margin-top:10px;"></div>
-
-<div id="defaultContent">
-
-
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <form method="POST">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" value="<?= htmlspecialchars($username ?? '') ?>" required>
-                            </div>
-                                
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                                
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Login</button>
-                            </div>
-                        </form>
-                    </div>   
-                </div> 
+<!-- Modalul de login -->
+<div id="loginModal" class="modal-login" style="display:flex;">
+    <div class="modal-content-login">
+        <form id="loginForm" method="POST" autocomplete="off">
+            <div class="modal-header-login">
+                <span class="modal-title-login"><?= lang('lang_login') ?></span>
+                <span class="modal-close-login" id="closeLoginModal">&times;</span>
             </div>
-        </div>           
-
+            <div class="modal-body-login">
+                <div class="modal-row-login">
+                    <label class="modal-label-login"><?= lang('lang_login_username') ?></label>
+                    <input class="modal-input-login" type="text" name="username" id="login-username" required>
+                </div>
+                <div class="modal-row-login">
+                    <label class="modal-label-login"><?= lang('lang_login_password') ?></label>
+                    <div class="password-wrapper">
+                        <input class="modal-input-login" type="password" name="password" id="login-password" required>
+                        <button type="button" id="login-btn-password" class="toggle-password" onclick="togglePasswordVisibility('login-password','login-btn-password')">👁️</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-login">
+                <button type="submit" class="modal-btn-register primary"><?= lang('lang_btn_login') ?? 'Login' ?></button>
+            </div>
+        </form>
     </div>
 </div>
 
-<?php if ($error): ?>
-    <p style="color:red"><?= $error ?></p>
-<?php endif; ?>
+<style>
+html, body {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
+</style>
 
+<script>
+const overlay = document.getElementById('modalOverlayLogin');
+const modal = document.getElementById('loginModal');
+const closeBtn = document.getElementById('closeLoginModal');
+
+function closeLoginModal() {
+    modal.style.display = "none";
+    overlay.style.display = "none";
+    window.location.href = "index.php";
+}
+
+if (closeBtn) closeBtn.onclick = closeLoginModal;
+if (overlay) overlay.onclick = closeLoginModal;
+
+// Blochează închiderea modalului la click pe fundal sau Escape
+window.onclick = function(event) {
+  if (event.target === modal) {
+    // nu face nimic
+  }
+};
+document.onkeydown = function(e) {
+  if (e.key === "Escape") {
+    e.preventDefault();
+    return false;
+  }
+};
+
+// Toggle password
+function togglePasswordVisibility(inputId, btnId) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (input.type === "password") {
+    input.type = "text";
+    btn.textContent = "🙈";
+  } else {
+    input.type = "password";
+    btn.textContent = "👁️";
+  }
+}
+
+// AJAX login
+document.getElementById('loginForm').onsubmit = async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  // Adaugă aici gestionarea erorilor dacă ai nevoie
+  const response = await fetch('api/bkd_login.php', {
+    method: 'POST',
+    body: data
+  });
+  const result = await response.json();
+  if (result.success) {
+    window.location.href = "index.php";
+  } else {
+    alert(result.error || "Eroare necunoscută.");
+  }
+};
+</script>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>
-

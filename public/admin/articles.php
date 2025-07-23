@@ -191,7 +191,7 @@ function loadCategories() {
             let select = document.getElementById('add_category_select');
             select.innerHTML = `<option value="">--<?= lang('lang_cat_select') ?> --</option>`;
             data.forEach(c => {
-                select.innerHTML += `<option value="${c.id}" data-img="/mykdb/assets/icons/categories/${c.icon}">${escapeHtml(c.name)}</option>`;
+                select.innerHTML += `<option value="${c.id}" data-img="/assets/icons/categories/${c.icon}">${escapeHtml(c.name)}</option>`;
             });
             // Reinițializează Select2
             if (window.$ && $(select).select2) {
@@ -370,17 +370,27 @@ function articleAction(action, articleId, publishAt = '') {
 function openArticleModal() {
     document.getElementById('modal-title').textContent = '<?=lang('lang_create_article')?>';
     document.getElementById('modal-add-article').style.display = 'block';
+
+
+    // Încarcă categoriile la deschiderea modalului!
+    loadCategories();
+
     setTimeout(() => {
         // Inițializează Summernote dacă nu e deja inițializat
         if (!$('#summernote').next('.note-editor').length) {
             $('#summernote').summernote({
                 height: 250,
                 placeholder: 'Scrie conținutul articolului...',
+                codemirror: { // codemirror options
+                    theme: 'default',
+                    mode: 'text/html',
+                    lineNumbers: true
+                },
                 toolbar: [
                     ['style', ['bold', 'italic', 'underline', 'clear']],
                     ['font', ['strikethrough', 'superscript', 'subscript']],
                     ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video']],
+                    ['insert', ['link', 'picture', 'video','code']],
                     ['view', ['fullscreen', 'codeview']]
                 ]
             });

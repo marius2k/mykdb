@@ -16,9 +16,15 @@ function escape($str) {
  * Format a MySQL timestamp to readable date
  */
 function formatDate($datetime) {
-    return date("d.m.Y H:i", strtotime($datetime));
+    if (empty($datetime)) {
+        return '';
+    }
+    $timestamp = strtotime($datetime);
+    if ($timestamp === false) {
+        return '';
+    }
+    return date("d.m.Y H:i", $timestamp);
 }
-
 /**
  * Shorten long text (used in previews)
  */
@@ -403,7 +409,7 @@ function generateNavBar2($uid) {
         // If user is not logged in, show only home, login and register links
         $nav .= '
                 <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang('lang_home').'</a>
-                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang('lang_login').'</a>
+                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active" id="openLoginModal"> ' : ' class="bi bi-box-arrow-in-right me-2" id="openLoginModal"> ').lang('lang_login').'</a>
                 <a href="#" id="openRegisterModal1" class="openRegisterModal bi bi-r-square-fill me-2"> '.lang('lang_register').'</a>';
         return $nav;
     }

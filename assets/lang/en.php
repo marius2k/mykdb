@@ -217,6 +217,8 @@ return [
     'lang_reg_pass_nomatch' => 'Passwords not matching',
     'lang_reg_pass_ok' => 'Passwords matching !',
     'lang_reg_pass_nok' => 'Passwords not matching !',
+    'lang_login_username' => 'Username',
+    'lang_login_password' => 'Password',
     'search' => 'search info in articles',
     'view_article' => 'view all published articles',
     'create_article' => 'create an article',
