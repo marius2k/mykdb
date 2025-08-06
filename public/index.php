@@ -201,20 +201,33 @@ if (isset($_SESSION['user']['id'])) {
                                     ?>
 
                                     <div class="article-card">
-                                        
-                                            <h3 class="article-title">
-                                                <?php if (!empty($a['icon'])): ?>
-                                                        <?php if (str_starts_with($a['icon'], 'http') || str_ends_with($a['icon'], '.png') || str_ends_with($a['icon'], '.svg')): ?>
-                                                            <a href="index.php?fcategory=<?=$a['catid']?>" title="<?=$a['category']?>"><img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;"></a>
-                                                            <?php else: ?>
-                                                            <span class="me-1"><?= htmlspecialchars($a['icon']) ?></span>
-                                                        <?php endif; ?>
-                                                <?php endif; ?><?= escape($a['title']) ?></h3>
-                                            <div class="article-body" id="article<?=$a['id']?>">
+                                          <div style="display: flex; justify-content: space-between;">
+                                              <div>
+                                                <h3 class="article-title">
+                                                    <?php if (!empty($a['icon'])): ?>
+                                                            <?php if (str_starts_with($a['icon'], 'http') || str_ends_with($a['icon'], '.png') || str_ends_with($a['icon'], '.svg')): ?>
+                                                                <a href="index.php?fcategory=<?=$a['catid']?>" title="<?=$a['category']?>"><img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;"></a>
+                                                                <?php else: ?>
+                                                                <span class="me-1"><?= htmlspecialchars($a['icon']) ?></span>
+                                                            <?php endif; ?>
+                                                    <?php endif; ?><?= escape($a['title']) ?>
+                                                
+                                                </h3>
+                                              </div>
+                                              <div>
+                                                <?php if(is_article_bookmarked($a['id'], $_SESSION['user']['id'] ?? null)): ?>
+                                                    <img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-full.svg" alt="Bookmark" class="bookmark-icon"  style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(<?= $a['id'] ?>, this)" title="<?=lang('lang_favorites_remove')?>" >
+                                                <?php else: ?>
+                                                    <img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-empty.svg" alt="Bookmark" class="bookmark-icon"  style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(<?= $a['id'] ?>, this)" title="<?=lang('lang_favorites_add')?>" >
+                                                <?php endif; ?>
+                                              </div>
+                                          </div>
+
+                                          <div class="article-body" id="article<?=$a['id']?>">
 
                                             
                                                 <p><?= nl2br($shortText) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="<?= lang('lang_read_more') ?>"> </a></p>                                            
-                                            </div>
+                                          </div>
                                             
                                             <div class="article-footer">
                                                 <div>
@@ -773,8 +786,28 @@ $('#filterCategory').on('select2:clear', function () {
   searchResults.innerHTML = '';
 });
 
+function toggleBookmark(articleId, img) {
+    fetch('api/bkd_toggle_bookmark.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'article_id=' + encodeURIComponent(articleId)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            if (data.bookmarked) {
+                img.src = '<?=APP_URL?>assets/icons/icon-bookmark-full.svg';
+                img.title = "Elimină din favorite";
+            } else {
+                img.src = '<?=APP_URL?>assets/icons/icon-bookmark-empty.svg';
+                img.title = "Adaugă la favorite";
+            }
+        }
+    });
+}
 
 </script>
+
 
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

@@ -1,16 +1,21 @@
 <?php
 
-
 // Include fișierele necesare pentru conexiunea la baza de date
 require_once '../config/bootstrap.php';
-
-
-// Inițializează sesiunea
-session_start();
 
 // Verifică dacă ID-ul articolului a fost trimis
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $articleId = intval($_GET['id']);
+
+    // Verifică permisiunile utilizatorului
+    if (!isset($_SESSION['user']['id'])) {
+        die('Neautentificat');
+    }
+    
+    $ops = ['approve_article'];
+    if (!hasPermission($_SESSION['user']['id'], $ops)) {
+        die('Nu ai permisiunea să aprobi articole');
+    }
 
     // Creează o instanță a clasei Database
     $db = new Database();
@@ -24,6 +29,16 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $stmt->bindParam(':id', $articleId, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
+            // Log activitatea
+            logActivity($_SESSION['user']['id'], 'article_approved', 'User ' . $_SESSION['user']['username'] . ' approved an article');
+            
+            // Obține datele articolului pentru notificare
+            $article = $db->fetchSingle("SELECT user_id, title FROM articles WHERE id = ?", [$articleId]);
+            if ($article) {
+                // Trimite notificare către autorul articolului
+                sendNotification($article['user_id'], 'Article Approved', 'Your article <a href="view_article.php?id=' . $articleId . '">' . truncateText($article['title'], 30) . '</a> has been approved.', 'info');
+            }
+            
             // Aprobarea a avut succes
             $_SESSION['message'] = 'Articolul a fost aprobat cu succes.';
         } else {

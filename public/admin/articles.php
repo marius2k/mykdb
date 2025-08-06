@@ -106,6 +106,13 @@ if ($lang === 'en') $lang = 'en-GB';
                     <textarea id="summernote" name="content"></textarea>
                 </div>
             </div>
+
+            <div style="padding: 20px width: 100%;" class="custom-box-2">
+                <span class="corner-label-2" style="align: left;"><?= lang('lang_create_article_tags') ?></span>
+                <div class="box-content-2" style="padding: 20px">
+                    <input type="text" id="tags" name="tags">
+                </div>
+            </div>
             <div>
                 <button type="button" onclick="submitArticle2('draft')" class="btn btn-outline-grey"><?= lang('lang_create_article_draft') ?></button>
                 <button type="button" onclick="submitArticle2('submit')" class="btn btn-outline-grey"><?= lang('lang_create_article_submit') ?></button>
@@ -424,7 +431,8 @@ function openEditArticleModal(articleId) {
             $('#add_category_select').val(data.article.category_id).trigger('change');
             document.getElementById('publish_at').value = data.article.publish_at ? data.article.publish_at.replace(' ', 'T') : '';
             $('#summernote').summernote('code', data.article.content);
-
+            // Completează și TAGURILE aici:
+            document.getElementById('tags').value = data.article.tags ? data.article.tags.join(', ') : '';  
             // Marchează formularul ca "edit"
             document.getElementById('add_article').setAttribute('data-edit-id', articleId);
 

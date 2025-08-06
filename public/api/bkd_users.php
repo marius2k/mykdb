@@ -6,9 +6,9 @@ header('Content-Type: application/json');
 require_login();
 $db = new Database();
 
-// Restricționează accesul doar pentru admin și superadmin
+// Restricționează accesul doar pentru admin, superadmin si moderator
 $role = $_SESSION['user']['role'] ?? '';
-if (!in_array($role, ['admin', 'superadmin'])) {
+if (!in_array($role, ['admin', 'superadmin','moderator'])) {
     http_response_code(403);
     echo json_encode(['error' => 'Access denied']);
     exit;

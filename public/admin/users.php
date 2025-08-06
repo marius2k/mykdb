@@ -20,10 +20,12 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
         
 }
 // Verifică dacă utilizatorul are rolul de admin sau superadmin
+/*
 if (!in_array($_SESSION['user']['role'] ?? '', ['admin', 'superadmin'])) {
     header('Location: /');
     exit;
 }
+*/
 
 $lang = $_SESSION['settings']['language'] ?? 'en';
 // Mapare rapidă dacă ai coduri locale

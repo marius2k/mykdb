@@ -9,7 +9,7 @@ function lang($key) {
  * Escape HTML special characters
  */
 function escape($str) {
-    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars($str ?? '', ENT_QUOTES, 'UTF-8');
 }
 
 /**
@@ -357,33 +357,33 @@ function generateNavBar($role = 'guest') {
     switch ($role) {
         case 'superadmin':
             $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>
-                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>
-                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang_users. '</a>
-                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang_categories.'</a>
-                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>
-                <a href="'.APP_URL.'public/admin/acl_edit.php"'.($currentPage === 'acl_edit.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_edit_acl.'</a>
-                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang('lang_home') .'</a>
+                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang('lang_dashboard') . '</a>
+                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang('lang_users'). '</a>
+                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang('lang_categories').'</a>
+                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang('lang_articles').'</a>
+                <a href="'.APP_URL.'public/admin/acl_edit.php"'.($currentPage === 'acl_edit.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang('lang_edit_acl').'</a>
+                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang('lang_logout') .'('.escape($_SESSION['user']['username']).')</a>';
             break;
         case 'admin':
         case 'moderator':
         case 'editor':
         case 'contributor':
             $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang_home .'</a>
-                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang_dashboard . '</a>
-                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang_users. '</a>
-                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang_categories.'</a>
-                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang_articles.'</a>
-                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang_settings.'</a>
-                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang_logout .'('.escape($_SESSION['user']['username']).')</a>';
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang('lang_home') .'</a>
+                <a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang('lang_dashboard') . '</a>
+                <a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang('lang_users'). '</a>
+                <a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang('lang_categories').'</a>
+                <a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang('lang_articles').'</a>
+                <a href="'.APP_URL.'public/settings.php"'.($currentPage === 'settings.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang('lang_settings').'</a>
+                <a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang('lang_logout') .'('.escape($_SESSION['user']['username']).')</a>';
             break;
 
         case 'guest':
             $nav .= '
-                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang_home.'</a>
-                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang_login.'</a>
-                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang_register.'</a>';
+                <a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active"> ' : ' class="bi bi-house-fill me-2"> ').lang('lang_home').'</a>
+                <a href="'.APP_URL.'public/login.php"'.($currentPage === 'login.php' ? ' class="bi bi-box-arrow-in-right me-2 active"> ' : ' class="bi bi-box-arrow-in-right me-2"> ').lang('lang_login').'</a>
+                <a href="'.APP_URL.'public/register.php"'.($currentPage === 'register.php' ? ' class="bi bi-r-square-fill me-2 active"> ' : ' class="bi bi-r-square-fill me-2"> ').lang('lang_register').'</a>';
             break;
     }
 
@@ -404,7 +404,7 @@ function generateNavBar2($uid) {
 
     $nav = '';
 
-    if(($_SESSION['user']['role']=== 'guest')) {
+    if(!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'guest') === 'guest') {
         // Guest user navigation
         // If user is not logged in, show only home, login and register links
         $nav .= '
@@ -446,8 +446,7 @@ function generateNavBar2($uid) {
           'enable_user',
           'disable_user',
           'delete_user',
-          'modify_user',
-          'modify_own_user'];
+          'modify_user'];
     
     if(hasPermission($uid,$ops)){
 
@@ -483,6 +482,16 @@ function generateNavBar2($uid) {
         $nav.='<a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang('lang_articles').'</a>';
     }
 
+    // check users allowed to manage tags
+    $ops = ['edit_article',
+            'create_article',
+            'approve_article'  // Pentru moment folosim permisiuni existente
+            ];
+
+    if (hasPermission($uid,$ops)){
+        $nav.='<a href="'.APP_URL.'public/admin/tags.php"'.($currentPage === 'tags.php' ? ' class="bi bi-tags-fill me-2 active"> ' : ' class="bi bi-tags-fill me-2"> ').lang('lang_tags').'</a>';
+    }
+
     // check users allowed to manage comments
     $ops = ['add_comment',
             'approve_comment',
@@ -515,7 +524,7 @@ function generateNavBar2($uid) {
     
     // menu bar for 'guest' users
 
-    $nav.='<a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang('lang_logout') .'('.escape($_SESSION['user']['username']).')</a>';
+    $nav.='<a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang('lang_logout') .'('.escape($_SESSION['user']['username'] ?? 'Guest').')</a>';
 
     return $nav;
 }
@@ -546,10 +555,10 @@ function generateAvatarMenu($uid) {
 
 
     // check if user is allowed to view his profile
-    // check if user is allowed to edit his profile;
+    
 
     //$ops = ['modify_own_user'];
-    if (hasPermission($uid,['modify_own_user'])) {
+    if (hasPermission($uid,['modify_own_data'])) {
 
         $menu .= '<li>
                         <a class="dropdown-item" href="' . APP_URL . 'public/profile.php">
@@ -557,6 +566,11 @@ function generateAvatarMenu($uid) {
                     </li>';
     }
 
+    $menu .= '<li>
+                        <a class="dropdown-item" href="' . APP_URL . 'public/favorites.php">
+                            <i class="bi bi-bookmark-fill me-2"></i>'.lang('lang_favorites').'</a>
+                    </li>';
+    
 
     //check if user is allowed to edit ACL
     //$ops = ['edit_acl'];
@@ -1356,7 +1370,7 @@ function getPendingArticles(): array {
     try {
         // Pregătește interogarea SQL pentru a obține articolele cu status "pending"
         $stmt = $db->prepare("
-            SELECT a.*, u.username, c.name AS category
+            SELECT a.id, a.title, a.created_at, a.user_id, u.username, c.name AS category
             FROM articles a
             JOIN users u ON a.user_id = u.id
             LEFT JOIN categories c ON a.category_id = c.id
@@ -1463,7 +1477,7 @@ function renderNotifications(array $notifications,array $t ): string {
                                     <th style="padding: 5px;">'.$t['lang_db_notif_type'].'</th>
                                     <th style="padding: 5px;">'.$t['lang_db_notif_message'].'</th>
                                     <th style="padding: 5px;">'.$t['lang_db_notif_date'].'</th>
-                                    <th style="padding: 5px;">'.$t['lang_db_notif_actions'].'</th>
+                                    <th style="padding: 5px; width: 70px">'.$t['lang_db_notif_actions'].'</th>
                                 </tr>
                             </thead>
                             <tbody>';
@@ -1495,7 +1509,7 @@ function renderNotifications(array $notifications,array $t ): string {
                         <td>' . htmlspecialchars($n['type']) . '</td>
                         <td>' . $n['message'] . '</td>
                         <td>' . date('Y-m-d H:i', strtotime($n['created_at'])) . '</td>
-                        <td>';
+                        <td width="70px">';
 
             // Afișează acțiunile pentru notificare
             if (!$n['is_read']) {
@@ -1609,7 +1623,7 @@ function renderPendingArticles(array $pendingArticles,array $t): string {
                         <div style="align-items: right;">
                             
                             <a href="approve_article.php?id=' . $article['id'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_btn_send_approval'].'">
+                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_article_approve'].'">
                             </a>
                             <a href="reject_article.php?id=' . $article['id'] . '">
                                 <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="'.$t['lang_article_reject'].'">
@@ -1643,7 +1657,7 @@ function renderPendingComments(array $pendingComments,array $t): string {
             <span class="corner-label-1">'.$t['lang_com_in_pending'].'</span>
             <div class="box-content-1" style="color: #888; padding: 20px;">
                 <ul class="list-group">
-                 '.$t['lang_no_pending_comments'].'   
+                 '.$t['lang_no_com_in_pending'].'   
                 </ul>
             </div>
         </div>';
@@ -1662,22 +1676,8 @@ function renderPendingComments(array $pendingComments,array $t): string {
                             <small style="font-size: 12px;">Autor: ' . htmlspecialchars($comment['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($comment['created_at'])) . '</small>
                         </div>
                         <div style="align-items: right;">
-                            <form action="comment_action.php" method="post" style="display:inline;">
-                                <input type="hidden" name="id" value="'.$comment['id'].'">
-                                <input type="hidden" name="user_id" value="'.$comment['user_id'].'">
-                                <input type="hidden" name="csrf_token" value="'.$csrf_token.'">
-                                <input type="hidden" name="redirect_to" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
-                                <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_com_approve'].'" style="width:24;height:auto;"></button>
-                            </form>
-                            <form action="comment_action.php" method="post" style="display:inline;">
-                                <input type="hidden" name="id" value="'.$comment['id'].'">
-                                <input type="hidden" name="user_id" value="'.$comment['user_id'].'">
-                                <input type="hidden" name="csrf_token" value="'.$csrf_token.'">
-                                <input type="hidden" name="redirect_to" value="'.htmlspecialchars($_SERVER['REQUEST_URI']).'">
-                                <input type="hidden" name="action" value="delete">
-                                <button type="submit" class="btn-icon"><img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.$t['lang_com_reject'].'" style="width:24;height:auto;"></button>
-                            </form>
+                            <img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_com_approve'].'" onclick="approveComment('.$comment['id'].'); return false;">
+                            <img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.$t['lang_com_reject'].'"  onclick="deleteComment('.$comment['id'].'); return false;">
                            
                         </div>
                     </li>';
@@ -1978,6 +1978,7 @@ function renderDashboardBox($box, $data) {
                 'lang_article_approve' => lang('lang_article_approve'),
                 'lang_article_reject' => lang('lang_article_reject')
             ];
+            //error_log('pendingArticles in render: ' . print_r($data['pendingArticles'], true));
             return renderPendingArticles($data['pendingArticles'], $lang_text);
         case 'pendingComments':
             $lang_text = [
@@ -2007,4 +2008,31 @@ function renderDashboardBox($box, $data) {
             return '';
     }
 }
+// Function to save article rating
+// @Param: $articleId - ID of the article being rated
+// @Param: $userId - ID of the user rating the article
+// @Param: $stars - Number of stars given by the user
+// @Param: $wasHelpful - Optional, boolean indicating if the article was helpful
+// @Param: $comment - Optional, comment provided by the user
+// @Return: void
+// @Note: This function saves the rating in the database, updating if the user has already rated the article
 
+function saveArticleRating($articleId, $userId, $stars, $wasHelpful = null, $comment = null) {
+    $db = new Database();
+    $stmt = $db->prepare("INSERT INTO article_ratings (article_id, user_id, stars, was_helpful, comment)
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE stars=?, was_helpful=?, comment=?");
+    $stmt->execute([$articleId, $userId, $stars, $wasHelpful, $comment, $stars, $wasHelpful, $comment]);
+}
+
+
+// check if an article is bookmarked by a user
+// @Param: $articleId - ID of the article to check
+// @Param: $userId - ID of the user to check
+// @Return: boolean - true if the article is bookmarked, false otherwise
+function is_article_bookmarked($articleId, $userId) {
+    if (!$userId || !$articleId) return false;
+    $db = new Database();
+    $row = $db->fetchSingle("SELECT id FROM user_bookmarks WHERE user_id = ? AND article_id = ?", [$userId, $articleId]);
+    return $row ? true : false;
+}

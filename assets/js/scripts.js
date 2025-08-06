@@ -511,3 +511,7 @@ function initializeCustomBox(boxElement, pageBgColor) {
     // Apelăm funcția și la redimensionarea ferestrei
     window.addEventListener('resize', updateBorderCutout2);
   }
+
+
+
+

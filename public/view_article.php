@@ -13,29 +13,51 @@ if (empty($_SESSION['csrf_token'])) {
 </script>
 
 
-    <div style="max-width:80%; margin:20px auto;">
-        <h2 class="article-title" id="article-title"></h2>
-        <p id="article-meta"></p>
+    
 
-        <div class="article-view">
+       <div class="article-view" style="max-width:80%; margin:20px auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 class="article-title" id="article-title"></h2>
+                </div>
+                <div id="bookmark-img"></div>              
+            </div>
+            <div class="article-header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="article-meta" id="article-meta"></div>
+                <div id="article-header-flex"></div>
+            </div>
+            <div class="article-tags" id="article-tags" style="margin: 10px 0;"></div>
+            <br>
+            <div style="height: 0.5px; background-color: #ccc; width: 100%;"></div>
+            <br>
             <div id="article-content"></div>
-            <div class="vote-buttons" id="article-votes"></div>
+            <br>
+            <div style="height: 0.5px; background-color: #ccc; width: 100%;"></div>
+            <br>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="vote-buttons" id="article-votes"></div>
+                <div class="article-useful" id="article-useful" cstyle="margin-top:8px;"></div>
+            </div>
         </div>
-
-        <div id="comments" class="article-view">
-            <h4 id="comments-title">💬 Comentarii</h4>
+        <div id="comments" class="article-view" style="max-width:80%; margin:20px auto;">
+            <h4 id="comments-title"><?= lang ('lang_view_article_comments');?></h4>
             <div id="comments-list"></div>
         </div>
-    </div>
 
-<div class="article-view" style="max-width:80%;margin:20px auto;">
-    <form id="comment-form" class="mb-4">
-        <input type="hidden" name="article_id" id="article_id">
-        <textarea name="content" id="comment-content" class="form-control" required rows="3" placeholder="Scrie un comentariu..."></textarea>
-        <button type="submit" class="btn btn-primary mt-2">Trimite</button>
-        <div id="comment-feedback" class="mt-2 text-success d-none">Comentariul a fost trimis!</div>
-    </form>
-</div>
+
+        <div class="article-view" style="max-width:80%;margin:20px auto;">
+            <form id="comment-form" class="mb-4">
+                <input type="hidden" name="article_id" id="article_id">
+                <textarea name="content" id="comment-content" class="form-control" required rows="3" placeholder="<?= lang('lang_view_article_write_a_comment'); ?>"></textarea>
+                <button type="submit" class="btn btn-primary mt-2"><?= lang ('lang_view_article_comment_send');?></button>
+                <div id="comment-feedback" class="mt-2 text-success d-none"><?= lang ('lang_view_article_comment_sent');?></div>
+            </form>
+        </div>
+   
+
+
+
+
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
@@ -52,6 +74,8 @@ function loadArticle() {
                 document.getElementById('article-title').textContent = data.error;
                 return;
             }
+
+
             // Icon categorie
             let iconHtml = '';
             if (data.icon) {
@@ -62,14 +86,75 @@ function loadArticle() {
                 }
             }
             document.getElementById('article-title').innerHTML = iconHtml + escapeHtml(data.title);
+            
+            // bookmark-btn
+
+            let bookmarkHtmtl = '';
+
+            if (data.is_bookmarked) {
+                bookmarkHtml = `<img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-full.svg" alt="Bookmark" class="bookmark-icon" style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(${data.id}, this)" title="<?=lang('lang_favorites_remove')?>" >`;
+            } else {
+                bookmarkHtml = `<img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-empty.svg" alt="Bookmark" class="bookmark-icon" style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(${data.id}, this)" title="<?=lang('lang_favorites_add')?>" >`;
+            }
+
+            document.getElementById('bookmark-img').innerHTML = bookmarkHtml;
 
             document.getElementById('article-meta').innerHTML =
-                `<em>Autor: ${escapeHtml(data.username)} | Categorie: ${escapeHtml(data.category)} | Publicat: ${escapeHtml(data.created_at)} | Actualizat: ${escapeHtml(data.updated_at)}</em>`;
+                `<em><?= lang ('lang_view_article_author');?>: ${escapeHtml(data.username)} | <?= lang('lang_view_article_category');?>: ${escapeHtml(data.category)} | <?= lang('lang_view_article_published');?>: ${escapeHtml(data.created_at)} | <?= lang('lang_view_article_updated');?>: ${escapeHtml(data.updated_at)}</em>`;
+
+            // Afișează tagurile
+            if (data.tags && data.tags.length > 0) {
+                const tagsHtml = data.tags.map(tag => 
+                    `<a href="articles_by_tag.php?tag=${encodeURIComponent(tag)}" class="tag-badge">${escapeHtml(tag)}</a>`
+                ).join('');
+                document.getElementById('article-tags').innerHTML = `<strong>Tags:</strong> ${tagsHtml}`;
+            } else {
+                document.getElementById('article-tags').innerHTML = '';
+            }
+
+   
+            // HTML cu stele
+            const articleStars = `
+                    <div class="article-rating" data-article-id="${data.id}">
+                        <span class="star" data-value="1">&#9733;</span>
+                        <span class="star" data-value="2">&#9733;</span>
+                        <span class="star" data-value="3">&#9733;</span>
+                        <span class="star" data-value="4">&#9733;</span>
+                        <span class="star" data-value="5">&#9733;</span>
+                        <span id="rating-average" style="margin-left:10px; color:#048eb1; font-size:0.9rem;"></span>
+                    </div>
+                `;
+            document.getElementById('article-header-flex').innerHTML = articleStars;
+
+            // Inițializează stelele după ce le-ai inserat
+            initRatingStars(data.id);
+
+        
+
+            
 
             document.getElementById('article-content').innerHTML = data.content;
             
+            // useful-feedback
+
+            const usefulHtml = `
+                        <span style="margin-right:10px;"><?= lang('lang_view_article_useful');?></span>
+                        <button id="btn-useful-yes" class="btn-useful-grey" type="button"><?= lang('lang_view_article_useful_yes');?></button>
+                        <button id="btn-useful-no" class="btn-useful-grey" type="button"><?= lang('lang_view_article_useful_no');?></button>
+                        <span id="useful-feedback" style="margin-left:10px; color:#048eb1; font-size:0.9rem;"></span>           
+            `;
+
+            document.getElementById('article-useful').innerHTML = usefulHtml;
+            
+            
+            // init useful-feedback
+
+            initUsefulFeedback(data.id);
+
+
+
             //debug
-            console.log(data.content);
+            //console.log(data.content);
 
             // Vote buttons articol
             document.getElementById('article-votes').innerHTML = `
@@ -88,7 +173,7 @@ function loadArticle() {
             if (data.comments && data.comments.length) {
                 data.comments.forEach(function(c) {
                     commentsHtml += `
-                    <div id="comment-${c.id}" class="comment border rounded p-2 mb-2">
+                    <div id="comment-${c.id}" class="comment border rounded p-2 mb-2" style="background-color:rgb(250, 250, 250);">
                         <strong>${escapeHtml(c.username)}</strong>
                         <small class="text-muted">${escapeHtml(c.created_at)}</small>
                         <p class="mb-0" style="padding: 20px;">${escapeHtml(c.content).replace(/\n/g, '<br>')}</p>
@@ -113,7 +198,7 @@ function loadArticle() {
                     </div>`;
                 });
             } else {
-                commentsHtml = '<p>Nu există comentarii aprobate.</p>';
+                commentsHtml = '<p><?= lang('lang_view_article_no_comments');?></p>';
             }
             document.getElementById('comments-list').innerHTML = commentsHtml;
             // Scroll la secțiunea de comentarii dacă există hash în URL
@@ -123,6 +208,9 @@ function loadArticle() {
                 commentsDiv.scrollIntoView({behavior: "smooth"});
             }
         }
+
+
+        
     });
 }
 
@@ -180,6 +268,145 @@ document.getElementById('comment-form').onsubmit = function(e) {
     });
     return false;
 };
+
+
+// init rating stars
+
+function initRatingStars(articleId) {
+    const stars = document.querySelectorAll('.article-rating .star');
+    const ratingMsg = document.getElementById('rating-message');
+    const ratingAvg = document.getElementById('rating-average');
+    const articleRatingDiv = document.querySelector('.article-rating');
+
+
+    let userRating = 0;
+    
+    if (!articleRatingDiv) return; // safety
+
+    function highlightStars(val) {
+      stars.forEach(star => {
+        star.classList.toggle('selected', parseInt(star.dataset.value) <= val);
+      });
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('mouseenter', function() {
+        highlightStars(this.dataset.value);
+        stars.forEach(s => s.classList.toggle('hovered', parseInt(s.dataset.value) <= this.dataset.value));
+      });
+      star.addEventListener('mouseleave', function() {
+        highlightStars(userRating);
+        stars.forEach(s => s.classList.remove('hovered'));
+      });
+      star.addEventListener('click', function() {
+        userRating = this.dataset.value;
+        highlightStars(userRating);
+        sendRating(userRating, articleId, ratingAvg, ratingMsg);
+      });
+    });
+
+    getAverageRating(articleId, ratingAvg, stars, function(val) { userRating = val; });
+}
+
+
+// Trimite ratingul la backend
+function sendRating(val, articleId, ratingAvg, ratingMsg) {
+  fetch('api/bkd_article_rating.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: `article_id=${encodeURIComponent(articleId)}&stars=${encodeURIComponent(val)}&csrf_token=${encodeURIComponent(window.CSRF_TOKEN)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      if (ratingMsg) ratingMsg.textContent = "<?= lang('lang_article_view_rating_thanks'); ?>";
+      getAverageRating(articleId, ratingAvg, document.querySelectorAll('.article-rating .star'));
+    } else {
+      if (ratingMsg) ratingMsg.textContent = data.error || "Eroare la rating!";
+      if (ratingMsg) ratingMsg.style.color = "red";
+    }
+  });
+}
+
+// Afișează ratingul mediu
+function getAverageRating(articleId, ratingAvg, stars, setUserRatingCb) {
+  fetch('api/bkd_article_rating.php?article_id=' + encodeURIComponent(articleId))
+    .then(res => res.json())
+    .then(data => {
+      if (data.average) {
+        if (ratingAvg) ratingAvg.textContent = `(${data.average.toFixed(2)} / 5, ${data.count} <?= lang('lang_view_article_rating_votes');?>)`;
+        if (stars) {
+          stars.forEach(star => {
+            star.classList.toggle('selected', parseInt(star.dataset.value) <= (data.user_rating || 0));
+          });
+        }
+        if (setUserRatingCb) setUserRatingCb(data.user_rating || 0);
+      } else {
+        if (ratingAvg) ratingAvg.textContent = "<?= lang('lang_view_article_no_ratings')?>";
+      }
+    });
+}
+
+function initUsefulFeedback(articleId) {
+    const btnYes = document.getElementById('btn-useful-yes');
+    const btnNo = document.getElementById('btn-useful-no');
+    const feedback = document.getElementById('useful-feedback');
+
+    if (!btnYes || !btnNo) return;
+
+    btnYes.onclick = function() { sendUsefulFeedback(articleId, 1, feedback); };
+    btnNo.onclick = function() { sendUsefulFeedback(articleId, 0, feedback); };
+
+    getUsefulStats(articleId, feedback);
+}
+
+function sendUsefulFeedback(articleId, wasHelpful, feedback) {
+    fetch('api/bkd_article_rating.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `article_id=${encodeURIComponent(articleId)}&was_helpful=${encodeURIComponent(wasHelpful)}&csrf_token=${encodeURIComponent(window.CSRF_TOKEN)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            feedback.textContent = "<?= lang('lang_view_article_rating_thanks');?>";
+            getUsefulStats(articleId, feedback);
+        } else {
+            feedback.textContent = data.error || "Eroare la feedback!";
+            feedback.style.color = "red";
+        }
+    });
+}
+
+function getUsefulStats(articleId, feedback) {
+    fetch('api/bkd_article_rating.php?article_id=' + encodeURIComponent(articleId) + '&useful_stats=1')
+        .then(res => res.json())
+        .then(data => {
+            if (data.useful_percent !== undefined) {
+                feedback.textContent = `<?= lang('lang_view_article_util');?>: ${data.useful_percent}% (${data.useful_yes} <?= lang('lang_view_article_from');?> ${data.useful_total} <?php lang('lang_view_article_rating_votes');?>)`;
+            }
+        });
+}
+
+function toggleBookmark(articleId, img) {
+    fetch('api/bkd_toggle_bookmark.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'article_id=' + encodeURIComponent(articleId)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            if (data.bookmarked) {
+                img.src = '<?=APP_URL?>assets/icons/icon-bookmark-full.svg';
+                img.title = "Elimină din favorite";
+            } else {
+                img.src = '<?=APP_URL?>assets/icons/icon-bookmark-empty.svg';
+                img.title = "Adaugă la favorite";
+            }
+        }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', loadArticle);
 </script>

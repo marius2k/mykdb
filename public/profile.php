@@ -6,7 +6,7 @@ if (!is_logged_in()) {
     exit;
 }
 
-$ops=['modify_own_user'];
+$ops=['modify_own_data'];
 
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
     

@@ -100,3 +100,4 @@ try {
 //$redirect = !empty($_POST['redirect_to']) ? $_POST['redirect_to'] : ('view_comment.php?id=' . $commentId);
 header('Location: ' . $redirect);
 exit;
+?>

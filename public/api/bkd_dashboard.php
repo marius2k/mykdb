@@ -43,6 +43,11 @@ $data = [
     'commentsStats'    => getCommentsByLastDays($daysCommentsStats),
 ];
 
+//error_log('Pending comments: ' . print_r(getPendingComments(), true));
+
+//error_log('Pending articles: ' . print_r(getPendingArticles(), true));
+
+
 // Configurație modulară pe roluri
 $dashboardConfig = [
     'superadmin' => [
@@ -54,7 +59,7 @@ $dashboardConfig = [
         'right' => ['topViewed', 'topLiked', 'topCommented', 'articlesChart', 'commentsChart']
     ],
     'moderator' => [
-        'left'  => ['pendingArticles', 'pendingComments', 'notifications'],
+        'left'  => ['drafts','pendingArticles', 'pendingComments', 'notifications'],
         'right' => ['topViewed', 'topLiked', 'topCommented', 'articlesChart', 'commentsChart']
     ],
     'editor' => [

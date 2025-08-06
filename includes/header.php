@@ -31,7 +31,7 @@ if (isset($_SESSION['user']) && !isset($_SESSION['settings'])) {
 
     //$_SESSION['user']['id']=2;
     
-    if ($_SESSION['user']['role'] == 'guest') {
+    if (isset($_SESSION['user']) && ($_SESSION['user']['role'] ?? 'guest') == 'guest') {
        
 
         // Set default settings for guest user
@@ -148,7 +148,7 @@ if ($userId) {
         <div style="float: right; padding: 5px;">
 
             <!-- User Dropdown -->
-            <?php if (($_SESSION['user']['role'] <> 'guest') || !isset($_SESSION['user'])) { ?>
+            <?php if (isset($_SESSION['user']) && ($_SESSION['user']['role'] ?? 'guest') !== 'guest') { ?>
                             
                             <!-- Notifications --> 
                             
@@ -163,8 +163,8 @@ if ($userId) {
                            
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                                 <div class="me-2 d-none d-md-block text-end">
-                                    <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'Guest') ?></div>
-                                    <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role_label'] ?? 'Guest') ?></div>
+                                    <div style="color: white; font-size: 15px;"><?= htmlspecialchars(($_SESSION['user']['first_name'] ?? '') . " " . ($_SESSION['user']['last_name'] ?? '')) ?: 'Guest' ?></div>
+                                    <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role_label'] ?? $_SESSION['user']['role'] ?? 'Guest') ?></div>
                                 </div>
                                 <?php
                                        if (isset($_SESSION['user']['profile_picture']) && $_SESSION['user']['profile_picture'] != '') {
@@ -181,7 +181,7 @@ if ($userId) {
                             <ul class="dropdown-menu dropdown-menu-end">
                                     <?php
                                         //echo "header.php: User Role;" . $_SESSION['user']['role'];
-                                        $aMenu = generateAvatarMenu($_SESSION['user']['id']);
+                                        $aMenu = generateAvatarMenu($_SESSION['user']['id'] ?? 0);
                                         echo $aMenu;
                                     ?>
                             </ul>
@@ -192,7 +192,7 @@ if ($userId) {
 
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                                         <div class="me-2 d-none d-md-block text-end">
-                                            <div style="color: white; font-size: 15px;"><?= htmlspecialchars($_SESSION['user']['first_name']. " ".$_SESSION['user']['last_name']  ?? 'Guest') ?></div>
+                                            <div style="color: white; font-size: 15px;"><?= htmlspecialchars(($_SESSION['user']['first_name'] ?? '') . " " . ($_SESSION['user']['last_name'] ?? '') ?: 'Guest') ?></div>
                                             <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role_label'] ?? 'Guest') ?></div>
                                         </div>
                                 <?php
@@ -210,7 +210,7 @@ if ($userId) {
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <?php
                                         //echo "header.php: User Role;" . $_SESSION['user']['role'];
-                                        $aMenu = generateAvatarMenu($_SESSION['user']['id']);
+                                        $aMenu = generateAvatarMenu($_SESSION['user']['id'] ?? 0);
                                         echo $aMenu;
                                     ?>
                                 </ul>
@@ -257,7 +257,7 @@ if ($userId) {
 <main style="padding: 20px;">
 
 
-<?php if (($_SESSION['user']['role']=== 'guest') || !isset($_SESSION['user'])) : ?>
+<?php if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'guest') === 'guest') : ?>
         <!-- Overlay pentru fundal -->
         <div id="modalOverlayRegister" style="display:none;"></div>
 
