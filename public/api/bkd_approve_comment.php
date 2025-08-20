@@ -22,6 +22,12 @@ if (!$comment) {
     exit;
 }
 
+// get article title for gamification
+$articleTitle = $db->fetchSingle("SELECT title FROM articles WHERE id = ?", [$comment['article_id']]);
+
 $db->query("UPDATE article_comments SET status = 'approved' WHERE id = ?", [$commentId]);
+
+// add gamification points
+awardCommentAdded($_SESSION['user']['id'], $commentId, $articleTitle);
 echo json_encode(['success' => true]);
 ?>

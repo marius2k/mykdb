@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Verifică statusul curent al comentariului
-    $comment = $db->fetchSingle("SELECT status, user_id FROM article_comments WHERE id = ?", [$commentId]);
+    $comment = $db->fetchSingle("SELECT status, user_id, article_id FROM article_comments WHERE id = ?", [$commentId]);
     if (!$comment) {
         http_response_code(404);
         echo json_encode(['error' => 'Comentariu inexistent']);
@@ -128,6 +128,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         $db->query("UPDATE article_comments SET status = 'approved' WHERE id = ?", [$commentId]);
+
+        // get article title 
+        $articleData = $db->fetchSingle("SELECT title FROM articles WHERE id = ?", [$comment['article_id']]);
+        $articleTitle = $articleData ? $articleData['title'] : 'Unknown Article';
+        
+        // Award points for comment approval (only if gamification helpers are available)
+        awardCommentAdded($comment['user_id'], $commentId, $articleTitle);
+        
+
         sendNotification($comment['user_id'], 'info', 'Your comment has been approved');
         sendNotificationToRole('admin', 'info', 'A comment has been approved');
         logActivity($_SESSION['user']['id'], 'approve_comment', 'User '.$_SESSION['user']['username'].' approved a comment');

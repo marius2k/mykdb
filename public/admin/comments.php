@@ -25,8 +25,23 @@ if ($lang === 'en') $lang = 'en-GB';
 ?>
 
 <script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
-<link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<div class="breadcrumb-container" style="width: 100%; margin-top: 20px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <br>
+            <li class="breadcrumb-item">Admin</li>
+            <li class="breadcrumb-item breadcrumb-separator">
+                <img src="<?=APP_URL?>assets/icons/icon-play-arrow.svg" class="breadcrumb-arrow" alt="→">
+                <?= lang('lang_com_comments') ?>
+            </li>
+        </ol>
+    </nav>
+</div>
+<hr style="height: 1px; border: none; background-color: gray; margin: 0; width: calc(100vw - 20px); margin-left: calc(-50vw + 50% + 10px);">
+<br>
 
 <div class="category-container">
     <div class="category-box-1" style="width: 100%;">
@@ -92,7 +107,7 @@ $(document).ready(function() {
         ],
         order: [[0, 'desc']],
         language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
         }
     });
     window.reloadCommentsTable = () => table.ajax.reload(null, false);

@@ -1,4 +1,4 @@
-/* 1. Variabile și stiluri de bază */
+/* 1. Variabile și stiluri de bază - Updated for breadcrumb fixes */
 :root {
     --primary-color: #48bec7;
     --primary-dark: #31a3a3;
@@ -279,10 +279,66 @@ a:hover {
     background-color: transparent;
     padding: 0;
     margin-bottom: 1rem;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
 }
 
 .breadcrumb-item.active {
     color: var(--secondary-color);
+}
+
+/* Force Bootstrap breadcrumb override */
+.breadcrumb, 
+ol.breadcrumb {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Custom breadcrumb styling for admin pages */
+.custom-breadcrumb .breadcrumb {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+}
+
+.custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 6px solid #495057 !important;
+    border-top: 4px solid transparent !important;
+    border-bottom: 4px solid transparent !important;
+    margin: 0 10px !important;
+    vertical-align: baseline !important;
+    position: relative !important;
+    top: 1px !important;
+    float: none !important;
+    padding-right: 0 !important;
+}
+
+/* Custom breadcrumb with arrow separator */
+.breadcrumb-separator .breadcrumb-arrow {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+    opacity: 0.6;
+    filter: brightness(0) saturate(100%) invert(43%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(89%);
+}
+
+/* Override default Bootstrap breadcrumb separator */
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "" !important;
 }
 
 /* Badges */
@@ -1227,6 +1283,8 @@ button[disabled],
     display: flex;
     gap: 10px;
     padding: 5px;
+    position: relative;
+    z-index: 1;
 }
 
 .settings-bar-text{
@@ -1246,6 +1304,8 @@ button[disabled],
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 14px;
+    position: relative;
+    z-index: 1;
 }
 
 
@@ -1358,34 +1418,182 @@ button[disabled],
 
 /* Add a black background color to the top navigation */
 .topnav {
-    
     background-color: #1697ad;
     /*background-color: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238));*/
-    overflow: hidden;
+    overflow: visible;
+    position: relative;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
  }
+
+  /* Main navigation container - higher z-index for dropdowns */
+  .main-nav-container {
+    position: relative;
+    z-index: 10000;
+  }
   
   /* Style the links inside the navigation bar */
   .topnav a {
-    float: left;
     color: #f2f2f2;
     text-align: center;   
     text-decoration: none;
     font-size: 17px;
     padding: 5px 8px;
+    display: inline-block;
   }
   
   /* Change the color of links on hover */
   .topnav a:hover {
-    background-color: #36b1b9;
-    color: rgb(8, 8, 8);
+    background-color: #1ea6be;
+    color: rgb(255, 255, 255);
   }
   
   /* Add a color to the active/current link */
   .topnav a.active {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #f3f8f3;
+    background-color: #f8f9fc;
     color: rgb(0, 0, 0);
+  }
+
+  /* Admin dropdown styles */
+  .topnav .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .topnav .dropdown .dropdown-toggle {
+    color: #f2f2f2;
+    text-align: center;   
+    text-decoration: none;
+    font-size: 17px;
+    padding: 5px 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: block;
+  }
+
+  .topnav .dropdown .dropdown-toggle:hover {
+    background-color: #1ea6be;
+    color: rgb(255, 255, 255);
+  }
+
+  .topnav .dropdown .dropdown-toggle.active {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #f8f9fc;
+    color: rgb(0, 0, 0);
+  }
+
+  .topnav .dropdown .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100000;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 0;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+    display: none;
+  }
+
+  .topnav .dropdown:hover .dropdown-menu,
+  .topnav .dropdown .dropdown-menu.show {
+    display: block;
+  }
+
+  .topnav .dropdown .dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+  }
+
+  .topnav .dropdown .dropdown-item:hover {
+    background-color: #8fd1cd;
+    color: #1e2125;
+  }
+
+  /* Submenu styles for nested dropdowns */
+  .topnav .dropdown .dropdown-submenu {
+    position: relative;
+  }
+
+  .topnav .dropdown .dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+    border-radius: 0.375rem;
+    display: none;
+    position: absolute;
+  }
+
+  /* Show theme submenu only when hovering over theme item */
+  .topnav .dropdown .dropdown-submenu:hover .theme-submenu {
+    display: block;
+  }
+
+  /* Show language submenu only when hovering over language item */
+  .topnav .dropdown .dropdown-submenu:hover .language-submenu {
+    display: block;
+  }
+
+  /* Show categories submenu only when hovering over categories item */
+  .topnav .dropdown .dropdown-submenu:hover .categories-submenu {
+    display: block;
+  }
+
+  /* Show articles submenu only when hovering over articles item */
+  .topnav .dropdown .dropdown-submenu:hover .articles-submenu {
+    display: block;
+  }
+
+  /* Show tags submenu only when hovering over tags item */
+  .topnav .dropdown .dropdown-submenu:hover .tags-submenu {
+    display: block;
+  }
+
+  .topnav .dropdown .dropdown-submenu > .dropdown-toggle::after {
+    display: none;
+  }
+
+  .submenu-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .theme-submenu {
+    min-width: 180px;
+  }
+
+  .language-submenu {
+    min-width: 180px;
+  }
+
+  .categories-submenu {
+    min-width: 180px;
+  }
+
+  .articles-submenu {
+    min-width: 180px;
+  }
+
+  .tags-submenu {
+    min-width: 180px;
   }
 
   .profile-form input {
@@ -3193,4 +3401,129 @@ ul.top-articles .li-icon {
 
 .article-card .article-tags {
     margin-bottom: 10px;
+}
+
+/* ========================================
+   GAMIFICATION STYLES
+   ======================================== */
+
+/* Header badges */
+.badge-mini {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border-radius: 50%;
+    margin-right: 3px;
+    font-size: 9px;
+    text-align: center;
+    line-height: 18px;
+    color: #333;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.badge-mini:hover {
+    transform: scale(1.2);
+}
+
+/* Gamification info in header */
+.gamification-header {
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.gamification-level {
+    color: #ffd700;
+}
+
+.gamification-points {
+    color: #87ceeb;
+}
+
+/* Badge variations by type */
+.badge-mini.bronze {
+    background: linear-gradient(45deg, #cd7f32, #e6a85c);
+}
+
+.badge-mini.silver {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8);
+}
+
+.badge-mini.gold {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+}
+
+.badge-mini.platinum {
+    background: linear-gradient(45deg, #e5e4e2, #f8f8ff);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .badge-mini {
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+        line-height: 16px;
+        margin-right: 2px;
+    }
+    
+    .gamification-header {
+        font-size: 10px;
+    }
+}
+
+/* ========================================
+   DROPDOWN Z-INDEX FIX
+   ======================================== */
+
+/* Fix dropdown menu appearing behind navigation */
+.dropdown-menu {
+    z-index: 10001 !important;
+}
+
+/* Ensure dropdown parent also has correct z-index */
+.dropdown {
+    z-index: 10001 !important;
+}
+
+/* Fix for Bootstrap dropdown container */
+.nav-item.dropdown {
+    z-index: 10001 !important;
+}
+
+/* ========================================
+   HEADER DROPDOWN STYLING
+   ======================================== */
+
+/* Style header dropdown menu to match topnav dropdown style */
+.app-header .dropdown-menu {
+    background-color: #ffffff !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+    padding: 5px 0;
+}
+
+.app-header .dropdown-menu .dropdown-item {
+    color: #212529 !important;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    display: block;
+    font-weight: 400;
+    white-space: nowrap;
+    background-color: transparent;
+    border: none;
+}
+
+.app-header .dropdown-menu .dropdown-item:hover {
+    background-color: #8fd1cd !important;
+    color: #1e2125 !important;
+}
+
+.app-header .dropdown-menu .dropdown-item:focus {
+    background-color: #8fd1cd !important;
+    color: #1e2125 !important;
 }

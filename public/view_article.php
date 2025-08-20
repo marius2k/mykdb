@@ -2,6 +2,8 @@
 include_once '../config/bootstrap.php';
 include '../includes/header.php'; 
 
+// Get article ID from URL parameter
+$articleId = (int)($_GET['id'] ?? 0);
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -409,6 +411,48 @@ function toggleBookmark(articleId, img) {
 }
 
 document.addEventListener('DOMContentLoaded', loadArticle);
+
+
 </script>
+
+<?php
+// JavaScript pentru tracking citirea articolului
+if (isset($_SESSION['user']['id'])) {
+    echo '<script>
+    // Tracking pentru citirea completă a articolului
+    let readStartTime = Date.now();
+    let hasAwarded = false;
+    
+    // Verifică dacă utilizatorul a citit cel puțin 30 de secunde
+    setTimeout(function() {
+        if (!hasAwarded) {
+            fetch("api/bkd_award_reading_points.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: "article_id=' . $articleId . '&csrf_token=' . $_SESSION['csrf_token'] . '"
+            });
+            hasAwarded = true;
+        }
+    }, 30000); // 30 secunde
+    
+    // Sau când utilizatorul ajunge la sfârșitul articolului
+    window.addEventListener("scroll", function() {
+        if (!hasAwarded && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+            fetch("api/bkd_award_reading_points.php", {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: "article_id=' . $articleId . '&csrf_token=' . $_SESSION['csrf_token'] . '"
+            });
+            hasAwarded = true;
+        }
+    });
+    </script>';
+}
+?>
+
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

@@ -59,6 +59,9 @@ return [
     'lang_select_romanian' => 'Romanian',
     'lang_select_language' => 'Language',
     'lang_select_theme' => 'Theme',
+    'lang_theme_light' => 'Light',
+    'lang_theme_dark' => 'Dark',
+    'lang_theme_gray' => 'Elegant Gray',
     'lang_profile' => 'My Profile',
     'lang_article_top_view' => 'Top Viewed Articles',
     'lang_article_top_like' => 'Top Liked Articles',
@@ -277,8 +280,6 @@ return [
     'view_dashboard' => 'view own dashboard',
     'view_comment' => 'view a comment',
     'lang_publish_at' => 'Scheduled for publish',
-
-    // Articles by tag translations
     'lang_tag_required_for_filter' => 'Tag required for filtering.',
     'lang_back_to_previous_page' => 'Back to previous page',
     'lang_articles_with_tag' => 'Articles with tag:',
@@ -332,9 +333,24 @@ return [
     'lang_no_data' => 'No data available',
     'lang_never_used' => 'Never Used',
     'lang_error_loading_articles' => 'Error loading articles.',
-    
-    // Additional tags fields
     'lang_created_at' => 'Created at',
-    'lang_updated_at' => 'Updated at'
+    'lang_updated_at' => 'Updated at',
+    'lang_no_description' => 'No description',
+
+    // Gamification translations
+    'lang_gamification_points' => 'Points',
+    'lang_gamification_level' => 'Level',
+    'lang_gamification_badges' => 'Badges',
+    'lang_gamification_xp' => 'XP',
+    'lang_gamification_rookie' => 'Rookie',
+    'lang_gamification_explorer' => 'Explorer',
+    'lang_gamification_contributor' => 'Contributor',
+    'lang_gamification_expert' => 'Expert',
+    'lang_gamification_master' => 'Master',
+    'lang_gamification_legend' => 'Legend',
+    'lang_gamification_badges_earned' => 'Badges Earned',
+    'lang_gamification_no_badges' => 'No badges yet',
+    'lang_gamification_view_profile' => 'View full profile',
+    'lang_gamification_next_level' => 'to next level'
 
 ];

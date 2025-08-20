@@ -36,7 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         $userSettings = new UserSettings($db);
         $_SESSION['settings'] = $userSettings->getAll($_SESSION['user']['id']);
+        
+        // Log the successful login
         logActivity($user['id'], 'login_success', 'User logged in ' . $username);
+
+        // add points for login
+        $todayLogin = $db->fetchSingle("SELECT id FROM points_history WHERE user_id = ? AND action = 'daily_login' AND DATE(created_at) = CURDATE()",[$userId]);   
+        if (!$todayLogin) {
+            awardDailyLogin($userId);
+        }
+
+
+
         echo json_encode(['success' => true]);
         exit;
     } elseif ($userok && ($userok['status'] == 'disabled' || $userok['status'] == 'pending')) {

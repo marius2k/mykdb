@@ -22,8 +22,23 @@ if ($lang === 'en') $lang = 'en-GB';
 
 <script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
 
-<link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<div class="breadcrumb-container" style="width: 100%; margin-top: 20px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <br>
+            <li class="breadcrumb-item">Admin</li>
+            <li class="breadcrumb-item breadcrumb-separator">
+                <img src="<?=APP_URL?>assets/icons/icon-play-arrow.svg" class="breadcrumb-arrow" alt="→">
+                <?= lang('lang_tags') ?> - DataTable
+            </li>
+        </ol>
+    </nav>
+</div>
+<hr style="height: 1px; border: none; background-color: gray; margin: 0; width: calc(100vw - 20px); margin-left: calc(-50vw + 50% + 10px);">
+<br>
 
 <div class="category-container">
     <div class="category-box-2" style="width: fit-content">
@@ -61,99 +76,50 @@ if ($lang === 'en') $lang = 'en-GB';
     </div>
 </div>
 
+<!-- Overlay pentru fundal -->
+<div id="modalOverlayCategory" style="display:none;"></div>
+
 <!-- Modal Adăugare/Editare Tag -->
-<div id="modal-tag" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-            <h3 id="modal-tag-title"><?= lang('lang_add_tag') ?></h3>
-            <span class="close" onclick="closeTagModal()">&times;</span>
+<div id="modal-tag" style="display:none;">
+    <form id="tag-form">
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <div class="modal-header-category">
+            <span class="modal-title-category" id="modal-tag-title"><?= lang('lang_add_tag') ?></span>
+            <span class="modal-close-category" onclick="closeTagModal()">&times;</span>
         </div>
-        <div class="modal-body">
-            <form id="tag-form">
-                <div class="form-group">
-                    <label for="tag-name"><?= lang('lang_tag_name') ?>:</label>
-                    <input type="text" id="tag-name" name="name" required style="width: 100%; padding: 8px; margin: 5px 0;">
-                </div>
-                <div class="form-group">
-                    <label for="tag-description"><?= lang('lang_tag_description') ?>:</label>
-                    <textarea id="tag-description" name="description" style="width: 100%; padding: 8px; margin: 5px 0; height: 80px;"></textarea>
-                </div>
-                <div class="modal-footer" style="text-align: right; margin-top: 20px;">
-                    <button type="button" onclick="closeTagModal()" class="btn btn-outline-grey"><?= lang('lang_cancel') ?></button>
-                    <button type="submit" class="btn btn-outline-grey"><?= lang('lang_save') ?></button>
-                </div>
-            </form>
+        <div class="modal-content-category">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <label><?= lang('lang_tag_name') ?></label>
+                <input type="text" id="tag-name" name="name" required style="width: 220px; min-height: 32px; height: 32px; box-sizing: border-box; border-radius: 7px; border: 1px solid #bbb; font-size: 1em; background: #fafbfc;">
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <label><?= lang('lang_tag_description') ?></label>
+                <input type="text" id="tag-description" name="description" style="width: 220px; min-height: 32px; height: 32px; box-sizing: border-box; border-radius: 7px; border: 1px solid #bbb; font-size: 1em; background: #fafbfc;">
+            </div>
         </div>
-    </div>
+        <div class="modal-footer-category">
+            <button class="modal-btn-category cancel" type="button" onclick="closeTagModal()"><?= lang('lang_btn_cancel') ?></button>
+            <button class="modal-btn-category primary" type="submit"><?= lang('lang_btn_save') ?></button>
+        </div>
+    </form>
 </div>
 
 <style>
-.modal {
-    display: none;
+#modal-tag {
     position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 0;
-    border: 1px solid #888;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    max-width: 500px;
-    width: 90%;
-}
-
-.modal-header {
-    padding: 15px 20px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.modal-footer {
-    padding: 15px 20px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-    text-align: right;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.btn {
-    padding: 8px 16px;
-    margin: 0 5px;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
+    left: 50%; 
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 18px;
+    min-width: 450px;
+    max-width: 100vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    z-index: 9999;
+    font-family: inherit;
+    animation: modalPop 0.18s cubic-bezier(.4,1.6,.6,1) 1;
+    display: none;
+    flex-direction: column;
 }
 </style>
 
@@ -212,7 +178,7 @@ $(document).ready(function() {
         ],
         order: [[3, 'desc']], // Sortează după usage_count descendent
         language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
         },
         pageLength: 25,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Toate"]]
@@ -234,6 +200,7 @@ function editTag(id) {
                 document.getElementById('tag-name').value = data.tag.name;
                 document.getElementById('tag-description').value = data.tag.description || '';
                 document.getElementById('modal-tag-title').textContent = '<?= lang('lang_edit_tag') ?>';
+                document.getElementById('modalOverlayCategory').style.display = 'block';
                 document.getElementById('modal-tag').style.display = 'block';
                 document.getElementById('tag-name').focus();
             } else {
@@ -288,12 +255,14 @@ function openAddTagModal() {
     editingTagId = null;
     document.getElementById('tag-form').reset();
     document.getElementById('modal-tag-title').textContent = '<?= lang('lang_add_tag') ?>';
+    document.getElementById('modalOverlayCategory').style.display = 'block';
     document.getElementById('modal-tag').style.display = 'block';
     document.getElementById('tag-name').focus();
 }
 
 function closeTagModal() {
     document.getElementById('modal-tag').style.display = 'none';
+    document.getElementById('modalOverlayCategory').style.display = 'none';
     editingTagId = null;
     document.getElementById('tag-form').reset();
 }
@@ -398,8 +367,9 @@ function displayStatsModal(stats) {
 
 // Click pe backdrop pentru închiderea modalului
 window.onclick = function(event) {
-    const tagModal = document.getElementById('modal-tag');
-    if (event.target === tagModal) {
+    const overlay = document.getElementById('modalOverlayCategory');
+    
+    if (event.target === overlay) {
         closeTagModal();
     }
 }

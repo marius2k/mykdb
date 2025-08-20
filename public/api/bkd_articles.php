@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         logActivity($user_id, 'create_article', 'User '. $_SESSION['user']['username'].' created the article:'. $title);
         sendNotificationToRole('moderator', 'info','Article <a href="view_article.php?id='. $aid.'">'. $title.'</a> has been submitted for approval.');
         sendNotificationToRole('admin', 'info', 'Article <a href="view_article.php?id='. $aid.'">'. $title.'</a> has been submitted for approval.');
-
+        //awardArticlePublished($user_id, $aid, $title);
         echo json_encode(['success' => true]);
         exit;
     }
@@ -210,8 +210,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db->query("UPDATE articles SET publish_at = ? WHERE id = ?", [$publishAt ?: null, $articleId]);
         $article = $db->fetchSingle("SELECT user_id, title FROM articles WHERE id = ?", [$articleId]);
         sendNotification($article['user_id'], 'Article Publication','Your article <a href="view_article.php?id='.$articleId.'">'. truncateText($article['title'],30). '</a> is published at ' .$publishAt,'info');
+        awardArticlePublished($_SESSION['user']['id'], $articleId, $article['title']);
         echo json_encode(['success' => true]);
-        exit;
+        exit;   
     }
 
     if ($action === 'approve') {
@@ -219,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         logActivity($_SESSION['user']['id'], 'article_approved', 'User ' .$_SESSION['user']['username'] .' approved an article');
         $article = $db->fetchSingle("SELECT user_id, title FROM articles WHERE id = ?", [$articleId]);
         sendNotification($article['user_id'], 'Article Approved','Your article <a href="article.php?id='.$articleId.'">'. truncateText($article['title'],30). '</a> has been approved.','info');
+        awardArticlePublished($_SESSION['user']['id'], $articleId, $article['title']);
         echo json_encode(['success' => true]);
         exit;
     }

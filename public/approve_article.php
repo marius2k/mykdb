@@ -37,6 +37,9 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             if ($article) {
                 // Trimite notificare către autorul articolului
                 sendNotification($article['user_id'], 'Article Approved', 'Your article <a href="view_article.php?id=' . $articleId . '">' . truncateText($article['title'], 30) . '</a> has been approved.', 'info');
+
+                // add points for article approval
+                awardArticlePublished($article['user_id'], $articleId, $article['title']);
             }
             
             // Aprobarea a avut succes

@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 //error_reporting(E_ALL);
 
 
-// start treatment of guest user
+// start treatment of g            <div class="settings-bar" style="padding-right: 10px; padding-top: 5px;">est user
 
 
 if (!isset($_SESSION['user'])) {
@@ -24,6 +24,55 @@ if (!isset($_SESSION['user'])) {
 
 
 $db = new Database();
+
+// Load gamification data for logged-in users
+$userGamificationData = null;
+if (isset($_SESSION['user']) && ($_SESSION['user']['role'] ?? 'guest') !== 'guest') {
+    require_once APP_ROOT . 'classes/gamification.php';
+    require_once APP_ROOT . 'includes/gamification_helpers.php';
+    
+    $gamification = new Gamification($db);
+    $userId = $_SESSION['user']['id'];
+    
+    // Get user points and level
+    $userPointsData = $gamification->getUserPoints($userId);
+    $userPoints = $userPointsData['total_points'] ?? 0;
+    $userLevel = $userPointsData['level'] ?? 'Rookie';
+    
+    // Get user badges
+    $userBadges = $gamification->getUserBadges($userId);
+    
+    // Calculate progress to next level (simplified for now)
+    $levelThresholds = [
+        'Rookie' => 0,
+        'Explorer' => 100,
+        'Contributor' => 300,
+        'Expert' => 700,
+        'Master' => 1500,
+        'Legend' => 3000
+    ];
+    
+    $currentLevelThreshold = $levelThresholds[$userLevel] ?? 0;
+    $nextLevelKey = array_search($userLevel, array_keys($levelThresholds)) + 1;
+    $nextLevelExists = $nextLevelKey < count($levelThresholds);
+    $pointsToNextLevel = 0;
+    
+    if ($nextLevelExists) {
+        $nextLevelName = array_keys($levelThresholds)[$nextLevelKey];
+        $nextLevelThreshold = $levelThresholds[$nextLevelName];
+        $pointsToNextLevel = $nextLevelThreshold - $userPoints;
+    }
+    
+    $userGamificationData = [
+        'points' => $userPoints,
+        'level' => $userLevel,
+        'level_name' => $userLevel,
+        'badges' => $userBadges,
+        'points_to_next_level' => $pointsToNextLevel,
+        'next_level_exists' => $nextLevelExists
+    ];
+}
+
 // Load user settings
 
 if (isset($_SESSION['user']) && !isset($_SESSION['settings'])) {
@@ -103,7 +152,25 @@ if ($userId) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="<?= APP_URL?>assets/css/style-<?=$theme?>.css">
+    <link rel="stylesheet" href="<?= APP_URL?>assets/css/style-<?=$theme?>.css?v=<?= time() ?>">
+    <!-- Force breadcrumb alignment fix after all other CSS -->
+    <style>
+    .breadcrumb, ol.breadcrumb {
+        text-align: left !important;
+        justify-content: flex-start !important;
+    }
+    
+    /* Dropdown z-index fix - ensure dropdowns appear above navigation */
+    .dropdown-menu {
+        z-index: 10001 !important;
+        position: absolute !important;
+    }
+    
+    .dropdown:hover .dropdown-menu,
+    .dropdown.show .dropdown-menu {
+        z-index: 10001 !important;
+    }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.js"></script>
@@ -165,6 +232,46 @@ if ($userId) {
                                 <div class="me-2 d-none d-md-block text-end">
                                     <div style="color: white; font-size: 15px;"><?= htmlspecialchars(($_SESSION['user']['first_name'] ?? '') . " " . ($_SESSION['user']['last_name'] ?? '')) ?: 'Guest' ?></div>
                                     <div style="color: gainsboro; font-size: 12px;"><?= ucfirst($_SESSION['user']['role_label'] ?? $_SESSION['user']['role'] ?? 'Guest') ?></div>
+                                    
+                                    <?php if ($userGamificationData): ?>
+                                    <!-- Gamification info -->
+                                    <div style="color: #ffd700; font-size: 11px; margin-top: 2px;">
+                                        <i class="bi bi-star-fill"></i> <?= lang('lang_gamification_level') ?> <?= htmlspecialchars($userGamificationData['level']) ?> 
+                                        <span style="color: #87ceeb;">| <?= $userGamificationData['points'] ?> <?= lang('lang_gamification_xp') ?></span>
+                                    </div>
+                                    
+                                    <!-- Badges -->
+                                    <?php if (!empty($userGamificationData['badges'])): ?>
+                                    <div style="margin-top: 3px;">
+                                        <?php 
+                                        $displayedBadges = 0;
+                                        $badgeIcons = [
+                                            'first_article' => 'bi-file-earmark-text',
+                                            'prolific_writer' => 'bi-pen',
+                                            'conversationalist' => 'bi-chat-dots',
+                                            'daily_visitor' => 'bi-calendar-check',
+                                            'profile_complete' => 'bi-person-check',
+                                            'active_reader' => 'bi-book',
+                                            'helpful_member' => 'bi-hand-thumbs-up'
+                                        ];
+                                        
+                                        foreach ($userGamificationData['badges'] as $badge): 
+                                            if ($displayedBadges >= 3) break; // Show max 3 badges in header
+                                            $iconClass = $badgeIcons[$badge['badge_key']] ?? 'bi-award';
+                                        ?>
+                                        <span class="badge-mini <?= $badge['badge_type'] ?? 'gold' ?>" style="display: inline-block; width: 18px; height: 18px; background: linear-gradient(45deg, #ffd700, #ffed4e); border-radius: 50%; margin-right: 3px; font-size: 9px; text-align: center; line-height: 18px; color: #333;" title="<?= htmlspecialchars($badge['name']) ?>">
+                                            <i class="<?= $iconClass ?>"></i>
+                                        </span>
+                                        <?php 
+                                            $displayedBadges++;
+                                        endforeach; 
+                                        ?>
+                                        <?php if (count($userGamificationData['badges']) > 3): ?>
+                                        <span style="color: #87ceeb; font-size: 10px;">+<?= count($userGamificationData['badges']) - 3 ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php endif; ?>
+                                    <?php endif; ?>
                                 </div>
                                 <?php
                                        if (isset($_SESSION['user']['profile_picture']) && $_SESSION['user']['profile_picture'] != '') {
@@ -178,7 +285,7 @@ if ($userId) {
 
 
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end" style="z-index: 10001 !important;">
                                     <?php
                                         //echo "header.php: User Role;" . $_SESSION['user']['role'];
                                         $aMenu = generateAvatarMenu($_SESSION['user']['id'] ?? 0);
@@ -207,7 +314,7 @@ if ($userId) {
 
 
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
+                                <ul class="dropdown-menu dropdown-menu-end" style="z-index: 10001 !important;">
                                     <?php
                                         //echo "header.php: User Role;" . $_SESSION['user']['role'];
                                         $aMenu = generateAvatarMenu($_SESSION['user']['id'] ?? 0);
@@ -224,7 +331,7 @@ if ($userId) {
 </div>
 
         <div class="topnav">
-            <div style="float: left; width: 70%">
+            <div class="main-nav-container" style="float: left; width: 100%; position: relative; z-index: 10000;">
             <?php
 
                 $userID = $_SESSION['user']['id'] ?? null;
@@ -232,29 +339,11 @@ if ($userId) {
                 echo $navbar;
             ?>
             </div>
-            <div style="float: right; padding-right: 10px; padding-top: 5px; justify-content: space-between;">
-
-                <form id="user-settings-form" method="post" action="<?=APP_URL?>public/update_settings.php">
-                    <em class="settings-bar-text"><?= lang('lang_select_theme') ?></em>
-                    <select name="theme" onchange="this.form.submit()" class="settings-dropdown">
-                        <option value="light" <?= $theme === 'light' ? 'selected' : '' ?>>Light</option>
-                        <option value="dark" <?= $theme === 'dark' ? 'selected' : '' ?>>Dark</option>
-                    </select>
-                    <em class="settings-bar-text"><?=lang('lang_select_language') ?></em>
-                    <select name="lang" onchange="this.form.submit()" class="settings-dropdown">
-                        <option value="en" <?= $lang === 'en' ? 'selected' : '' ?>><?= lang('lang_select_english') ?></option>
-                        <option value="ro" <?= $lang === 'ro' ? 'selected' : '' ?>><?= lang('lang_select_romanian') ?></option>
-                        <!-- adaugă alte limbi dacă e cazul -->
-                    </select>
-                    <input type="hidden" name="redirect_back" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
-                </form>
-
-            </div>
         </div>   
         
 
 
-<main style="padding: 20px;">
+<main style="padding: 0 20px 20px 20px;">
 
 
 <?php if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? 'guest') === 'guest') : ?>

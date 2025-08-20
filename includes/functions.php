@@ -414,116 +414,172 @@ function generateNavBar2($uid) {
         return $nav;
     }
 
-
-    $ops=['view_article',
-          'search'
-        ];
-
+    // Home menu
+    $ops=['view_article', 'search'];
     if(hasPermission($uid,$ops)){
         $nav .= '<a href="'.APP_URL.'public/index.php"'.($currentPage === 'index.php' ? ' class="bi bi-house-fill me-2 active" > ' : ' class="bi bi-house-fill me-2"> '). lang('lang_home') .'</a>';
     }
 
+    // Dashboard menu
     $ops=['view_dashboard'];
-
     if (hasPermission($uid,$ops)){
         $nav.='<a href="'.APP_URL.'public/dashboard.php"'.($currentPage === 'dashboard.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang('lang_dashboard') . '</a>';
     }
 
-
-    // check users allowed for view activity logs;
-    $ops=['view_own_logs',
-          'view_all_logs'
-        ];
-
-    if (hasPermission($uid,$ops)){
-        $nav.='<a href="'.APP_URL.'public/logs.php"'.($currentPage === 'logs.php' ? ' class="bi bi-book-fill me-2 active"> ' : ' class="bi bi-book-fill me-2"> '). lang('lang_logs') . '</a>';
-    }
-
-    // check users allowed for users management (file: admin/users.php);
-
-    $ops=['add_user',
-          'edit_user',
-          'enable_user',
-          'disable_user',
-          'delete_user',
-          'modify_user'];
+    // Admin dropdown menu
+    $adminMenuItems = '';
+    $hasAdminAccess = false;
     
+    // Logs
+    $ops=['view_own_logs', 'view_all_logs'];
+    if (hasPermission($uid,$ops)){
+        $adminMenuItems .= '<a href="'.APP_URL.'public/logs.php" class="dropdown-item">
+                                <img src="'.APP_URL.'assets/icons/icon-logs.svg" class="submenu-icon"> '.lang('lang_logs').'
+                            </a>';
+        $hasAdminAccess = true;
+    }
+
+    // Users
+    $ops=['add_user', 'edit_user', 'enable_user', 'disable_user', 'delete_user', 'modify_user'];
     if(hasPermission($uid,$ops)){
-
-        $nav.='<a href="'.APP_URL.'public/admin/users.php"'.($currentPage === 'users.php' ? ' class="bi bi-person-fill me-2 active"> ' : ' class="bi bi-person-fill me-2"> '). lang('lang_users'). '</a>';
+        $adminMenuItems .= '<a href="'.APP_URL.'public/admin/users.php" class="dropdown-item">
+                                <img src="'.APP_URL.'assets/icons/icon-user.svg" class="submenu-icon"> '.lang('lang_users').'
+                            </a>';
+        $hasAdminAccess = true;
     }
 
-    //check users allowed to manage categories (file: admin/categories.php)
-
-    $ops=['add_category',
-          'edit_category'
-        ];
-
+    // Categories
+    $ops=['add_category', 'edit_category'];
     if (hasPermission($uid,$ops)){
-
-        $nav.='<a href="'.APP_URL.'public/admin/categories.php"'.($currentPage === 'categories.php' ? ' class="bi bi-diagram-3-fill me-2 active"> ' : ' class="bi bi-diagram-3-fill me-2"> ').lang('lang_categories').'</a>';
-
+        $adminMenuItems .= '<div class="dropdown-submenu">
+            <a class="dropdown-item dropdown-toggle" href="'.APP_URL.'public/admin/categories.php">
+                <img src="'.APP_URL.'assets/icons/icon-add-category.svg" class="submenu-icon"> '.lang('lang_categories').'
+            </a>
+            <div class="dropdown-menu categories-submenu">
+                <a href="'.APP_URL.'public/admin/categories.php?modal=add" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-add-category.svg" class="submenu-icon"> '.lang('lang_cat_add').'
+                </a>
+                <a href="'.APP_URL.'public/admin/categories.php?modal=icon" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-add-icons.svg" class="submenu-icon"> '.lang('lang_cat_add_icon').'
+                </a>
+                <a href="'.APP_URL.'public/admin/categories.php?modal=enable" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-enable-cat.svg" class="submenu-icon"> '.lang('lang_cat_enable').'
+                </a>
+                <a href="'.APP_URL.'public/admin/categories.php?modal=disable" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-disable-cat.svg" class="submenu-icon"> '.lang('lang_cat_disable').'
+                </a>
+            </div>
+        </div>';
+        $hasAdminAccess = true;
     }
 
-    //check users allowed to manage articles
-    $ops = ['edit_article',
-            'create_article',
-            'edit_own_article',
-            'publish_article',
-            'disable_article',
-            'enable_article',
-            'approve_article',
-            'delete_article',
-            'export_article'
-            ];
-
+    // Articles
+    $ops = ['edit_article', 'create_article', 'edit_own_article', 'publish_article', 'disable_article', 'enable_article', 'approve_article', 'delete_article', 'export_article'];
     if (hasPermission($uid,$ops)){
-
-        $nav.='<a href="'.APP_URL.'public/admin/articles.php"'.($currentPage === 'articles.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang('lang_articles').'</a>';
+        $adminMenuItems .= '<div class="dropdown-submenu">
+            <a class="dropdown-item dropdown-toggle" href="'.APP_URL.'public/admin/articles.php">
+                <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon"> '.lang('lang_articles').'
+            </a>
+            <div class="dropdown-menu articles-submenu">
+                <a href="'.APP_URL.'public/admin/articles.php?modal=create" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon"> '.lang('lang_create_article').'
+                </a>
+            </div>
+        </div>';
+        $hasAdminAccess = true;
     }
 
-    // check users allowed to manage tags
-    $ops = ['edit_article',
-            'create_article',
-            'approve_article'  // Pentru moment folosim permisiuni existente
-            ];
-
+    // Tags
+    $ops = ['edit_article', 'create_article', 'approve_article'];
     if (hasPermission($uid,$ops)){
-        $nav.='<a href="'.APP_URL.'public/admin/tags.php"'.($currentPage === 'tags.php' ? ' class="bi bi-tags-fill me-2 active"> ' : ' class="bi bi-tags-fill me-2"> ').lang('lang_tags').'</a>';
+        $adminMenuItems .= '<div class="dropdown-submenu">
+            <a class="dropdown-item dropdown-toggle" href="'.APP_URL.'public/admin/tags.php">
+                <img src="'.APP_URL.'assets/icons/icon-add.svg" class="submenu-icon"> '.lang('lang_tags').'
+            </a>
+            <div class="dropdown-menu tags-submenu">
+                <a href="'.APP_URL.'public/admin/tags.php?action=add" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-add.svg" class="submenu-icon"> '.lang('lang_add_tag').'
+                </a>
+                <a href="'.APP_URL.'public/admin/tags.php?action=stats" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-view.svg" class="submenu-icon"> '.lang('lang_tag_statistics').'
+                </a>
+                <a href="'.APP_URL.'public/admin/tags.php?action=clean" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-delete.svg" class="submenu-icon"> '.lang('lang_clean_unused_tags').'
+                </a>
+            </div>
+        </div>';
+        $hasAdminAccess = true;
     }
 
-    // check users allowed to manage comments
-    $ops = ['add_comment',
-            'approve_comment',
-            'delete_comment',
-            'edit_comment'
-            ];
-
+    // Comments
+    $ops = ['add_comment', 'approve_comment', 'delete_comment', 'edit_comment'];
     if (hasPermission($uid,$ops)){
-
-
-        $nav.='<a href="'.APP_URL.'public/admin/comments.php"'.($currentPage === 'comments.php' ? ' class="bi bi-file-earmark-text-fill me-2 active"> ' : ' class="bi bi-file-earmark-text-fill me-2"> ').lang('lang_com_comments').'</a>';
+        $adminMenuItems .= '<a href="'.APP_URL.'public/admin/comments.php" class="dropdown-item">
+                                <img src="'.APP_URL.'assets/icons/icon-bell.svg" class="submenu-icon"> '.lang('lang_com_comments').'
+                            </a>';
+        $hasAdminAccess = true;
     }
 
-
-    //check users allowed to edit ACL (file:admin/acl_edit.php)
-
+    // ACL
     $ops=['edit_acl'];
-
     if(hasPermission($uid,$ops)){
-        $nav.='<a href="'.APP_URL.'public/admin/acl_edit.php"'.($currentPage === 'acl_edit.php' ? ' class="bi bi-gear-fill me-2 active"> ' : ' class="bi bi-gear-fill me-2"> ').lang('lang_edit_acl').'</a>';
+        $adminMenuItems .= '<a href="'.APP_URL.'public/admin/acl_edit.php" class="dropdown-item">
+                                <img src="'.APP_URL.'assets/icons/icon-user-change-role.svg" class="submenu-icon"> '.lang('lang_edit_acl').'
+                            </a>';
+        $hasAdminAccess = true;
     }
 
-    
-    $ops=['register'];
+    // Add Admin dropdown if user has any admin permissions
+    if ($hasAdminAccess) {
+        $isAdminPageActive = in_array($currentPage, ['logs.php', 'users.php', 'categories.php', 'articles.php', 'tags.php', 'comments.php', 'acl_edit.php']);
+        $nav .= '<div class="dropdown">
+                    <a href="#" class="bi bi-gear-fill me-2 dropdown-toggle'.($isAdminPageActive ? ' active' : '').'">
+                        Admin
+                    </a>
+                    <div class="dropdown-menu">
+                        '.$adminMenuItems.'
+                    </div>
+                 </div>';
+    }
 
+    // Settings dropdown menu
+    $currentTheme = $_SESSION['settings']['theme'] ?? 'light';
+    $currentLang = $_SESSION['settings']['lang'] ?? 'en';
+    
+    $settingsMenuItems = '';
+    $settingsMenuItems .= '<div class="dropdown-submenu">
+                             <a class="dropdown-item dropdown-toggle" href="#">'.lang('lang_select_theme').'</a>
+                             <div class="dropdown-menu theme-submenu">
+                               <a href="'.APP_URL.'public/update_settings.php?theme=light&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'light' ? ' active' : '').'">'.lang('lang_theme_light').'</a>
+                               <a href="'.APP_URL.'public/update_settings.php?theme=dark&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'dark' ? ' active' : '').'">'.lang('lang_theme_dark').'</a>
+                               <a href="'.APP_URL.'public/update_settings.php?theme=gray&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'gray' ? ' active' : '').'">'.lang('lang_theme_gray').'</a>
+                             </div>
+                           </div>';
+    
+    $settingsMenuItems .= '<div class="dropdown-submenu">
+                             <a class="dropdown-item dropdown-toggle" href="#">'.lang('lang_select_language').'</a>
+                             <div class="dropdown-menu language-submenu">
+                               <a href="'.APP_URL.'public/update_settings.php?lang=en&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentLang === 'en' ? ' active' : '').'">'.lang('lang_select_english').'</a>
+                               <a href="'.APP_URL.'public/update_settings.php?lang=ro&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentLang === 'ro' ? ' active' : '').'">'.lang('lang_select_romanian').'</a>
+                             </div>
+                           </div>';
+
+    $nav .= '<div class="dropdown">
+                <a href="#" class="bi bi-sliders me-2 dropdown-toggle">
+                    '.lang('lang_settings').'
+                </a>
+                <div class="dropdown-menu">
+                    '.$settingsMenuItems.'
+                </div>
+             </div>';
+
+    // Register (if allowed)
+    $ops=['register'];
     if(hasPermission($uid,$ops)){
         $nav.= '<a href="#" id="openRegisterModal" class="bi bi-r-square-fill me-2">'.lang('lang_register').'</a>';
     }    
 
-    
-    // menu bar for 'guest' users
-
+    // Logout
     $nav.='<a href="'.APP_URL.'public/logout.php" class="bi bi-box-arrow-right me-2"> '. lang('lang_logout') .'('.escape($_SESSION['user']['username'] ?? 'Guest').')</a>';
 
     return $nav;

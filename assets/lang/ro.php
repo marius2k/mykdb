@@ -55,6 +55,9 @@ return [
     'lang_select_romanian' => 'Romana',
     'lang_select_language' => 'Limba',
     'lang_select_theme' => 'Tema',
+    'lang_theme_light' => 'Deschisă',
+    'lang_theme_dark' => 'Închisă',
+    'lang_theme_gray' => 'Gri Elegantă',
     'lang_profile' => 'Profilul meu',
     'lang_edit_acl' => 'ACL',
     'lang_no_articles' => 'Nici un articol nu a fost gasit',
@@ -134,6 +137,7 @@ return [
     'lang_cat_select_icon' => 'Alege Icon',
     'lang_icon_select' => '-- Pictograme --',
     'lang_cat_enable' => 'Activeaza categorie',
+    'lang_cat_disable' => 'Dezactiveaza categorie',
     'lang_log_delete_selected' => 'Sterge selectate',
     'lang_log_archive_selected' => 'Arhiveaza selectate',
     'lang_log_filter_start_date' => 'Data inceput',
@@ -273,14 +277,12 @@ return [
     'view_dashboard' => 'vizualizeaza dashbordul',
     'view_comment' => 'vizualizeaza un comentariu',
     'lang_publish_at' => 'Programat pentru publicare',
-
-    // Articles by tag translations
     'lang_tag_required_for_filter' => 'Tag necesar pentru filtrare.',
     'lang_back_to_previous_page' => 'Înapoi la pagina anterioară',
     'lang_articles_with_tag' => 'Articole cu tag-ul:',
     'lang_loading_articles' => 'Se încarcă articolele...',
     'lang_no_articles_with_tag' => 'Nu există articole cu tag-ul',
-        'lang_tags' => 'Taguri',
+    'lang_tags' => 'Taguri',
     'lang_tag' => 'Tag',
     'lang_add_tag' => 'Adaugă tag',
     'lang_edit_tag' => 'Editează tag',
@@ -328,9 +330,10 @@ return [
     'lang_no_data' => 'Nu există date',
     'lang_never_used' => 'Niciodată folosite',
     'lang_error_loading_articles' => 'Eroare la încărcarea articolelor.',
-    
-    // Additional tags fields
     'lang_tag_description_help' => 'Descriere opțională pentru a explica scopul tag-ului',
     'lang_tag_description_optional' => 'Câmpul descriere este opțional',
     'lang_created_at' => 'Creat la',
-    'lang_updated_at' => 'Actualizat la'];
+    'lang_updated_at' => 'Actualizat la',
+    'lang_no_description' => 'Fără descriere',
+
+];

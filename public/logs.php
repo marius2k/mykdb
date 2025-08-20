@@ -17,6 +17,21 @@ if ($lang === 'en') $lang = 'en-GB';
 ?>
 <script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
 
+<div class="breadcrumb-container" style="width: 100%; margin-top: 20px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <br>
+            <li class="breadcrumb-item">Admin</li>
+            <li class="breadcrumb-item breadcrumb-separator">
+                <img src="<?=APP_URL?>assets/icons/icon-play-arrow.svg" class="breadcrumb-arrow" alt="→">
+                <?= lang('lang_logs') ?>
+            </li>
+        </ol>
+    </nav>
+</div>
+<hr style="height: 1px; border: none; background-color: gray; margin: 0; width: calc(100vw - 20px); margin-left: calc(-50vw + 50% + 10px);">
+<br>
+
 <div style="display: flex; width: 50%;">
     <div class="custom-box-1">
                     <div class="corner-label-1">Filter by</div>
@@ -128,7 +143,7 @@ $(document).ready(function() {
             }
         ],
         language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
         },
         serverSide: true, // Set true if you implement server-side paging
         processing: true

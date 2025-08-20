@@ -36,33 +36,27 @@ if ($lang === 'en') $lang = 'en-GB';
 ?>
 
 <script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
-<link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-<script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 
+
+<div class="breadcrumb-container" style="width: 100%; margin-top: 20px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <br>
+            <li class="breadcrumb-item">Admin</li>
+            <li class="breadcrumb-item breadcrumb-separator">
+                <img src="<?=APP_URL?>assets/icons/icon-play-arrow.svg" class="breadcrumb-arrow" alt="→">
+                <?= lang('lang_categories') ?>
+            </li>
+        </ol>
+    </nav>
+</div>
+<hr style="height: 1px; border: none; background-color: gray; margin: 0; width: calc(100vw - 20px); margin-left: calc(-50vw + 50% + 10px);">
+<br>
 
 <div class="category-container">
-    <div class="category-box-2" style="width: fit-content">
-        <div class="operations-bar">
-            <button class="btn-flat" onclick="openCategoryModal('add')" title="Add Category">
-                <img src="../../assets/icons/icon-add-category.svg" class="op-icon">
-                Add Category
-            </button>
-            <button class="btn-flat" onclick="openCategoryModal('icon')" title="Add Icon">
-                <img src="../../assets/icons/icon-add-icons.svg" class="op-icon">
-                Add Icon
-            </button>
-            <button class="btn-flat" onclick="openCategoryModal('enable')" title="Enable Category">
-                <img src="../../assets/icons/icon-enable-cat.svg" class="op-icon">
-                Enable Category
-            </button>
-            <button class="btn-flat" onclick="openCategoryModal('disable')" title="Disable Category">
-                <img src="../../assets/icons/icon-disable-cat.svg" class="op-icon">
-                Disable Category
-            </button>
-        </div>
-    </div>
-
-    <div class="category-box-1" style="width: 80%;">
+    <div class="category-box-1" style="width: 100%;">
         <table id="categoriesTable" class="articles-table" width="100%">
             <thead>
                 <tr>
@@ -216,7 +210,7 @@ $(document).ready(function () {
         ],
         order: [[0, 'desc']],
         language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/<?=lang($lang)?>.json"
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/<?=lang($lang)?>.json"
         }
     });
     window.reloadCategoriesTable = () => table.ajax.reload(null, false);
@@ -385,6 +379,17 @@ document.getElementById('modalOverlayCategory').onclick = function(e) {
     }
     
 };
+
+// Auto-open modal based on URL parameter
+$(document).ready(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const modal = urlParams.get('modal');
+    if (modal && ['add', 'icon', 'enable', 'disable'].includes(modal)) {
+        setTimeout(function() {
+            openCategoryModal(modal);
+        }, 500); // Give time for page to fully load
+    }
+});
 
 
 </script>

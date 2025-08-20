@@ -14,6 +14,8 @@ require_once APP_ROOT . 'classes/database.php';
 require_once APP_ROOT . 'classes/usersettings.php';
 require_once APP_ROOT . 'includes/functions.php';
 require_once APP_ROOT . 'includes/auth.php';
+require_once APP_ROOT . 'classes/gamification.php';
+require_once APP_ROOT . 'includes/gamification_helpers.php';
 
 date_default_timezone_set('Europe/Bucharest');
 

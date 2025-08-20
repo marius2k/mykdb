@@ -106,7 +106,21 @@ $roles = $db->fetchAll("SELECT id, name, label FROM roles");
 ?>
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
-<h4>ACL - Permisiuni pe rol</h4>
+<div class="breadcrumb-container" style="width: 100%; margin-top: 20px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <br>
+            <li class="breadcrumb-item">Admin</li>
+            <li class="breadcrumb-item breadcrumb-separator">
+                <img src="<?=APP_URL?>assets/icons/icon-play-arrow.svg" class="breadcrumb-arrow" alt="→">
+                <?= lang('lang_edit_acl') ?>
+            </li>
+        </ol>
+    </nav>
+</div>
+<hr style="height: 1px; border: none; background-color: gray; margin: 0; width: calc(100vw - 20px); margin-left: calc(-50vw + 50% + 10px);">
+<br>
+
 
 <div class="acl-container">
   <!-- STÂNGA: roluri -->

@@ -11,8 +11,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 if ($_SESSION['user']['role'] === 'guest') {
     
-    $_SESSION['settings']['theme'] = $_POST['theme'] ?? null;
-    $_SESSION['settings']['language'] = $_POST['lang'] ?? null;
+    $_SESSION['settings']['theme'] = $_POST['theme'] ?? $_GET['theme'] ?? null;
+    $_SESSION['settings']['language'] = $_POST['lang'] ?? $_GET['lang'] ?? null;
     
     //header("Location:".APP_URL. "public/index.php");
     //exit;
@@ -27,8 +27,8 @@ if ($_SESSION['user']['role'] === 'guest') {
         }
 
         $db = new Database();
-        $theme = $_POST['theme'] ?? null;
-        $lang = $_POST['lang'] ?? null;
+        $theme = $_POST['theme'] ?? $_GET['theme'] ?? null;
+        $lang = $_POST['lang'] ?? $_GET['lang'] ?? null;
 
         //echo "Tema selectat:".$theme;
         //echo "<br>Limba selectata:".$lang;
@@ -53,8 +53,8 @@ if ($_SESSION['user']['role'] === 'guest') {
 
 $redirectTo = '/index.php'; // fallback implicit
 
-if (!empty($_POST['redirect_back'])) {
-    $url = filter_var($_POST['redirect_back'], FILTER_SANITIZE_URL);
+if (!empty($_POST['redirect_back']) || !empty($_GET['redirect_back'])) {
+    $url = filter_var($_POST['redirect_back'] ?? $_GET['redirect_back'], FILTER_SANITIZE_URL);
 
     // Validare basică: trebuie să înceapă cu "/" ca să nu fie redirect extern
     if (strpos($url, '/') === 0) {

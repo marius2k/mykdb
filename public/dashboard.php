@@ -28,8 +28,9 @@ include APP_ROOT . 'includes/header.php';
 
 //error_log("Translations:" $translations['lang_create_article_error'] ?? 'N/A');
 ?>
-
+<br>
 <div id="dashboard-root">
+    
 
     <div class="loading">
         

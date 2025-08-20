@@ -1,20 +1,20 @@
-/* 1. Variabile și stiluri de bază */
+/* 1. Variabile și stiluri de bază - Gray Theme */
 :root {
-    --primary-color: #48bec7;
-    --primary-dark: #31a3a3;
-    --secondary-color: #858796;
-    --success-color: #1cc88a;
-    --danger-color: #e74a3b;
-    --warning-color: #f6c23e;
-    --info-color: #36b9cc;
-    --light-color: #f8f9fc;
-    --dark-color: #5a5c69;
-    --body-bg: #f8f9fc;
+    --primary-color: #5a6c7d;
+    --primary-dark: #455a64;
+    --secondary-color: #90a4ae;
+    --success-color: #66bb6a;
+    --danger-color: #ef5350;
+    --warning-color: #ffca28;
+    --info-color: #42a5f5;
+    --light-color: #fafafa;
+    --dark-color: #37474f;
+    --body-bg: #f8f9fa;
     --card-bg: #ffffff;
     --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
     --border-radius: 0.35rem;
-    --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    --box-shadow: 0 0.15rem 1.75rem 0 rgba(55, 71, 79, 0.15);
 }
 
 /* 2. Reset și stiluri de bază */
@@ -97,8 +97,8 @@ a:hover {
 }
 
 .card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #d5d5d5;
     padding: 1rem 1.35rem;
     border-radius: calc(var(--border-radius) calc(var(--border-radius)) 0 0) !important;
 }
@@ -137,12 +137,12 @@ a:hover {
 }
 
 .table th {
-    background-color: #f8f9fc;
+    background-color: #f5f5f5;
     color: var(--dark-color);
     font-weight: 700;
     padding: 1rem;
     text-align: left;
-    border-bottom: 2px solid #e3e6f0;
+    border-bottom: 2px solid #d5d5d5;
 }
 
 .table td {
@@ -178,17 +178,30 @@ a:hover {
 /* 9. Navigație */
 .navbar {
     padding: 0.5rem 1rem;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(55, 71, 79, 0.15);
+    background-color: #e0e0e0 !important;
+    border-bottom: 1px solid #d5d5d5;
 }
 
 .navbar-brand {
     font-weight: 800;
     font-size: 1.25rem;
+    color: #37474f !important;
 }
 
 .nav-link {
     font-weight: 600;
     padding: 0.75rem 1rem;
+    color: #546e7a !important;
+    border-radius: var(--border-radius);
+    margin: 0 0.125rem;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: #37474f !important;
+    background-color: #d6d6d6;
 }
 
 /* 10. Footer */
@@ -333,7 +346,7 @@ ol.breadcrumb {
     margin-right: 8px;
     vertical-align: middle;
     opacity: 0.6;
-    filter: brightness(0) saturate(100%) invert(69%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(89%);
+    filter: brightness(0) saturate(100%) invert(43%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(89%);
 }
 
 /* Override default Bootstrap breadcrumb separator */
@@ -356,7 +369,7 @@ ol.breadcrumb {
 .progress {
     height: 1rem;
     border-radius: 0.35rem;
-    background-color: #eaecf4;
+    background-color: #e8e8e8;
 }
 
 .progress-bar {
@@ -924,6 +937,20 @@ ol.breadcrumb {
     transform: rotate(90deg);
 }
 
+.btn-useful-grey {
+    
+    background-color: #e9e8e6;
+    color: #4d4c4c;
+    border: 1px solid #696968;
+    border-radius: 3px;
+    width: 90px;
+}
+
+.btn-useful-grey:hover {
+    background-color: #b6b5b5;
+    color: rgb(0, 0, 0);
+}
+
 
 .pagination {
     text-align: center;
@@ -1402,9 +1429,9 @@ button[disabled],
 }
 
 
-/* Add a black background color to the top navigation */
+/* Add a gray background color to the top navigation */
 .topnav {
-    background-color: #1697ad;
+    background-color: #707070;
     /*background-color: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238));*/
     overflow: visible;
     position: relative;
@@ -1431,7 +1458,7 @@ button[disabled],
   
   /* Change the color of links on hover */
   .topnav a:hover {
-    background-color: #36cdc8;
+    background-color: transparent;
     color: rgb(255, 255, 255);
   }
   
@@ -1439,7 +1466,7 @@ button[disabled],
   .topnav a.active {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #e9ecef;
+    background-color: #f5f5f5;
     color: rgb(0, 0, 0);
   }
 
@@ -1462,14 +1489,14 @@ button[disabled],
   }
 
   .topnav .dropdown .dropdown-toggle:hover {
-    background-color: #36cdc8;
+    background-color: transparent;
     color: rgb(255, 255, 255);
   }
 
   .topnav .dropdown .dropdown-toggle.active {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #e9ecef;
+    background-color: #f5f5f5;
     color: rgb(0, 0, 0);
   }
 
@@ -1481,10 +1508,10 @@ button[disabled],
     min-width: 160px;
     padding: 5px 0;
     margin: 0;
-    background-color: #2c2c2c;
-    border: 1px solid #3a3a3a;
+    background-color: #f5f5f5;
+    border: 1px solid #d5d5d5;
     border-radius: 0.375rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.375);
+    box-shadow: 0 0.5rem 1rem rgba(55, 71, 79, 0.175);
     display: none;
   }
 
@@ -1499,7 +1526,7 @@ button[disabled],
     padding: 0.5rem 1rem;
     clear: both;
     font-weight: 400;
-    color: #f8f9fa;
+    color: #37474f;
     text-align: inherit;
     text-decoration: none;
     white-space: nowrap;
@@ -1508,8 +1535,8 @@ button[disabled],
   }
 
   .topnav .dropdown .dropdown-item:hover {
-    background-color: #4a9b97;
-    color: #ffffff;
+    background-color: #b0bec5;
+    color: #263238;
   }
 
   /* Submenu styles for nested dropdowns */
@@ -1522,8 +1549,6 @@ button[disabled],
     left: 100%;
     margin-top: -1px;
     border-radius: 0.375rem;
-    background-color: #2c2c2c;
-    border: 1px solid #3a3a3a;
     display: none;
     position: absolute;
   }
@@ -1769,8 +1794,8 @@ button[disabled],
 }
 
 .op-icon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     padding-right: 10px;
     filter: grayscale(100%);
     transition: 0.2s ease;
@@ -2261,7 +2286,11 @@ ul.top-articles .li-icon {
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
 }
-
+@media (max-width: 768px) {
+  .dashboard-right {
+    grid-template-columns: 1fr; /* Pe ecrane mici, o singură coloană */
+  }
+}
 .list-item {
     display: flex; /* Asigură-te că elementele sunt flexibile */
     align-items: center; /* Aliniază vertical elementele */
@@ -2963,6 +2992,430 @@ ul.top-articles .li-icon {
     min-height: 32px !important;
 }
 
+
+#modalOverlayRegister {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+    display: none;
+}
+
+/* Modalul principal */
+.modal-register {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  min-width: 600px;
+  max-width: 95vw;
+  max-height: 95vh;
+  height: auto;         
+  overflow-y: auto;
+  display: none;
+  
+}
+
+#registerForm.form-styled {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header, content, footer */
+.modal-header-register {
+  padding: 1em 1.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-content-register {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.modal-body-register {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.modal-footer-register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 30px 20px 20px 22px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background: #f2f2f3;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+/* Rânduri și inputuri */
+.modal-row-register {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.modal-label-register {
+  min-width: 150px;
+  text-align: right;
+  margin-bottom: 0;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+}
+.modal-input-register {
+  width: 250px;
+  min-height: 32px;
+  min-width: 0;
+  height: 32px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  font-size: 1em;
+  background: #fafbfc;
+  margin: 0;
+  padding: 4px 8px;
+}
+
+/* Password wrapper */
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  width: 250px;
+  position: relative;
+}
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding-right: 40px;
+  box-sizing: border-box;
+  padding-right: 36px; 
+}
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #888;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mesajul de potrivire parolă sub input */
+#password-match-msg {
+  display: block;
+  font-size: 0.97em;
+  margin-left: 150px; /* la fel ca min-width label */
+  margin-top: 4px;
+  color: red;
+}
+
+.modal-title-register {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #222;
+}
+.modal-close-register {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #444;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #f7f7fa;
+    border: 1px solid #bfc7d1;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+.modal-close-register:hover {
+    background: #ececec;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.modal-btn-register {
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 180px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #c9c8c8;
+    color: #444;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+.modal-btn-register.primary {
+    background: #4e9faa;
+    color: #fff;
+}
+.modal-btn-register.primary:hover {
+    background: #408188;
+}
+
+
+.modal-btn-register.cancel {
+    background: #d4d4d4;
+    color: #444;
+}
+.modal-btn-register.cancel:hover {
+    background: #e0e0e0;
+}
+
+
+/* Centrare perfectă pentru login modal */
+.modal-overlay {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 998;
+  display: none;
+}
+.modal-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.modal-content-login {
+  background: #fff;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 2px 8px #0002;
+  animation: fadeIn .2s;
+  max-width: 400px;
+  width: 100%;
+  margin: 0;
+}
+@media (min-width: 600px) {
+  .modal-content-login {
+    width: 400px;
+  }
+}
+.modal-header-login {
+  padding: 1em 1.5em;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-title-login {
+  font-size: 1.3em;
+  font-weight: 600;
+}
+.modal-close-login {
+  font-size: 1.7em;
+  color: #444;
+  cursor: pointer;
+  border-radius: 8px;
+  background: #f7f7fa;
+  border: 1px solid #bfc7d1;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  box-shadow: none;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+.modal-close-login:hover {
+  background: #ececec;
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.modal-body-login {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.modal-row-login {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.modal-label-login {
+  min-width: 150px;
+  text-align: right;
+  margin-bottom: 0;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+}
+.modal-input-login {
+  width: 250px;
+  min-height: 32px;
+  min-width: 0;
+  height: 32px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  font-size: 1em;
+  background: #fafbfc;
+  margin: 0;
+  padding: 4px 8px;
+}
+.modal-footer-login {
+  padding: 24px 30px;
+  background: #f7f7fa;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.article-header {
+    max-width: 80%;
+    margin: 20px auto;
+}
+
+
+.article-rating {
+    /*margin-top: 8px;*/
+    color: #048eb1;
+    font-size: 0.9rem;
+}
+
+.article-rating .star {
+    font-size: 1.7rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+}
+
+.article-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.article-meta {
+    font-style: italic;
+    color: #048eb1;
+    font-size: 0.9rem;
+}
+.article-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.article-rating .star.selected,
+.article-rating .star.hovered {
+    color: #f7d106;
+}
+.article-useful button {
+    margin-right: 5px;
+}
+
+.bookmark-icon {
+    transition: filter 0.2s;
+}
+.bookmark-icon:hover {
+    filter: brightness(0.8);
+}
+
+.tag-badge {
+    background: linear-gradient(135deg, #e3f2fd, #a6e0e4ff) !important;
+    color: rgb(1, 80, 100) !important;
+    padding: 3px 6px !important;
+    border-radius: 10px !important;
+    font-size: 0.85em !important;
+    margin-right: 6px !important;
+    margin-bottom: 4px !important;
+    display: inline-block !important;
+    border: 1px solid #08a8bdff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.tag-badge:hover {
+    background: linear-gradient(135deg, #bbdefb, #90caf9) !important;
+    color: #0894a7 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+    text-decoration: none !important;
+}
+
+.article-tags strong {
+    color: #424242;
+    margin-right: 8px;
+}
+
+/* Stiluri pentru articles_by_tag.php */
+.article-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.article-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.article-card .article-title {
+    margin-bottom: 10px;
+}
+
+.article-card .article-meta {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.article-card .article-excerpt {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.article-card .article-tags {
+    margin-bottom: 10px;
+}
+
 /* ========================================
    GAMIFICATION STYLES
    ======================================== */
@@ -3060,15 +3513,15 @@ ul.top-articles .li-icon {
 
 /* Style header dropdown menu to match topnav dropdown style */
 .app-header .dropdown-menu {
-    background-color: #2c2c2c !important;
-    border: 1px solid #3a3a3a !important;
+    background-color: #f5f5f5 !important;
+    border: 1px solid #d5d5d5 !important;
     border-radius: 0.375rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.375);
+    box-shadow: 0 0.5rem 1rem rgba(55, 71, 79, 0.175);
     padding: 5px 0;
 }
 
 .app-header .dropdown-menu .dropdown-item {
-    color: #f8f9fa !important;
+    color: #37474f !important;
     padding: 0.5rem 1rem;
     text-decoration: none;
     display: block;
@@ -3079,11 +3532,30 @@ ul.top-articles .li-icon {
 }
 
 .app-header .dropdown-menu .dropdown-item:hover {
-    background-color: #4a9b97 !important;
-    color: #ffffff !important;
+    background-color: #d6d6d6 !important;
+    color: #263238 !important;
 }
 
 .app-header .dropdown-menu .dropdown-item:focus {
-    background-color: #4a9b97 !important;
-    color: #ffffff !important;
+    background-color: #d6d6d6 !important;
+    color: #263238 !important;
+}
+
+/* Anulează hover-ul pe zona cu profilul din header */
+.navbar .nav-link.dropdown-toggle:hover,
+.navbar .nav-link.dropdown-toggle:focus,
+.navbar .nav-link.dropdown-toggle:active,
+.navbar .nav-link.dropdown-toggle[aria-expanded="true"] {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+/* Regulă foarte specifică pentru a anula complet hover-ul pe zona cu profilul */
+a.nav-link.dropdown-toggle.d-flex.align-items-center:hover,
+a.nav-link.dropdown-toggle.d-flex.align-items-center:focus,
+a.nav-link.dropdown-toggle.d-flex.align-items-center:active,
+a.nav-link.dropdown-toggle.d-flex.align-items-center[aria-expanded="true"] {
+    background-color: transparent !important;
+    color: inherit !important;
+    text-decoration: none !important;
 }

@@ -73,6 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_picture']['n
             $db->query("UPDATE users SET first_name = ?, last_name = ?, email = ?, profile_picture = ? WHERE id = ?", [
             $firstName, $lastName, $email, $filename, $userId]);
 
+            // Verifică și acordă puncte pentru profilul complet
+            checkAndAwardProfileCompletion($userId);
+
             $_SESSION['flash'] = "Poza actualizata cu succes!!!";
             
 
@@ -119,6 +122,9 @@ if (isset($_POST['update_profile'])) {
     $db->query("UPDATE users SET first_name = ?, last_name = ?, profile_picture = ?, email = ? WHERE id = ?", [
         $firstName, $lastName, $picture, $email, $userId
     ]);
+
+    // Verifică și acordă puncte pentru profilul complet
+    checkAndAwardProfileCompletion($userId);
 
     $_SESSION['flash'] = "Profil actualizat cu succes.";
     //$_SESSION['user']['first_name'] = $firstName;
