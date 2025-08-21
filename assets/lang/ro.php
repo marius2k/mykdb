@@ -335,5 +335,19 @@ return [
     'lang_created_at' => 'Creat la',
     'lang_updated_at' => 'Actualizat la',
     'lang_no_description' => 'Fără descriere',
+    'lang_gamification_points' => 'Puncte',
+    'lang_gamification_level' => 'Nivel',
+    'lang_gamification_badges' => 'Insigne',
+    'lang_gamification_xp' => 'XP',
+    'lang_gamification_rookie' => 'Începător',
+    'lang_gamification_explorer' => 'Explorator',
+    'lang_gamification_contributor' => 'Contributor',
+    'lang_gamification_expert' => 'Expert',
+    'lang_gamification_master' => 'Master',
+    'lang_gamification_legend' => 'Legend',
+    'lang_gamification_badges_earned' => 'Insigne câștigate',
+    'lang_gamification_no_badges' => 'Nu ai insigne încă',
+    'lang_gamification_view_profile' => 'Vezi profilul complet',
+    'lang_gamification_next_level' => 'la nivelul următor'
 
 ];

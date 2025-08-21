@@ -1584,6 +1584,35 @@ button[disabled],
     min-width: 180px;
   }
 
+  /* Profile dropdown submenu support */
+  .avatar-menu .dropdown-submenu {
+    position: relative;
+  }
+
+  .avatar-menu .dropdown-submenu .dropdown-menu {
+    position: absolute;
+    top: 0;
+    right: 100%;
+    left: auto;
+    margin-top: 0;
+    margin-right: 0;
+    border-radius: 6px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 1000;
+  }
+
+  .avatar-menu .dropdown-submenu:hover .theme-submenu,
+  .avatar-menu .dropdown-submenu:hover .language-submenu {
+    display: block;
+  }
+
+  .avatar-menu .dropdown-submenu > .dropdown-toggle::after {
+    transform: rotate(90deg);
+    float: right;
+    margin-top: 8px;
+  }
+
   .profile-form input {
     width: 100%;
     padding: 8px;
@@ -2304,6 +2333,17 @@ ul.top-articles .li-icon {
     float: right;
     margin-bottom: 10px; /* spațiu sub search box */
     margin-top: -5px
+}
+
+/* DataTable header colors*/
+#logsTable thead th,
+#categoriesTable thead th,
+#articlesTable thead th,
+#commentsTable thead th,
+#tagsTable thead th,
+#usersTable thead th {
+  background-color: #4d4d4d; /* Example: blue */
+  color: #fff;               /* Example: white text */
 }
 
 #modalOverlay {
@@ -3086,4 +3126,313 @@ ul.top-articles .li-icon {
 .app-header .dropdown-menu .dropdown-item:focus {
     background-color: #4a9b97 !important;
     color: #ffffff !important;
+}
+
+/* ================================================
+   GAMIFICATION PROFILE STYLES - DARK THEME
+   ================================================ */
+
+/* Two Column Layout Styles */
+.profile-container {
+    max-width: 100%;
+}
+
+/* Stats Cards - Dark Theme */
+.stat-card {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1e1e1e 100%);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+    border: 1px solid #404040;
+}
+
+.stat-card h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: #e0e0e0;
+}
+
+.stat-card p {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+    color: #b0b0b0;
+}
+
+/* Badge Cards - Dark Theme */
+.progress-badge-card {
+    background: #2a2a2a;
+    border: 1px solid #404040;
+    padding: 0.75rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.progress-badge-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.progress-badge-card.earned-badge {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3d2914 100%);
+    border: 2px solid #ffa000;
+    box-shadow: 0 4px 15px rgba(255, 160, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.progress-badge-card.earned-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 160, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Badge Icons - Dark Theme */
+.badge-icon-medium {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #404040 0%, #2c2c2c 100%);
+    color: #b0b0b0;
+}
+
+.badge-icon-medium.earned {
+    background: linear-gradient(135deg, #ffa000 0%, #ff8f00 100%);
+    color: #1a1a1a;
+    box-shadow: 0 1px 4px rgba(255, 160, 0, 0.4);
+}
+
+/* Badge Text - Dark Theme */
+.badge-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+}
+
+.badge-title.earned {
+    color: #ffb74d;
+}
+
+.badge-description {
+    color: #b0b0b0;
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.earned-indicator-small {
+    font-size: 1rem;
+}
+
+/* Progress Bars - Dark Theme */
+.progress {
+    background-color: rgba(176, 176, 176, 0.2);
+    border-radius: 6px;
+    height: 8px;
+}
+
+.progress-bar {
+    border-radius: 6px;
+    transition: width 0.6s ease;
+}
+
+/* Section Headers - Dark Theme */
+.gaming-column h5 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: #e0e0e0;
+}
+
+/* Progress Text - Dark Theme */
+.progress-badge-card small {
+    font-size: 0.7rem;
+    color: #b0b0b0;
+}
+
+/* Related Articles Section - Dark Theme */
+#related-articles-section h4 {
+    color: #4dd0e1;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+#related-articles-section .card {
+    border: 1px solid #424242;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: #3a3a3a;
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+#related-articles-section .card:hover {
+    border-color: #4dd0e1;
+    box-shadow: 0 4px 12px rgba(77, 208, 225, 0.3);
+    transform: translateY(-2px);
+    background-color: #383838;
+}
+
+#related-articles-section .card-title a {
+    color: #4dd0e1;
+    font-weight: 500;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+#related-articles-section .card-title a:hover {
+    color: #80e5f0;
+    text-decoration: underline;
+}
+
+#related-articles-section .badge {
+    font-size: 0.7em;
+    padding: 0.25em 0.5em;
+}
+
+#related-articles-section .text-muted {
+    color: #b0b0b0 !important;
+    font-size: 0.85em;
+}
+
+#related-articles-section .card-body {
+    padding: 0.75rem !important;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+}
+
+/* Spațiere egală pentru carduri */
+#related-articles-section .col-md-6.col-lg-4 {
+    padding: 0.5rem !important;
+}
+
+#related-articles-section .mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+#related-articles-section .row {
+    margin-left: -0.5rem !important;
+    margin-right: -0.5rem !important;
+    margin-bottom: -1rem !important;
+}
+
+#related-articles-section .card-title {
+    margin-bottom: 0.25rem !important;
+    line-height: 1.2 !important;
+    font-size: 1rem !important;
+}
+
+#related-articles-section .mb-1 {
+    margin-bottom: 0.125rem !important;
+}
+
+#related-articles-section .mb-2 {
+    margin-bottom: 0.125rem !important;
+}
+
+#related-articles-section .mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+#related-articles-section .mt-auto {
+    margin-top: 0.125rem !important;
+}
+
+#related-articles-section .d-flex.justify-content-between {
+    margin-bottom: 0 !important;
+}
+
+/* Responsive pentru Related Articles */
+@media (max-width: 768px) {
+    #related-articles-section .col-md-6 {
+        margin-bottom: 1rem;
+    }
+    
+    #related-articles-section .card-title {
+        font-size: 0.95rem;
+    }
+}
+
+/* Stiluri specifice pentru noile classe */
+.related-article-col {
+    padding: 0.5rem !important;
+}
+
+.related-article-card {
+    border: 1px solid #444;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: #2d3748;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    height: 140px !important;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem !important;
+}
+
+.related-article-card:hover {
+    border-color: #048eb1;
+    box-shadow: 0 4px 12px rgba(4, 142, 177, 0.3);
+    transform: translateY(-2px);
+}
+
+.related-article-card-body {
+    padding: 0.75rem !important;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.related-article-title {
+    margin-bottom: 0.5rem !important;
+    line-height: 1.2 !important;
+    font-size: 0.9rem !important;
+}
+
+.related-article-link {
+    color: #048eb1 !important;
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+.related-article-link:hover {
+    color: #36a2c4 !important;
+    text-decoration: underline;
+}
+
+.related-article-content {
+    margin-top: 0.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.related-article-tags {
+    margin-bottom: 0.25rem;
+}
+
+.related-article-footer {
+    margin-bottom: 0;
+    margin-top: auto;
+}
+
+.related-articles-row {
+    margin: -0.5rem -0.5rem -0.5rem -0.5rem !important;
 }

@@ -41,6 +41,18 @@ if (empty($_SESSION['csrf_token'])) {
                 <div class="article-useful" id="article-useful" cstyle="margin-top:8px;"></div>
             </div>
         </div>
+
+        <!-- Related Articles Section -->
+        <div id="related-articles-section" class="article-view" style="max-width:80%; margin:20px auto;">
+            <h4 style="color: #048eb1; margin-bottom: 20px;">
+                <i class="fas fa-link" style="margin-right: 8px;"></i>
+                Related Articles
+            </h4>
+            <div id="related-articles-container" class="row related-articles-row">
+                <!-- Articolele relacionate vor fi încărcate aici -->
+            </div>
+        </div>
+
         <div id="comments" class="article-view" style="max-width:80%; margin:20px auto;">
             <h4 id="comments-title"><?= lang ('lang_view_article_comments');?></h4>
             <div id="comments-list"></div>
@@ -65,6 +77,13 @@ if (empty($_SESSION['csrf_token'])) {
 const urlParams = new URLSearchParams(window.location.search);
 const articleId = urlParams.get('id');
 document.getElementById('article_id').value = articleId;
+
+// Funcție pentru escape HTML
+function escapeHtml(txt) {
+  const div = document.createElement('div');
+  div.textContent = txt;
+  return div.innerHTML;
+}
 
 
 
@@ -211,9 +230,89 @@ function loadArticle() {
             }
         }
 
-
-        
+        // Încarcă articolele relationate
+        loadRelatedArticles(data.id);
     });
+}
+
+// Funcție pentru încărcarea articolelor relationate
+function loadRelatedArticles(articleId) {
+    fetch(`api/bkd_related_articles.php?id=${articleId}&limit=6`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error loading related articles:', data.error);
+                return;
+            }
+
+            const relatedArticles = data.related_articles;
+            const container = document.getElementById('related-articles-container');
+            
+            if (!relatedArticles || relatedArticles.length === 0) {
+                document.getElementById('related-articles-section').style.display = 'none';
+                return;
+            }
+
+            let articlesHtml = '';
+            relatedArticles.forEach(article => {
+                // Icona categoriei
+                let iconHtml = '';
+                if (article.category_icon) {
+                    iconHtml = `<img src="<?=APP_URL?>assets/icons/categories/${escapeHtml(article.category_icon)}" alt="icon" style="width: 20px; margin-right: 5px;">`;
+                }
+
+                // Tag-urile
+                let tagsHtml = '';
+                if (article.tags && article.tags.length > 0) {
+                    const limitedTags = article.tags.slice(0, 3); // Maxim 3 tag-uri
+                    tagsHtml = limitedTags.map(tag => 
+                        `<span class="badge bg-secondary me-1" style="font-size: 0.7em;">${escapeHtml(tag)}</span>`
+                    ).join('');
+                    if (article.tags.length > 3) {
+                        tagsHtml += `<span class="badge bg-light text-dark" style="font-size: 0.7em;">+${article.tags.length - 3}</span>`;
+                    }
+                }
+
+                articlesHtml += `
+                    <div class="col-md-6 col-lg-4 related-article-col">
+                        <div class="card related-article-card">
+                            <div class="card-body related-article-card-body">
+                                <div class="d-flex align-items-center mb-1">
+                                    ${iconHtml}
+                                    <small class="text-muted">${escapeHtml(article.category_name)}</small>
+                                </div>
+                                
+                                <h6 class="card-title related-article-title">
+                                    <a href="view_article.php?id=${article.id}" class="text-decoration-none related-article-link">
+                                        ${escapeHtml(article.title)}
+                                    </a>
+                                </h6>
+                                
+                                <div class="related-article-content">
+                                    <div class="related-article-tags">
+                                        ${tagsHtml}
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center related-article-footer">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user"></i> ${escapeHtml(article.username)}
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fas fa-eye"></i> ${article.views}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = articlesHtml;
+        })
+        .catch(error => {
+            console.error('Error loading related articles:', error);
+        });
 }
 
 function voteArticle2(articleId, vote, el) {

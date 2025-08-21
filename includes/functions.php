@@ -542,36 +542,7 @@ function generateNavBar2($uid) {
                  </div>';
     }
 
-    // Settings dropdown menu
-    $currentTheme = $_SESSION['settings']['theme'] ?? 'light';
-    $currentLang = $_SESSION['settings']['lang'] ?? 'en';
-    
-    $settingsMenuItems = '';
-    $settingsMenuItems .= '<div class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">'.lang('lang_select_theme').'</a>
-                             <div class="dropdown-menu theme-submenu">
-                               <a href="'.APP_URL.'public/update_settings.php?theme=light&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'light' ? ' active' : '').'">'.lang('lang_theme_light').'</a>
-                               <a href="'.APP_URL.'public/update_settings.php?theme=dark&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'dark' ? ' active' : '').'">'.lang('lang_theme_dark').'</a>
-                               <a href="'.APP_URL.'public/update_settings.php?theme=gray&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'gray' ? ' active' : '').'">'.lang('lang_theme_gray').'</a>
-                             </div>
-                           </div>';
-    
-    $settingsMenuItems .= '<div class="dropdown-submenu">
-                             <a class="dropdown-item dropdown-toggle" href="#">'.lang('lang_select_language').'</a>
-                             <div class="dropdown-menu language-submenu">
-                               <a href="'.APP_URL.'public/update_settings.php?lang=en&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentLang === 'en' ? ' active' : '').'">'.lang('lang_select_english').'</a>
-                               <a href="'.APP_URL.'public/update_settings.php?lang=ro&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentLang === 'ro' ? ' active' : '').'">'.lang('lang_select_romanian').'</a>
-                             </div>
-                           </div>';
 
-    $nav .= '<div class="dropdown">
-                <a href="#" class="bi bi-sliders me-2 dropdown-toggle">
-                    '.lang('lang_settings').'
-                </a>
-                <div class="dropdown-menu">
-                    '.$settingsMenuItems.'
-                </div>
-             </div>';
 
     // Register (if allowed)
     $ops=['register'];
@@ -627,18 +598,35 @@ function generateAvatarMenu($uid) {
                             <i class="bi bi-bookmark-fill me-2"></i>'.lang('lang_favorites').'</a>
                     </li>';
     
-
-    //check if user is allowed to edit ACL
-    //$ops = ['edit_acl'];
-
-    if (hasPermission($uid,['edit_acl'])) {
-     
-            $menu .='<li>
-                        <a class="dropdown-item" href="'.APP_URL.'public/admin/acl_edit.php">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>'.lang('lang_edit_acl').'</a>
-                    </li>';
-    }
-
+    // Settings submenu in profile dropdown
+    $currentTheme = $_SESSION['settings']['theme'] ?? 'light';
+    $currentLang = $_SESSION['settings']['lang'] ?? 'en';
+    
+    $menu .= '<li><hr class="dropdown-divider"></li>';
+    
+    // Theme settings
+    $menu .= '<li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">
+                    <i class="bi bi-palette-fill me-2"></i>'.lang('lang_select_theme').'
+                </a>
+                <div class="dropdown-menu theme-submenu">
+                    <a href="'.APP_URL.'public/update_settings.php?theme=light&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'light' ? ' active' : '').'">'.lang('lang_theme_light').'</a>
+                    <a href="'.APP_URL.'public/update_settings.php?theme=dark&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'dark' ? ' active' : '').'">'.lang('lang_theme_dark').'</a>
+                    <a href="'.APP_URL.'public/update_settings.php?theme=gray&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentTheme === 'gray' ? ' active' : '').'">'.lang('lang_theme_gray').'</a>
+                </div>
+              </li>';
+    
+    // Language settings
+    $menu .= '<li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">
+                    <i class="bi bi-translate me-2"></i>'.lang('lang_select_language').'
+                </a>
+                <div class="dropdown-menu language-submenu">
+                    <a href="'.APP_URL.'public/update_settings.php?lang=en&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentLang === 'en' ? ' active' : '').'">'.lang('lang_select_english').'</a>
+                    <a href="'.APP_URL.'public/update_settings.php?lang=ro&redirect_back='.urlencode($_SERVER['REQUEST_URI']).'" class="dropdown-item'.($currentLang === 'ro' ? ' active' : '').'">'.lang('lang_select_romanian').'</a>
+                </div>
+              </li>';
+    
 
             $menu .='<li><hr class="dropdown-divider"></li>
                     <li>

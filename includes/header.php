@@ -257,9 +257,9 @@ if ($userId) {
                                         
                                         foreach ($userGamificationData['badges'] as $badge): 
                                             if ($displayedBadges >= 3) break; // Show max 3 badges in header
-                                            $iconClass = $badgeIcons[$badge['badge_key']] ?? 'bi-award';
+                                            $iconClass = $badgeIcons[$badge['name']] ?? 'bi-award';
                                         ?>
-                                        <span class="badge-mini <?= $badge['badge_type'] ?? 'gold' ?>" style="display: inline-block; width: 18px; height: 18px; background: linear-gradient(45deg, #ffd700, #ffed4e); border-radius: 50%; margin-right: 3px; font-size: 9px; text-align: center; line-height: 18px; color: #333;" title="<?= htmlspecialchars($badge['name']) ?>">
+                                        <span class="badge-mini <?= $badge['category'] ?? 'gold' ?>" style="display: inline-block; width: 18px; height: 18px; background: linear-gradient(45deg, #ffd700, #ffed4e); border-radius: 50%; margin-right: 3px; font-size: 9px; text-align: center; line-height: 18px; color: #333;" title="<?= htmlspecialchars($badge['name']) ?>">
                                             <i class="<?= $iconClass ?>"></i>
                                         </span>
                                         <?php 
@@ -285,7 +285,7 @@ if ($userId) {
 
 
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" style="z-index: 10001 !important;">
+                            <ul class="dropdown-menu dropdown-menu-end avatar-menu" style="z-index: 10001 !important;">
                                     <?php
                                         //echo "header.php: User Role;" . $_SESSION['user']['role'];
                                         $aMenu = generateAvatarMenu($_SESSION['user']['id'] ?? 0);
@@ -314,7 +314,7 @@ if ($userId) {
 
 
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" style="z-index: 10001 !important;">
+                                <ul class="dropdown-menu dropdown-menu-end avatar-menu" style="z-index: 10001 !important;">
                                     <?php
                                         //echo "header.php: User Role;" . $_SESSION['user']['role'];
                                         $aMenu = generateAvatarMenu($_SESSION['user']['id'] ?? 0);
