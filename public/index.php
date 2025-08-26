@@ -133,7 +133,30 @@ if (isset($filterCatId) && $filterCatId > 0) {
         $articles = $stmt->fetchAll();
     
         
-   
+
+        // Preluare tag-uri pentru toate articolele
+        $articleIds = array_column($articles, 'id');
+        $tagsByArticle = [];
+        if ($articleIds) {
+            $in = implode(',', array_fill(0, count($articleIds), '?'));
+            $tagsRows = $db->fetchAll("
+                SELECT at.article_id, t.name
+                FROM article_tags at
+                JOIN tags t ON at.tag_id = t.id
+                WHERE at.article_id IN ($in)
+            ", $articleIds);
+
+            foreach ($tagsRows as $row) {
+                $tagsByArticle[$row['article_id']][] = $row['name'];
+            }
+        }
+        
+        // Adaugă tag-urile la fiecare articol
+        foreach ($articles as &$a) {
+            $a['tags'] = $tagsByArticle[$a['id']] ?? [];
+        }
+        unset($a);
+        
 
 if (isset($_SESSION['user']['id'])) {
 
@@ -206,12 +229,11 @@ if (isset($_SESSION['user']['id'])) {
                                                 <h3 class="article-title">
                                                     <?php if (!empty($a['icon'])): ?>
                                                             <?php if (str_starts_with($a['icon'], 'http') || str_ends_with($a['icon'], '.png') || str_ends_with($a['icon'], '.svg')): ?>
-                                                                <a href="index.php?fcategory=<?=$a['catid']?>" title="<?=$a['category']?>"><img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 45px; vertical-align: middle;"></a>
+                                                                <a href="index.php?fcategory=<?=$a['catid']?>" title="<?=$a['category']?>"><img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 35px; vertical-align: middle;"></a>
                                                                 <?php else: ?>
                                                                 <span class="me-1"><?= htmlspecialchars($a['icon']) ?></span>
                                                             <?php endif; ?>
                                                     <?php endif; ?><?= escape($a['title']) ?>
-                                                
                                                 </h3>
                                               </div>
                                               <div>
@@ -223,6 +245,15 @@ if (isset($_SESSION['user']['id'])) {
                                               </div>
                                           </div>
 
+                                          <div>
+                                                <?php if (!empty($a['tags'])): ?>
+                                                    <div class="article-tags" style="margin: 6px 10px; padding-bottom: 10px;">
+                                                        <?php foreach ($a['tags'] as $tag): ?>
+                                                            <span class="tag-badge-1"><a href="articles_by_tag.php?tag=<?= urlencode($tag) ?>"><?= htmlspecialchars($tag) ?></a></span>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                          </div>
                                           <div class="article-body" id="article<?=$a['id']?>">
 
                                             
@@ -373,14 +404,14 @@ if (isset($_SESSION['user']['id'])) {
                   </div>
                   <div class="search-form-header-right">
                         <button id="toggleMVABtn" title="<?= lang('lang_adv_search') ?>" style="background: none; border: none;">
-                              <img id="icon-mva-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
-                              <img id="icon-mva-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
+                              <img id="icon-mva-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: none;">
+                              <img id="icon-mva-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: inline;">
                         </button>
 
                   </div>
                 </div>
                 <!-- most viewed articles list -->
-                <div id="advancedMVAForm" style="padding: 20px; background-color: white;">
+                <div id="advancedMVAForm" style="padding: 20px; background-color: white;display: block;">
                    
                     <?php echo getTopViewedArticles(5); ?>
                     
@@ -394,14 +425,14 @@ if (isset($_SESSION['user']['id'])) {
                     </div>
                     <div class="search-form-header-right">
                           <button id="toggleMLABtn" title="<?= lang('lang_adv_search') ?>" style="background: none; border: none;">
-                                <img id="icon-mla-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: inline;">
-                                <img id="icon-mla-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: none;">
+                                <img id="icon-mla-open" src="<?= APP_URL ?>assets/icons/icon-arrow-down.svg" width="24px" style="display: none;">
+                                <img id="icon-mla-close" src="<?= APP_URL ?>assets/icons/icon-arrow-up.svg" width="24px" style="display: inline;">
                           </button>
 
                     </div>
                 </div>
                 <!-- most liked articles list -->
-              <div id="advancedMLAForm" style="padding: 20px; background-color: white;">
+              <div id="advancedMLAForm" style="padding: 20px; background-color: white;display: block;">
                    
                     <?php echo getTopLikedArticles(5); ?>
                     
@@ -669,7 +700,7 @@ advToggleMVA.addEventListener('click', () => {
   //advForm.style.display = isOpen ? 'none' : 'block';
   iconOpenMVA.style.display = isOpenMVA ? 'inline' : 'none';
   iconCloseMVA.style.display = isOpenMVA ? 'none' : 'inline';
-  advFormMVA.style.display = (advFormMVA.style.display === 'none') ? 'block' : 'none';
+  advFormMVA.style.display = (advFormMVA.style.display === 'block') ? 'none' : 'block';
 });
 
 // Toggle Most Liked Articles (MLA)
@@ -679,7 +710,7 @@ advToggleMLA.addEventListener('click', () => {
   //advForm.style.display = isOpen ? 'none' : 'block';
   iconOpenMLA.style.display = isOpenMLA ? 'inline' : 'none';
   iconCloseMLA.style.display = isOpenMLA ? 'none' : 'inline';
-  advFormMLA.style.display = (advFormMLA.style.display === 'none') ? 'block' : 'none';
+  advFormMLA.style.display = (advFormMLA.style.display === 'block') ? 'none' : 'block';
 });
 
 

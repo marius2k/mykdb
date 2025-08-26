@@ -2,8 +2,9 @@
 include_once '../config/bootstrap.php';
 include '../includes/header.php'; 
 
-// Get article ID from URL parameter
+// Get article ID and version from URL parameters
 $articleId = (int)($_GET['id'] ?? 0);
+$version = (int)($_GET['version'] ?? 0);
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -12,9 +13,19 @@ if (empty($_SESSION['csrf_token'])) {
 ?>
 <script>
     window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";
+    const articleId = <?= $articleId ?>;
+    const requestedVersion = <?= $version ?>;
 </script>
 
-
+<style>
+.icon-pdf-export {
+    transition: transform 0.2s cubic-bezier(.4,2,.3,1), box-shadow 0.2s;
+}
+.icon-pdf-export:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+</style>
     
 
        <div class="article-view" style="max-width:80%; margin:20px auto;">
@@ -75,7 +86,6 @@ if (empty($_SESSION['csrf_token'])) {
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
-const articleId = urlParams.get('id');
 document.getElementById('article_id').value = articleId;
 
 // Funcție pentru escape HTML
@@ -88,7 +98,13 @@ function escapeHtml(txt) {
 
 
 function loadArticle() {
-    fetch('api/bkd_view_article.php?id=' + articleId)
+    // Construiește URL-ul cu versiunea dacă este specificată
+    let url = 'api/bkd_view_article.php?id=' + articleId;
+    if (requestedVersion && requestedVersion > 0) {
+        url += '&version=' + requestedVersion;
+    }
+    
+    fetch(url)
         .then(res => res.json())
         .then(data => {
             if (data.error) {
@@ -106,7 +122,13 @@ function loadArticle() {
                     iconHtml = `<span class="me-1">${escapeHtml(data.icon)}</span>`;
                 }
             }
-            document.getElementById('article-title').innerHTML = iconHtml + escapeHtml(data.title);
+            
+            // Afișează titlul cu indicatorul de versiune dacă este cazul
+            let titleHtml = iconHtml + escapeHtml(data.title);
+            if (data.is_version && data.version_number) {
+                titleHtml += ` <small style="background: #f1f1f1ff; color: #09838bff; padding: 4px 8px; border: solid 1px #9c9a9aff; border-radius: 4px; font-size: 0.7em; font-weight: normal;"><?=lang('lang_art_version')?> ${data.version_number}</small>`;
+            }
+            document.getElementById('article-title').innerHTML = titleHtml;
             
             // bookmark-btn
 
@@ -120,20 +142,33 @@ function loadArticle() {
 
             document.getElementById('bookmark-img').innerHTML = bookmarkHtml;
 
-            document.getElementById('article-meta').innerHTML =
-                `<em><?= lang ('lang_view_article_author');?>: ${escapeHtml(data.username)} | <?= lang('lang_view_article_category');?>: ${escapeHtml(data.category)} | <?= lang('lang_view_article_published');?>: ${escapeHtml(data.created_at)} | <?= lang('lang_view_article_updated');?>: ${escapeHtml(data.updated_at)}</em>`;
+            let metaHtml = `<em><?= lang ('lang_view_article_author');?>: ${escapeHtml(data.username)} | <?= lang('lang_view_article_category');?>: ${escapeHtml(data.category)} | <?= lang('lang_view_article_published');?>: ${escapeHtml(data.created_at)} | <?= lang('lang_view_article_updated');?>: ${escapeHtml(data.updated_at)}</em>`;
+            
+            // Adaugă change_note dacă există și este o versiune specifică
+            if (data.is_version && data.change_note) {
+                metaHtml += `<br><small style="color: #7f8c8d; font-style: italic;"><strong>Notă modificare:</strong> ${escapeHtml(data.change_note)}</small>`;
+            }
+            
+            document.getElementById('article-meta').innerHTML = metaHtml;
 
-            // Afișează tagurile
+            // Afișează tagurile și iconița Export to PDF pe aceeași linie
+            let tagsHtml = '';
             if (data.tags && data.tags.length > 0) {
-                const tagsHtml = data.tags.map(tag => 
+                tagsHtml = data.tags.map(tag => 
                     `<a href="articles_by_tag.php?tag=${encodeURIComponent(tag)}" class="tag-badge">${escapeHtml(tag)}</a>`
                 ).join('');
-                document.getElementById('article-tags').innerHTML = `<strong>Tags:</strong> ${tagsHtml}`;
-            } else {
-                document.getElementById('article-tags').innerHTML = '';
             }
+            document.getElementById('article-tags').innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div><strong>Tags:</strong> ${tagsHtml}</div>
+                    <a href="api/bkd_export_article.php?id=${data.id}" title="Export to PDF" style="margin-left:20px; display:inline-block;">
+                        <img src="/assets/icons/icon-pdf.png" alt="Export PDF" style="height:35px; vertical-align:middle; cursor:pointer;">
+                    </a>
+                </div>
+            `;
 
-   
+            
+
             // HTML cu stele
             const articleStars = `
                     <div class="article-rating" data-article-id="${data.id}">

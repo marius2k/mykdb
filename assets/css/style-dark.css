@@ -1220,7 +1220,7 @@ button[disabled],
     align-items: center;
     padding: 15px;
     font-weight: bold;
-    font-size: 1.3rem;    
+    font-size: 1rem;    
     color: black;
    
 
@@ -1337,7 +1337,7 @@ button[disabled],
 
 .article-body {
     flex-grow: 1;
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: #444;
     overflow: hidden;
   
@@ -2898,6 +2898,404 @@ ul.top-articles .li-icon {
     height: 32px !important;
 }
 
+/* Article History Modal Styles - Dark Theme */
+.modal-header-history {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 15px 0 25px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    background: #3c3c3c;
+}
+
+.modal-title-history {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #e8e8e8;
+}
+
+.modal-close-history {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #ccc;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #4a4a4a;
+    border: 1px solid #666;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+
+.modal-close-history:hover {
+    background: #555;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.modal-content-history {
+    padding: 50px 30px 50px 30px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin: 0 auto;
+    background: #2e2e2e;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.article-title-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #555;
+}
+
+.article-title {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #e8e8e8;
+    margin: 0;
+    text-align: center;
+}
+
+.version-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.version-item {
+    background: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 12px 15px;
+    transition: all 0.2s ease;
+}
+
+.version-item:hover {
+    background: #404040;
+    border-color: #666;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.version-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.version-title-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.version-number {
+    font-weight: 600;
+    font-size: 1.1em;
+    color: #4e9faa;
+}
+
+.version-date {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+.version-meta {
+    color: #ccc;
+    font-size: 0.85em;
+    margin-bottom: 6px;
+}
+
+.version-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #e8e8e8;
+}
+
+.version-excerpt {
+    color: #bbb;
+    font-size: 0.95em;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.version-note {
+    color: #bbb;
+    font-size: 0.9em;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.version-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.version-online-indicator {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    background: #dc3545 !important;
+    color: white !important;
+    margin-left: 5px;
+    text-transform: uppercase;
+}
+
+.version-status.approved {
+    background: #2d5a2d;
+    color: #90ee90;
+    border: 1px solid #4a8f4a;
+}
+
+.version-status.pending {
+    background: #5a5a2d;
+    color: #ffd700;
+    border: 1px solid #8f8f4a;
+}
+
+.version-status.rejected {
+    background: #5a2d2d;
+    color: #ff9090;
+    border: 1px solid #8f4a4a;
+}
+
+.version-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.version-action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.version-action-btn.view {
+    background: #4e9faa;
+    color: #fff;
+}
+
+.version-action-btn.view:hover {
+    background: #408188;
+}
+
+.version-action-btn.approve {
+    background: #4a8f4a;
+    color: #fff;
+}
+
+.version-action-btn.approve:hover {
+    background: #3a7a3a;
+}
+
+.version-action-btn.reject {
+    background: #8f4a4a;
+    color: #fff;
+}
+
+.version-action-btn.reject:hover {
+    background: #7a3a3a;
+}
+
+.version-action-btn.edit {
+    background: #8f8f4a;
+    color: #fff;
+}
+
+.version-action-btn.edit:hover {
+    background: #7a7a3a;
+}
+
+.version-action-btn.delete {
+    background: #aa4e4e;
+    color: #fff;
+}
+
+.version-action-btn.delete:hover {
+    background: #883a3a;
+}
+
+.modal-footer-history {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 30px 22px 30px 22px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background: #333;
+    margin-top: 18px;
+}
+
+.modal-btn-history {
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 180px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #555;
+    color: #ccc;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.modal-btn-history:hover {
+    background: #666;
+    color: #fff;
+}
+
+/* =================================== */
+/* ARTICLE EDIT MODAL STYLES - DARK    */
+/* =================================== */
+
+/* Overlay pentru modalul de editare articol */
+#modalOverlayAddArticle {
+    position: fixed;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.45);
+    z-index: 9998;
+}
+
+/* Modal pentru editare articol - același styling ca history */
+#modal-add-article {
+    position: fixed;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: #3c3c3c;
+    border-radius: 18px;
+    min-width: 850px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    z-index: 9999;
+    font-family: inherit;
+    animation: modalPop 0.18s cubic-bezier(.4,1.6,.6,1) 1;
+    display: none;
+    flex-direction: column;
+}
+
+.modal-header-edit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 15px 0 25px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    background: #3c3c3c;
+}
+
+.modal-title-edit {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #e8e8e8;
+}
+
+.modal-close-edit {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #ccc;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #525252;
+    border: 1px solid #666;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+
+.modal-close-edit:hover {
+    background: #666;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.modal-content-edit {
+    padding: 50px 30px 50px 30px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: calc(90vh - 120px);
+    background: #3c3c3c;
+}
+
+.modal-footer-edit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 30px 22px 30px 22px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background: #2a2a2a;
+    margin-top: 18px;
+}
+
+.modal-btn-edit {
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 180px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #525252;
+    color: #e8e8e8;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.modal-btn-edit:hover {
+    background: #666;
+    color: #fff;
+}
+
 #modalAddCategory .select2-container {
     min-height: 32px !important;
 }
@@ -3435,4 +3833,80 @@ ul.top-articles .li-icon {
 
 .related-articles-row {
     margin: -0.5rem -0.5rem -0.5rem -0.5rem !important;
+}
+
+/* Article Form Redesign - Dark Theme */
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-group-full {
+    width: 100%;
+}
+
+.form-row-compact {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+
+.form-group-compact {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    font-size: 0.9em;
+    color: #e8e8e8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    font-size: 0.95em;
+    background: #3a3a3a;
+    color: #e8e8e8;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: #4e9faa;
+    box-shadow: 0 0 0 3px rgba(78, 159, 170, 0.2);
+}
+
+.form-input:hover, .form-select:hover {
+    border-color: #666;
+}
+
+/* Select2 integration */
+.form-group-compact .select2-container {
+    width: 100% !important;
+}
+
+.form-group-compact .select2-container .select2-selection--single {
+    height: 42px !important;
+    border: 2px solid #555 !important;
+    border-radius: 6px !important;
+    padding: 10px 12px !important;
+    background: #3a3a3a !important;
+    color: #e8e8e8 !important;
+}
+
+.form-group-compact .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 20px !important;
+    padding-left: 0 !important;
+    color: #e8e8e8 !important;
+}
+
+.form-group-compact .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 40px !important;
 }

@@ -34,6 +34,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 
 $id = (int)$_GET['id'];
+$version = (int)($_GET['version'] ?? 0);
 $db = new Database();
 
 // Increment view counter
@@ -43,17 +44,55 @@ if (isset($_GET['id'])) {
 }
 
 // Fetch article + voturi articol
-$stmt = $db->prepare("
-    SELECT a.*, u.username, c.name AS category, c.icon,
-        (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'like') AS likes,
-        (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'dislike') AS dislikes
-    FROM articles a
-    JOIN users u ON a.user_id = u.id
-    LEFT JOIN categories c ON a.category_id = c.id
-    WHERE a.id = ?
-");
-$stmt->execute([$id]);
-$article = $stmt->fetch();
+if ($version > 0) {
+    // Dacă este specificată o versiune, încarcă din article_versions
+    $stmt = $db->prepare("
+        SELECT av.title, av.content, av.status, av.created_at, av.updated_at, av.change_note, av.category_id,
+            a.user_id, a.views, a.publish_at, a.id,
+            u.username, c.name AS category, c.icon,
+            (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'like') AS likes,
+            (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'dislike') AS dislikes
+        FROM article_versions av
+        JOIN articles a ON av.article_id = a.id
+        JOIN users u ON a.user_id = u.id
+        LEFT JOIN categories c ON av.category_id = c.id
+        WHERE av.article_id = ? AND av.version_number = ?
+    ");
+    $stmt->execute([$id, $version]);
+    $article = $stmt->fetch();
+    
+    if (!$article) {
+        // Încearcă să încarci articolul principal dacă versiunea nu există
+        $stmt = $db->prepare("
+            SELECT a.*, u.username, c.name AS category, c.icon,
+                (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'like') AS likes,
+                (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'dislike') AS dislikes
+            FROM articles a
+            JOIN users u ON a.user_id = u.id
+            LEFT JOIN categories c ON a.category_id = c.id
+            WHERE a.id = ?
+        ");
+        $stmt->execute([$id]);
+        $article = $stmt->fetch();
+    } else {
+        // Adaugă informație despre versiune
+        $article['is_version'] = true;
+        $article['version_number'] = $version;
+    }
+} else {
+    // Încarcă articolul principal
+    $stmt = $db->prepare("
+        SELECT a.*, u.username, c.name AS category, c.icon,
+            (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'like') AS likes,
+            (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'dislike') AS dislikes
+        FROM articles a
+        JOIN users u ON a.user_id = u.id
+        LEFT JOIN categories c ON a.category_id = c.id
+        WHERE a.id = ?
+    ");
+    $stmt->execute([$id]);
+    $article = $stmt->fetch();
+}
 
 if (!$article) {
     http_response_code(404);
