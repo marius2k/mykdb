@@ -234,6 +234,30 @@ function initGuestSession(){
 
 // log article views in db
 function logArticleView($articleId) {
+    // Don't log views if the request comes from admin pages
+    $referer = $_SERVER['HTTP_REFERER'] ?? '';
+    $currentUri = $_SERVER['REQUEST_URI'] ?? '';
+    
+    // Check if the request is coming from admin pages or admin API calls
+    if (strpos($referer, '/admin/') !== false || 
+        strpos($referer, '/public/admin/') !== false ||
+        strpos($currentUri, '/admin/') !== false ||
+        strpos($currentUri, '/public/admin/') !== false) {
+        return; // Don't log the view
+    }
+    
+    // Check if the request is from a modal (history modal) - indicated by version parameter
+    if (isset($_GET['version']) && $_GET['version'] > 0) {
+        return; // Don't log views for version history
+    }
+    
+    // Check if this is an AJAX request from admin context
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+              strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    
+    if ($isAjax && (strpos($referer, '/admin/') !== false || strpos($referer, '/public/admin/') !== false)) {
+        return; // Don't log AJAX views from admin pages
+    }
 
     $db = new Database();
     $userId = $_SESSION['user']['id'] ?? null;
@@ -452,10 +476,15 @@ function generateNavBar2($uid) {
     $ops=['add_category', 'edit_category'];
     if (hasPermission($uid,$ops)){
         $adminMenuItems .= '<div class="dropdown-submenu">
-            <a class="dropdown-item dropdown-toggle" href="'.APP_URL.'public/admin/categories.php">
+            <a class="dropdown-item dropdown-toggle admin-submenu-trigger" href="#" onclick="return false;">
                 <img src="'.APP_URL.'assets/icons/icon-add-category.svg" class="submenu-icon"> '.lang('lang_categories').'
+                <img src="'.APP_URL.'assets/icons/icon-play-arrow.svg" class="submenu-arrow" style="float: right; width: 12px; height: 12px; margin-top: 8px;">
+
             </a>
             <div class="dropdown-menu categories-submenu">
+                <a href="'.APP_URL.'public/admin/categories.php" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-view.svg" class="submenu-icon"> View Categories
+                </a>
                 <a href="'.APP_URL.'public/admin/categories.php?modal=add" class="dropdown-item">
                     <img src="'.APP_URL.'assets/icons/icon-add-category.svg" class="submenu-icon"> '.lang('lang_cat_add').'
                 </a>
@@ -477,14 +506,30 @@ function generateNavBar2($uid) {
     $ops = ['edit_article', 'create_article', 'edit_own_article', 'publish_article', 'disable_article', 'enable_article', 'approve_article', 'delete_article', 'export_article'];
     if (hasPermission($uid,$ops)){
         $adminMenuItems .= '<div class="dropdown-submenu">
-            <a class="dropdown-item dropdown-toggle" href="'.APP_URL.'public/admin/articles.php">
-                <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon"> '.lang('lang_articles').'
+            <a class="dropdown-item dropdown-toggle admin-submenu-trigger" href="#" onclick="return false;">
+                <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon"> '.lang('lang_articles').' 
+                <img src="'.APP_URL.'assets/icons/icon-play-arrow.svg" class="submenu-arrow" style="float: right; width: 12px; height: 12px; margin-top: 8px;">
             </a>
             <div class="dropdown-menu articles-submenu">
-                <a href="'.APP_URL.'public/admin/articles.php?modal=create" class="dropdown-item">
+                <a href="'.APP_URL.'public/admin/articles.php" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-view.svg" class="submenu-icon"> View Articles
+                </a>';
+            
+        // Create Article - vizibil pentru toate rolurile, enabled doar pentru Contributor
+        $userRole = $_SESSION['user']['role'] ?? '';
+        if ($userRole === 'contributor') {
+            // Contributor - enabled
+            $adminMenuItems .= '<a href="'.APP_URL.'public/admin/articles.php?modal=create" class="dropdown-item">
                     <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon"> '.lang('lang_create_article').'
-                </a>
-            </div>
+                </a>';
+        } else {
+            // Alte roluri - disabled
+            $adminMenuItems .= '<a href="#" class="dropdown-item disabled" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Only Contributors can create articles">
+                    <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon" style="filter: grayscale(100%);"> '.lang('lang_create_article').'
+                </a>';
+        }
+        
+        $adminMenuItems .= '</div>
         </div>';
         $hasAdminAccess = true;
     }
@@ -493,10 +538,14 @@ function generateNavBar2($uid) {
     $ops = ['edit_article', 'create_article', 'approve_article'];
     if (hasPermission($uid,$ops)){
         $adminMenuItems .= '<div class="dropdown-submenu">
-            <a class="dropdown-item dropdown-toggle" href="'.APP_URL.'public/admin/tags.php">
-                <img src="'.APP_URL.'assets/icons/icon-add.svg" class="submenu-icon"> '.lang('lang_tags').'
+            <a class="dropdown-item dropdown-toggle admin-submenu-trigger" href="#" onclick="return false;">
+                <img src="'.APP_URL.'assets/icons/icon-add.svg" class="submenu-icon"> '.lang('lang_tags').' 
+                <img src="'.APP_URL.'assets/icons/icon-play-arrow.svg" class="submenu-arrow" style="float: right; width: 12px; height: 12px; margin-top: 8px;">
             </a>
             <div class="dropdown-menu tags-submenu">
+                <a href="'.APP_URL.'public/admin/tags.php" class="dropdown-item">
+                    <img src="'.APP_URL.'assets/icons/icon-view.svg" class="submenu-icon"> View Tags
+                </a>
                 <a href="'.APP_URL.'public/admin/tags.php?action=add" class="dropdown-item">
                     <img src="'.APP_URL.'assets/icons/icon-add.svg" class="submenu-icon"> '.lang('lang_add_tag').'
                 </a>

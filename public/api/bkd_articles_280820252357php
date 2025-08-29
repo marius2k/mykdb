@@ -1,6 +1,9 @@
 <?php
+ob_start();
 require_once '../../config/bootstrap.php';
+ob_clean();
 header('Content-Type: application/json');
+
 
 if (!isset($_SESSION['user']['id'])) {
     http_response_code(401);
@@ -8,12 +11,13 @@ if (!isset($_SESSION['user']['id'])) {
     exit;
 }
 
-$ops = ['edit_article','disable_article','enable_article','create_article','approve_article','restore_article'];
+$ops = ['edit_article','disable_article','enable_article','create_article','approve_article','restore_article','publish_article'];
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
     http_response_code(403);
     echo json_encode(['error' => 'Access denied']);
     exit;
 }
+
 
 $db = new Database();
 
@@ -74,12 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $where = '';
     $params = [];
     if ($searchValue) {
-        $where = "WHERE a.title LIKE :search1 OR u.username LIKE :search2 OR c.name LIKE :search3";
-        $params = [
-            ':search1' => "%$searchValue%",
-            ':search2' => "%$searchValue%",
-            ':search3' => "%$searchValue%"
-        ];
+        $where = 'WHERE a.title LIKE ? OR u.username LIKE ? OR c.name LIKE ?';
+        $params = ["%$searchValue%", "%$searchValue%", "%$searchValue%"];
     }
 
     $totalStmt = $db->query("SELECT COUNT(*) FROM articles");
@@ -87,52 +87,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $filteredStmt = $db->prepare("
         SELECT COUNT(*) FROM articles a
-        JOIN users u ON a.user_id = u.id
+        LEFT JOIN users u ON a.user_id = u.id
         LEFT JOIN categories c ON a.category_id = c.id
         $where
     ");
-    foreach ($params as $k => $v){
-        $filteredStmt->bindValue($k, $v);
+    foreach ($params as $k => $v) {
+        $filteredStmt->bindValue($k + 1, $v);
     }
     $filteredStmt->execute();
     $filtered = $filteredStmt->fetchColumn();
 
     $stmt = $db->prepare("
-        SELECT a.id as article_id, a.title, a.status, a.publish_at, a.updated_at, a.user_id, a.version as current_version,
-               u.username, c.name as category,
-               GROUP_CONCAT(DISTINCT av.version_number ORDER BY av.version_number DESC) as versions_list
+        SELECT 
+            a.id as article_id,
+            a.title,
+            a.status,
+            a.publish_at,
+            a.updated_at,
+            a.user_id,
+            a.version as current_version,
+            u.username,
+            c.name as category,
+            CASE 
+                WHEN ROW_NUMBER() OVER (ORDER BY a.id ASC) + :offset_calc = 0 
+                THEN :start_calc + ROW_NUMBER() OVER (ORDER BY a.id ASC)
+                ELSE :start_calc2 + ROW_NUMBER() OVER (ORDER BY a.id ASC)
+            END as rownum
         FROM articles a
-        JOIN users u ON a.user_id = u.id
+        LEFT JOIN users u ON a.user_id = u.id
         LEFT JOIN categories c ON a.category_id = c.id
-        LEFT JOIN article_versions av ON a.id = av.article_id
         $where
-        GROUP BY a.id
-        ORDER BY a.updated_at DESC
+        ORDER BY a.id ASC
         LIMIT :limit OFFSET :offset
     ");
-    foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+    
+    foreach ($params as $k => $v) {
+        $stmt->bindValue($k + 1, $v);
+    }
     $stmt->bindValue(':limit', $length, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $start, PDO::PARAM_INT);
+    $stmt->bindValue(':offset_calc', $start, PDO::PARAM_INT);
+    $stmt->bindValue(':start_calc', $start, PDO::PARAM_INT);
+    $stmt->bindValue(':start_calc2', $start, PDO::PARAM_INT);
     $stmt->execute();
+    
     $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $rownum = $start + 1;
-    foreach ($articles as &$a) {
-        $a['rownum'] = $rownum++;
-        $a['versions'] = [];
-        if ($a['versions_list']) {
-            foreach (explode(',', $a['versions_list']) as $v) {
-                $a['versions'][] = ['version_number' => (int)$v];
-            }
-        }
-        unset($a['versions_list']);
+    
+    // Pentru fiecare articol, încarcă versiunile disponibile
+    foreach ($articles as &$article) {
+        $versionsStmt = $db->prepare("
+            SELECT version_number, status, is_online 
+            FROM article_versions 
+            WHERE article_id = ? 
+            ORDER BY version_number DESC
+        ");
+        $versionsStmt->execute([$article['article_id']]);
+        $article['versions'] = $versionsStmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     echo json_encode([
-        "draw" => $draw,
-        "recordsTotal" => $totalArticles,
-        "recordsFiltered" => $filtered,
-        "data" => $articles
+        'draw' => $draw,
+        'recordsTotal' => $totalArticles,
+        'recordsFiltered' => $filtered,
+        'data' => $articles
     ]);
     exit;
 }
@@ -146,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = $_POST['action'] ?? '';
 
-    // Creare articol nou
+    // CREARE ARTICOL NOU
     if ($action === 'add_article') {
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
@@ -167,12 +184,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $clean_content = clean_html($content);
         $clean_content = removeImageCaptionText($clean_content);
 
-        // Inserează articolul în tabelul articles
+        // Inserează articolul în tabelul articles cu versiunea 1
         $stmt = $db->prepare("INSERT INTO articles (title, content, category_id, user_id, status, publish_at, created_at, updated_at, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)");
         $stmt->execute([$title, $clean_content, $category_id, $user_id, $status, $publish_at, $created_at, $created_at]);
         $aid = $db->lastInsertedId();
 
-        // Salvează versiunea inițială în article_versions (v1) - nu este online încă
+        // Salvează versiunea inițială în article_versions (v1) - nu este online încă (is_online = 0)
         $initial_note = $change_note ?: 'Versiune inițială';
         $db->query("INSERT INTO article_versions (article_id, version_number, title, content, category_id, author_id, status, is_online, created_at, updated_at, change_note) VALUES (?, 1, ?, ?, ?, ?, ?, 0, NOW(), NOW(), ?)",
             [$aid, $title, $clean_content, $category_id, $user_id, $status, $initial_note]);
@@ -196,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Editare articol
+    // EDITARE ARTICOL - IMPLEMENTAREA REGULILOR OFICIALE
     if ($action === 'edit_article') {
         $articleId = (int)($_POST['article_id'] ?? 0);
         $baseVersion = (int)($_POST['base_version'] ?? 1);
@@ -208,7 +225,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $publish_at = $_POST['publish_at'] ?? null;
         $status = $_POST['submit_type'] === 'draft' ? 'draft' : 'pending';
         $user_id = $_SESSION['user']['id'];
-        $updated_at = date('Y-m-d H:i:s');
         $tags = isset($_POST['tags']) ? $_POST['tags'] : '';
         $tagList = array_filter(array_map('trim', explode(',', $tags)));
         $change_note = trim($_POST['change_note'] ?? '');
@@ -222,9 +238,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $clean_content = removeImageCaptionText($clean_content);
 
         if ($isEditingOnlineVersion === 1) {
-            // REGULA 5: Editarea versiunii online generează o versiune nouă
+            // REGULA 5: Editarea articolului online → generează versiune nouă
             
-            // Obține ultima versiune
+            // Obține ultima versiune pentru a determina următorul număr
             $lastVersion = $db->fetchSingle("SELECT MAX(version_number) as v FROM article_versions WHERE article_id = ?", [$articleId]);
             $nextVersion = ($lastVersion && $lastVersion['v']) ? $lastVersion['v'] + 1 : 1;
             
@@ -235,12 +251,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $edit_note = "Modificare bazată pe versiunea ONLINE {$baseVersion} → versiunea {$nextVersion}";
             }
             
-            // Creează noua versiune în article_versions (NU este online)
+            // Creează noua versiune în article_versions (NU este online - is_online = 0)
             $db->query("INSERT INTO article_versions (article_id, version_number, title, content, category_id, author_id, status, is_online, created_at, updated_at, change_note) VALUES (?, ?, ?, ?, ?, ?, ?, 0, NOW(), NOW(), ?)",
                 [$articleId, $nextVersion, $title, $clean_content, $category_id, $user_id, $status, $edit_note]);
 
             // NU actualizează tabelul articles - versiunea online rămâne neschimbată
-            // Doar dacă se aprobă noua versiune, aceasta va deveni online
+            // Aceasta este esența regulii: stabilitatea versiunii online în timpul dezvoltării
             
             logActivity($user_id, 'edit_online_version', 'User '. $_SESSION['user']['username'].' edited ONLINE version '. $baseVersion .' of article ID '. $articleId .', created new version '. $nextVersion);
             
@@ -249,24 +265,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'was_editing_online_version' => 1,
                 'base_version' => $baseVersion,
                 'new_version' => $nextVersion,
-                'message' => 'A fost creată o versiune nouă bazată pe versiunea online'
+                'message' => 'A fost creată versiunea ' . $nextVersion . ' bazată pe versiunea online ' . $baseVersion
             ]);
             
         } else {
             // REGULA 1: Editarea unei versiuni care NU este online
-            // Regula 4: Editarea unei versiuni aprobate o scoate din statusul Approved
+            // REGULA 4: Editarea unei versiuni aprobate o scoate din statusul Approved
+            
+            // Verifică statusul curent al versiunii
+            $currentVersionData = $db->fetchSingle("SELECT status FROM article_versions WHERE article_id = ? AND version_number = ?", [$articleId, $baseVersion]);
+            
+            if (!$currentVersionData) {
+                echo json_encode(['error' => 'Versiunea nu există']);
+                exit;
+            }
             
             // Actualizează versiunea existentă în article_versions
+            // Dacă era approved, devine draft/pending conform Regulii 4
             $db->query("UPDATE article_versions SET title = ?, content = ?, category_id = ?, status = ?, updated_at = NOW(), change_note = ? WHERE article_id = ? AND version_number = ?",
                 [$title, $clean_content, $category_id, $status, $change_note ?: "Modificare versiune {$baseVersion}", $articleId, $baseVersion]);
             
-            logActivity($user_id, 'edit_version', 'User '. $_SESSION['user']['username'].' edited NON-ONLINE version '. $baseVersion .' of article ID '. $articleId);
+            // Log diferit pentru versiuni aprobate care au fost scoase din approved
+            if ($currentVersionData['status'] === 'approved') {
+                logActivity($user_id, 'edit_approved_version', 'User '. $_SESSION['user']['username'].' edited APPROVED version '. $baseVersion .' of article ID '. $articleId .', version moved to '. $status);
+            } else {
+                logActivity($user_id, 'edit_version', 'User '. $_SESSION['user']['username'].' edited NON-ONLINE version '. $baseVersion .' of article ID '. $articleId);
+            }
             
             echo json_encode([
                 'success' => true, 
                 'was_editing_online_version' => 0,
                 'base_version' => $baseVersion,
-                'message' => 'Versiunea a fost actualizată'
+                'message' => 'Versiunea ' . $baseVersion . ' a fost actualizată'
             ]);
         }
 
@@ -288,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Schimbarea datei de publicare
+    // SCHIMBAREA DATEI DE PUBLICARE
     if ($action === 'publish_at') {
         $articleId = (int)($_POST['article_id'] ?? 0);
         $publishAt = $_POST['publish_at'] ?? null;
@@ -300,11 +330,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Aprobare articol - REGULA 2: Versiunea nouă se generează DOAR la aprobare
+    // APROBARE ARTICOL - REGULA 2: Doar marchează ca approved, NU publică
     if ($action === 'approve') {
         $articleId = (int)($_POST['article_id'] ?? 0);
         $version = (int)($_POST['version'] ?? 1);
-        $publishAt = $_POST['publish_at'] ?? null;
         
         // Obține datele versiunii care se aprobă
         $versionData = $db->fetchSingle("SELECT * FROM article_versions WHERE article_id = ? AND version_number = ?", [$articleId, $version]);
@@ -313,34 +342,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        // REGULA 2: Marchează versiunea ca approved în article_versions
+        // Verifică că versiunea nu este deja aprobată
+        if ($versionData['status'] === 'approved') {
+            echo json_encode(['error' => 'Versiunea este deja aprobată']);
+            exit;
+        }
+        
+        // REGULA 2: Doar marchează versiunea ca approved în article_versions
+        // NU o publică automat
         $db->query("UPDATE article_versions SET status = 'approved', updated_at = NOW() WHERE article_id = ? AND version_number = ?", [$articleId, $version]);
         
+        logActivity($_SESSION['user']['id'], 'approve_article', 'User '. $_SESSION['user']['username'].' approved version '. $version .' of article ID '. $articleId);
+        echo json_encode(['success' => true, 'message' => 'Versiunea ' . $version . ' a fost aprobată (nu este încă publicată)']);
+        exit;
+    }
+
+    // PUBLICARE ARTICOL - REGULA 3: Acțiune separată pentru publicare
+    if ($action === 'publish') {
+        $articleId = (int)($_POST['article_id'] ?? 0);
+        $version = (int)($_POST['version'] ?? 1);
+        $publishAt = $_POST['publish_at'] ?? null;
+        
+        // Obține datele versiunii care se publică
+        $versionData = $db->fetchSingle("SELECT * FROM article_versions WHERE article_id = ? AND version_number = ? AND status = 'approved'", [$articleId, $version]);
+        if (!$versionData) {
+            echo json_encode(['error' => 'Versiunea nu există sau nu este aprobată']);
+            exit;
+        }
+        
+        // Verifică că versiunea nu este deja online
+        if ($versionData['is_online'] == 1) {
+            echo json_encode(['error' => 'Versiunea este deja publicată']);
+            exit;
+        }
+        
         // REGULA 3: Publicarea = copierea în tabelul articles
+        
+        // Verifică dacă articolul există deja în tabela articles
+        $existingArticle = $db->fetchSingle("SELECT id FROM articles WHERE id = ?", [$articleId]);
+        
+        if ($existingArticle) {
+            // Articolul există - UPDATE cu datele din versiunea aprobată
+            $db->query("UPDATE articles SET title = ?, content = ?, category_id = ?, status = 'approved', version = ?, publish_at = ?, updated_at = NOW() WHERE id = ?", 
+                [$versionData['title'], $versionData['content'], $versionData['category_id'], $version, $publishAt, $articleId]);
+        } else {
+            // Articolul nu există - INSERT nou în articles
+            $db->query("INSERT INTO articles (id, title, content, category_id, user_id, status, version, publish_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'approved', ?, ?, NOW(), NOW())", 
+                [$articleId, $versionData['title'], $versionData['content'], $versionData['category_id'], $versionData['author_id'], $version, $publishAt]);
+        }
+        
         // Marchează vechea versiune online ca non-online
         $db->query("UPDATE article_versions SET is_online = 0 WHERE article_id = ? AND is_online = 1", [$articleId]);
         
         // Marchează noua versiune ca online
         $db->query("UPDATE article_versions SET is_online = 1 WHERE article_id = ? AND version_number = ?", [$articleId, $version]);
         
-        // Actualizează tabelul articles cu datele versiunii aprobate
-        $db->query("UPDATE articles SET title = ?, content = ?, category_id = ?, status = 'approved', version = ?, publish_at = ?, updated_at = NOW() WHERE id = ?", 
-            [$versionData['title'], $versionData['content'], $versionData['category_id'], $version, $publishAt, $articleId]);
-        
-        logActivity($_SESSION['user']['id'], 'approve_article', 'User '. $_SESSION['user']['username'].' approved version '. $version .' of article ID '. $articleId);
-        echo json_encode(['success' => true, 'message' => 'Articolul a fost aprobat și publicat']);
+        logActivity($_SESSION['user']['id'], 'publish_article', 'User '. $_SESSION['user']['username'].' published version '. $version .' of article ID '. $articleId);
+        echo json_encode(['success' => true, 'message' => 'Versiunea ' . $version . ' a fost publicată și este acum online']);
         exit;
     }
 
-    // Restaurare versiune
+    // RESTAURARE VERSIUNE - Pentru versiuni approved non-online
     if ($action === 'restore') {
         $articleId = (int)($_POST['id'] ?? 0);
         $version = (int)($_POST['version'] ?? 1);
         
         // Obține datele versiunii care se restaurează
-        $versionData = $db->fetchSingle("SELECT * FROM article_versions WHERE article_id = ? AND version_number = ? AND status = 'approved'", [$articleId, $version]);
+        $versionData = $db->fetchSingle("SELECT * FROM article_versions WHERE article_id = ? AND version_number = ? AND status = 'approved' AND is_online = 0", [$articleId, $version]);
         if (!$versionData) {
-            echo json_encode(['error' => 'Versiunea nu există sau nu este approved']);
+            echo json_encode(['error' => 'Versiunea nu există, nu este approved sau este deja online']);
             exit;
         }
         
@@ -354,12 +424,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db->query("UPDATE articles SET title = ?, content = ?, category_id = ?, status = 'approved', version = ?, updated_at = NOW() WHERE id = ?", 
             [$versionData['title'], $versionData['content'], $versionData['category_id'], $version, $articleId]);
         
-        logActivity($_SESSION['user']['id'], 'restore_article', 'User '. $_SESSION['user']['username'].' restored version '. $version .' of article ID '. $articleId);
-        echo json_encode(['success' => true, 'message' => 'Versiunea a fost restaurată']);
+        logActivity($_SESSION['user']['id'], 'restore_article', 'User '. $_SESSION['user']['username'].' restored version '. $version .' of article ID '. $articleId .' as online version');
+        echo json_encode(['success' => true, 'message' => 'Versiunea ' . $version . ' a fost restaurată ca versiune online']);
         exit;
     }
 
-    // Dezactivare articol
+    // DEZACTIVARE ARTICOL
     if ($action === 'disable') {
         $articleId = (int)($_POST['article_id'] ?? 0);
         
@@ -369,8 +439,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Marchează toate versiunile ca non-online
         $db->query("UPDATE article_versions SET is_online = 0 WHERE article_id = ?", [$articleId]);
         
-        logActivity($_SESSION['user']['id'], 'disable_article', 'User '. $_SESSION['user']['username'].' disabled article ID '. $articleId);
-        echo json_encode(['success' => true, 'message' => 'Articolul a fost dezactivat']);
+        logActivity($_SESSION['user']['id'], 'disable_article', 'User '. $_SESSION['user']['username'].' disabled article ID '. $articleId .' and all its versions');
+        echo json_encode(['success' => true, 'message' => 'Articolul a fost dezactivat complet']);
+        exit;
+    }
+
+    // ACTIVARE ARTICOL - Reactivează ultima versiune approved
+    if ($action === 'enable') {
+        $articleId = (int)($_POST['article_id'] ?? 0);
+        
+        // Găsește cea mai recentă versiune approved
+        $latestApproved = $db->fetchSingle("SELECT * FROM article_versions WHERE article_id = ? AND status = 'approved' ORDER BY version_number DESC LIMIT 1", [$articleId]);
+        
+        if (!$latestApproved) {
+            echo json_encode(['error' => 'Nu există versiuni aprobate pentru acest articol']);
+            exit;
+        }
+        
+        // Marchează versiunea găsită ca online
+        $db->query("UPDATE article_versions SET is_online = 1 WHERE article_id = ? AND version_number = ?", [$articleId, $latestApproved['version_number']]);
+        
+        // Reactivează în tabelul articles
+        $db->query("UPDATE articles SET status = 'approved', version = ?, updated_at = NOW() WHERE id = ?", [$latestApproved['version_number'], $articleId]);
+        
+        logActivity($_SESSION['user']['id'], 'enable_article', 'User '. $_SESSION['user']['username'].' enabled article ID '. $articleId .' with version '. $latestApproved['version_number']);
+        echo json_encode(['success' => true, 'message' => 'Articolul a fost reactivat cu versiunea ' . $latestApproved['version_number']]);
         exit;
     }
 }

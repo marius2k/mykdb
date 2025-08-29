@@ -20,6 +20,7 @@ Sistemul suportă următoarele 6 operații asupra articolelor:
 Sistemul definește 5 tipuri de roluri cu nivele diferite de acces:
 
 ### 1. **Contributor** (Nivel de bază)
+- **ROL EXCLUSIV pentru crearea de articole** - Doar Contributors pot crea articole noi
 - Rol pentru utilizatori care contribuie cu conținut
 - Acces limitat doar la propriile articole (în draft/pending)
 - Nu poate aproba sau dezactiva articole
@@ -221,6 +222,24 @@ Un utilizator cu rol **Admin** accesează un articol în status **Approved**:
 
 ---
 
+---
+
+## ⚠️ Restricții Speciale
+
+### Crearea de Articole
+**IMPORTANT:** Doar utilizatorii cu rolul **Contributor** pot crea articole noi în sistem.
+
+**Implementare:**
+- **Frontend:** Opțiunea "Create Article" din meniul Admin → Articles este vizibilă pentru toate rolurile, dar disabled (cu styling gri și cursor not-allowed) pentru non-Contributors
+- **Backend:** API-ul verifică explicit rolul utilizatorului înainte de a permite crearea unui articol
+- **Securitate:** Încercările de creare de către alte roluri sunt respinse cu eroarea "Access denied. Only Contributors can create articles."
+- **UI/UX:** Utilizatorii pot vedea ce funcționalitate există, dar înțeleg clar că nu o pot accesa
+
+**Justificare:**
+Această restricție asigură că procesul de creație al conținutului este controlat și că doar utilizatorii dedicați creației (Contributors) pot adăuga articole noi în sistem. Celelalte roluri se concentrează pe gestionarea, moderarea și aprobarea conținutului existent.
+
+---
+
 ## Note Importante
 
 1. **Securitate:** Toate verificările sunt efectuate atât pe frontend (UI) cât și pe backend (API)
@@ -238,3 +257,116 @@ Un utilizator cu rol **Admin** accesează un articol în status **Approved**:
 **Data ultimei actualizări:** 26 August 2025  
 **Versiune:** 1.0  
 **Autor:** MyKDB Development Team
+
+
+Mapare Operații Articole (Roluri vs. Statusuri)
+Această secțiune detaliază permisiunile specifice pentru fiecare operație (view, edit, history, approve, disable, delete), aplicate rolurilor de utilizator (Contributor, Editor, Moderator, Admin, Superadmin) și statusurilor articolelor (Draft, Pending, Approved).
+
+Operație / Status
+
+Contributor
+
+Editor
+
+Moderator
+
+Admin
+
+Superadmin
+
+View
+
+Draft (propriu), Pending (propriu), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Edit
+
+Draft (propriu)
+
+Draft (toate), Pending (toate)
+
+Draft (toate), Pending (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+History
+
+Draft (propriu), Pending (propriu), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Approve
+
+N/A
+
+Pending (toate)
+
+Pending (toate)
+
+Pending (toate)
+
+Pending (toate)
+
+Disable
+
+N/A
+
+Approved (toate)
+
+Approved (toate)
+
+Approved (toate)
+
+Approved (toate)
+
+Delete
+
+Draft (propriu)
+
+Draft (toate), Pending (toate)
+
+Draft (toate), Pending (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Draft (toate), Pending (toate), Approved (toate)
+
+Explicații suplimentare:
+View: Toți utilizatorii pot vizualiza articolele aprobate. Contributorii își pot vedea propriile articole în Draft și Pending. Rolurile superioare (Editor, Moderator, Admin, Superadmin) pot vedea toate articolele, indiferent de status.
+
+Edit:
+
+Contributorii pot edita doar propriile articole în Draft.
+
+Editorii și Moderatorii pot edita articolele în Draft și Pending (ale oricui).
+
+Adminii și Superadminii pot edita toate articolele, indiferent de status.
+
+History: Similar cu View, dar se referă la accesul la istoricul versiunilor. Logica este aceeași: contributorii la propriile draft-uri/pending și toate aprobate, iar restul rolurilor la toate.
+
+Approve: Doar Editorii, Moderatorii, Adminii și Superadminii pot aproba articole din stadiul Pending.
+
+Disable: Această operație este aplicabilă articolelor Approved și implică, de obicei, un status intern de "dezactivat" sau "nepublicat". Permisiunea este acordată Editorilor, Moderatorilor, Adminilor și Superadminilor.
+
+Delete:
+
+Contributorii pot șterge doar propriile articole aflate în Draft.
+
+Editorii și Moderatorii pot șterge articolele în Draft și Pending (ale oricui).
+
+Adminii și Superadminii pot șterge toate articolele, indiferent de status.

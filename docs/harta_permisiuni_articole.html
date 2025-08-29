@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografic: Harta Permisiunilor pe Articole</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .flowchart-step {
+            background-color: white;
+            border: 2px solid #58508d;
+            color: #003f5c;
+        }
+        .flowchart-arrow {
+            color: #58508d;
+            font-weight: bold;
+        }
+        .permission-card-header {
+            background-color: #003f5c;
+            color: white;
+            padding: 1rem;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-black text-[#003f5c] mb-2">Infografic: Harta Permisiunilor pe Articole</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">O vizualizare detaliată a drepturilor de acțiune pentru fiecare rol, în funcție de statusul articolelor dintr-o bază de cunoștințe.</p>
+        </header>
+
+        <main class="space-y-16">
+            
+            <section id="roles">
+                <h2 class="text-3xl font-bold text-center mb-8 text-[#58508d]">Actorii & Statusurile</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <h3 class="text-xl font-bold text-[#003f5c] mb-2">Contributor</h3>
+                        <p class="text-sm">Creare & Editare</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <h3 class="text-xl font-bold text-[#58508d] mb-2">Editor</h3>
+                        <p class="text-sm">Verificare & Aprobare</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <h3 class="text-xl font-bold text-[#bc5090] mb-2">Moderator</h3>
+                        <p class="text-sm">Aprobare & Control</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <h3 class="text-xl font-bold text-[#ff6361] mb-2">Admin</h3>
+                        <p class="text-sm">Control Complet</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <h3 class="text-xl font-bold text-[#ffa600] mb-2">Superadmin</h3>
+                        <p class="text-sm">Acces Total</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <p class="text-center text-gray-700 mb-8 font-semibold">Articolele trec prin următoarele stadii:</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 text-center">
+                        <div class="flowchart-step rounded-lg p-4 w-48">
+                            <div class="text-2xl font-bold">DRAFT</div>
+                        </div>
+                        <div class="text-4xl flowchart-arrow transform md:-rotate-0 rotate-90">&rarr;</div>
+                        <div class="flowchart-step rounded-lg p-4 w-48">
+                            <div class="text-2xl font-bold">PENDING</div>
+                        </div>
+                        <div class="text-4xl flowchart-arrow transform md:-rotate-0 rotate-90">&rarr;</div>
+                        <div class="flowchart-step rounded-lg p-4 w-48">
+                            <div class="text-2xl font-bold">APPROVED</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="core-operations" class="mt-16">
+                 <h2 class="text-3xl font-bold text-center mb-8 text-[#58508d]">Operațiuni de Bază</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Drepturi de Vizualizare</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Toate articolele aprobate sunt vizibile public. Dreptul de a vizualiza articolele în stadii incipiente este restricționat la rolurile superioare.</p>
+                            <div class="chart-container">
+                                <canvas id="viewPermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Acces la Istoric</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Istoricul versiunilor este crucial pentru audit. Accesul este similar cu permisiunile de vizualizare.</p>
+                            <div class="chart-container">
+                                <canvas id="historyPermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="editorial-operations" class="mt-16">
+                 <h2 class="text-3xl font-bold text-center mb-8 text-[#58508d]">Acțiuni Editoriale & de Aprobare</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Permisiuni de Aprobare</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Numai rolurile cu autoritate editorială pot valida articolele, trecându-le în stadiul "Approved".</p>
+                            <div class="chart-container">
+                                <canvas id="approvePermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Permisiuni de Dezactivare</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Dezactivarea unui articol aprobat este o acțiune limitată la rolurile superioare, pentru a menține controlul asupra conținutului public.</p>
+                            <div class="chart-container">
+                                <canvas id="disablePermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="management-operations" class="mt-16">
+                 <h2 class="text-3xl font-bold text-center mb-8 text-[#58508d]">Managementul Conținutului</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-md">
+                         <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Permisiuni de Editare</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Vizualizează cine poate modifica articole în diferite stadii. Rolurile avansate au capacități de editare extinse.</p>
+                            <div class="chart-container">
+                                <canvas id="editPermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Permisiuni de Ștergere</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Analizează cine are autoritatea de a elimina articole. Această acțiune este restricționată pentru a preveni pierderea de date.</p>
+                            <div class="chart-container">
+                                <canvas id="deletePermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-16 pt-8 border-t border-gray-300">
+            <p class="text-sm text-gray-500">&copy; 2025 Knowledge Base Systems. Infografic generat pentru a clarifica fluxul de lucru.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+
+            const commonChartOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            stepSize: 1,
+                            color: '#333'
+                        },
+                        grid: {
+                            color: '#e0e0e0'
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        ticks: {
+                            color: '#333'
+                        },
+                         grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                         labels: {
+                            color: '#333'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            };
+            
+            const labels = ['Contributor', 'Editor', 'Moderator', 'Admin', 'Superadmin'];
+            
+            const viewHistoryDraft = [1, 1, 1, 1, 1];
+            const viewHistoryPending = [1, 1, 1, 1, 1];
+            const viewHistoryApproved = [1, 1, 1, 1, 1];
+            
+            const approveData = [0, 1, 1, 1, 1];
+            
+            const disableData = [0, 1, 1, 1, 1];
+            
+            const editDraftData = [1, 1, 1, 1, 1];
+            const editPendingData = [0, 1, 1, 1, 1];
+            const editApprovedData = [0, 0, 0, 1, 1];
+            
+            const deleteDraftData = [1, 1, 1, 1, 1];
+            const deletePendingData = [0, 1, 1, 1, 1];
+            const deleteApprovedData = [0, 0, 0, 1, 1];
+
+            new Chart(document.getElementById('viewPermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Draft', data: viewHistoryDraft, backgroundColor: '#003f5c' },
+                        { label: 'Pending', data: viewHistoryPending, backgroundColor: '#bc5090' },
+                        { label: 'Approved', data: viewHistoryApproved, backgroundColor: '#ffa600' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+            
+            new Chart(document.getElementById('historyPermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Draft', data: viewHistoryDraft, backgroundColor: '#003f5c' },
+                        { label: 'Pending', data: viewHistoryPending, backgroundColor: '#bc5090' },
+                        { label: 'Approved', data: viewHistoryApproved, backgroundColor: '#ffa600' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+
+            new Chart(document.getElementById('approvePermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Pending', data: approveData, backgroundColor: '#ff6361' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+
+            new Chart(document.getElementById('disablePermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Approved', data: disableData, backgroundColor: '#58508d' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+
+            new Chart(document.getElementById('editPermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Draft', data: editDraftData, backgroundColor: '#003f5c' },
+                        { label: 'Pending', data: editPendingData, backgroundColor: '#bc5090' },
+                        { label: 'Approved', data: editApprovedData, backgroundColor: '#ffa600' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+
+            new Chart(document.getElementById('deletePermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Draft', data: deleteDraftData, backgroundColor: '#003f5c' },
+                        { label: 'Pending', data: deletePendingData, backgroundColor: '#bc5090' },
+                        { label: 'Approved', data: deleteApprovedData, backgroundColor: '#ffa600' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+        });
+    </script>
+</body>
+</html>

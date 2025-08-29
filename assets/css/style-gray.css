@@ -1539,6 +1539,13 @@ button[disabled],
     color: #263238;
   }
 
+  /* Special styling for admin submenu triggers - same as regular dropdown items */
+  .topnav .dropdown .dropdown-item.admin-submenu-trigger:hover {
+    background-color: #b0bec5 !important;
+    color: #263238 !important;
+    border-radius: 4px;
+  }
+
   /* Submenu styles for nested dropdowns */
   .topnav .dropdown .dropdown-submenu {
     position: relative;

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Interactiv: Permisiuni Articole</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: Am proiectat un dashboard interactiv cu o singură pagină. Structura începe cu o prezentare generală a rolurilor și a fluxului de lucru al articolelor pentru a oferi context. Nucleul aplicației este un "Explorator de Permisiuni" interactiv, unde utilizatorul poate selecta un rol specific pentru a vizualiza doar permisiunile acestuia, reducând complexitatea cognitivă a unei matrice complete. Această abordare este orientată spre sarcini ("Ce poate face un Editor?"). În final, o secțiune de vizualizări comparative cu grafice Chart.js oferă o perspectivă de ansamblu asupra ierarhiei de putere. Această structură transformă o matrice statică într-o experiență de învățare ghidată și explorabilă. -->
+    <!-- Visualization & Content Choices: 
+        - Flux Articol: Goal: Organize -> Method: Diagramă HTML/CSS cu Tailwind. Justification: Stabilește contextul statusurilor fără SVG/Mermaid.
+        - Explorator Interactiv: Goal: Organize/Inform -> Method: Butoane de filtrare (JS) + Carduri de conținut (HTML/Tailwind). Justification: Simplifică informația complexă, permițând utilizatorului să se concentreze pe un singur rol.
+        - Grafice Comparative (Edit, Delete): Goal: Compare -> Method: Grafic cu bare grupate (Chart.js/Canvas). Justification: Permite compararea vizuală rapidă a puterii fiecărui rol pe acțiuni critice, respectând constrângerea NO SVG.
+        - Carduri KPI (Approve, Disable): Goal: Inform -> Method: Numere mari, stilizate (HTML/Tailwind). Justification: Evidențiază rapid și clar cine poate efectua acțiuni cheie de moderare. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #1a202c;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .role-btn {
+            transition: all 0.3s ease;
+        }
+        .role-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .flowchart-step {
+            border: 2px solid;
+        }
+        .flowchart-arrow {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-black text-[#003f5c] mb-2">Dashboard Permisiuni Knowledge Base</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">O aplicație interactivă pentru a explora cine ce poate face în funcție de rol și statusul articolului.</p>
+        </header>
+
+        <main class="space-y-16">
+            
+            <section id="overview">
+                <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">Prezentare Generală</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold text-center mb-4 text-[#58508d]">Rolurile Utilizatorilor</h3>
+                        <ul class="space-y-2 text-center">
+                            <li><strong class="text-[#003f5c]">Contributor:</strong> Creatorul de conținut.</li>
+                            <li><strong class="text-[#58508d]">Editor:</strong> Asigură calitatea editorială.</li>
+                            <li><strong class="text-[#bc5090]">Moderator:</strong> Menține ordinea și aprobă.</li>
+                            <li><strong class="text-[#ff6361]">Admin:</strong> Managerul platformei.</li>
+                            <li><strong class="text-[#ffa600]">Superadmin:</strong> Control absolut.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold text-center mb-4 text-[#58508d]">Fluxul de Viață al Articolului</h3>
+                         <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                            <div class="flowchart-step border-[#003f5c] rounded-lg p-3 w-36">
+                                <div class="font-bold">DRAFT</div>
+                            </div>
+                            <div class="text-2xl flowchart-arrow text-[#58508d] transform md:rotate-0 rotate-90">&rarr;</div>
+                            <div class="flowchart-step border-[#bc5090] rounded-lg p-3 w-36">
+                                <div class="font-bold">PENDING</div>
+                            </div>
+                            <div class="text-2xl flowchart-arrow text-[#58508d] transform md:rotate-0 rotate-90">&rarr;</div>
+                            <div class="flowchart-step border-[#ff6361] rounded-lg p-3 w-36">
+                                <div class="font-bold">APPROVED</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="explorer">
+                <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">Explorator Interactiv de Permisiuni</h2>
+                <div class="flex justify-center flex-wrap gap-4 mb-8" id="role-selector">
+                    <button data-role="Contributor" class="role-btn font-bold py-2 px-4 rounded-lg bg-[#003f5c] text-white">Contributor</button>
+                    <button data-role="Editor" class="role-btn font-bold py-2 px-4 rounded-lg bg-[#58508d] text-white">Editor</button>
+                    <button data-role="Moderator" class="role-btn font-bold py-2 px-4 rounded-lg bg-[#bc5090] text-white">Moderator</button>
+                    <button data-role="Admin" class="role-btn font-bold py-2 px-4 rounded-lg bg-[#ff6361] text-white">Admin</button>
+                    <button data-role="Superadmin" class="role-btn font-bold py-2 px-4 rounded-lg bg-[#ffa600] text-white">Superadmin</button>
+                </div>
+                <div id="permission-details" class="bg-white rounded-lg shadow-md p-6 min-h-[300px]">
+                    <!-- Detaliile permisiunilor vor fi injectate aici -->
+                </div>
+            </section>
+
+            <section id="charts">
+                <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">Analiză Comparativă</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold text-center mb-4 text-[#58508d]">Cine poate Edita Articole?</h3>
+                        <div class="chart-container">
+                            <canvas id="editChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold text-center mb-4 text-[#58508d]">Cine poate Șterge Articole?</h3>
+                        <div class="chart-container">
+                            <canvas id="deleteChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+             <section id="key-actions">
+                <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">Acțiuni Cheie de Moderare</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center text-white">
+                    <div class="bg-[#bc5090] rounded-lg shadow-md p-6">
+                        <h3 class="text-2xl font-bold mb-2">Approve</h3>
+                        <p>Doar rolurile de la Editor în sus pot aproba articole din stadiul `Pending`.</p>
+                    </div>
+                    <div class="bg-[#ff6361] rounded-lg shadow-md p-6">
+                        <h3 class="text-2xl font-bold mb-2">Disable</h3>
+                        <p>Doar rolurile de la Editor în sus pot dezactiva articole `Approved`.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-16 pt-8 border-t border-gray-300">
+            <p class="text-sm text-gray-500">&copy; 2025 Knowledge Base Systems. Dashboard generat pentru clarificarea permisiunilor.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const permissionsData = {
+                Contributor: {
+                    View: '`Draft` (propriu), `Pending` (propriu), `Approved` (toate)',
+                    Edit: '`Draft` (propriu)',
+                    History: '`Draft` (propriu), `Pending` (propriu), `Approved` (toate)',
+                    Approve: 'Nu are permisiunea',
+                    Disable: 'Nu are permisiunea',
+                    Delete: '`Draft` (propriu)'
+                },
+                Editor: {
+                    View: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    Edit: '`Draft` (toate), `Pending` (toate)',
+                    History: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    Approve: '`Pending` (toate)',
+                    Disable: '`Approved` (toate)',
+                    Delete: '`Draft` (toate), `Pending` (toate)'
+                },
+                Moderator: {
+                    View: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    Edit: '`Draft` (toate), `Pending` (toate)',
+                    History: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    Approve: '`Pending` (toate)',
+                    Disable: '`Approved` (toate)',
+                    Delete: '`Draft` (toate), `Pending` (toate)'
+                },
+                Admin: {
+                    View: 'Toate articolele, indiferent de status',
+                    Edit: 'Toate articolele, indiferent de status',
+                    History: 'Toate articolele, indiferent de status',
+                    Approve: '`Pending` (toate)',
+                    Disable: '`Approved` (toate)',
+                    Delete: 'Toate articolele, indiferent de status'
+                },
+                Superadmin: {
+                    View: 'Toate articolele, indiferent de status',
+                    Edit: 'Toate articolele, indiferent de status',
+                    History: 'Toate articolele, indiferent de status',
+                    Approve: '`Pending` (toate)',
+                    Disable: '`Approved` (toate)',
+                    Delete: 'Toate articolele, indiferent de status'
+                }
+            };
+
+            const roleSelector = document.getElementById('role-selector');
+            const permissionDetails = document.getElementById('permission-details');
+            const roleButtons = roleSelector.querySelectorAll('.role-btn');
+
+            function displayPermissions(role) {
+                const permissions = permissionsData[role];
+                let html = `<h3 class="text-2xl font-bold text-center mb-6 text-[#003f5c]">Permisiuni pentru: ${role}</h3>`;
+                html += '<ul class="space-y-3">';
+                for (const operation in permissions) {
+                    html += `<li class="flex items-start"><strong class="w-24 font-semibold">${operation}:</strong> <span>${permissions[operation]}</span></li>`;
+                }
+                html += '</ul>';
+                permissionDetails.innerHTML = html;
+
+                roleButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.role === role) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            roleSelector.addEventListener('click', function(e) {
+                if (e.target.matches('.role-btn')) {
+                    const role = e.target.dataset.role;
+                    displayPermissions(role);
+                }
+            });
+
+            displayPermissions('Contributor');
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+
+            const commonChartOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#4a5568'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#4a5568'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#1a202c'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            };
+            
+            const labels = ['Contributor', 'Editor', 'Moderator', 'Admin', 'Superadmin'];
+
+            new Chart(document.getElementById('editChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Draft',
+                            data: [1, 1, 1, 1, 1],
+                            backgroundColor: '#003f5c',
+                        },
+                        {
+                            label: 'Pending',
+                            data: [0, 1, 1, 1, 1],
+                            backgroundColor: '#bc5090',
+                        },
+                        {
+                            label: 'Approved',
+                            data: [0, 0, 0, 1, 1],
+                            backgroundColor: '#ff6361',
+                        }
+                    ]
+                },
+                options: {
+                    ...commonChartOptions,
+                    scales: {
+                        x: { stacked: true, ticks: { color: '#4a5568' } },
+                        y: { stacked: true, ticks: { color: '#4a5568' } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('deleteChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Draft',
+                            data: [1, 1, 1, 1, 1],
+                            backgroundColor: '#003f5c',
+                        },
+                        {
+                            label: 'Pending',
+                            data: [0, 1, 1, 1, 1],
+                            backgroundColor: '#bc5090',
+                        },
+                        {
+                            label: 'Approved',
+                            data: [0, 0, 0, 1, 1],
+                            backgroundColor: '#ff6361',
+                        }
+                    ]
+                },
+                options: {
+                    ...commonChartOptions,
+                    scales: {
+                        x: { stacked: true, ticks: { color: '#4a5568' } },
+                        y: { stacked: true, ticks: { color: '#4a5568' } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

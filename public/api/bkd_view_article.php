@@ -35,6 +35,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $id = (int)$_GET['id'];
 $version = (int)($_GET['version'] ?? 0);
+$isOnline = (int)($_GET['isonline'] ?? 0);
 $db = new Database();
 
 // Increment view counter
@@ -47,7 +48,7 @@ if (isset($_GET['id'])) {
 if ($version > 0) {
     // Dacă este specificată o versiune, încarcă din article_versions
     $stmt = $db->prepare("
-        SELECT av.title, av.content, av.status, av.created_at, av.updated_at, av.change_note, av.category_id,
+        SELECT av.title, av.content, av.status, av.created_at, av.updated_at, av.change_note, av.category_id, av.status,
             a.user_id, a.views, a.publish_at, a.id,
             u.username, c.name AS category, c.icon,
             (SELECT COUNT(*) FROM article_likes WHERE article_id = a.id AND vote_type = 'like') AS likes,
@@ -128,5 +129,8 @@ $comments = $db->fetchAll("
 $article['comments'] = $comments;
 $article['is_bookmarked'] = $isBookmarked;
 $article['tags'] = array_column($tags, 'name');
+$article['is_online'] = $isOnline;
+
+
 
 echo json_encode($article);

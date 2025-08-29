@@ -1526,6 +1526,13 @@ button[disabled],
     color: #1e2125;
   }
 
+  /* Special styling for admin submenu triggers - same as regular dropdown items */
+  .topnav .dropdown .dropdown-item.admin-submenu-trigger:hover {
+    background-color: #8fd1cd !important;
+    color: #1e2125 !important;
+    border-radius: 4px;
+  }
+
   /* Submenu styles for nested dropdowns */
   .topnav .dropdown .dropdown-submenu {
     position: relative;
@@ -3385,9 +3392,9 @@ ul.top-articles .li-icon {
 .tag-badge {
     background: linear-gradient(135deg, #e3f2fd, #a6e0e4ff) !important;
     color: rgb(1, 80, 100) !important;
-    padding: 3px 6px !important;
-    border-radius: 10px !important;
-    font-size: 0.85em !important;
+    padding: 0px 6px 0px 6px !important;
+    border-radius: 4px !important;
+    font-size: 0.8em !important;
     margin-right: 6px !important;
     margin-bottom: 4px !important;
     display: inline-block !important;
@@ -3410,10 +3417,10 @@ ul.top-articles .li-icon {
     display: inline-block;
     background: #ffffff;
     color: rgb(46, 106, 117);
-    border-radius: 7px;
-    padding: 1px 10px;
-    margin: 2px 6px 2px 0;
-    font-size: 0.88em;
+    border-radius: 4px;
+    padding: 0px 5px;
+    margin: 2px 2px 2px 0;
+    font-size: 0.85em;
     font-weight: 500;
     border: 1px solid rgb(66, 148, 148);
     box-shadow: 0 1px 2px rgba(21,101,192,0.08);
@@ -3426,6 +3433,7 @@ ul.top-articles .li-icon {
     background: #f0efef;
     color: rgb(46, 95, 117);
     box-shadow: 0 2px 8px rgba(25,118,210,0.12);
+    transform: scale(1.03);
 }
 
 

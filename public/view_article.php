@@ -39,7 +39,11 @@ if (empty($_SESSION['csrf_token'])) {
                 <div class="article-meta" id="article-meta"></div>
                 <div id="article-header-flex"></div>
             </div>
-            <div class="article-tags" id="article-tags" style="margin: 10px 0;"></div>
+             <div class="article-header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="article-tags" style="text-align: left;" id="article-tags"></div>
+                <div class="article-status" style="text-align: right;" id="article-status"></div>
+
+            </div>
             <br>
             <div style="height: 0.5px; background-color: #ccc; width: 100%;"></div>
             <br>
@@ -104,6 +108,13 @@ function loadArticle() {
         url += '&version=' + requestedVersion;
     }
     
+    // Adaugă parametrul isonline din URL dacă există
+    const urlParams = new URLSearchParams(window.location.search);
+    const isOnline = urlParams.get('isonline');
+    if (isOnline !== null) {
+        url += '&isonline=' + isOnline;
+    }
+    
     fetch(url)
         .then(res => res.json())
         .then(data => {
@@ -111,6 +122,12 @@ function loadArticle() {
                 document.getElementById('article-title').textContent = data.error;
                 return;
             }
+
+            // Debug temporar pentru a vedea toate valorile
+            //console.log('Full JSON response:', data);
+            //console.log('debug_get_isonline:', data.debug_get_isonline);
+            //console.log('debug_isOnline_var:', data.debug_isOnline_var);
+            //console.log('debug_isOnline_type:', data.debug_isOnline_type);
 
 
             // Icon categorie
@@ -125,19 +142,21 @@ function loadArticle() {
             
             // Afișează titlul cu indicatorul de versiune dacă este cazul
             let titleHtml = iconHtml + escapeHtml(data.title);
-            if (data.is_version && data.version_number) {
-                titleHtml += ` <small style="background: #f1f1f1ff; color: #09838bff; padding: 4px 8px; border: solid 1px #9c9a9aff; border-radius: 4px; font-size: 0.7em; font-weight: normal;"><?=lang('lang_art_version')?> ${data.version_number}</small>`;
-            }
+            
+
             document.getElementById('article-title').innerHTML = titleHtml;
             
-            // bookmark-btn
+            // bookmark-btn + export to pdf icon
 
-            let bookmarkHtmtl = '';
+            let bookmarkHtml = '';
+            bookmarkHtml += `<a href="api/bkd_export_article.php?id=${data.id}" title="Export to PDF" style="margin-left:20px; display:inline-block;">
+                        <img src="/assets/icons/icon-pdf.png" alt="Export PDF" style="height:35px; vertical-align:middle; cursor:pointer;">
+                    </a>&nbsp;&nbsp;&nbsp;&nbsp;`;
 
             if (data.is_bookmarked) {
-                bookmarkHtml = `<img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-full.svg" alt="Bookmark" class="bookmark-icon" style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(${data.id}, this)" title="<?=lang('lang_favorites_remove')?>" >`;
+                bookmarkHtml += `<img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-full.svg" alt="Bookmark" class="bookmark-icon" style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(${data.id}, this)" title="<?=lang('lang_favorites_remove')?>" >`;
             } else {
-                bookmarkHtml = `<img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-empty.svg" alt="Bookmark" class="bookmark-icon" style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(${data.id}, this)" title="<?=lang('lang_favorites_add')?>" >`;
+                bookmarkHtml += `<img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-empty.svg" alt="Bookmark" class="bookmark-icon" style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(${data.id}, this)" title="<?=lang('lang_favorites_add')?>" >`;
             }
 
             document.getElementById('bookmark-img').innerHTML = bookmarkHtml;
@@ -146,12 +165,27 @@ function loadArticle() {
             
             // Adaugă change_note dacă există și este o versiune specifică
             if (data.is_version && data.change_note) {
-                metaHtml += `<br><small style="color: #7f8c8d; font-style: italic;"><strong>Notă modificare:</strong> ${escapeHtml(data.change_note)}</small>`;
+                //metaHtml += `<br><small style="color: #7f8c8d; font-style: italic;"><strong>Notă modificare:</strong> ${escapeHtml(data.change_note)}</small>`;
             }
             
             document.getElementById('article-meta').innerHTML = metaHtml;
 
-            // Afișează tagurile și iconița Export to PDF pe aceeași linie
+
+            // afiseaza versiunea, statusul si daca este online articolul
+            let statusHtml = '<strong>Info: </strong>';
+            if (data.is_version && data.version_number) {
+                statusHtml += ` <small style="background: #e4e3e3ff; color: #05646bff; padding: 5px; border-radius: 4px; font-size: 0.8em; font-weight: normal;"><?=lang('lang_art_version')?>: ${data.version_number}</small>`;
+            }
+            
+            statusHtml += ` <small style="background: ${getStatusColor(data.status)};  color: white; padding: 5px; border-radius: 4px; font-size: 0.8em; font-weight: normal;"> ${data.status}</small>`;
+
+            if (data.is_online == 1) {
+                statusHtml += ` <small style="background: #c70606ff; color: white; padding: 5px; border-radius: 4px; font-size: 0.8em; font-weight: normal;">ONLINE</small>`;
+            }
+
+            document.getElementById('article-status').innerHTML = statusHtml;
+
+            // Afișează tagurile 
             let tagsHtml = '';
             if (data.tags && data.tags.length > 0) {
                 tagsHtml = data.tags.map(tag => 
@@ -161,9 +195,6 @@ function loadArticle() {
             document.getElementById('article-tags').innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div><strong>Tags:</strong> ${tagsHtml}</div>
-                    <a href="api/bkd_export_article.php?id=${data.id}" title="Export to PDF" style="margin-left:20px; display:inline-block;">
-                        <img src="/assets/icons/icon-pdf.png" alt="Export PDF" style="height:35px; vertical-align:middle; cursor:pointer;">
-                    </a>
                 </div>
             `;
 
@@ -269,6 +300,16 @@ function loadArticle() {
         loadRelatedArticles(data.id);
     });
 }
+
+function getStatusColor(status) {
+    switch(status) {
+        case 'approved': return '#27ae60';
+        case 'pending': return '#e67e22';
+        case 'draft': return '#95a5a6';
+        default: return '#bdc3c7';
+    }
+}
+
 
 // Funcție pentru încărcarea articolelor relationate
 function loadRelatedArticles(articleId) {

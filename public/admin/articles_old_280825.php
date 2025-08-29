@@ -61,26 +61,6 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 a:has(.op-icon.disabled) {
     pointer-events: none;
 }
-
-#articlesTable {
-    font-size: 0.9em; /* Poți ajusta: 0.8em, 0.9em, etc. */
-}
-
-#articlesTable thead th {
-    font-size: 0.9em; /* Font mai mic pentru header */
-    font-weight: 600;
-}
-
-#articlesTable tbody td {
-    font-size: 0.9em; /* Font mai mic pentru conținut */
-    padding: 8px 10px; /* Reduce și padding-ul dacă vrei */
-    text-align:left;
-}
-
-/* Pentru dropdown-urile de versiuni */
-#articlesTable .version-select {
-    font-size: 0.9em;
-}
 </style>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -105,16 +85,16 @@ a:has(.op-icon.disabled) {
     <div class="category-box-1" style="width: 100%;">
         <table id="articlesTable" class="articles-table" width="100%">
             <thead>
-                <tr>
+                <tr style="font-size: 0.8em;">
                     <th>#</th>
                     <th><?= lang('lang_art_title') ?></th>
-                    <th style="text-align:center;"><?= lang('lang_art_version') ?></th>
-                    <th style="text-align:center;"><?= lang('lang_art_author') ?></th>
-                    <th style="text-align:center;"><?= lang('lang_art_category') ?></th>
-                    <th style="text-align:center;"><?= lang('lang_art_status') ?></th>
-                    <th style="text-align:center;"><?= lang('lang_art_publish_at') ?></th>
-                    <th style="text-align:center;"><?= lang('lang_art_updated_at') ?></th>
-                    <th style="width:250px; text-align:center;"><?= lang('lang_art_actions') ?></th>
+                    <th><?= lang('lang_art_version') ?></th>
+                    <th><?= lang('lang_art_author') ?></th>
+                    <th><?= lang('lang_art_category') ?></th>
+                    <th><?= lang('lang_art_status') ?></th>
+                    <th><?= lang('lang_art_publish_at') ?></th>
+                    <th><?= lang('lang_art_updated_at') ?></th>
+                    <th style="width:220px; text-align:center;"><?= lang('lang_art_actions') ?></th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -398,12 +378,6 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
                 : `articleAction('approve', ${articleId}, '${publishAt}', getSelectedVersion(${articleId}));return false;`
         },
         {
-            name: 'publish',
-            icon: 'icon-publish.svg',
-            title: '<?=lang('lang_art_publish')?>',
-            onclick: `articleAction('publish', ${articleId});return false;`
-        },
-        {
             name: 'disable',
             icon: 'icon-disable.svg',
             title: '<?=lang('lang_art_disable')?>',
@@ -581,14 +555,12 @@ function getVersionDataFromRow(row, versionNumber) {
 
 // Funcție globală pentru a naviga la view_article.php cu versiunea selectată
 function viewArticleWithVersion(articleId, onlineVersion = null) {
+
     const selectedVersion = getSelectedVersion(articleId);
-    
-    // Pentru a determina is_online, ar fi ideal să ai acces la datele versiunii
-    // Pentru simplitate, poți presupune că selectedVersion == onlineVersion înseamnă is_online = 1
     const isOnlineVersion = onlineVersion && selectedVersion == onlineVersion;
-    
     const url = `../view_article.php?id=${articleId}&version=${selectedVersion}&isonline=${isOnlineVersion ? 1 : 0}`;
     window.location.href = url;
+
 }
 
 let currentPage = 1;
@@ -710,6 +682,52 @@ function renderPagination(page, totalPages) {
     document.getElementById('pagination-results').innerHTML = html;
 }
 
+/*
+function submitArticle2(submitType) {
+    const form = document.getElementById('add_article');
+    // Ia HTML-ul din Summernote
+    if ($('#summernote').summernote) {
+        form.querySelector('textarea[name="content"]').value = $('#summernote').summernote('code');
+    }
+    const formData = new FormData(form);
+    formData.append('csrf_token', window.CSRF_TOKEN);
+
+    // Verifică dacă e edit sau add
+    const editId = form.getAttribute('data-edit-id');
+    const editVersion = form.getAttribute('data-edit-version');
+    if (editId) {
+        formData.append('action', 'edit_article');
+        formData.append('article_id', editId);
+        if (editVersion) {
+            formData.append('base_version', editVersion);
+        }
+    } else {
+        formData.append('action', 'add_article');
+    }
+    formData.append('submit_type', submitType);
+
+    fetch('../api/bkd_articles.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('article-feedback').textContent = 'Articolul a fost salvat!';
+            document.getElementById('article-feedback').classList.remove('d-none');
+            form.reset();
+            form.removeAttribute('data-edit-id');
+            form.removeAttribute('data-edit-version');
+            setTimeout(closeArticleModal, 1200);
+            loadArticles(currentPage);
+        } else {
+            document.getElementById('article-feedback').textContent = data.error || 'Eroare la salvare!';
+            document.getElementById('article-feedback').classList.remove('d-none');
+        }
+    });
+}
+*/
+
 function submitArticle2(submitType) {
     const form = document.getElementById('add_article');
     
@@ -724,23 +742,28 @@ function submitArticle2(submitType) {
     // Verifică dacă e edit sau add
     const editId = form.getAttribute('data-edit-id');
     const editVersion = form.getAttribute('data-edit-version');
-    const isOnlineVersion = form.getAttribute('data-is-online-version');
+    const onlineVersion = form.getAttribute('data-online-version');
     
-    if (editId && editVersion) {
-        // Folosește direct informația din atributul data-is-online-version
-        const isEditingOnlineVersion = parseInt(isOnlineVersion) || 0;
+    // Calculează dacă versiunea editată este cea online (afișată pe prima pagină)
+    let isEditingOnlineVersion = 0;
+    
+    if (editId && editVersion && onlineVersion) {
+        // 1 = versiunea editată este cea online (afișată pe prima pagină)
+        // 0 = versiunea editată NU este cea online
+        isEditingOnlineVersion = parseInt(editVersion) === parseInt(onlineVersion) ? 1 : 0;
         
         // Debug logging
-        console.log('Online version check (using is_online field):', {
-            editVersion: editVersion,
-            isOnlineVersion: isOnlineVersion,
+        console.log('Online version check:', {
+            editVersion: parseInt(editVersion),
+            onlineVersion: parseInt(onlineVersion),
             isEditingOnlineVersion: isEditingOnlineVersion,
-            description: isEditingOnlineVersion ? 'Editing ONLINE version (is_online=1)' : 'Editing NON-ONLINE version (is_online=0)'
+            description: isEditingOnlineVersion ? 'Editing ONLINE version (displayed on homepage)' : 'Editing NON-ONLINE version'
         });
         
         formData.append('action', 'edit_article');
         formData.append('article_id', editId);
         formData.append('base_version', editVersion);
+        formData.append('online_version', onlineVersion);
         formData.append('is_editing_online_version', isEditingOnlineVersion);
     } else {
         formData.append('action', 'add_article');
@@ -763,9 +786,8 @@ function submitArticle2(submitType) {
             form.removeAttribute('data-edit-id');
             form.removeAttribute('data-edit-version');
             form.removeAttribute('data-online-version');
-            form.removeAttribute('data-is-online-version');
             setTimeout(closeArticleModal, 1200);
-            reloadArticlesTable();
+            reloadArticlesTable(); // Folosește DataTables reload
         } else {
             document.getElementById('article-feedback').textContent = data.error || 'Eroare la salvare!';
             document.getElementById('article-feedback').classList.remove('d-none');
@@ -858,14 +880,16 @@ function loadArticleVersions(articleId, currentVersion) {
     // Versiunea se selectează din tabelul principal
 }
 
+/*
 function openEditArticleModal(articleId, version = null) {
+
     openArticleModal();
     document.getElementById('modal-title').textContent = '<?=lang('lang_edit_article')?>';
     
     // Folosește versiunea selectată din dropdown sau versiunea implicită
     const targetVersion = version || getSelectedVersion(articleId) || 1;
     
-    // Încarcă direct versiunea pentru editare
+    // fetch article data pentru versiunea specificată
     fetch(`../api/bkd_articles.php?action=get_version&id=${articleId}&version=${targetVersion}`)
         .then(res => res.json())
         .then(data => {
@@ -874,31 +898,90 @@ function openEditArticleModal(articleId, version = null) {
                 return;
             }
             
-            // Stochează informația despre versiunea online în formular
+            // Completează câmpurile formularului cu datele versiunii selectate
+            document.getElementById('title').value = data.title || '';
+            $('#summernote').summernote('code', data.content || '');
+            
+            // Populează change_note dacă există
+            document.getElementById('change_note').value = data.change_note || '';
+            
+            // Marchează formularul ca "edit" și salvează versiunea
             const form = document.getElementById('add_article');
-            form.setAttribute('data-online-version', data.is_online ? targetVersion : 'unknown');
+            form.setAttribute('data-edit-id', articleId);
+            form.setAttribute('data-edit-version', targetVersion);
+            
+            // Populează dropdown-ul de versiuni și selectează versiunea curentă
+            loadArticleVersions(articleId, targetVersion);
+        });
+    
+    // Încarcă și alte date necesare (categorii, etc.)
+    fetch(`../api/bkd_articles.php?action=get_article&id=${articleId}`)
+        .then(res => res.json())
+        .then(data => {
+            $('#add_category_select').val(data.article.category_id).trigger('change');
+            document.getElementById('publish_at').value = data.article.publish_at ? data.article.publish_at.replace(' ', 'T') : '';
+            document.getElementById('tags').value = data.article.tags ? data.article.tags.join(', ') : '';
+        });
+}
+*/
+
+
+function openEditArticleModal(articleId, version = null) {
+    openArticleModal();
+    document.getElementById('modal-title').textContent = '<?=lang('lang_edit_article')?>';
+    
+    // Folosește versiunea selectată din dropdown sau versiunea implicită
+    const targetVersion = version || getSelectedVersion(articleId) || 1;
+    
+    // Încarcă articolul pentru a obține versiunea online (cea afișată pe prima pagină)
+    fetch(`../api/bkd_articles.php?action=get_article&id=${articleId}`)
+        .then(res => res.json())
+        .then(articleData => {
+            if (!articleData.success) {
+                console.error('Failed to load article data:', articleData);
+                return;
+            }
+            
+            // Versiunea online este cea din tabelul articles (cea afișată pe prima pagină)
+            const onlineVersion = articleData.article.version;
+            
+            // Stochează versiunea online în formular
+            const form = document.getElementById('add_article');
+            form.setAttribute('data-online-version', onlineVersion);
             
             console.log('Edit modal setup:', {
                 targetVersion: targetVersion,
-                isOnlineVersion: data.is_online,
-                editingOnlineVersion: data.is_online ? 1 : 0
+                onlineVersion: onlineVersion,
+                isEditingOnlineVersion: parseInt(targetVersion) === parseInt(onlineVersion)
             });
+            
+            // Continuă cu încărcarea versiunii de editat
+            return fetch(`../api/bkd_articles.php?action=get_version&id=${articleId}&version=${targetVersion}`);
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Failed to load version data:', data);
+                return;
+            }
             
             // Completează câmpurile formularului cu datele versiunii selectate
             document.getElementById('title').value = data.title || '';
             $('#summernote').summernote('code', data.content || '');
+            
+            // Populează change_note dacă există
             document.getElementById('change_note').value = data.change_note || '';
             
             // Marchează formularul ca "edit" și salvează versiunea
+            const form = document.getElementById('add_article');
             form.setAttribute('data-edit-id', articleId);
             form.setAttribute('data-edit-version', targetVersion);
-            form.setAttribute('data-is-online-version', data.is_online ? 1 : 0);
             
-            // Populează dropdown-ul de versiuni
+            // Populează dropdown-ul de versiuni și selectează versiunea curentă
             loadArticleVersions(articleId, targetVersion);
         });
     
-    // Încarcă alte date necesare (categorii, etc.)
+    // Încarcă și alte date necesare (categorii, etc.) - folosește același fetch pentru eficiență
     fetch(`../api/bkd_articles.php?action=get_article&id=${articleId}`)
         .then(res => res.json())
         .then(data => {
@@ -909,6 +992,25 @@ function openEditArticleModal(articleId, version = null) {
             }
         });
 }
+
+/*
+function closeArticleModal() {
+    document.getElementById('modalOverlayAddArticle').style.display = 'none';
+    document.getElementById('modal-add-article').style.display = 'none';
+    document.getElementById('add_article').reset();
+    document.getElementById('article-feedback').classList.add('d-none');
+    document.getElementById('add_article').removeAttribute('data-edit-id');
+    document.getElementById('add_article').removeAttribute('data-edit-version');
+    // Reset Summernote
+    if ($('#summernote').summernote) {
+        $('#summernote').summernote('reset');
+    }
+    // Reset Select2
+    if (window.$ && $('#add_category_select').select2) {
+        $('#add_category_select').val('').trigger('change');
+    }
+}
+*/
 
 function closeArticleModal() {
     document.getElementById('modalOverlayAddArticle').style.display = 'none';
@@ -921,7 +1023,6 @@ function closeArticleModal() {
     form.removeAttribute('data-edit-id');
     form.removeAttribute('data-edit-version');
     form.removeAttribute('data-online-version');
-    form.removeAttribute('data-is-online-version');
     
     // Reset Summernote
     if ($('#summernote').summernote) {
@@ -937,6 +1038,22 @@ window.onclick = function(event) {
     const modal = document.getElementById('modal-add-article');
     if (event.target === modal) closeArticleModal();
 }
+
+/*
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+    loadArticles();
+});
+*/
+/*
+document.addEventListener('DOMContentLoaded', () => {
+    const allCustomBoxes = document.querySelectorAll('.custom-box-1');
+    allCustomBoxes.forEach(box => {
+      initializeCustomBox1(box);
+    });
+    
+});
+*/
 
 // Funcții pentru istoricul versiunilor
 function showVersionHistory(articleId) {
@@ -966,24 +1083,45 @@ function showVersionHistory(articleId) {
     });
 }
 
-function generateRestoreButton(version, onlineVersion = null) {
-    const userRole = window.USER_ROLE || '';
-    const isModerator = userRole === 'moderator' || userRole === 'admin' || userRole === 'superadmin';
+function generateRestoreButton(version, isOnlineVersion) {
+    // Verifică dacă utilizatorul este moderator
+    const userRole = window.USER_ROLE || '<?= $_SESSION['user']['role'] ?? '' ?>';
+    const isModerator = userRole === 'moderator' || userRole === 'admin';
     
-    // Folosește direct câmpul is_online din date (1 sau 0)
-    const isOnlineVersion = version.is_online == 1;
+    // Debug logging
+    console.log('generateRestoreButton called:', {
+        version: version.version_number,
+        status: version.status,
+        isOnlineVersion: isOnlineVersion,
+        userRole: userRole,
+        isModerator: isModerator
+    });
+    
+    // Verifică eligibilitatea pentru restore
     const isEligible = version.status === 'approved' && !isOnlineVersion;
     
+    console.log('Eligibility check:', {
+        'version.status': version.status,
+        'isOnlineVersion': isOnlineVersion,
+        'isEligible': isEligible
+    });
+    
     if (!isModerator) {
+        // Utilizatorul nu este moderator - nu afișa butonul
+        console.log('User is not moderator, no button');
         return '';
     }
     
     if (isEligible) {
+        // Versiune eligibilă - buton activ
+        console.log('Version eligible, showing active button');
         return `<button onclick="restoreVersion(${version.version_number})" class="version-action-btn restore">
                     <?=lang('lang_art_restore')?>
                 </button>`;
     } else {
+        // Versiune neeligibilă - buton disabled
         const reason = isOnlineVersion ? 'Versiune online' : 'Nu este approved';
+        console.log('Version not eligible:', reason);
         return `<button class="version-action-btn restore disabled" disabled title="${reason}">
                     <?=lang('lang_art_restore')?>
                 </button>`;
@@ -1010,8 +1148,8 @@ function displayVersionHistory(history, articleTitle = '', onlineVersion = null)
         const date = new Date(version.created_at).toLocaleDateString('ro-RO');
         const time = new Date(version.created_at).toLocaleTimeString('ro-RO');
         
-        // Folosește direct câmpul is_online din date
-        const isOnlineVersion = version.is_online == 1;
+        // Verifică dacă aceasta este versiunea online
+        const isOnlineVersion = onlineVersion && version.version_number == onlineVersion;
         
         html += `
             <div class="version-item">
@@ -1035,10 +1173,10 @@ function displayVersionHistory(history, articleTitle = '', onlineVersion = null)
                     '<div class="version-note" style="color: #999;"><?=lang('lang_art_no_change_note')?></div>'
                 }
                 <div class="version-actions">
-                    <button onclick="viewVersion(${version.version_number}, ${version.is_online})" class="version-action-btn view">
+                    <button onclick="viewVersion(${version.version_number}, ${onlineVersion || 'null'})" class="version-action-btn view">
                         <?=lang('lang_art_view')?>
                     </button>
-                    ${generateRestoreButton(version)}
+                    ${generateRestoreButton(version, isOnlineVersion)}
                 </div>
             </div>
         `;
@@ -1061,15 +1199,20 @@ function closeVersionHistoryModal() {
     document.getElementById('modalOverlayVersionHistory').style.display = 'none';
 }
 
-function viewVersion(versionNumber, isOnline = 0) {
+
+// restore the selected version: copy it in articles table over the existing online version
+
+function viewVersion(versionNumber, onlineVersion = null) {
+    // Implementare viitoare pentru vizualizarea unei versiuni specifice
+    //alert(`Funcționalitate în dezvoltare: Vizualizare versiunea ${versionNumber}`);
     const articleId = parseInt(document.getElementById('modal-version-history').dataset.articleId);
     if (!articleId) {
         alert('Eroare: Nu s-a putut identifica articolul.');
         return;
     }
     
-    // Folosește direct parametrul is_online
-    const isOnlineVersion = isOnline == 1;
+    // Verifică dacă versiunea selectată este cea online
+    const isOnlineVersion = onlineVersion && versionNumber == onlineVersion;
     
     const url = `../view_article.php?id=${articleId}&version=${versionNumber}&isonline=${isOnlineVersion ? 1 : 0}`;
     window.location.href = url;
