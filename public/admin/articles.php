@@ -425,7 +425,7 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     // Validează statusul - dacă este undefined sau null, folosește 'draft' ca fallback
     const normalizedStatus = status || 'draft';
     
-    // Definește acțiunile disponibile
+    // Definește acțiunile disponibile - adaugă restore
     const actions = [
         {
             name: 'view',
@@ -468,6 +468,12 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
             onclick: `articleAction('disable', ${articleId});return false;`
         },
         {
+            name: 'restore',
+            icon: 'icon-restore.svg',
+            title: '<?=lang('lang_art_restore')?>',
+            onclick: `articleAction('restore', ${articleId});return false;`
+        },
+        {
             name: 'delete',
             icon: 'icon-delete.svg',
             title: '<?=lang('lang_art_delete')?>',
@@ -479,6 +485,15 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     
     actions.forEach(action => {
         const isEnabled = isActionEnabled(action.name, userRole, normalizedStatus, authorId, currentUserId, onlineVersion, version);
+        
+        // Pentru disable/restore, afișează doar una din ele în funcție de status
+        if (action.name === 'disable' && normalizedStatus === 'disabled') {
+            return; // Nu afișa disable pentru articole disabled
+        }
+        if (action.name === 'restore' && normalizedStatus !== 'disabled') {
+            return; // Nu afișa restore pentru articole care nu sunt disabled
+        }
+        
         const cssClass = isEnabled ? 'op-icon' : 'op-icon disabled';
         const clickHandler = isEnabled ? `onclick="${action.onclick}"` : '';
         
@@ -494,13 +509,21 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
     
     // Normalizează statusurile pentru comparație - elimină spațiile și convertește la lowercase
     const status = (articleStatus || '').toString().trim().toLowerCase();
+    
+    // Determină dacă versiunea selectată este online
+    const isSelectedVersionOnline = selectedVersion && onlineVersion && 
+                                   parseInt(selectedVersion) === parseInt(onlineVersion);
    
+    // Pentru acțiunea "edit", verifică dacă versiunea online poate fi editată
+    if (actionName === 'edit' && isSelectedVersionOnline) {
+        // Versiunea online se poate edita doar dacă este disabled
+        if (status !== 'disabled') {
+            return false;
+        }
+    }
+    
     // Pentru acțiunea "publish", verifică dacă versiunea selectată este online
     if (actionName === 'publish') {
-        // Versiunea este considerată online dacă selectedVersion == onlineVersion
-        const isSelectedVersionOnline = selectedVersion && onlineVersion && 
-                                       parseInt(selectedVersion) === parseInt(onlineVersion);
-        
         // Nu se poate publica o versiune care este deja online
         if (isSelectedVersionOnline) {
             return false;
@@ -509,12 +532,21 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
     
     // Pentru acțiunea "disable", verifică dacă versiunea selectată este online
     if (actionName === 'disable') {
-        // Versiunea este considerată online dacă selectedVersion == onlineVersion
-        const isSelectedVersionOnline = selectedVersion && onlineVersion && 
-                                       parseInt(selectedVersion) === parseInt(onlineVersion);
-        
         // Doar versiunile online pot fi dezactivate
         if (!isSelectedVersionOnline) {
+            return false;
+        }
+        
+        // Disable se face doar pentru status approved (nu disabled)
+        if (status !== 'approved') {
+            return false;
+        }
+    }
+
+    // Pentru acțiunea "restore", verifică dacă versiunea este online și disabled
+    if (actionName === 'restore') {
+        // Restore se face doar pentru versiuni online care sunt disabled
+        if (!isSelectedVersionOnline || status !== 'disabled') {
             return false;
         }
     }
@@ -523,24 +555,32 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'contributor':
             switch (actionName) {
                 case 'view':
-                    const canViewDraft = status === 'draft' && isOwner;
-                    const canViewPending = status === 'pending' && isOwner;
-                    const canViewApproved = status === 'approved';
-                    
-                    return canViewDraft || canViewPending || canViewApproved;
+                    // Contributor: toate approved si disabled + propriile draft/pending
+                    return status === 'approved' || status === 'disabled' || (isOwner && (status === 'draft' || status === 'pending'));
                 case 'edit':
+                    // Contributor: propriile draft + versiuni online disabled (dacă sunt owner)
+                    if (isSelectedVersionOnline) {
+                        return status === 'disabled' && isOwner;
+                    }
                     return status === 'draft' && isOwner;
                 case 'history':
-                    return (status === 'draft' && isOwner) || 
-                           (status === 'pending' && isOwner) || 
-                           (status === 'approved');
+                    // Contributor: toate approved si disabled + propriile draft/pending
+                    return status === 'approved' || status === 'disabled' ||
+                           (isOwner && (status === 'draft' || status === 'pending'));
                 case 'approve':
+                    // Contributor: nu poate aproba
                     return false;
                 case 'publish':
+                    // Contributor: nu poate publica
                     return false;
                 case 'disable':
+                    // Contributor: nu poate dezactiva
+                    return false;
+                case 'restore':
+                    // Contributor: nu poate restaura
                     return false;
                 case 'delete':
+                    // Contributor: doar propriile draft
                     return status === 'draft' && isOwner;
                 default:
                     return false;
@@ -549,18 +589,31 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'editor':
             switch (actionName) {
                 case 'view':
+                    // Editor: toate articolele în orice status
                     return true;
                 case 'edit':
-                    return status === 'draft' || status === 'pending';
+                    // Editor: draft, pending, approved + versiuni online disabled
+                    if (isSelectedVersionOnline) {
+                        return status === 'disabled';
+                    }
+                    return status === 'draft' || status === 'pending' || status === 'approved';
                 case 'history':
+                    // Editor: toate articolele
                     return true;
                 case 'approve':
+                    // Editor: doar pending
                     return status === 'pending';
                 case 'publish':
+                    // Editor: doar approved (și nu online)
                     return status === 'approved';
                 case 'disable':
+                    // Editor: doar approved online
                     return status === 'approved';
+                case 'restore':
+                    // Editor: doar disabled online
+                    return status === 'disabled';
                 case 'delete':
+                    // Editor: toate draft și pending
                     return status === 'draft' || status === 'pending';
                 default:
                     return false;
@@ -569,18 +622,31 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'moderator':
             switch (actionName) {
                 case 'view':
+                    // Moderator: toate articolele în orice status
                     return true;
                 case 'edit':
+                    // Moderator: draft, pending + versiuni online disabled
+                    if (isSelectedVersionOnline) {
+                        return status === 'disabled';
+                    }
                     return status === 'draft' || status === 'pending';
                 case 'history':
+                    // Moderator: toate articolele
                     return true;
                 case 'approve':
+                    // Moderator: doar pending
                     return status === 'pending';
                 case 'publish':
+                    // Moderator: doar approved (și nu online)
                     return status === 'approved';
                 case 'disable':
+                    // Moderator: doar approved online
                     return status === 'approved';
+                case 'restore':
+                    // Moderator: doar disabled online
+                    return status === 'disabled';
                 case 'delete':
+                    // Moderator: toate draft și pending
                     return status === 'draft' || status === 'pending';
                 default:
                     return false;
@@ -589,18 +655,31 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'admin':
             switch (actionName) {
                 case 'view':
+                    // Admin: toate articolele în orice status
                     return true;
                 case 'edit':
+                    // Admin: toate versiunile + versiuni online doar dacă sunt disabled
+                    if (isSelectedVersionOnline) {
+                        return status === 'disabled';
+                    }
                     return true;
                 case 'history':
+                    // Admin: toate articolele
                     return true;
                 case 'approve':
+                    // Admin: doar pending
                     return status === 'pending';
                 case 'publish':
+                    // Admin: doar approved (și nu online)
                     return status === 'approved';
                 case 'disable':
+                    // Admin: doar approved online
                     return status === 'approved';
+                case 'restore':
+                    // Admin: doar disabled online
+                    return status === 'disabled';
                 case 'delete':
+                    // Admin: toate versiunile în toate stările
                     return true;
                 default:
                     return false;
@@ -609,18 +688,31 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'superadmin':
             switch (actionName) {
                 case 'view':
+                    // Superadmin: toate articolele în orice status
                     return true;
                 case 'edit':
+                    // Superadmin: toate versiunile + versiuni online doar dacă sunt disabled
+                    if (isSelectedVersionOnline) {
+                        return status === 'disabled';
+                    }
                     return true;
                 case 'history':
+                    // Superadmin: toate articolele
                     return true;
                 case 'approve':
+                    // Superadmin: doar pending
                     return status === 'pending';
                 case 'publish':
+                    // Superadmin: doar approved (și nu online)
                     return status === 'approved';
                 case 'disable':
+                    // Superadmin: doar approved online
                     return status === 'approved';
+                case 'restore':
+                    // Superadmin: doar disabled online
+                    return status === 'disabled';
                 case 'delete':
+                    // Superadmin: toate versiunile în toate stările
                     return true;
                 default:
                     return false;
@@ -966,16 +1058,39 @@ function articleAction(action, articleId, publishAt = '', version = null) {
         }
     }
     
+    // Pentru acțiunea disable, afișează o confirmare
+    if (action === 'disable') {
+        if (!confirm(`Sigur vrei să dezactivezi acest articol? Acesta nu va mai fi vizibil publicului.`)) {
+            return;
+        }
+    }
+    
+    // Pentru acțiunea restore, afișează o confirmare
+    if (action === 'restore') {
+        if (!confirm(`Sigur vrei să restaurezi acest articol? Acesta va deveni din nou vizibil publicului.`)) {
+            return;
+        }
+    }
+    
     fetch('../api/bkd_articles.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(data => {
         if (data.success) {
             if (action === 'publish') {
                 alert('Articolul a fost publicat cu succes!');
+            } else if (action === 'disable') {
+                alert('Articolul a fost dezactivat cu succes!');
+            } else if (action === 'restore') {
+                alert('Articolul a fost restaurat cu succes!');
             }
             reloadArticlesTable();
         } else {
@@ -984,7 +1099,7 @@ function articleAction(action, articleId, publishAt = '', version = null) {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Eroare la comunicarea cu serverul!');
+        alert('Eroare la comunicarea cu serverul! Detalii: ' + error.message);
     });
 }
 

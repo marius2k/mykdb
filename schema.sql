@@ -26,12 +26,8 @@ function canPerformAction($action, $userRole, $articleStatus, $authorId, $curren
         case 'contributor':
             switch ($action) {
                 case 'view':
-                    return $status === 'approved' || $status === 'disabled' || ($isOwner && ($status === 'draft' || $status === 'pending'));
+                    return $status === 'approved' || ($isOwner && ($status === 'draft' || $status === 'pending'));
                 case 'edit':
-                    // Contributor: doar propriile draft + versiuni online disabled
-                    if ($isOnlineVersion) {
-                        return $status === 'disabled' && $isOwner;
-                    }
                     return $status === 'draft' && $isOwner;
                 case 'approve':
                 case 'publish':
@@ -49,10 +45,6 @@ function canPerformAction($action, $userRole, $articleStatus, $authorId, $curren
                 case 'view':
                     return true;
                 case 'edit':
-                    // Editor: draft, pending + versiuni online disabled
-                    if ($isOnlineVersion) {
-                        return $status === 'disabled';
-                    }
                     return $status === 'draft' || $status === 'pending' || $status === 'approved';
                 case 'approve':
                     return $status === 'pending';
@@ -73,10 +65,6 @@ function canPerformAction($action, $userRole, $articleStatus, $authorId, $curren
                 case 'view':
                     return true;
                 case 'edit':
-                    // Moderator: draft, pending + versiuni online disabled
-                    if ($isOnlineVersion) {
-                        return $status === 'disabled';
-                    }
                     return $status === 'draft' || $status === 'pending';
                 case 'approve':
                     return $status === 'pending';
@@ -96,12 +84,7 @@ function canPerformAction($action, $userRole, $articleStatus, $authorId, $curren
         case 'superadmin':
             switch ($action) {
                 case 'view':
-                    return true;
                 case 'edit':
-                    // Admin/Superadmin: toate versiunile + versiuni online doar dacă sunt disabled
-                    if ($isOnlineVersion) {
-                        return $status === 'disabled';
-                    }
                     return true;
                 case 'approve':
                     return $status === 'pending';
@@ -272,8 +255,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $roleParams = [];
     
     if ($userRole === 'contributor') {
-        // Contributors can only see approved and disabled articles + their own draft/pending
-        $roleFilter = " AND (a.status = 'approved' OR a.status = 'disabled' OR (a.user_id = :current_user_id AND a.status IN ('draft', 'pending')))";
+        // Contributors can only see approved articles + their own draft/pending
+        $roleFilter = " AND (a.status = 'approved' OR (a.user_id = :current_user_id AND a.status IN ('draft', 'pending')))";
         $roleParams[':current_user_id'] = $currentUserId;
     }
 
@@ -798,8 +781,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        // Now use proper status values
-        $newStatus = $action === 'disable' ? 'disabled' : 'approved';
+        // Use shorter status values that fit database schema
+        $newStatus = $action === 'disable' ? 'draft' : 'approved';  // Changed from 'disabled' to 'draft'
         
         try {
             $db->beginTransaction();

@@ -1529,19 +1529,21 @@ function getUnreadNotifications($uid) {
     return $unreadNotifications;
 }
 
-function getDraftsArticles($uid):array {
-    $db = new Database();
+    function getDraftsArticles($uid):array {
+        $db = new Database();
 
-    $query = "SELECT * FROM articles WHERE user_id = :uid AND status = 'draft' ORDER BY created_at DESC";
+        $query = "SELECT * FROM article_versions WHERE author_id = :uid AND status = 'draft' ORDER BY created_at DESC";
 
-    $stmt = $db->prepare($query);
-    $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
-    $stmt->execute();
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(':uid', $uid, PDO::PARAM_INT);
+        $stmt->execute();
 
-    $draftsArticles = $stmt->fetchAll();
+        $draftsArticles = $stmt->fetchAll();
 
-    return $draftsArticles;
-}
+        //debug
+        //error_log(print_r("test: ". $draftsArticles[0], true));
+        return $draftsArticles;
+    }
 
 //************************************************************************************************************* */
 // Return HTML output for notifications
@@ -1661,10 +1663,10 @@ function renderDraftsArticles(array $drafts, array $t): string {
                             <small class="text-muted">creat la ' . date('Y-m-d H:i', strtotime($draft['created_at'])) . '</small>
                         </div>
                         <div class="btn-group">
-                            <a href="edit_article.php?id=' . $draft['id'] . '">
+                            <a href="edit_article.php?id=' . $draft['article_id'] . '">
                                 <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . $t['lang_btn_edit']. '">
                             </a>
-                            <a href="submit_article.php?article_id=' . $draft['id'] . '">
+                            <a href="submit_article.php?article_id=' . $draft['article_id'] . '">
                                 <img src="' . APP_URL . 'assets/icons/icon-send-approval.svg" class="op-icon" title="' . $t['lang_btn_send_approval'] . '">
                             </a>
                         </div>

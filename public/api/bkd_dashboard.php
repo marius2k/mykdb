@@ -44,7 +44,7 @@ $data = [
 ];
 
 //error_log('Pending comments: ' . print_r(getPendingComments(), true));
-
+error_log('Draft articles: ' . print_r($data['drafts'], true));  
 //error_log('Pending articles: ' . print_r(getPendingArticles(), true));
 
 
