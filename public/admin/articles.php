@@ -422,20 +422,6 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     const currentUserId = <?= $_SESSION['user']['id'] ?? 0 ?>;
     const userRole = window.USER_ROLE || '';
     
-    /*
-    // Debug pentru a vedea exact ce primim
-    console.log('buildActionsHtml called with:', {
-        articleId: articleId,
-        status: status,
-        publishAt: publishAt,
-        version: version,
-        authorId: authorId,
-        onlineVersion: onlineVersion,
-        userRole: userRole,
-        currentUserId: currentUserId
-    });
-    */
-
     // Validează statusul - dacă este undefined sau null, folosește 'draft' ca fallback
     const normalizedStatus = status || 'draft';
     
@@ -471,7 +457,9 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
             name: 'publish',
             icon: 'icon-publish.svg',
             title: '<?=lang('lang_art_publish')?>',
-            onclick: `articleAction('publish', ${articleId});return false;`
+            onclick: version
+                ? `articleAction('publish', ${articleId}, '', ${version});return false;`
+                : `articleAction('publish', ${articleId}, '', getSelectedVersion(${articleId}));return false;`
         },
         {
             name: 'disable',
@@ -490,7 +478,7 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     let html = '';
     
     actions.forEach(action => {
-        const isEnabled = isActionEnabled(action.name, userRole, normalizedStatus, authorId, currentUserId);
+        const isEnabled = isActionEnabled(action.name, userRole, normalizedStatus, authorId, currentUserId, onlineVersion, version);
         const cssClass = isEnabled ? 'op-icon' : 'op-icon disabled';
         const clickHandler = isEnabled ? `onclick="${action.onclick}"` : '';
         
@@ -500,27 +488,36 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     return html;
 }
 
-function isActionEnabled(actionName, userRole, articleStatus, authorId, currentUserId) {
+function isActionEnabled(actionName, userRole, articleStatus, authorId, currentUserId, onlineVersion = null, selectedVersion = null) {
     // Convertește ID-urile la numere pentru comparație
     const isOwner = parseInt(authorId) === parseInt(currentUserId);
     
     // Normalizează statusurile pentru comparație - elimină spațiile și convertește la lowercase
     const status = (articleStatus || '').toString().trim().toLowerCase();
    
-    /*
-    // Debug logging îmbunătățit
-    console.log(`🔍 Action Check:`, {
-        action: actionName,
-        role: userRole, 
-        originalStatus: `"${articleStatus}"`,
-        normalizedStatus: `"${status}"`,
-        isOwner: isOwner,
-        authorId: authorId,
-        currentUserId: currentUserId,
-        statusLength: status.length,
-        statusCharCodes: Array.from(status).map(c => c.charCodeAt(0))
-    });
-    */
+    // Pentru acțiunea "publish", verifică dacă versiunea selectată este online
+    if (actionName === 'publish') {
+        // Versiunea este considerată online dacă selectedVersion == onlineVersion
+        const isSelectedVersionOnline = selectedVersion && onlineVersion && 
+                                       parseInt(selectedVersion) === parseInt(onlineVersion);
+        
+        // Nu se poate publica o versiune care este deja online
+        if (isSelectedVersionOnline) {
+            return false;
+        }
+    }
+    
+    // Pentru acțiunea "disable", verifică dacă versiunea selectată este online
+    if (actionName === 'disable') {
+        // Versiunea este considerată online dacă selectedVersion == onlineVersion
+        const isSelectedVersionOnline = selectedVersion && onlineVersion && 
+                                       parseInt(selectedVersion) === parseInt(onlineVersion);
+        
+        // Doar versiunile online pot fi dezactivate
+        if (!isSelectedVersionOnline) {
+            return false;
+        }
+    }
 
     switch (userRole) {
         case 'contributor':
@@ -528,21 +525,9 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                 case 'view':
                     const canViewDraft = status === 'draft' && isOwner;
                     const canViewPending = status === 'pending' && isOwner;
-                    const canViewApproved = status === 'approved'; // Orice articol approved
+                    const canViewApproved = status === 'approved';
                     
-                    const finalResult = canViewDraft || canViewPending || canViewApproved;
-                    
-                    console.log(`📋 Contributor VIEW check:`, {
-                        status: `"${status}"`,
-                        canViewDraft: canViewDraft,
-                        canViewPending: canViewPending, 
-                        canViewApproved: canViewApproved,
-                        finalResult: finalResult,
-                        statusEqualsApproved: status === 'approved',
-                        strictComparison: status === 'approved'
-                    });
-                    
-                    return finalResult;
+                    return canViewDraft || canViewPending || canViewApproved;
                 case 'edit':
                     return status === 'draft' && isOwner;
                 case 'history':
@@ -550,11 +535,11 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                            (status === 'pending' && isOwner) || 
                            (status === 'approved');
                 case 'approve':
-                    return false; // N/A
+                    return false;
                 case 'publish':
-                    return false; // N/A
+                    return false;
                 case 'disable':
-                    return false; // N/A
+                    return false;
                 case 'delete':
                     return status === 'draft' && isOwner;
                 default:
@@ -564,11 +549,11 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'editor':
             switch (actionName) {
                 case 'view':
-                    return true; // Toate statusurile
+                    return true;
                 case 'edit':
                     return status === 'draft' || status === 'pending';
                 case 'history':
-                    return true; // Toate statusurile
+                    return true;
                 case 'approve':
                     return status === 'pending';
                 case 'publish':
@@ -584,11 +569,11 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'moderator':
             switch (actionName) {
                 case 'view':
-                    return true; // Toate statusurile
+                    return true;
                 case 'edit':
                     return status === 'draft' || status === 'pending';
                 case 'history':
-                    return true; // Toate statusurile
+                    return true;
                 case 'approve':
                     return status === 'pending';
                 case 'publish':
@@ -604,11 +589,11 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'admin':
             switch (actionName) {
                 case 'view':
-                    return true; // Toate statusurile
+                    return true;
                 case 'edit':
-                    return true; // Toate statusurile
+                    return true;
                 case 'history':
-                    return true; // Toate statusurile
+                    return true;
                 case 'approve':
                     return status === 'pending';
                 case 'publish':
@@ -616,7 +601,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                 case 'disable':
                     return status === 'approved';
                 case 'delete':
-                    return true; // Toate statusurile
+                    return true;
                 default:
                     return false;
             }
@@ -624,11 +609,11 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'superadmin':
             switch (actionName) {
                 case 'view':
-                    return true; // Toate statusurile
+                    return true;
                 case 'edit':
-                    return true; // Toate statusurile
+                    return true;
                 case 'history':
-                    return true; // Toate statusurile
+                    return true;
                 case 'approve':
                     return status === 'pending';
                 case 'publish':
@@ -636,13 +621,12 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                 case 'disable':
                     return status === 'approved';
                 case 'delete':
-                    return true; // Toate statusurile
+                    return true;
                 default:
                     return false;
             }
             
         default:
-            //console.log(`❌ Unknown role: "${userRole}"`);
             return false;
     }
 }
@@ -965,12 +949,23 @@ function changePublishAt(value, articleId) {
 
 function articleAction(action, articleId, publishAt = '', version = null) {
     let body = `action=${encodeURIComponent(action)}&article_id=${encodeURIComponent(articleId)}&csrf_token=${encodeURIComponent(window.CSRF_TOKEN)}`;
+    
     if (action === 'approve' && publishAt) {
         body += `&publish_at=${encodeURIComponent(publishAt)}`;
     }
-    if (action === 'approve' && version) {
+    
+    if ((action === 'approve' || action === 'publish') && version) {
         body += `&version=${encodeURIComponent(version)}`;
     }
+    
+    // Pentru acțiunea publish, afișează o confirmare
+    if (action === 'publish') {
+        const selectedVersion = version || getSelectedVersion(articleId);
+        if (!confirm(`Sigur vrei să publici versiunea ${selectedVersion} a acestui articol? Aceasta va înlocui versiunea curent publicată.`)) {
+            return;
+        }
+    }
+    
     fetch('../api/bkd_articles.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -978,8 +973,18 @@ function articleAction(action, articleId, publishAt = '', version = null) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) reloadArticlesTable();
-        else alert(data.error || 'Eroare la acțiune!');
+        if (data.success) {
+            if (action === 'publish') {
+                alert('Articolul a fost publicat cu succes!');
+            }
+            reloadArticlesTable();
+        } else {
+            alert(data.error || 'Eroare la acțiune!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Eroare la comunicarea cu serverul!');
     });
 }
 

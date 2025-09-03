@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infografic: Harta Permisiunilor pe Articole</title>
+    <title>Operatii si Permisiuni pe Articole</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +51,7 @@
     <div class="container mx-auto p-4 md:p-8">
 
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-black text-[#003f5c] mb-2">Infografic: Harta Permisiunilor pe Articole</h1>
+            <h1 class="text-4xl md:text-5xl font-black text-[#003f5c] mb-2">Operatii si Permisiuni pe Articole</h1>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto">O vizualizare detaliată a drepturilor de acțiune pentru fiecare rol, în funcție de statusul articolelor dintr-o bază de cunoștințe.</p>
         </header>
 
@@ -95,6 +95,10 @@
                         <div class="flowchart-step rounded-lg p-4 w-48">
                             <div class="text-2xl font-bold">APPROVED</div>
                         </div>
+                        <div class="text-4xl flowchart-arrow transform md:-rotate-0 rotate-90">&rarr;</div>
+                        <div class="flowchart-step rounded-lg p-4 w-48">
+                            <div class="text-2xl font-bold">DISABLED</div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -107,7 +111,12 @@
                            <h3 class="text-xl font-bold text-center">Drepturi de Vizualizare</h3>
                         </div>
                         <div class="p-6">
-                            <p class="text-center text-sm text-gray-600 mb-4">Toate articolele aprobate sunt vizibile public. Dreptul de a vizualiza articolele în stadii incipiente este restricționat la rolurile superioare.</p>
+                            <p class="text-center text-sm text-gray-600 mb-4">Vizualizează cine poate vedea articole și în ce stadiu, luând în considerare ownership-ul.</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se vizualizează articole și versiuni.</li>
+                                <li>Contributorul poate să vizualizeze toate articolele aprobate, dar numai articolele sale de tip <b>Draft</b> sau <b>Pending</b>.</li>
+                                <li>Editorul, Moderatorul, Adminul și Superadminul pot vizualiza toate articolele în orice status, indiferent de cine le-a creat.</li>
+                            </ul>
                             <div class="chart-container">
                                 <canvas id="viewPermissionsChart"></canvas>
                             </div>
@@ -118,7 +127,12 @@
                            <h3 class="text-xl font-bold text-center">Acces la Istoric</h3>
                         </div>
                         <div class="p-6">
-                            <p class="text-center text-sm text-gray-600 mb-4">Istoricul versiunilor este crucial pentru audit. Accesul este similar cu permisiunile de vizualizare.</p>
+                            <p class="text-center text-sm text-gray-600 mb-4">Accesul la istoricul versiunilor este crucial pentru audit. Vizualizează cine poate accesa versiunile anterioare.</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se afișează toate versiunile unui articol și statusul fiecăruia.</li>
+                                <li>Contributorul poate să vadă istoricul doar la articolele proprii în stadiul <b>Draft</b> și <b>Pending</b>, și la toate articolele <b>Approved</b>.</li>
+                                <li>Celelalte roluri pot să vadă istoricul la toate articolele, indiferent de stare și de cine le-a creat.</li>
+                            </ul>
                             <div class="chart-container">
                                 <canvas id="historyPermissionsChart"></canvas>
                             </div>
@@ -135,7 +149,13 @@
                            <h3 class="text-xl font-bold text-center">Permisiuni de Aprobare</h3>
                         </div>
                         <div class="p-6">
-                            <p class="text-center text-sm text-gray-600 mb-4">Numai rolurile cu autoritate editorială pot valida articolele, trecându-le în stadiul "Approved".</p>
+                            <p class="text-center text-sm text-gray-600 mb-4">Numai rolurile cu autoritate editorială pot valida articolele, trecându-le în stadiul <b>Approved</b>.</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se aprobă o versiune a unui articol, schimbând statusul în <b>Approved</b> și actualizând `updated_at` în tabela `article_versions`.</li>
+                                <li>Doar versiunile aflate în <b>Pending</b> pot fi aprobate.</li>
+                                <li>Contributorul nu are drept de a aproba.</li>
+                                <li>Editorul, Moderatorul, Adminul și Superadminul au drept de aprobare pentru toate versiunile în statusul <b>Pending</b>.</li>
+                            </ul>
                             <div class="chart-container">
                                 <canvas id="approvePermissionsChart"></canvas>
                             </div>
@@ -143,12 +163,18 @@
                     </div>
                     <div class="bg-white rounded-lg shadow-md">
                         <div class="permission-card-header rounded-t-lg">
-                           <h3 class="text-xl font-bold text-center">Permisiuni de Dezactivare</h3>
+                           <h3 class="text-xl font-bold text-center">Permisiuni de Publicare</h3>
                         </div>
                         <div class="p-6">
-                            <p class="text-center text-sm text-gray-600 mb-4">Dezactivarea unui articol aprobat este o acțiune limitată la rolurile superioare, pentru a menține controlul asupra conținutului public.</p>
+                            <p class="text-center text-sm text-gray-600 mb-4">Publicarea unei versiuni <b>Approved</b> a unui articol, trecând-o la stadiul <b>Online</b> în baza de date.</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se face doar pentru versiunile articolelor care au statusul <b>Approved</b> și care nu sunt online.</li>
+                                <li>Se poate face doar de către Editor, Moderator, Admin și Superadmin.</li>
+                                <li>Versiunea selectată este copiată din `article_versions` în tabela `articles`.</li>
+                                <li>Dacă nu există deja o versiune online, se creează una nouă.</li>
+                            </ul>
                             <div class="chart-container">
-                                <canvas id="disablePermissionsChart"></canvas>
+                                <canvas id="publishPermissionsChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -164,6 +190,12 @@
                         </div>
                         <div class="p-6">
                             <p class="text-center text-sm text-gray-600 mb-4">Vizualizează cine poate modifica articole în diferite stadii. Rolurile avansate au capacități de editare extinse.</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se editează sau modifică articole și versiuni.</li>
+                                <li>Contributorul modifică doar articolele proprii în statusul <b>Draft</b>.</li>
+                                <li>Moderatorul și Editorul modifică toate articolele aflate în <b>Draft</b> sau <b>Pending</b>.</li>
+                                <li>Adminul și Superadminul modifică toate articolele aflate în orice stare, inclusiv articolele online.</li>
+                            </ul>
                             <div class="chart-container">
                                 <canvas id="editPermissionsChart"></canvas>
                             </div>
@@ -175,8 +207,55 @@
                         </div>
                         <div class="p-6">
                             <p class="text-center text-sm text-gray-600 mb-4">Analizează cine are autoritatea de a elimina articole. Această acțiune este restricționată pentru a preveni pierderea de date.</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se șterge complet o versiune a unui articol din baza de date (`articles` și `article_versions`).</li>
+                                <li>Contributorul poate șterge doar articolele proprii în statusul <b>Draft</b>.</li>
+                                <li>Editorul și Moderatorul șterg toate articolele <b>Draft</b> și <b>Pending</b>.</li>
+                                <li>Adminul și Superadminul șterg toate versiunile în toate stările, indiferent de cine le-a creat.</li>
+                                <li>După ștergerea unei versiuni, aceasta nu mai poate fi recuperată.</li>
+                            </ul>
                             <div class="chart-container">
                                 <canvas id="deletePermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="lifecycle-operations" class="mt-16">
+                <h2 class="text-3xl font-bold text-center mb-8 text-[#58508d]">Managementul Ciclului de Viață</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Permisiuni de Dezactivare</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Dezactivarea unui articol online (<b>Approved</b>) este o acțiune limitată la rolurile superioare, trecându-l în stadiul "Disabled".</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se face doar pentru versiunea online a articolului (cea din tabela `articles`).</li>
+                                <li>Poate fi făcută de către Moderator, Editor, Admin și Superadmin.</li>
+                                <li>Contributorul nu are dreptul de a dezactiva o versiune online.</li>
+                                <li>Dezactivarea constă în modificarea statusului la <b>Disabled</b> în tabelele `articles` și `article_versions`.</li>
+                            </ul>
+                            <div class="chart-container">
+                                <canvas id="disablePermissionsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="permission-card-header rounded-t-lg">
+                           <h3 class="text-xl font-bold text-center">Permisiuni de Restaurare</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-center text-sm text-gray-600 mb-4">Restaurarea unei versiuni online <b>Disabled</b> a unui articol, trecându-l înapoi la stadiul <b>Approved</b>.</p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 space-y-2 mb-4">
+                                <li>Se face doar pentru versiunea online a articolului, care este în statusul <b>Disabled</b>.</li>
+                                <li>Poate fi făcută de către Moderator, Editor, Admin și Superadmin.</li>
+                                <li>Contributorul nu are dreptul de a re-activa o versiune online.</li>
+                                <li>Restaurarea constă în modificarea statusului la <b>Approved</b> în tabelele `articles` și `article_versions`.</li>
+                            </ul>
+                            <div class="chart-container">
+                                <canvas id="restorePermissionsChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -244,30 +323,51 @@
             
             const labels = ['Contributor', 'Editor', 'Moderator', 'Admin', 'Superadmin'];
             
-            const viewHistoryDraft = [1, 1, 1, 1, 1];
-            const viewHistoryPending = [1, 1, 1, 1, 1];
-            const viewHistoryApproved = [1, 1, 1, 1, 1];
+            // Data for the 'View' chart
+            const viewDraftData = [1, 1, 1, 1, 1]; // Contributor: doar propriile
+            const viewPendingData = [1, 1, 1, 1, 1]; // Contributor: doar propriile
+            const viewApprovedData = [1, 1, 1, 1, 1]; // Toti pot vizualiza
+            const viewDisabledData = [0, 1, 1, 1, 1];
             
-            const approveData = [0, 1, 1, 1, 1];
+            // Data for the 'Edit' chart
+            const editDraftData = [1, 1, 1, 1, 1]; // Contributor: doar propriile
+            const editPendingData = [0, 1, 1, 1, 1];
+            const editApprovedData = [0, 0, 0, 1, 1]; // Admin si Superadmin pot edita online
             
+            // Data for the 'History' chart
+            const historyDraftData = [1, 1, 1, 1, 1]; // Contributor: doar propriile
+            const historyPendingData = [1, 1, 1, 1, 1]; // Contributor: doar propriile
+            const historyApprovedData = [1, 1, 1, 1, 1];
+            const historyDisabledData = [0, 1, 1, 1, 1]; // La fel ca 'View'
+            
+            // Data for the 'Approve' chart
+            const approveData = [0, 1, 1, 1, 1]; // Numai cei cu drept de aprobare
+            
+            // Data for the 'Publish' chart
+            const publishData = [0, 1, 1, 1, 1];
+            
+            // Data for the 'Disable' chart
             const disableData = [0, 1, 1, 1, 1];
             
-            const editDraftData = [1, 1, 1, 1, 1];
-            const editPendingData = [0, 1, 1, 1, 1];
-            const editApprovedData = [0, 0, 0, 1, 1];
+            // Data for the 'Restore' chart
+            const restoreData = [0, 1, 1, 1, 1];
             
-            const deleteDraftData = [1, 1, 1, 1, 1];
+            // Data for the 'Delete' chart
+            const deleteDraftData = [1, 1, 1, 1, 1]; // Contributor: doar propriile
             const deletePendingData = [0, 1, 1, 1, 1];
             const deleteApprovedData = [0, 0, 0, 1, 1];
+            const deleteDisabledData = [0, 0, 0, 1, 1];
+
 
             new Chart(document.getElementById('viewPermissionsChart'), {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Draft', data: viewHistoryDraft, backgroundColor: '#003f5c' },
-                        { label: 'Pending', data: viewHistoryPending, backgroundColor: '#bc5090' },
-                        { label: 'Approved', data: viewHistoryApproved, backgroundColor: '#ffa600' }
+                        { label: 'Draft', data: viewDraftData, backgroundColor: '#003f5c' },
+                        { label: 'Pending', data: viewPendingData, backgroundColor: '#bc5090' },
+                        { label: 'Approved', data: viewApprovedData, backgroundColor: '#ffa600' },
+                        { label: 'Disabled', data: viewDisabledData, backgroundColor: '#ff6361' }
                     ]
                 },
                 options: commonChartOptions
@@ -278,9 +378,10 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Draft', data: viewHistoryDraft, backgroundColor: '#003f5c' },
-                        { label: 'Pending', data: viewHistoryPending, backgroundColor: '#bc5090' },
-                        { label: 'Approved', data: viewHistoryApproved, backgroundColor: '#ffa600' }
+                        { label: 'Draft', data: historyDraftData, backgroundColor: '#003f5c' },
+                        { label: 'Pending', data: historyPendingData, backgroundColor: '#bc5090' },
+                        { label: 'Approved', data: historyApprovedData, backgroundColor: '#ffa600' },
+                        { label: 'Disabled', data: historyDisabledData, backgroundColor: '#ff6361' }
                     ]
                 },
                 options: commonChartOptions
@@ -297,12 +398,12 @@
                 options: commonChartOptions
             });
 
-            new Chart(document.getElementById('disablePermissionsChart'), {
+            new Chart(document.getElementById('publishPermissionsChart'), {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Approved', data: disableData, backgroundColor: '#58508d' }
+                        { label: 'Approved', data: publishData, backgroundColor: '#58508d' }
                     ]
                 },
                 options: commonChartOptions
@@ -328,7 +429,30 @@
                     datasets: [
                         { label: 'Draft', data: deleteDraftData, backgroundColor: '#003f5c' },
                         { label: 'Pending', data: deletePendingData, backgroundColor: '#bc5090' },
-                        { label: 'Approved', data: deleteApprovedData, backgroundColor: '#ffa600' }
+                        { label: 'Approved', data: deleteApprovedData, backgroundColor: '#ffa600' },
+                        { label: 'Disabled', data: deleteDisabledData, backgroundColor: '#ff6361' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+
+            new Chart(document.getElementById('disablePermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Approved', data: disableData, backgroundColor: '#58508d' }
+                    ]
+                },
+                options: commonChartOptions
+            });
+
+            new Chart(document.getElementById('restorePermissionsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Disabled', data: restoreData, backgroundColor: '#bc5090' }
                     ]
                 },
                 options: commonChartOptions

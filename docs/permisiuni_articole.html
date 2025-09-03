@@ -3,20 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Interactiv: Permisiuni Articole</title>
+    <title>Dashboard Permisiuni Knowledge Base</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Energetic & Playful -->
-    <!-- Application Structure Plan: Am proiectat un dashboard interactiv cu o singură pagină. Structura începe cu o prezentare generală a rolurilor și a fluxului de lucru al articolelor pentru a oferi context. Nucleul aplicației este un "Explorator de Permisiuni" interactiv, unde utilizatorul poate selecta un rol specific pentru a vizualiza doar permisiunile acestuia, reducând complexitatea cognitivă a unei matrice complete. Această abordare este orientată spre sarcini ("Ce poate face un Editor?"). În final, o secțiune de vizualizări comparative cu grafice Chart.js oferă o perspectivă de ansamblu asupra ierarhiei de putere. Această structură transformă o matrice statică într-o experiență de învățare ghidată și explorabilă. -->
-    <!-- Visualization & Content Choices: 
-        - Flux Articol: Goal: Organize -> Method: Diagramă HTML/CSS cu Tailwind. Justification: Stabilește contextul statusurilor fără SVG/Mermaid.
-        - Explorator Interactiv: Goal: Organize/Inform -> Method: Butoane de filtrare (JS) + Carduri de conținut (HTML/Tailwind). Justification: Simplifică informația complexă, permițând utilizatorului să se concentreze pe un singur rol.
-        - Grafice Comparative (Edit, Delete): Goal: Compare -> Method: Grafic cu bare grupate (Chart.js/Canvas). Justification: Permite compararea vizuală rapidă a puterii fiecărui rol pe acțiuni critice, respectând constrângerea NO SVG.
-        - Carduri KPI (Approve, Disable): Goal: Inform -> Method: Numere mari, stilizate (HTML/Tailwind). Justification: Evidențiază rapid și clar cine poate efectua acțiuni cheie de moderare. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -90,6 +82,10 @@
                             <div class="flowchart-step border-[#ff6361] rounded-lg p-3 w-36">
                                 <div class="font-bold">APPROVED</div>
                             </div>
+                            <div class="text-2xl flowchart-arrow text-[#58508d] transform md:rotate-0 rotate-90">&rarr;</div>
+                            <div class="flowchart-step border-[#ffa600] rounded-lg p-3 w-36">
+                                <div class="font-bold">DISABLED</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,7 +124,7 @@
             </section>
              <section id="key-actions">
                 <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">Acțiuni Cheie de Moderare</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center text-white">
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center text-white">
                     <div class="bg-[#bc5090] rounded-lg shadow-md p-6">
                         <h3 class="text-2xl font-bold mb-2">Approve</h3>
                         <p>Doar rolurile de la Editor în sus pot aproba articole din stadiul `Pending`.</p>
@@ -136,6 +132,10 @@
                     <div class="bg-[#ff6361] rounded-lg shadow-md p-6">
                         <h3 class="text-2xl font-bold mb-2">Disable</h3>
                         <p>Doar rolurile de la Editor în sus pot dezactiva articole `Approved`.</p>
+                    </div>
+                    <div class="bg-[#ffa600] rounded-lg shadow-md p-6">
+                        <h3 class="text-2xl font-bold mb-2">Restore</h3>
+                        <p>Doar rolurile de la Editor în sus pot restaura articole `Disabled`.</p>
                     </div>
                 </div>
             </section>
@@ -155,23 +155,29 @@
                     Edit: '`Draft` (propriu)',
                     History: '`Draft` (propriu), `Pending` (propriu), `Approved` (toate)',
                     Approve: 'Nu are permisiunea',
+                    Publish: 'Nu are permisiunea',
                     Disable: 'Nu are permisiunea',
+                    Restore: 'Nu are permisiunea',
                     Delete: '`Draft` (propriu)'
                 },
                 Editor: {
-                    View: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    View: 'Toate articolele (cu excepția celor `Disabled`)',
                     Edit: '`Draft` (toate), `Pending` (toate)',
-                    History: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    History: 'Toate articolele (cu excepția celor `Disabled`)',
                     Approve: '`Pending` (toate)',
+                    Publish: '`Approved` (toate)',
                     Disable: '`Approved` (toate)',
+                    Restore: '`Disabled` (toate)',
                     Delete: '`Draft` (toate), `Pending` (toate)'
                 },
                 Moderator: {
-                    View: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    View: 'Toate articolele, indiferent de status',
                     Edit: '`Draft` (toate), `Pending` (toate)',
-                    History: '`Draft` (toate), `Pending` (toate), `Approved` (toate)',
+                    History: 'Toate articolele, indiferent de status',
                     Approve: '`Pending` (toate)',
+                    Publish: '`Approved` (toate)',
                     Disable: '`Approved` (toate)',
+                    Restore: '`Disabled` (toate)',
                     Delete: '`Draft` (toate), `Pending` (toate)'
                 },
                 Admin: {
@@ -179,7 +185,9 @@
                     Edit: 'Toate articolele, indiferent de status',
                     History: 'Toate articolele, indiferent de status',
                     Approve: '`Pending` (toate)',
+                    Publish: '`Approved` (toate)',
                     Disable: '`Approved` (toate)',
+                    Restore: '`Disabled` (toate)',
                     Delete: 'Toate articolele, indiferent de status'
                 },
                 Superadmin: {
@@ -187,7 +195,9 @@
                     Edit: 'Toate articolele, indiferent de status',
                     History: 'Toate articolele, indiferent de status',
                     Approve: '`Pending` (toate)',
+                    Publish: '`Approved` (toate)',
                     Disable: '`Approved` (toate)',
+                    Restore: '`Disabled` (toate)',
                     Delete: 'Toate articolele, indiferent de status'
                 }
             };
