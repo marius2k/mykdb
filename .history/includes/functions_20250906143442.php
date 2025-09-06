@@ -1716,8 +1716,11 @@ function renderPendingArticles(array $pendingArticles,array $t): string {
                             <small class="text-muted">Autor: ' . htmlspecialchars($article['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($article['created_at'])) . '</small>
                         </div>
                         <div style="align-items: right;">
-                            <a href="#" onclick="approveArticle('.$article['article_id'].','.$article['version_number'].');return false;">
-                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . $t['lang_article_approve']. '">
+                            <a href="#" onclick="approveArticle('.$article['article_id'].','.$article['publish_at'].','.$article['version_number'].');return false;">
+                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . $t['lang_btn_edit']. '">
+                            </a>
+                            <a href="approve_article.php?id=' . $article['article_id'] . '&version=' . $article['version_number'] . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_article_approve'].'">
                             </a>
                             <a href="reject_article.php?id=' . $article['article_id'] . '&version=' . $article['version_number'] . '">
                                 <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="'.$t['lang_article_reject'].'">
@@ -2072,7 +2075,6 @@ function renderDashboardBox($box, $data) {
                 'lang_no_articles_in_pending' => lang('lang_no_articles_in_pending'),
                 'lang_article_approve' => lang('lang_article_approve'),
                 'lang_article_reject' => lang('lang_article_reject')
-                
             ];
             //error_log('pendingArticles in render: ' . print_r($data['pendingArticles'], true));
             return renderPendingArticles($data['pendingArticles'], $lang_text);

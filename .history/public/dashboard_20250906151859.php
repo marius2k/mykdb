@@ -1,105 +1,50 @@
 <?php
 require_once '../config/bootstrap.php';
 require_login();
-
-
-
-
-$id = (int)($_GET['id'] ?? 0);
-
-$ops = ['edit_article'];
-
-if (!hasPermission($_SESSION['user']['id'],$ops)) {
-    
+/*
+$ops = ['view_own_logs', 'view_all_logs'];
+if (!hasPermission($_SESSION['user']['id'], $ops)) {
     $_SESSION['flash'] = "⚠️ Access Denied";
     $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
-
     echo "<script>
             alert('⚠️ Access Denied');
             window.location.href = '$referer';
         </script>";
-    exit;     
-}
-
-// Obține articolul
-$stmt = $pdo->prepare("SELECT * FROM articles WHERE id = ?");
-$stmt->execute([$id]);
-$article = $stmt->fetch();
-
-if (!$article) {
-    die("Articol inexistent.");
-}
-
-// Doar autorul sau adminul poate edita
-/*
-if ($_SESSION['user']['id'] !== $article['user_id'] && $_SESSION['user']['role'] !== 'admin') {
-
-    logActivity($_SESSION['user']['id'], 'edit_article', 'User '. $_SESSION['user']['username'].'tried to edit an article without permission');
-
-    die("Nu ai permisiunea să modifici acest articol.");
-    
+    exit;
 }
 */
-// Preia categorii
-$db = new Database();
-$categories = $db->query("SELECT * FROM categories")->fetchAll();
-
-// Procesare form
-$errors = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    if (isset($_POST['action']) && $_POST['action'] === 'cancel') {
-        header('Location: '. APP_URL . 'public/admin/articles.php');
-        exit;
-    }
-    
-    if (!isset($_POST['action']) || !in_array($_POST['action'], ['submit', 'draft'])) {
-        $errors[] = 'Acțiune necunoscută.';
-    }
-    
-    if ($_POST['action'] === 'submit') {
-        $status = 'pending'; // Set status to pending for approval
-    } elseif ($_POST['action'] === 'draft') {
-        $status = 'draft'; // Set status to draft
-    } 
-
-    //$status = $_POST['action'] === 'draft' ? 'draft' : 'pending';
-
-
-    $title = trim($_POST['title']);
-    $content = trim($_POST['content']);
-    $category_id = (int)$_POST['category_id'];
-    $publish_at = $_POST['publish_at'] ?? time();
-    if (strlen($title) < 5) {
-        $errors[] = 'Titlul trebuie să aibă minim 5 caractere.';
-    }
-    if (strlen($content) < 20) {
-        $errors[] = 'Conținutul trebuie să aibă minim 20 de caractere.';
-    }
-
-    if (!$category_id) {
-        $errors[] = 'Alege o categorie validă.';
-    }
-
-    if (empty($errors)) {
-        $clean_content = clean_html($content);
-        $clean_content = removeImageCaptionText($clean_content); // dacă ai folosit funcția anterioară
-        $updated_at = date('Y-m-d H:i:s');
-
-        $stmt = $db->prepare("UPDATE articles SET title = ?, content = ?, category_id = ?, status = ?, updated_at = ?, publish_at = ? WHERE id = ?");
-        $stmt->execute([$title, $clean_content, $category_id, $status, $updated_at, $publish_at, $id]);
-        
-        // Log the edit
-        logActivity($_SESSION['user']['id'], 'edit_article', 'User '. $_SESSION['user']['username'].' edited an article');
-        
-        header('Location: '. APP_URL . 'public/admin/articles.php?updated=1');
-        exit;
-    }
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+$csrf_token = $_SESSION['csrf_token'];
+
+$userId = $_SESSION['user']['id'];
+$userRole = $_SESSION['user']['role'];
+
+
+
+include APP_ROOT . 'includes/header.php';
+
+
+//error_log("Translations:" $translations['lang_create_article_error'] ?? 'N/A');
 ?>
 
-<?php include APP_ROOT . 'includes/header.php'; ?>
+<script>
+window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";
+window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
+</script>
+
+<br>
+<div id="dashboard-root">
+    
+
+    <div class="loading">
+        
+             Se încarcă dashboard-ul...
+    
+    </div>
+</div>
+
 
 <!-- Modal Overlay pentru editare articol -->
 <div id="modalOverlayAddArticle" style="display:none;"></div>
@@ -113,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <br>
     <div class="modal-content-edit" style="padding-top: 0px;">
         <form id="add_article" class="article-form" autocomplete="off">
-                
+                 
                 <!-- Title Section - Full Width -->
                 <div class="form-section">
                     <div class="form-group-full">
@@ -176,7 +121,176 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="button" onclick="closeArticleModal()" class="modal-btn-edit"><?= lang('lang_btn_cancel') ?></button>
     </div>
 </div>
+<?php include APP_ROOT . 'includes/footer.php'; ?>
+
 <script>
+$(function() {
+    $.getJSON('api/bkd_dashboard.php', function(data) {
+        if (data.error) {
+            $('#dashboard-root').html('<div class="error">' + data.error + '</div>');
+            return;
+        }
+        $('#dashboard-root').html(data.html);
+        $('#art_top_view').text(data.titleTopViewed);
+        $('#art_top_like').text(data.titleTopLiked);
+        $('#art_top_com').text(data.titleTopCommented);
+
+        // Inițializează graficele dacă există date
+        if (typeof data.articlesChart === 'object') {
+            renderChart('articlesChart', data.articlesChart);
+        }
+        if (typeof data.commentsChart === 'object') {
+            renderChart('commentsChart', data.commentsChart);
+        }
+
+        // Inițializează custom-box-1 după ce HTML-ul a fost inserat
+        document.querySelectorAll('.custom-box-1').forEach(box => {
+            initializeCustomBox1(box);
+        });
+    });
+});
+
+/**
+ * Approve article; status = pending->approved
+ */
+function approveArticle(articleId, version = 1) {
+    
+
+    fetch(`api/bkd_approve_article.php`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'article_id=' + encodeURIComponent(articleId) + '&version=' + encodeURIComponent(version) + '&csrf_token=' + encodeURIComponent(window.CSRF_TOKEN)
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+                //alert('Articolul a fost aprobat cu succes!');
+                location.reload();
+        } else {
+            alert(data.error || 'Eroare la aprobat!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Eroare la comunicarea cu serverul! Detalii: ' + error.message);
+    });
+}
+
+
+
+
+// Submit an article for approval (draft->pending) from the Draft Articles section in Dashboard
+
+function submitForApproval(articleId, version = 1) {
+   
+    /*
+    const formData = new FormData();
+    formData.append('article_id', articleId);
+    formData.append('version', version);
+    
+    */
+    //formData.append('csrf_token', window.CSRF_TOKEN);
+
+    fetch('api/bkd_submit_approval.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'article_id=' + encodeURIComponent(articleId) + '&version=' + encodeURIComponent(version) + '&csrf_token=' + encodeURIComponent(window.CSRF_TOKEN)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            //alert('Article submitted for approval successfully!');
+            // Refresh dashboard sau doar secțiunea draft articles
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Network error occurred');
+    });
+}
+
+// Funcție pentru a desena graficele Chart.js
+function renderChart(canvasId, chartData) {
+    if (!document.getElementById(canvasId)) return;
+    new Chart(document.getElementById(canvasId).getContext('2d'), chartData);
+}
+
+function deleteNotif(id) {
+    fetch('api/bkd_delete_notification.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'id=' + encodeURIComponent(id) + '&csrf_token=' + encodeURIComponent(window.CSRF_TOKEN)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const row = document.getElementById('notif-' + id);
+            if (row) row.remove();
+        } else {
+            alert(data.error || 'Eroare la ștergere!');
+        }
+    });
+}
+
+function markRead(id) {
+    fetch('api/bkd_mark_notification_read.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'id=' + encodeURIComponent(id) + '&csrf_token=' + encodeURIComponent(window.CSRF_TOKEN)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const row = document.getElementById('notif-' + id);
+            if (row) row.remove(); // elimină rândul din tabel
+        } else {
+            alert(data.error || 'Eroare la marcare!');
+        }
+    });
+}
+
+function deleteComment(id) {
+    fetch('api/bkd_delete_comment.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'id=' + encodeURIComponent(id) + '&csrf_token=' + encodeURIComponent(window.CSRF_TOKEN)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Error in delete comment!');
+        }
+    });
+}
+
+function approveComment(id) {
+    fetch('api/bkd_approve_comment.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'id=' + encodeURIComponent(id) + '&csrf_token=' + encodeURIComponent(window.CSRF_TOKEN)
+    })
+    .then(res => res.json())
+    .then(data => {
+         if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Error in approve comment!');
+        }
+    });
+
+}
+
+// save article as Draft or send it for approval from the edit form (modal)
 
 function submitArticle2(submitType) {
     const form = document.getElementById('add_article');
@@ -220,7 +334,13 @@ function submitArticle2(submitType) {
     
     formData.append('submit_type', submitType);
 
-    fetch('../api/bkd_articles.php', {
+    //console.log('CSRF_Token', formData.get('csrf_token'));
+    console.log('csrf_token', window.CSRF_TOKEN);
+    console.log('CSRF Token Sesion: ' + "<?= $_SESSION['csrf_token'] ?>");
+    
+    console.log('Form Data:', Array.from(formData.entries()));
+
+    fetch('api/bkd_articles.php', {
         method: 'POST',
         body: formData
     })
@@ -235,7 +355,7 @@ function submitArticle2(submitType) {
             form.removeAttribute('data-online-version');
             form.removeAttribute('data-is-online-version');
             setTimeout(closeArticleModal, 1200);
-            reloadArticlesTable();
+            
         } else {
             document.getElementById('article-feedback').textContent = data.error || 'Eroare la salvare!';
             document.getElementById('article-feedback').classList.remove('d-none');
@@ -245,7 +365,7 @@ function submitArticle2(submitType) {
 
 
 function loadCategories() {
-    fetch('../api/bkd_select_categories.php')
+    fetch('api/bkd_select_categories.php')
         .then(res => res.json())
         .then(data => {
             categories = data;
@@ -273,6 +393,15 @@ function formatWithIcon2(option) {
     return $(
       `<span><img src="${img}" class="select2-option-img" width="20" style="margin-right:8px;" />${option.text}</span>`
     );
+}
+
+function loadArticleVersions(articleId, currentVersion) {
+    // Pentru că versiunea nu este editabilă, doar setăm valoarea în input
+    const versionInput = document.getElementById('version');
+    versionInput.value = 'v' + currentVersion;
+    
+    // Nu mai avem nevoie de onchange pentru versiune deoarece nu se poate modifica
+    // Versiunea se selectează din tabelul principal
 }
 
 // Modal logic
@@ -310,22 +439,25 @@ function openArticleModal() {
     }, 200);
 
     // initialize custom boxes from the modal form;
-    const allCustomBoxes = document.querySelectorAll('.custom-box-2');
-    allCustomBoxes.forEach(box => {
-      initializeCustomBox2(box);
-    });
+    //const allCustomBoxes = document.querySelectorAll('.custom-box-2');
+    //allCustomBoxes.forEach(box => {
+    //  initializeCustomBox2(box);
+    //});
 
 }
 
 function openEditArticleModal(articleId, version = null) {
     openArticleModal();
+    
+    //console.log('Opening edit modal for article:', articleId, 'version:', version);
+
     document.getElementById('modal-title').textContent = '<?=lang('lang_edit_article')?>';
     
     // Folosește versiunea selectată din dropdown sau versiunea implicită
-    const targetVersion = version || getSelectedVersion(articleId) || 1;
+    //const targetVersion = version || getSelectedVersion(articleId) || 1;
     
     // Încarcă direct versiunea pentru editare
-    fetch(`../api/bkd_articles.php?action=get_version&id=${articleId}&version=${targetVersion}`)
+    fetch(`api/bkd_articles.php?action=get_version&id=${articleId}&version=${version}`)
         .then(res => res.json())
         .then(data => {
             if (!data.success) {
@@ -335,7 +467,7 @@ function openEditArticleModal(articleId, version = null) {
             
             // Stochează informația despre versiunea online în formular
             const form = document.getElementById('add_article');
-            form.setAttribute('data-online-version', data.is_online ? targetVersion : 'unknown');
+            form.setAttribute('data-online-version', data.is_online ? version : 'unknown');
             
             /*
             console.log('Edit modal setup:', {
@@ -353,15 +485,15 @@ function openEditArticleModal(articleId, version = null) {
             
             // Marchează formularul ca "edit" și salvează versiunea
             form.setAttribute('data-edit-id', articleId);
-            form.setAttribute('data-edit-version', targetVersion);
+            form.setAttribute('data-edit-version', version);
             form.setAttribute('data-is-online-version', data.is_online ? 1 : 0);
             
             // Populează dropdown-ul de versiuni
-            loadArticleVersions(articleId, targetVersion);
+            loadArticleVersions(articleId, version);
         });
     
     // Încarcă alte date necesare (categorii, etc.)
-    fetch(`../api/bkd_articles.php?action=get_article&id=${articleId}`)
+    fetch(`api/bkd_articles.php?action=get_article&id=${articleId}`)
         .then(res => res.json())
         .then(data => {
             if (data.success) {
@@ -403,4 +535,4 @@ window.onclick = function(event) {
 
 </script>
 
-<?php include APP_ROOT . 'includes/footer.php'; ?>
+

@@ -7,7 +7,8 @@ if (empty($_SESSION['csrf_token'])) {
 }
 
 // Debug: Să vedem rolul utilizatorului
-echo "<script>console.log('PHP Session role: " . ($_SESSION['user']['role'] ?? 'NOT SET') . "');</script>";
+//echo "<script>console.log('PHP Session role: " . ($_SESSION['user']['role'] ?? 'NOT SET') . "');</script>";
+
 
 
 $ops = ['edit_article','disable_article','enable_article','create_article'];
@@ -363,7 +364,7 @@ function generateActionsForArticle(row) {
     // Pentru prima încărcare, când dropdown-ul nu există încă, 
     // presupune că se afișează versiunea online
     if (!document.querySelector(`.version-select[data-article-id="${row.article_id}"]`)) {
-        console.log('📋 First render - using online version data');
+        //console.log('📋 First render - using online version data');
         return buildActionsHtml(
             row.article_id || 0, 
             row.status, 
@@ -465,13 +466,17 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
             name: 'disable',
             icon: 'icon-disable.svg',
             title: '<?=lang('lang_art_disable')?>',
-            onclick: `articleAction('disable', ${articleId});return false;`
+            onclick: version
+                ? `articleAction('disable', ${articleId}, '', ${version});return false;`
+                : `articleAction('disable', ${articleId}, '', getSelectedVersion(${articleId}));return false;`
         },
         {
             name: 'restore',
             icon: 'icon-restore.svg',
             title: '<?=lang('lang_art_restore')?>',
-            onclick: `articleAction('restore', ${articleId});return false;`
+            onclick: version
+                ? `articleAction('restore', ${articleId}, '', ${version});return false;`
+                : `articleAction('restore', ${articleId}, '', getSelectedVersion(${articleId}));return false;`
         },
         {
             name: 'delete',
@@ -758,13 +763,15 @@ function buildPublishAtHtml(articleId, status, publishAt) {
 
 // Funcție pentru a obține datele versiunii din rândul DataTables
 function getVersionDataFromRow(row, versionNumber) {
+    
+    /*
     console.log('🔧 getVersionDataFromRow called:', {
         articleId: row.article_id,
         versionNumber: versionNumber,
         rowVersions: row.versions,
         rowStatus: row.status
     });
-    
+    */
     if (!row.versions || !row.versions.length) {
         //console.log('⚠️ No versions found, using main row data');
         // Dacă nu există versiuni, returnează datele principale
@@ -814,11 +821,11 @@ function getVersionDataFromRow(row, versionNumber) {
             const statusCell = tr.querySelector('td:nth-child(6) .version-status');
             if (statusCell && statusCell.textContent.trim()) {
                 statusFromUI = statusCell.textContent.trim();
-                console.log('📋 Got status from UI:', statusFromUI);
+                //console.log('📋 Got status from UI:', statusFromUI);
             }
         }
     } catch (e) {
-        console.log('❌ Error getting status from UI:', e);
+        //console.log('❌ Error getting status from UI:', e);
     }
     
     return {
@@ -983,13 +990,15 @@ function submitArticle2(submitType) {
         const isEditingOnlineVersion = parseInt(isOnlineVersion) || 0;
         
         // Debug logging
+        /*
         console.log('Online version check (using is_online field):', {
             editVersion: editVersion,
             isOnlineVersion: isOnlineVersion,
             isEditingOnlineVersion: isEditingOnlineVersion,
             description: isEditingOnlineVersion ? 'Editing ONLINE version (is_online=1)' : 'Editing NON-ONLINE version (is_online=0)'
         });
-        
+        */
+
         formData.append('action', 'edit_article');
         formData.append('article_id', editId);
         formData.append('base_version', editVersion);
@@ -1059,23 +1068,27 @@ function articleAction(action, articleId, publishAt = '', version = null) {
     }
     
     // Pentru acțiunea disable, afișează o confirmare
-    if (action === 'disable') {
+    if (action === 'disable' && version) {
         if (!confirm(`Sigur vrei să dezactivezi acest articol? Acesta nu va mai fi vizibil publicului.`)) {
             return;
         }
+       body += `&version=${encodeURIComponent(version)}`;
     }
     
     // Pentru acțiunea restore, afișează o confirmare
-    if (action === 'restore') {
+    if (action === 'restore' && version) {
+        /*
         if (!confirm(`Sigur vrei să restaurezi acest articol? Acesta va deveni din nou vizibil publicului.`)) {
             return;
-        }
+        }*/
+        body += `&version=${encodeURIComponent(version)}`;
+        console.log('URL:', body);
     }
-    
-    fetch('../api/bkd_articles.php', {
+
+    fetch(`../api/bkd_articles.php`, {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body
+        body: body
     })
     .then(res => {
         if (!res.ok) {
@@ -1174,12 +1187,15 @@ function openEditArticleModal(articleId, version = null) {
             const form = document.getElementById('add_article');
             form.setAttribute('data-online-version', data.is_online ? targetVersion : 'unknown');
             
+            /*
             console.log('Edit modal setup:', {
                 targetVersion: targetVersion,
                 isOnlineVersion: data.is_online,
                 editingOnlineVersion: data.is_online ? 1 : 0
             });
-            
+            */
+
+
             // Completează câmpurile formularului cu datele versiunii selectate
             document.getElementById('title').value = data.title || '';
             $('#summernote').summernote('code', data.content || '');
@@ -1262,6 +1278,8 @@ function showVersionHistory(articleId) {
     });
 }
 
+
+// genereaza butonul Restore in fereastra modala history
 function generateRestoreButton(version, onlineVersion = null) {
     const userRole = window.USER_ROLE || '';
     const isModerator = userRole === 'moderator' || userRole === 'admin' || userRole === 'superadmin';
@@ -1334,7 +1352,9 @@ function displayVersionHistory(history, articleTitle = '', onlineVersion = null)
                     <button onclick="viewVersion(${version.version_number}, ${version.is_online})" class="version-action-btn view">
                         <?=lang('lang_art_view')?>
                     </button>
+                    <!--
                     ${generateRestoreButton(version)}
+                    -->
                 </div>
             </div>
         `;
@@ -1391,7 +1411,7 @@ function restoreVersion(versionNumber) {
     formData.append('version', versionNumber);
     formData.append('csrf_token', window.CSRF_TOKEN);
     
-    fetch('../api/bkd_articles.php', {
+    fetch(`../api/bkd_articles.php`, {
         method: 'POST',
         body: formData
     })

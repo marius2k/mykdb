@@ -163,6 +163,7 @@ return [
     'lang_art_delete' => 'Delete',
     'lang_art_disable' => 'Disable',
     'lang_art_publish' => 'Publish',
+    'lang_art_created' => 'created at',
     'lang_com_comments' => 'Comments',
     'lang_com_title' => 'Title',
     'lang_com_author' => 'Author',

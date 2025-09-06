@@ -6,6 +6,7 @@ require_once '../config/bootstrap.php';
 // Verifică dacă ID-ul articolului a fost trimis
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $articleId = intval($_GET['id']);
+    $versionNumber = intval($_GET['version']);
 
     // Verifică permisiunile utilizatorului
     if (!isset($_SESSION['user']['id'])) {
@@ -22,24 +23,25 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
     try {
         // Pregătește interogarea SQL pentru a actualiza statusul articolului
-        $sql = "UPDATE articles SET status = 'approved' WHERE id = :id";
+        $sql = "UPDATE article_versions SET status = 'approved' WHERE article_id = :id AND version_number = :version";
         $stmt = $db->getPdo()->prepare($sql);
 
         // Leagă parametrul și execută interogarea
         $stmt->bindParam(':id', $articleId, PDO::PARAM_INT);
+        $stmt->bindParam(':version', $versionNumber, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
             // Log activitatea
             logActivity($_SESSION['user']['id'], 'article_approved', 'User ' . $_SESSION['user']['username'] . ' approved an article');
             
             // Obține datele articolului pentru notificare
-            $article = $db->fetchSingle("SELECT user_id, title FROM articles WHERE id = ?", [$articleId]);
+            $article = $db->fetchSingle("SELECT author_id, title FROM article_versions WHERE article_id = ? AND version_number = ?", [$articleId, $versionNumber]);
             if ($article) {
                 // Trimite notificare către autorul articolului
-                sendNotification($article['user_id'], 'Article Approved', 'Your article <a href="view_article.php?id=' . $articleId . '">' . truncateText($article['title'], 30) . '</a> has been approved.', 'info');
+                sendNotification($article['author_id'], 'Article Approved', 'Your article <a href="view_article.php?id=' . $articleId . '&version=' . $versionNumber . '">' . truncateText($article['title'], 30) . '</a> has been approved.', 'info');
 
                 // add points for article approval
-                awardArticlePublished($article['user_id'], $articleId, $article['title']);
+                awardArticlePublished($article['author_id'], $articleId, $article['title']);
             }
             
             // Aprobarea a avut succes

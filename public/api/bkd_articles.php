@@ -1,4 +1,15 @@
 <?php
+
+/*
+// Debug - scrie în log că fișierul a fost accesat
+error_log("=== bkd_articles.php START === " . date('Y-m-d H:i:s'));
+error_log("REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
+error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
+error_log("POST data: " . print_r($_POST, true));
+error_log("GET data: " . print_r($_GET, true));
+
+*/
+
 require_once '../../config/bootstrap.php';
 header('Content-Type: application/json');
 
@@ -14,6 +25,7 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
     echo json_encode(['error' => 'Access denied']);
     exit;
 }
+
 
 $db = new Database();
 
@@ -353,8 +365,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+    
+    
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        http_response_code(403);
         echo json_encode(['error' => 'Token CSRF invalid']);
         exit;
     }
@@ -715,9 +729,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Restore version
     if ($action === 'restore') {
-        $articleId = (int)($_POST['id'] ?? 0);
+
+        /*
+        error_log("RESTORE ACTION - article_id: " . ($_POST['article_id'] ?? 'NOT SET'));
+        error_log("RESTORE ACTION - version: " . ($_POST['version'] ?? 'NOT SET'));
+        error_log("RESTORE ACTION - id: " . ($_POST['id'] ?? 'NOT SET'));
+        */
+
+        $articleId = (int)($_POST['article_id'] ?? 0);
         $version = (int)($_POST['version'] ?? 0);
         
+        /*
+        error_log("RESTORE ACTION - parsed articleId: " . $articleId);
+        error_log("RESTORE ACTION - parsed version: " . $version);
+        */
+
         // Check restore permission
         $versionData = getArticleWithPermissionCheck($articleId, 'restore', $version);
         if ($versionData === false) {
@@ -732,8 +758,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Additional checks
-        if ($versionData['status'] !== 'approved') {
-            echo json_encode(['success' => false, 'error' => 'Doar versiunile aprobate pot fi restaurate']);
+        if ($versionData['status'] !== 'disabled') {
+            echo json_encode(['success' => false, 'error' => 'Doar versiunile dezactivate pot fi restaurate']);
             exit;
         }
         
@@ -748,15 +774,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->beginTransaction();
             
             // Marchează toate versiunile ca nefiind online
-            $db->query("UPDATE article_versions SET is_online = 0 WHERE article_id = ?", [$articleId]);
+            //$db->query("UPDATE article_versions SET is_online = 0 WHERE article_id = ?", [$articleId]);
+
+            // Marchează versiunea selectată approved in tabela article_versions
+            $db->query("UPDATE article_versions SET status = 'approved' WHERE article_id = ? AND version_number = ?", [$articleId, $version]);
             
-            // Marchează versiunea selectată ca fiind online
-            $db->query("UPDATE article_versions SET is_online = 1 WHERE article_id = ? AND version_number = ?", [$articleId, $version]);
-            
+
             // Actualizează articolul principal cu datele din versiunea restaurată
-            $db->query("UPDATE articles SET title = ?, content = ?, category_id = ?, version = ?, updated_at = NOW() WHERE id = ?", 
-                [$versionData['title'], $versionData['content'], $versionData['category_id'], $version, $articleId]);
-            
+            //$db->query("UPDATE articles SET status = 'approved', title = ?, content = ?, category_id = ?, version = ?, updated_at = NOW() WHERE id = ?", 
+            //    [$versionData['title'], $versionData['content'], $versionData['category_id'], $version, $articleId]);
+
+            // Actualieaza statusul articolului din pagina principala (tabela articles)
+            $db->query("UPDATE articles SET status = 'approved' WHERE id = ?",  [$articleId]);
+
             $db->commit();
             
             logActivity($user_id, 'restore_article', 'User '. $_SESSION['user']['username'].' restored version '. $version .' of article ID '. $articleId);

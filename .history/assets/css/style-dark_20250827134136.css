@@ -558,9 +558,6 @@ ol.breadcrumb {
     margin-left: auto;
     margin-right: auto;
     font-size: 0.95rem;
-    border: 1px solid #ddd; /* Border de un gri mai închis */
-    border-radius: 0.45rem;
-    overflow: hidden; /* Ascunde conținutul care depășește marginile, pentru a rotunji corect colțurile */
 }
 
 .articles-table thead {

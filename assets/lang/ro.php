@@ -163,6 +163,7 @@ return [
     'lang_art_delete' => 'Sterge',
     'lang_art_disable' => 'Dezactiveaza',
     'lang_art_publish' => 'Publica',
+    'lang_art_created' => 'creat la',
     'lang_com_comments' => 'Comentarii',
     'lang_com_title' => 'Titlu',
     'lang_com_author' => 'Autor',

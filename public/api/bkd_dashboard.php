@@ -55,7 +55,7 @@ $dashboardConfig = [
         'right' => ['topViewed', 'topLiked', 'topCommented', 'articlesChart', 'commentsChart', 'operations', 'logs', 'exports']
     ],
     'admin' => [
-        'left'  => ['drafts', 'notifications'],
+        'left'  => ['drafts', 'pendingArticles', 'notifications'],
         'right' => ['topViewed', 'topLiked', 'topCommented', 'articlesChart', 'commentsChart']
     ],
     'moderator' => [
@@ -63,7 +63,7 @@ $dashboardConfig = [
         'right' => ['topViewed', 'topLiked', 'topCommented', 'articlesChart', 'commentsChart']
     ],
     'editor' => [
-        'left'  => ['drafts', 'notifications'],
+        'left'  => ['drafts', 'pendingArticles', 'notifications'],
         'right' => ['topViewed', 'topLiked', 'topCommented', 'articlesChart', 'commentsChart']
     ],
     'contributor' => [
