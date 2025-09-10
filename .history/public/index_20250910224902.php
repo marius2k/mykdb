@@ -18,8 +18,16 @@ if (!isset($_SESSION['user'])) {
     
 }
 
+$lng = $_SESSION['settings']['language'];
+
+// Mapare rapidă dacă ai coduri locale
+if ($lng === 'ro') $tz = 'ro-RO';
+if ($lng === 'en') $tz = 'en-US';
+
+//error_log('Language: ' . var_export($lang, true));
 
 ?>
+<script>window.TZ = "<?= $tz ?>";</script>
 
 <?php
 
@@ -175,23 +183,16 @@ if (isset($_SESSION['user']['id'])) {
     $theme = $currentSettings['theme'] ?? 'light';
     $_SESSION['settings'] = $currentSettings;
 
-    if ($currentSettings['language'] === 'ro') {
-        $tz = 'ro-RO';
-    } elseif ($currentSettings['language'] === 'en') {
-        $tz = 'en-US';
-    }
-
+    
 }else {
 
     // user not logged in
     $lang = 'en';
     $theme = 'light';
-    $tz='en-US';
 }
 
 
 ?>
-<script>window.TZ = "<?= $tz ?>";</script>
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
@@ -769,7 +770,7 @@ function triggerAdvancedSearch() {
             searchResults.innerHTML = data.map(article => `
                 <div class="article-card">
                   <h4><img src="<?=APP_URL?>/assets/icons/categories/${article.icon}" width="40" height="auto">&nbsp;&nbsp;&nbsp;&nbsp;${highlightQuery(article.title, query)}</h4>
-                  <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString(window.TZ)}</em></p>
+                  <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString('ro-RO')}</em></p>
                   <p>${highlightQuery(article.content, query)}</p>
                   <p><a href="view_article.php?id=${article.id}&version=${article.version}">Read more...</a></p>
                 </div>
@@ -800,7 +801,7 @@ function triggerFilterCategory() {
       searchResults.innerHTML = data.map(article => `
         <div class="article-card">
           <h4><img src="<?=APP_URL?>/assets/icons/categories/${article.icon}" width="40" height="auto">&nbsp;&nbsp;&nbsp;&nbsp;<b>${article.title}</b></h4>
-          <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString(window.TZ)}</em></p>
+          <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString()}</em></p>
           <p>${article.content}</p>
           <p><a href="view_article.php?id=${article.id}&version=${article.version}">Read more...</a></p>
         </div>

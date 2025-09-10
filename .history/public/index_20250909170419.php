@@ -19,10 +19,6 @@ if (!isset($_SESSION['user'])) {
 }
 
 
-?>
-
-<?php
-
 $filter = '';
 $params= [];
 
@@ -175,23 +171,15 @@ if (isset($_SESSION['user']['id'])) {
     $theme = $currentSettings['theme'] ?? 'light';
     $_SESSION['settings'] = $currentSettings;
 
-    if ($currentSettings['language'] === 'ro') {
-        $tz = 'ro-RO';
-    } elseif ($currentSettings['language'] === 'en') {
-        $tz = 'en-US';
-    }
-
 }else {
 
     // user not logged in
     $lang = 'en';
     $theme = 'light';
-    $tz='en-US';
 }
 
 
 ?>
-<script>window.TZ = "<?= $tz ?>";</script>
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
@@ -218,6 +206,7 @@ if (isset($_SESSION['user']['id'])) {
                             <?php 
                             foreach ($articles as $a): 
                             
+
                                     $content = $a['content'];
 
                                     // Extragem prima imagine (dacă există)
@@ -233,6 +222,7 @@ if (isset($_SESSION['user']['id'])) {
 
                                     $preview = truncateHtmlWithImages($a['content'], 100);
                                     ?>
+
                                     <div class="article-card">
                                           <div style="display: flex; justify-content: space-between;">
                                               <div>
@@ -272,7 +262,7 @@ if (isset($_SESSION['user']['id'])) {
                                             
                                             <div class="article-footer">
                                                 <div>
-                                                    <span class="article-meta"><?= lang('lang_article_author') ?>:<?=escape($a['username']) ?> | <?= lang('lang_article_category') ?>:<?=escape($a['category']) ?> | <?= lang('lang_article_published') ?>:<?=formatDate($a['publish_at']) ?> | <?= lang('lang_article_updated') ?>:<?=formatDate($a['updated_at'])?></span>
+                                                    <span class="article-meta"><?= lang('lang_article_author') ?>:<?=escape($a['username']) ?> | <?= lang('lang_article_category') ?>:<?=escape($a['category']) ?> | <?= lang('lang_article_published') ?>:<?=formatDate($a['created_at']) ?>| <?= lang('lang_article_updated') ?>:<?=formatDate($a['updated_at'])?></span>
                                                 </div>
                                                 <div class="vote-buttons-container"> 
                                                             <div class="vote-buttons" id="meta-<?=$a['id']?>">
@@ -660,7 +650,7 @@ const searchArticles = async () => {
     return;
   }
 
-  const res = await fetch('api/bkd_search_articles.php?q=' + encodeURIComponent(query));
+  const res = await fetch('search_articles.php?q=' + encodeURIComponent(query));
   const data = await res.json();
 
   defaultContent.style.display = 'none';
@@ -668,13 +658,13 @@ const searchArticles = async () => {
     const title = highlightText(article.title, query);
     
     //DEBUG: Log the highlighted title
-    //console.log('Highlighted title:', title);
+    console.log('Highlighted title:', title);
 
     const content = highlightHtmlContent(article.content, 200);
     return `
       <div style="border:1px solid #ccc; padding:10px; margin-bottom:5px;">
         <h4>${title}</h4>
-        <p class="article-meta">Autor: ${article.username} | Categorie: ${article.category} | ${new Date(article.created_at).toLocaleDateString()}</p>
+        <p><em>Autor: ${article.username} | Categorie: ${article.category} | ${new Date(article.created_at).toLocaleDateString()}</em></p>
         <p>${content}</p>
       </div>`;
   }).join('') || '<p>Nu s-au găsit articole.</p>';
@@ -683,11 +673,7 @@ input.addEventListener('input', debounce(searchArticles, 300));
 
 
 
-function clearSearchForm() {
-  document.getElementById('searchAuthor').value = '';
-  document.getElementById('searchCategory').value = '';
-  document.getElementById('liveSearch').value = '';
-}
+
 
 
 
@@ -699,7 +685,6 @@ advToggleSearch.addEventListener('click', () => {
   iconOpenSearch.style.display = isOpenSearch ? 'inline' : 'none';
   iconCloseSearch.style.display = isOpenSearch ? 'none' : 'inline';
   advFormSearch.style.display = (advFormSearch.style.display === 'none') ? 'block' : 'none';
-  //clearSearchForm();
 });
 
 // Toggle Filter
@@ -733,7 +718,6 @@ advToggleMLA.addEventListener('click', () => {
 });
 
 
-
 // Trigger advanced
 function triggerAdvancedSearch() {
   const query = document.getElementById('liveSearch').value.trim();
@@ -754,35 +738,20 @@ function triggerAdvancedSearch() {
   if (author) params.append('author', author);
   if (category) params.append('category', category);
 
-  fetch('api/bkd_search_articles.php?' + params.toString())
-    .then(res => {
-        if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.text(); // Mai întâi citește ca text
-    })
-    .then(text => {
-        console.log('Raw response:', text); // Debug
-        try {
-            const data = JSON.parse(text);
-            defaultContent.style.display = 'none';
-            searchResults.innerHTML = data.map(article => `
-                <div class="article-card">
-                  <h4><img src="<?=APP_URL?>/assets/icons/categories/${article.icon}" width="40" height="auto">&nbsp;&nbsp;&nbsp;&nbsp;${highlightQuery(article.title, query)}</h4>
-                  <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString(window.TZ)}</em></p>
-                  <p>${highlightQuery(article.content, query)}</p>
-                  <p><a href="view_article.php?id=${article.id}&version=${article.version}">Read more...</a></p>
-                </div>
-              `).join('') || '<p>Nu s-au găsit articole pe baza filtrului.</p>';
-        } catch (parseError) {
-            console.error('JSON Parse Error:', parseError);
-            console.error('Response was:', text);
-            searchResults.innerHTML = '<p>Eroare la căutare. Încercați din nou.</p>';
-        }
+  fetch('search_articles.php?' + params.toString())
+    .then(res => res.json())
+    .then(data => {
+      defaultContent.style.display = 'none';
+      searchResults.innerHTML = data.map(article => `
+        <div class="article-card">
+          <h4>${highlightQuery(article.title, query)}</h4>
+          <p><em>${article.username} | ${article.category} | ${new Date(article.created_at).toLocaleDateString()}</em></p>
+          <p>${highlightQuery(article.content.substring(0, 200), query)}...</p>
+        </div>
+      `).join('') || '<p>Nu s-au găsit articole pe baza filtrului.</p>';
     })
     .catch(err => {
-        console.error('[AJAX ERROR]', err);
-        searchResults.innerHTML = '<p>Eroare de conectare. Încercați din nou.</p>';
+      console.error('[AJAX ERROR]', err);
     });
 }
 
@@ -793,16 +762,15 @@ function triggerFilterCategory() {
 
   const params = new URLSearchParams({ fcategory: categoryId });
 
-  fetch('api/bkd_search_articles.php?' + params.toString())
+  fetch('search_articles.php?' + params.toString())
     .then(res => res.json())
     .then(data => {
       defaultContent.style.display = 'none';
       searchResults.innerHTML = data.map(article => `
         <div class="article-card">
-          <h4><img src="<?=APP_URL?>/assets/icons/categories/${article.icon}" width="40" height="auto">&nbsp;&nbsp;&nbsp;&nbsp;<b>${article.title}</b></h4>
-          <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString(window.TZ)}</em></p>
+          <h4><b>${article.title}</b></h4>
+          <p><em>${article.username} | ${article.category} | ${new Date(article.created_at).toLocaleDateString()}</em></p>
           <p>${article.content}</p>
-          <p><a href="view_article.php?id=${article.id}&version=${article.version}">Read more...</a></p>
         </div>
       `).join('') || '<p style="margin-top:10px;">Nu s-au găsit articole în această categorie.</p>';
     })

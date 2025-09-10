@@ -195,6 +195,7 @@ function loadArticle() {
             document.getElementById('article-tags').innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div><strong>Tags:</strong> ${tagsHtml.length > 0 ? tagsHtml : '(no tags)'}</div>
+                    <div><a href="articles_by_tag.php?tag=all" class="tag-badge">All</a></div>
                 </div>
             `;
 

@@ -107,14 +107,14 @@ function loadArticlesByTag(tag) {
                             <strong>${translations.views}:</strong> ${article.views || 0} |
                             <img src="<?=APP_URL?>assets/images/icon-like.png" width="16" height="auto" title="Like"> ${article.likes || 0}
                             <img src="<?=APP_URL?>assets/images/icon-dlike.png" width="16" height="auto" title="Dislike"> ${article.dislikes || 0}
-                        </div><br>
+                        </div>
                         ${tagsHtml ? `<div class="article-tags"><strong>${translations.tags}</strong> ${tagsHtml}</div><br>${hrLine}` : `${hrLine}`}
-                        <div class="article-excerpt" style="padding-bottom: 10px;">${excerpt}
+                        <div class="article-excerpt">${excerpt}
                             <a href="view_article.php?id=${article.id}" style="text-decoration: none;">
                                 <img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="${translations.readMore}" style="vertical-align: middle; margin-left: 5px;">
                             </a>
                         </div>
-                    </div>                    
+                    </div>
                 `;
             });
             

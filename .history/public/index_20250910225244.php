@@ -186,7 +186,7 @@ if (isset($_SESSION['user']['id'])) {
     // user not logged in
     $lang = 'en';
     $theme = 'light';
-    $tz='en-US';
+    $tz='en-US'
 }
 
 
@@ -800,7 +800,7 @@ function triggerFilterCategory() {
       searchResults.innerHTML = data.map(article => `
         <div class="article-card">
           <h4><img src="<?=APP_URL?>/assets/icons/categories/${article.icon}" width="40" height="auto">&nbsp;&nbsp;&nbsp;&nbsp;<b>${article.title}</b></h4>
-          <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString(window.TZ)}</em></p>
+          <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString()}</em></p>
           <p>${article.content}</p>
           <p><a href="view_article.php?id=${article.id}&version=${article.version}">Read more...</a></p>
         </div>

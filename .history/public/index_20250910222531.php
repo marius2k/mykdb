@@ -19,10 +19,6 @@ if (!isset($_SESSION['user'])) {
 }
 
 
-?>
-
-<?php
-
 $filter = '';
 $params= [];
 
@@ -175,23 +171,15 @@ if (isset($_SESSION['user']['id'])) {
     $theme = $currentSettings['theme'] ?? 'light';
     $_SESSION['settings'] = $currentSettings;
 
-    if ($currentSettings['language'] === 'ro') {
-        $tz = 'ro-RO';
-    } elseif ($currentSettings['language'] === 'en') {
-        $tz = 'en-US';
-    }
-
 }else {
 
     // user not logged in
     $lang = 'en';
     $theme = 'light';
-    $tz='en-US';
 }
 
 
 ?>
-<script>window.TZ = "<?= $tz ?>";</script>
 
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
@@ -272,7 +260,7 @@ if (isset($_SESSION['user']['id'])) {
                                             
                                             <div class="article-footer">
                                                 <div>
-                                                    <span class="article-meta"><?= lang('lang_article_author') ?>:<?=escape($a['username']) ?> | <?= lang('lang_article_category') ?>:<?=escape($a['category']) ?> | <?= lang('lang_article_published') ?>:<?=formatDate($a['publish_at']) ?> | <?= lang('lang_article_updated') ?>:<?=formatDate($a['updated_at'])?></span>
+                                                    <span class="article-meta"><?= lang('lang_article_author') ?>:<?=escape($a['username']) ?> | <?= lang('lang_article_category') ?>:<?=escape($a['category']) ?> | <?= lang('lang_article_published') ?>:<?=formatDate($a['created_at']) ?>| <?= lang('lang_article_updated') ?>:<?=formatDate($a['updated_at'])?></span>
                                                 </div>
                                                 <div class="vote-buttons-container"> 
                                                             <div class="vote-buttons" id="meta-<?=$a['id']?>">
@@ -769,7 +757,7 @@ function triggerAdvancedSearch() {
             searchResults.innerHTML = data.map(article => `
                 <div class="article-card">
                   <h4><img src="<?=APP_URL?>/assets/icons/categories/${article.icon}" width="40" height="auto">&nbsp;&nbsp;&nbsp;&nbsp;${highlightQuery(article.title, query)}</h4>
-                  <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString(window.TZ)}</em></p>
+                  <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString()}</em></p>
                   <p>${highlightQuery(article.content, query)}</p>
                   <p><a href="view_article.php?id=${article.id}&version=${article.version}">Read more...</a></p>
                 </div>
@@ -800,7 +788,7 @@ function triggerFilterCategory() {
       searchResults.innerHTML = data.map(article => `
         <div class="article-card">
           <h4><img src="<?=APP_URL?>/assets/icons/categories/${article.icon}" width="40" height="auto">&nbsp;&nbsp;&nbsp;&nbsp;<b>${article.title}</b></h4>
-          <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString(window.TZ)}</em></p>
+          <p class="article-meta" style="font-size: 0.9rem;"><em><?=lang('lang_art_author')?>: ${article.username} | <?=lang('lang_art_category')?>: ${article.category} | <?=lang('lang_art_publish_at')?>: ${new Date(article.publish_at).toLocaleDateString()}</em></p>
           <p>${article.content}</p>
           <p><a href="view_article.php?id=${article.id}&version=${article.version}">Read more...</a></p>
         </div>

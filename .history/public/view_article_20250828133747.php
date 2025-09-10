@@ -194,7 +194,7 @@ function loadArticle() {
             }
             document.getElementById('article-tags').innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div><strong>Tags:</strong> ${tagsHtml.length > 0 ? tagsHtml : '(no tags)'}</div>
+                    <div><strong>Tags:</strong> ${tagsHtml}</div>
                 </div>
             `;
 

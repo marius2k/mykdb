@@ -239,8 +239,10 @@ function deleteLog(logId) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success)  $('#logsTable').DataTable().ajax.reload();
-        else alert(data.error || 'Eroare la ștergere!');
+        if (data.success) {
+            $('#checkAll').prop('checked', false);
+            $('#logsTable').DataTable().ajax.reload();
+        }else alert(data.error || 'Eroare la ștergere!');
     });
     
 }
@@ -255,10 +257,8 @@ function submitBulkLogs(action) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            $('#checkAll').prop('checked', false);
-            $('#logsTable').DataTable().ajax.reload();
-        } else alert(data.error || 'Eroare la acțiunea bulk!');
+        if (data.success) $('#logsTable').DataTable().ajax.reload();
+        else alert(data.error || 'Eroare la acțiunea bulk!');
     });
 }
 
