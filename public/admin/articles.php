@@ -560,8 +560,18 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
 
 
 function isActionEnabled(actionName, userRole, articleStatus, authorId, currentUserId, onlineVersion = null, selectedVersion = null) {
-    // Convertește ID-urile la numere pentru comparație
-    const isOwner = parseInt(authorId) === parseInt(currentUserId);
+    // Enhanced validation and debugging
+    if (userRole === 'contributor') {
+        console.log('🔍 CONTRIBUTOR ACTION CHECK:', {
+            actionName: actionName,
+            userRole: userRole,
+            articleStatus: articleStatus,
+            authorId: `${authorId} (${typeof authorId})`,
+            currentUserId: `${currentUserId} (${typeof currentUserId})`,
+            onlineVersion: onlineVersion,
+            selectedVersion: selectedVersion
+        });
+    }
     
     // Normalizează statusurile pentru comparație - elimină spațiile și convertește la lowercase
     const status = (articleStatus || '').toString().trim().toLowerCase();
@@ -570,58 +580,53 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
     const isSelectedVersionOnline = selectedVersion && onlineVersion && 
                                    parseInt(selectedVersion) === parseInt(onlineVersion);
 
-    // Debug logging for contributor edit action
-    if (userRole === 'contributor' && actionName === 'edit') {
-        console.log('🔍 CONTRIBUTOR EDIT CHECK:', {
-            actionName: actionName,
-            userRole: userRole,
-            status: status,
-            authorId: authorId,
-            currentUserId: currentUserId,
-            isOwner: isOwner,
-            onlineVersion: onlineVersion,
-            selectedVersion: selectedVersion,
-            isSelectedVersionOnline: isSelectedVersionOnline
-        });
-    }
-
     switch (userRole) {
         case 'contributor':
             switch (actionName) {
                 case 'view':
                     // Contributor poate vedea TOATE articolele proprii (orice status)
-                    return isOwner;
+                    // Multiple ownership checks for robustness
+                    return authorId && currentUserId && 
+                           (parseInt(authorId) === parseInt(currentUserId) || 
+                            String(authorId) === String(currentUserId) ||
+                            authorId == currentUserId);
                 case 'edit':
-                    // Draft (propriu) și NU online
-                    // Adăugat debugging și verificări robuste pentru contributors
+                    // Enhanced logic for contributor draft editing
                     const isDraft = status === 'draft';
-                    const isOwner = parseInt(authorId) === parseInt(currentUserId);
                     const notOnline = !isSelectedVersionOnline;
                     
-                    // Verificări robuste pentru edge cases
-                    const isOwnerRobust = authorId && currentUserId && 
-                                         (parseInt(authorId) === parseInt(currentUserId) || 
-                                          String(authorId) === String(currentUserId));
+                    // Enhanced ownership check with multiple fallbacks
+                    const isOwnerStrict = authorId && currentUserId && parseInt(authorId) === parseInt(currentUserId);
+                    const isOwnerLoose = authorId && currentUserId && (authorId == currentUserId);
+                    const isOwnerString = authorId && currentUserId && String(authorId) === String(currentUserId);
+                    const isOwnerRobust = !!(isOwnerStrict || isOwnerLoose || isOwnerString);
                     
-                    const result = isDraft && isOwnerRobust && notOnline;
+                    // Main condition
+                    const result = !!(isDraft && isOwnerRobust && notOnline);
                     
                     if (userRole === 'contributor') {
-                        console.log('✅ CONTRIBUTOR EDIT RESULT:', result, 'Details:', {
+                        console.log('✅ CONTRIBUTOR EDIT RESULT:', result, 'Detailed Analysis:', {
                             isDraft: isDraft,
-                            isOwner: isOwner,
+                            isOwnerStrict: isOwnerStrict,
+                            isOwnerLoose: isOwnerLoose, 
+                            isOwnerString: isOwnerString,
                             isOwnerRobust: isOwnerRobust,
                             notOnline: notOnline,
-                            authorId: authorId,
-                            currentUserId: currentUserId,
+                            authorId: `${authorId} (${typeof authorId})`,
+                            currentUserId: `${currentUserId} (${typeof currentUserId})`,
                             status: status,
                             version: selectedVersion,
-                            onlineVersion: onlineVersion
+                            onlineVersion: onlineVersion,
+                            finalFormula: `${isDraft} && ${isOwnerRobust} && ${notOnline} = ${result}`
                         });
                     }
                     return result;
                 case 'history':
                     // Toate articolele proprii
-                    return isOwner;
+                    return !!(authorId && currentUserId && 
+                             (parseInt(authorId) === parseInt(currentUserId) || 
+                              String(authorId) === String(currentUserId) ||
+                              authorId == currentUserId));
                 case 'approve':
                 case 'publish':
                 case 'disable':
