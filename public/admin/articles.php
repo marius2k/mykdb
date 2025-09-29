@@ -11,11 +11,7 @@ if (empty($_SESSION['csrf_token'])) {
 
 
 
-<<<<<<< HEAD
 $ops = ['edit_article','edit_own_article','disable_article','enable_article','create_article'];
-=======
-$ops = ['edit_article','disable_article','enable_article','create_article','edit_own_article'];
->>>>>>> e7ba7ac (290920251919)
 
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
     
