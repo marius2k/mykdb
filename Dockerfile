@@ -16,7 +16,8 @@ RUN apt-get update \
 COPY . /var/www/html/
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer require dompdf/dompdf
+WORKDIR /var/www/html
+RUN /usr/local/bin/composer require dompdf/dompdf
 
 # (Opțional) Setează permisiunile corecte pentru directorul web.
 # Acest lucru poate fi necesar pentru ca aplicația să poată scrie fișiere (ex: upload-uri).

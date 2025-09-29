@@ -433,6 +433,20 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     // Determină dacă versiunea selectată este online
     const isSelectedVersionOnline = version && onlineVersion && parseInt(version) === parseInt(onlineVersion);
     
+    // Debug pentru contributors
+    if (userRole === 'contributor') {
+        console.log('🔍 BUILD ACTIONS DEBUG:', {
+            articleId: articleId,
+            status: status,
+            authorId: authorId,
+            currentUserId: currentUserId,
+            userRole: userRole,
+            version: version,
+            onlineVersion: onlineVersion,
+            isSelectedVersionOnline: isSelectedVersionOnline
+        });
+    }
+    
     // Pentru articole online, trebuie să transformăm statusul din article_versions în statusul din articles
     let displayStatus = status || 'draft';
     if (isSelectedVersionOnline) {
@@ -543,6 +557,21 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
     const isSelectedVersionOnline = selectedVersion && onlineVersion && 
                                    parseInt(selectedVersion) === parseInt(onlineVersion);
 
+    // Debug logging for contributor edit action
+    if (userRole === 'contributor' && actionName === 'edit') {
+        console.log('🔍 CONTRIBUTOR EDIT CHECK:', {
+            actionName: actionName,
+            userRole: userRole,
+            status: status,
+            authorId: authorId,
+            currentUserId: currentUserId,
+            isOwner: isOwner,
+            onlineVersion: onlineVersion,
+            selectedVersion: selectedVersion,
+            isSelectedVersionOnline: isSelectedVersionOnline
+        });
+    }
+
     switch (userRole) {
         case 'contributor':
             switch (actionName) {
@@ -551,7 +580,32 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                     return isOwner;
                 case 'edit':
                     // Draft (propriu) și NU online
-                    return status === 'draft' && isOwner && !isSelectedVersionOnline;
+                    // Adăugat debugging și verificări robuste pentru contributors
+                    const isDraft = status === 'draft';
+                    const isOwner = parseInt(authorId) === parseInt(currentUserId);
+                    const notOnline = !isSelectedVersionOnline;
+                    
+                    // Verificări robuste pentru edge cases
+                    const isOwnerRobust = authorId && currentUserId && 
+                                         (parseInt(authorId) === parseInt(currentUserId) || 
+                                          String(authorId) === String(currentUserId));
+                    
+                    const result = isDraft && isOwnerRobust && notOnline;
+                    
+                    if (userRole === 'contributor') {
+                        console.log('✅ CONTRIBUTOR EDIT RESULT:', result, 'Details:', {
+                            isDraft: isDraft,
+                            isOwner: isOwner,
+                            isOwnerRobust: isOwnerRobust,
+                            notOnline: notOnline,
+                            authorId: authorId,
+                            currentUserId: currentUserId,
+                            status: status,
+                            version: selectedVersion,
+                            onlineVersion: onlineVersion
+                        });
+                    }
+                    return result;
                 case 'history':
                     // Toate articolele proprii
                     return isOwner;
