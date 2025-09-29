@@ -34,24 +34,44 @@ function canPerformAction($action, $userRole, $articleStatus, $authorId, $curren
     $isOwner = (int)$authorId === (int)$currentUserId;
     $status = strtolower(trim($articleStatus));
     
+    // ACTIVEAZĂ LOGGING PENTRU TOATE ROLURILE
+    error_log("canPerformAction: action=$action, userRole=$userRole, status=$status, isOwner=" . ($isOwner ? 'true' : 'false') . ", isOnlineVersion=" . ($isOnlineVersion ? 'true' : 'false'));
+    
+
     switch ($userRole) {
         case 'contributor':
+ 
+            error_log("canPerformAction - Contributor: action=$action, status=$status, isOwner=" . ($isOwner ? 'true' : 'false') . ", isOnlineVersion=" . ($isOnlineVersion ? 'true' : 'false'));
+ 
             switch ($action) {
                 case 'view':
-                    return $status === 'approved' || $status === 'disabled' || ($isOwner && ($status === 'draft' || $status === 'pending'));
+                    // VIEW: Published (toate), Disabled (toate), Draft (propriu), Approved (toate), Pending (propriu)
+                    return ($status === 'draft' && $isOwner) || 
+                        ($status === 'pending' && $isOwner) || 
+                        ($status === 'approved') || 
+                        ($status === 'published') ||
+                        ($status === 'disabled'); 
                 case 'edit':
-                    // Contributor: doar propriile draft + versiuni online disabled
-                    if ($isOnlineVersion) {
-                        return $status === 'disabled' && $isOwner;
-                    }
-                    return $status === 'draft' && $isOwner;
+                    // Draft (propriu) - doar versiuni care NU sunt online
+                     $result = $status === 'draft' && $isOwner && !$isOnlineVersion;
+                    error_log("canPerformAction - Contributor EDIT result: " . ($result ? 'ALLOWED' : 'DENIED'));
+                    return $result;
+                case 'history':
+                    // HISTORY: Published (toate), Disabled (toate), Draft (propriu), Approved (toate), Pending (propriu)
+                    return ($status === 'draft' && $isOwner) || 
+                        ($status === 'pending' && $isOwner) || 
+                        ($status === 'approved') || 
+                        ($status === 'published') ||
+                        ($status === 'disabled');
                 case 'approve':
                 case 'publish':
                 case 'disable':
                 case 'restore':
+                    // Nu are permisiunea pentru aceste acțiuni
                     return false;
                 case 'delete':
-                    return $status === 'draft' && $isOwner;
+                    // Draft (propriu)
+                    return $status === 'draft' && $isOwner && !$isOnlineVersion;
                 default:
                     return false;
             }
@@ -141,38 +161,73 @@ function getArticleWithPermissionCheck($articleId, $action, $version = null) {
     $userRole = $_SESSION['user']['role'] ?? '';
     $currentUserId = $_SESSION['user']['id'] ?? 0;
     
+    // Add debug logging
+    error_log("getArticleWithPermissionCheck: articleId=$articleId, action=$action, version=" . ($version ?? 'null') . ", userRole=$userRole, currentUserId=$currentUserId");
+    
     if ($version) {
-        // Get specific version data
+        // Get specific version data from article_versions only
         $articleData = $db->fetchSingle("
-            SELECT av.*, a.user_id as owner_id 
+            SELECT av.*, av.author_id as owner_id, av.author_id as user_id
             FROM article_versions av 
-            JOIN articles a ON av.article_id = a.id 
             WHERE av.article_id = ? AND av.version_number = ?
         ", [$articleId, $version]);
         
         if (!$articleData) {
+            error_log("getArticleWithPermissionCheck: Version $version not found for article $articleId");
             return null;
         }
         
         $isOnlineVersion = (int)$articleData['is_online'] === 1;
         
     } else {
-        // Get main article data
-        $articleData = $db->fetchSingle("SELECT * FROM articles WHERE id = ?", [$articleId]);
+        // SIMPLIFICĂ - ia versiunea conform regulii de afișare: online first, then latest
+        $articleData = $db->fetchSingle("
+            SELECT av.*, av.author_id as owner_id, av.author_id as user_id
+            FROM article_versions av 
+            WHERE av.article_id = ? 
+            ORDER BY av.is_online DESC, av.version_number DESC
+            LIMIT 1
+        ", [$articleId]);
         
         if (!$articleData) {
+            error_log("getArticleWithPermissionCheck: Article $articleId not found in article_versions");
             return null;
         }
         
-        $articleData['owner_id'] = $articleData['user_id'];
-        $isOnlineVersion = true; // Main article is always considered online
+        $isOnlineVersion = (int)$articleData['is_online'] === 1;
+        
+        error_log("getArticleWithPermissionCheck: Found version=" . $articleData['version_number'] . ", status=" . $articleData['status'] . ", is_online=" . $articleData['is_online'] . ", author_id=" . $articleData['author_id']);
     }
     
-    // Check permissions
-    if (!canPerformAction($action, $userRole, $articleData['status'], $articleData['owner_id'], $currentUserId, $isOnlineVersion)) {
-        return false; // Permission denied
+    // Determină statusul corect pentru permisiuni
+    if ($isOnlineVersion) {
+        // Versiune online - folosește statusul din articles (published/disabled)
+        $articlesStatus = $db->fetchSingle("SELECT status FROM articles WHERE id = ?", [$articleId]);
+        if ($articlesStatus) {
+            $articleData['articles_status'] = $articlesStatus['status'];
+            $articleData['permission_status'] = $articlesStatus['status'];
+            error_log("getArticleWithPermissionCheck: Online version - using articles status: " . $articlesStatus['status']);
+        } else {
+            $articleData['permission_status'] = $articleData['status'];
+            error_log("getArticleWithPermissionCheck: Online version - no articles record, using version status: " . $articleData['status']);
+        }
+    } else {
+        // Versiune offline - folosește statusul din article_versions (draft/pending/approved)
+        $articleData['permission_status'] = $articleData['status'];
+        error_log("getArticleWithPermissionCheck: Offline version - using version status: " . $articleData['status']);
     }
     
+    // Check permissions - folosește permission_status pentru verificare
+    $statusForPermission = $articleData['permission_status'] ?? $articleData['status'];
+    
+    error_log("getArticleWithPermissionCheck: FINAL CHECK - statusForPermission=$statusForPermission, isOnlineVersion=" . ($isOnlineVersion ? 'true' : 'false') . ", isOwner=" . (((int)$articleData['owner_id'] === (int)$currentUserId) ? 'true' : 'false'));
+    
+    if (!canPerformAction($action, $userRole, $statusForPermission, $articleData['owner_id'], $currentUserId, $isOnlineVersion)) {
+        error_log("getArticleWithPermissionCheck: Permission DENIED for action=$action");
+        return false;
+    }
+    
+    error_log("getArticleWithPermissionCheck: Permission GRANTED for action=$action");
     return $articleData;
 }
 
@@ -271,97 +326,217 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get_art
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $draw = intval($_GET['draw'] ?? 1);
-    $start = intval($_GET['start'] ?? 0);
-    $length = intval($_GET['length'] ?? 10);
-    $searchValue = $_GET['search']['value'] ?? '';
+    // Verifică dacă este un request pentru acțiuni specifice
+    if (isset($_GET['action'])) {
+        // Lasă să continue la acțiunile specifice (get_versions, etc.)
+        // Nu executa logica DataTables
+    } else {
+        // Logica pentru DataTables
+        error_reporting(E_ALL);
+        ini_set('display_errors', 0);
+        
+        try {
+            //error_log("bkd_articles: === GET DataTables Request Start ===");
+            
+            $draw = intval($_GET['draw'] ?? 1);
+            $start = intval($_GET['start'] ?? 0);
+            $length = intval($_GET['length'] ?? 10);
+            $searchValue = $_GET['search']['value'] ?? '';
 
-    $userRole = $_SESSION['user']['role'] ?? '';
-    $currentUserId = $_SESSION['user']['id'] ?? 0;
-    
-    // Apply role-based filtering for contributors
-    $roleFilter = '';
-    $roleParams = [];
-    
-    if ($userRole === 'contributor') {
-        // Contributors can only see approved and disabled articles + their own draft/pending
-        $roleFilter = " AND (a.status = 'approved' OR a.status = 'disabled' OR (a.user_id = :current_user_id AND a.status IN ('draft', 'pending')))";
-        $roleParams[':current_user_id'] = $currentUserId;
-    }
+            $userRole = $_SESSION['user']['role'] ?? '';
+            $currentUserId = $_SESSION['user']['id'] ?? 0;
+            
+            //error_log("bkd_articles: User Role: $userRole, User ID: $currentUserId, Search: '$searchValue'");
 
-    $where = '';
-    $params = [];
-    if ($searchValue) {
-        $where = "WHERE a.title LIKE :search1 OR u.username LIKE :search2 OR c.name LIKE :search3";
-        $params = [
-            ':search1' => "%$searchValue%",
-            ':search2' => "%$searchValue%",
-            ':search3' => "%$searchValue%"
-        ];
-    }
-    
-    // Combine search and role filters
-    if ($where && $roleFilter) {
-        $where .= $roleFilter;
-    } elseif ($roleFilter) {
-        $where = "WHERE " . ltrim($roleFilter, ' AND ');
-    }
-    
-    $params = array_merge($params, $roleParams);
-
-    $totalStmt = $db->query("SELECT COUNT(*) FROM articles");
-    $totalArticles = $totalStmt->fetchColumn();
-
-    $filteredStmt = $db->prepare("
-        SELECT COUNT(*) FROM articles a
-        JOIN users u ON a.user_id = u.id
-        LEFT JOIN categories c ON a.category_id = c.id
-        $where
-    ");
-    foreach ($params as $k => $v){
-        $filteredStmt->bindValue($k, $v);
-    }
-    $filteredStmt->execute();
-    $filtered = $filteredStmt->fetchColumn();
-
-    $stmt = $db->prepare("
-        SELECT a.id as article_id, a.title, a.status, a.publish_at, a.updated_at, a.user_id, a.version as current_version,
-               u.username, c.name as category,
-               GROUP_CONCAT(DISTINCT av.version_number ORDER BY av.version_number DESC) as versions_list
-        FROM articles a
-        JOIN users u ON a.user_id = u.id
-        LEFT JOIN categories c ON a.category_id = c.id
-        LEFT JOIN article_versions av ON a.id = av.article_id
-        $where
-        GROUP BY a.id
-        ORDER BY a.updated_at DESC
-        LIMIT :limit OFFSET :offset
-    ");
-    foreach ($params as $k => $v) $stmt->bindValue($k, $v);
-    $stmt->bindValue(':limit', $length, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $start, PDO::PARAM_INT);
-    $stmt->execute();
-    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $rownum = $start + 1;
-    foreach ($articles as &$a) {
-        $a['rownum'] = $rownum++;
-        $a['versions'] = [];
-        if ($a['versions_list']) {
-            foreach (explode(',', $a['versions_list']) as $v) {
-                $a['versions'][] = ['version_number' => (int)$v];
+            // Build WHERE conditions for filtering
+            $whereConditions = [];
+            $params = [];
+            
+            // Add role-based filtering
+            if ($userRole === 'contributor') {
+                // Contributor: Doar articolele proprii (toate statusurile)
+                $whereConditions[] = "av.author_id = ?";
+                $params[] = $currentUserId;
             }
-        }
-        unset($a['versions_list']);
-    }
 
-    echo json_encode([
-        "draw" => $draw,
-        "recordsTotal" => $totalArticles,
-        "recordsFiltered" => $filtered,
-        "data" => $articles
-    ]);
-    exit;
+            // Add search filtering
+            if (!empty($searchValue)) {
+                $whereConditions[] = "(av.title LIKE ? OR u.username LIKE ? OR c.name LIKE ?)";
+                $params[] = "%$searchValue%";
+                $params[] = "%$searchValue%";
+                $params[] = "%$searchValue%";
+            }
+            
+            // Build final WHERE clause
+            $whereClause = '';
+            if (!empty($whereConditions)) {
+                $whereClause = "AND " . implode(" AND ", $whereConditions);
+            }
+            
+            //error_log("bkd_articles: WHERE clause: $whereClause");
+            //error_log("bkd_articles: Params: " . json_encode($params));
+
+            // Count total unique articles
+            //error_log("bkd_articles: === Getting total count ===");
+            $totalStmt = $db->prepare("SELECT COUNT(DISTINCT av.article_id) FROM article_versions av WHERE av.article_id IS NOT NULL");
+            $totalStmt->execute();
+            $totalArticles = $totalStmt->fetchColumn();
+            //error_log("bkd_articles: Total unique articles: $totalArticles");
+
+            // Count filtered unique articles
+            //error_log("bkd_articles: === Getting filtered count ===");
+            $filteredQuery = "
+                SELECT COUNT(DISTINCT av.article_id) 
+                FROM article_versions av
+                LEFT JOIN users u ON av.author_id = u.id
+                LEFT JOIN categories c ON av.category_id = c.id
+                LEFT JOIN articles a ON av.article_id = a.id
+                WHERE av.article_id IS NOT NULL
+                AND av.version_number = (
+                    SELECT version_number 
+                    FROM article_versions av2 
+                    WHERE av2.article_id = av.article_id 
+                    ORDER BY av2.is_online DESC, av2.version_number DESC 
+                    LIMIT 1
+                )
+                $whereClause
+            ";
+            
+            $filteredStmt = $db->prepare($filteredQuery);
+            $filteredStmt->execute($params);
+            $filtered = $filteredStmt->fetchColumn();
+            //error_log("bkd_articles: Filtered count: $filtered");
+
+            // Main query - UN SINGUR QUERY pentru toate articolele
+            //error_log("bkd_articles: === Executing main query ===");
+            $mainQuery = "
+                SELECT 
+                    av.article_id,
+                    av.title, 
+                    av.status as version_status,
+                    av.created_at, 
+                    av.updated_at, 
+                    av.author_id as user_id, 
+                    av.version_number as current_version,
+                    av.is_online,
+                    u.username, 
+                    c.name as category,
+                    a.publish_at,
+                    a.status as article_status
+                FROM article_versions av
+                LEFT JOIN users u ON av.author_id = u.id
+                LEFT JOIN categories c ON av.category_id = c.id
+                LEFT JOIN articles a ON av.article_id = a.id
+                WHERE av.article_id IS NOT NULL
+                AND av.version_number = (
+                    SELECT version_number 
+                    FROM article_versions av2 
+                    WHERE av2.article_id = av.article_id 
+                    ORDER BY av2.is_online DESC, av2.version_number DESC 
+                    LIMIT 1
+                )
+                $whereClause
+                ORDER BY av.updated_at DESC
+                LIMIT ? OFFSET ?
+            ";
+
+            //error_log("bkd_articles: Main query: $mainQuery");
+
+            // Add LIMIT and OFFSET to params
+            $mainParams = array_merge($params, [$length, $start]);
+            
+            $stmt = $db->prepare($mainQuery);
+            $stmt->execute($mainParams);
+            $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            //error_log("bkd_articles: Found " . count($articles) . " articles");
+
+            // Process results - get ALL versions for each article and determine display status
+            $rownum = $start + 1;
+            foreach ($articles as &$a) {
+                $a['rownum'] = $rownum++;
+                
+                // Determină statusul corect pentru afișare
+                if ($a['is_online'] == 1) {
+                    // Pentru versiunea online, folosește statusul din articles (published/disabled)
+                    $a['status'] = $a['article_status'];
+                } else {
+                    // Pentru versiunile offline, folosește statusul din article_versions (draft/pending/approved)
+                    $a['status'] = $a['version_status'];
+                }
+                
+                // Get ALL versions for this article
+                $versionsStmt = $db->prepare("
+                    SELECT 
+                        av.version_number, 
+                        av.status, 
+                        av.is_online,
+                        CASE 
+                            WHEN av.is_online = 1 THEN a.publish_at 
+                            ELSE NULL 
+                        END as publish_at
+                    FROM article_versions av
+                    LEFT JOIN articles a ON av.article_id = a.id
+                    WHERE av.article_id = ? 
+                    ORDER BY av.version_number DESC
+                ");
+                $versionsStmt->execute([$a['article_id']]);
+                $versions = $versionsStmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                $a['versions'] = [];
+                foreach ($versions as $v) {
+                    $a['versions'][] = [
+                        'version_number' => (int)$v['version_number'],
+                        'status' => $v['status'],
+                        'is_online' => (int)$v['is_online'],
+                        'publish_at' => $v['publish_at']
+                    ];
+                }
+
+                //error_log("bkd_articles: Processed article ID: " . $a['article_id'] . ", Title: " . $a['title'] . ", Display Status: " . $a['status'] . ", Current Version: " . $a['current_version'] . ", Is Online: " . $a['is_online'] . ", Total versions: " . count($a['versions']));
+            }
+
+            $response = [
+                "draw" => $draw,
+                "recordsTotal" => $totalArticles,
+                "recordsFiltered" => $filtered,
+                "data" => $articles
+            ];
+
+            //error_log("bkd_articles: === Final response ===");
+           //error_log("bkd_articles: Response structure: draw=$draw, recordsTotal=$totalArticles, recordsFiltered=$filtered, data_count=" . count($articles));
+
+            echo json_encode($response);
+            //error_log("bkd_articles: === GET DataTables Request End ===");
+
+        } catch (Exception $e) {
+            //error_log("bkd_articles: === EXCEPTION in GET ===");
+            //error_log("bkd_articles: Exception message: " . $e->getMessage());
+            //error_log("bkd_articles: Exception trace: " . $e->getTraceAsString());
+
+            echo json_encode([
+                "draw" => intval($_GET['draw'] ?? 1),
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
+                "error" => "Database error: " . $e->getMessage()
+            ]);
+            
+        } catch (Error $e) {
+            //error_log("bkd_articles: === PHP ERROR in GET ===");
+            //error_log("bkd_articles: Error message: " . $e->getMessage());
+            //error_log("bkd_articles: Error trace: " . $e->getTraceAsString());
+
+            echo json_encode([
+                "draw" => intval($_GET['draw'] ?? 1),
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
+                "error" => "PHP error: " . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -375,64 +550,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = $_POST['action'] ?? '';
 
-    // Creare articol nou
-    if ($action === 'add_article') {
-        // Contributors and above can create articles
-        $userRole = $_SESSION['user']['role'] ?? '';
-        if (!in_array($userRole, ['contributor', 'editor', 'moderator', 'admin', 'superadmin'])) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Nu aveți permisiunea să creați articole']);
-            exit;
-        }
-        
-        $title = trim($_POST['title'] ?? '');
-        $content = trim($_POST['content'] ?? '');
-        $category_id = $_POST['category_id'] ?? '';
-        $publish_at = $_POST['publish_at'] ?? null;
-        $status = $_POST['submit_type'] === 'draft' ? 'draft' : 'pending';
-        $user_id = $_SESSION['user']['id'];
-        $created_at = date('Y-m-d H:i:s');
-        $tags = isset($_POST['tags']) ? $_POST['tags'] : '';
-        $tagList = array_filter(array_map('trim', explode(',', $tags)));
-        $change_note = trim($_POST['change_note'] ?? '');
-
-        if (!$title || !$content || !$category_id) {
-            echo json_encode(['error' => 'Toate câmpurile sunt obligatorii.']);
-            exit;
-        }
-
-        $clean_content = clean_html($content);
-        $clean_content = removeImageCaptionText($clean_content);
-
-        // Inserează articolul în tabelul articles
-        $stmt = $db->prepare("INSERT INTO articles (title, content, category_id, user_id, status, publish_at, created_at, updated_at, version) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)");
-        $stmt->execute([$title, $clean_content, $category_id, $user_id, $status, $publish_at, $created_at, $created_at]);
-        $aid = $db->lastInsertedId();
-
-        // Salvează versiunea inițială în article_versions (v1) - nu este online încă
-        $initial_note = $change_note ?: 'Versiune inițială';
-        $db->query("INSERT INTO article_versions (article_id, version_number, title, content, category_id, author_id, status, is_online, created_at, updated_at, change_note) VALUES (?, 1, ?, ?, ?, ?, ?, 0, NOW(), NOW(), ?)",
-            [$aid, $title, $clean_content, $category_id, $user_id, $status, $initial_note]);
-
-        // Salvează tagurile
-        if ($aid && $tagList) {
-            foreach ($tagList as $tagName) {
-                $tagStmt = $db->prepare("SELECT id FROM tags WHERE name = ?");
-                $tagStmt->execute([$tagName]);
-                $tagId = $tagStmt->fetchColumn();
-                if (!$tagId) {
-                    $db->query("INSERT INTO tags (name) VALUES (?)", [$tagName]);
-                    $tagId = $db->lastInsertedId();
-                }
-                $db->query("INSERT INTO article_tags (article_id, tag_id) VALUES (?, ?)", [$aid, $tagId]);
-            }
-        }
-
-        logActivity($user_id, 'create_article', 'User '. $_SESSION['user']['username'].' created article: '. $title);
-        echo json_encode(['success' => true, 'article_id' => $aid]);
-        exit;
-    }
-
+    
     // Editare articol
     if ($action === 'edit_article') {
         $articleId = (int)($_POST['article_id'] ?? 0);

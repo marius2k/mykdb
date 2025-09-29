@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Responsive Masonry Layout</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,minimum-scale=1">
+        <meta name="description" content="Responsive Masonry Layout Tutorial">
+        <style>
+        body {
+            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 60px;
+            background-color: #f6f7f8;
+        }
+        .masonry-layout {
+            display: flex;
+            flex-wrap: wrap; /* Allows items to wrap into new rows */
+            gap: 25px; /* Space between columns */
+            width: 100%; /* Full width of the container */
+            max-width: 1000px; /* Optional: limit the width of the layout */
+            margin: 0 auto; /* Center the layout */
+        }
+        .masonry-column {
+            flex: 1; /* Allows columns to grow and shrink */
+            min-width: 200px; /* Minimum width before columns might wrap or stack */
+            display: flex; /* For items within the column */
+            flex-direction: column; /* Stack items vertically in a column */
+            gap: 25px; /* Space between items within a column */
+        }
+        .masonry-item {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .masonry-item img {
+            max-width: 100%;
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 4px;
+            display: block; /* Remove extra space below image */
+            margin-bottom: 10px;
+        }
+        .masonry-item p {
+            margin: 15px 0 5px 0;
+            font-size: 16px;
+            color: #5e6168;
+        }
+        /* Basic responsiveness for smaller screens (handled more by JS) */
+        /* Our JS will effectively make it a single column below the breakpoint */
+        </style>
+	</head>
+	<body>
+        <div class="masonry-layout">
+            <div class="masonry-column"> 
+                <div class="masonry-item" data-sort-index="1"> 
+                    <img src="https://placehold.co/300x250" width="300" height="250" alt="Placeholder Image 1">
+                    <p>Content for Item 1</p>
+                </div>
+                <div class="masonry-item" data-sort-index="4">
+                    <img src="https://placehold.co/300x500" width="300" height="500" alt="Placeholder Image 4">
+                    <p>Content for Item 4</p>
+                </div>
+                <div class="masonry-item" data-sort-index="7">
+                    <img src="https://placehold.co/300x500" width="300" height="500" alt="Placeholder Image 7">
+                    <p>Content for Item 7</p>
+                </div>
+            </div>
+            <div class="masonry-column">
+                <div class="masonry-item" data-sort-index="2">
+                    <img src="https://placehold.co/300x500" width="300" height="500" alt="Placeholder Image 2">
+                    <p>Content for Item 2</p>
+                </div>
+                <div class="masonry-item" data-sort-index="5">
+                    <img src="https://placehold.co/300x500" width="300" height="500" alt="Placeholder Image 5">
+                    <p>Content for Item 5</p>
+                </div>
+                <div class="masonry-item" data-sort-index="8">
+                    <img src="https://placehold.co/300x250" width="300" height="250" alt="Placeholder Image 8">
+                    <p>Content for Item 8</p>
+                </div>
+            </div>
+            <div class="masonry-column">
+                <div class="masonry-item" data-sort-index="3">
+                    <img src="https://placehold.co/300x250" width="300" height="250" alt="Placeholder Image 3">
+                    <p>Content for Item 3</p>
+                </div>
+                <div class="masonry-item" data-sort-index="6">
+                    <img src="https://placehold.co/300x500" width="300" height="500" alt="Placeholder Image 6">
+                    <p>Content for Item 6</p>
+                </div>
+                <div class="masonry-item" data-sort-index="9">
+                    <img src="https://placehold.co/300x500" width="300" height="500" alt="Placeholder Image 9">
+                    <p>Content for Item 9</p>
+                </div>
+            </div>
+        </div>
+        <script>
+        const sortMasonry = () => {
+            const breakpoint = 800; // Set your breakpoint for mobile/desktop switch (800px in this case)
+            const container = document.querySelector('.masonry-layout');
+            if (!container) return;
+            const columnElements = Array.from(container.querySelectorAll('.masonry-column'));
+            const numColumns = columnElements.length;
+            if (window.innerWidth < breakpoint) {
+                // --- MOBILE VIEW ---
+                // Check if we need to switch to mobile (e.g., first column is visible and not already processed)
+                let needsFlattening = false;
+                if (numColumns > 0 && columnElements[0].style.display !== 'none') {
+                    // Check if items are actually in columns
+                    for (const col of columnElements) {
+                        if (col.querySelector('.masonry-item')) {
+                            needsFlattening = true;
+                            break;
+                        }
+                    }
+                }
+                if (needsFlattening) {
+                    const allItems = [];
+                    // Collect all items from wherever they might be to ensure we get them all
+                    document.querySelectorAll('.masonry-layout .masonry-item').forEach(item => {
+                        allItems.push(item);
+                    });
+                    // Sort items using the data-sort-index attribute
+                    allItems.sort((a, b) => {
+                        const indexA = parseInt(a.dataset.sortIndex, 10);
+                        const indexB = parseInt(b.dataset.sortIndex, 10);
+                        if (isNaN(indexA) && isNaN(indexB)) return 0;
+                        if (isNaN(indexA)) return 1;
+                        if (isNaN(indexB)) return -1;
+                        return indexA - indexB;
+                    });
+                    // Detach all items from their current parents
+                    allItems.forEach(item => item.remove());
+                    // Hide and clear original columns
+                    columnElements.forEach(column => {
+                        column.innerHTML = '';
+                        column.style.display = 'none';
+                    });
+                    // Append sorted items directly to the main container
+                    allItems.forEach(item => {
+                        container.appendChild(item);
+                    });
+                }
+            } else {
+                // --- DESKTOP VIEW ---
+                // Check if we need to switch to desktop (e.g., columns are hidden or items are direct children)
+                const itemsAreFlatInContainer = container.querySelector(':scope > .masonry-item');
+                if (numColumns > 0 && ((columnElements[0].style.display === 'none') || itemsAreFlatInContainer)) {
+                    // Prepare columns: make visible and clear.
+                    // columnMap will use 0-based array index as the key.
+                    const columnMap = {};
+                    columnElements.forEach((column, index) => {
+                        column.style.display = 'flex'; // Or your original display ('block', etc.)
+                        column.innerHTML = '';
+                        columnMap[index] = column; // Store column by its 0-based index
+                    });
+                    // Collect all .masonry-item elements that have a data-sort-index
+                    const allItemsToRedistribute = Array.from(document.querySelectorAll('.masonry-layout .masonry-item[data-sort-index]'));
+                    // Detach all items from their current parents
+                    allItemsToRedistribute.forEach(item => item.remove());
+                    // Sort all items globally by their sort-index. This ensures correct distribution order.
+                    allItemsToRedistribute.sort((a, b) => {
+                        const indexA = parseInt(a.dataset.sortIndex, 10);
+                        const indexB = parseInt(b.dataset.sortIndex, 10);
+                        if (isNaN(indexA) && isNaN(indexB)) return 0;
+                        if (isNaN(indexA)) return 1;
+                        if (isNaN(indexB)) return -1;
+                        return indexA - indexB;
+                    });
+                    // Distribute items to columns in a round-robin fashion
+                    if (numColumns > 0) {
+                        allItemsToRedistribute.forEach(item => {
+                            const sortIndex = parseInt(item.dataset.sortIndex, 10);
+                            if (isNaN(sortIndex)) {
+                                // Fallback for items without a valid sort-index, append to the first column or container
+                                if (columnMap[0]) {
+                                    columnMap[0].appendChild(item);
+                                } else {
+                                    container.appendChild(item);
+                                }
+                                return;
+                            }                    
+                            // Calculate target column index (0-based)
+                            // Assumes data-sort-index is 1-based (1, 2, 3...)
+                            const targetColumnIndex = (sortIndex - 1) % numColumns;
+                            const targetColumn = columnMap[targetColumnIndex];
+                            if (targetColumn) {
+                                targetColumn.appendChild(item);
+                            } else {
+                                // This case should ideally not happen if numColumns > 0 and calculation is correct
+                                container.appendChild(item);
+                            }
+                        });
+                    } else {
+                        // If there are no columns, append all items to the container
+                        allItemsToRedistribute.forEach(item => container.appendChild(item));
+                    }
+                }
+            }
+        };
+        // Debounced resize listener and initial call
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(sortMasonry, 250);
+        });
+        sortMasonry(); // Call on page load
+        </script>
+    </body>
+</html>

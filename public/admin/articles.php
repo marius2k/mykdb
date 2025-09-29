@@ -11,7 +11,11 @@ if (empty($_SESSION['csrf_token'])) {
 
 
 
+<<<<<<< HEAD
 $ops = ['edit_article','edit_own_article','disable_article','enable_article','create_article'];
+=======
+$ops = ['edit_article','disable_article','enable_article','create_article','edit_own_article'];
+>>>>>>> e7ba7ac (290920251919)
 
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
     
@@ -157,10 +161,12 @@ a:has(.op-icon.disabled) {
                                 <option value="">--<?= lang('lang_cat_select') ?> --</option>
                             </select>
                         </div>
+                        
                         <div class="form-group-compact">
                             <label for="publish_at" class="form-label"><?= lang('lang_art_publish_at') ?></label>
                             <input type="datetime-local" name="publish_at" id="publish_at" class="form-input">
                         </div>
+                        
                     </div>
                 </div>
                 
@@ -418,15 +424,32 @@ function generatePublishAtForArticleWithVersionData(articleId, versionData) {
     return buildPublishAtHtml(articleId, versionData.status, versionData.publish_at || '');
 }
 
+
+
+
 // Funcție pentru construirea HTML-ului acțiunilor
+
+
 function buildActionsHtml(articleId, status, publishAt, version = null, authorId = null, onlineVersion = null) {
     const currentUserId = <?= $_SESSION['user']['id'] ?? 0 ?>;
     const userRole = window.USER_ROLE || '';
     
-    // Validează statusul - dacă este undefined sau null, folosește 'draft' ca fallback
-    const normalizedStatus = status || 'draft';
+    // Determină dacă versiunea selectată este online
+    const isSelectedVersionOnline = version && onlineVersion && parseInt(version) === parseInt(onlineVersion);
     
-    // Definește acțiunile disponibile - adaugă restore
+    // Pentru articole online, trebuie să transformăm statusul din article_versions în statusul din articles
+    let displayStatus = status || 'draft';
+    if (isSelectedVersionOnline) {
+        // Pentru versiuni online, dacă primim 'approved' din article_versions,
+        // înseamnă că statusul real din articles este 'published' sau 'disabled'
+        if (displayStatus === 'approved') {
+            // Aici ar trebui să verifici statusul real din articles
+            // Pentru simplitate, presupunem că 'approved' + online = 'published'
+            displayStatus = 'published'; 
+        }
+    }
+    
+    // Definește acțiunile disponibile
     const actions = [
         {
             name: 'view',
@@ -489,14 +512,14 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     let html = '';
     
     actions.forEach(action => {
-        const isEnabled = isActionEnabled(action.name, userRole, normalizedStatus, authorId, currentUserId, onlineVersion, version);
+        const isEnabled = isActionEnabled(action.name, userRole, displayStatus, authorId, currentUserId, onlineVersion, version);
         
-        // Pentru disable/restore, afișează doar una din ele în funcție de status
-        if (action.name === 'disable' && normalizedStatus === 'disabled') {
+        // Pentru disable/restore, afișează doar una din ele în funcție de statusul REAL
+        if (action.name === 'disable' && isSelectedVersionOnline && displayStatus === 'disabled') {
             return; // Nu afișa disable pentru articole disabled
         }
-        if (action.name === 'restore' && normalizedStatus !== 'disabled') {
-            return; // Nu afișa restore pentru articole care nu sunt disabled
+        if (action.name === 'restore' && (!isSelectedVersionOnline || displayStatus !== 'disabled')) {
+            return; // Nu afișa restore pentru articole care nu sunt disabled online
         }
         
         const cssClass = isEnabled ? 'op-icon' : 'op-icon disabled';
@@ -508,6 +531,11 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     return html;
 }
 
+
+
+
+
+
 function isActionEnabled(actionName, userRole, articleStatus, authorId, currentUserId, onlineVersion = null, selectedVersion = null) {
     // Convertește ID-urile la numere pentru comparație
     const isOwner = parseInt(authorId) === parseInt(currentUserId);
@@ -518,75 +546,28 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
     // Determină dacă versiunea selectată este online
     const isSelectedVersionOnline = selectedVersion && onlineVersion && 
                                    parseInt(selectedVersion) === parseInt(onlineVersion);
-   
-    // Pentru acțiunea "edit", verifică dacă versiunea online poate fi editată
-    if (actionName === 'edit' && isSelectedVersionOnline) {
-        // Versiunea online se poate edita doar dacă este disabled
-        if (status !== 'disabled') {
-            return false;
-        }
-    }
-    
-    // Pentru acțiunea "publish", verifică dacă versiunea selectată este online
-    if (actionName === 'publish') {
-        // Nu se poate publica o versiune care este deja online
-        if (isSelectedVersionOnline) {
-            return false;
-        }
-    }
-    
-    // Pentru acțiunea "disable", verifică dacă versiunea selectată este online
-    if (actionName === 'disable') {
-        // Doar versiunile online pot fi dezactivate
-        if (!isSelectedVersionOnline) {
-            return false;
-        }
-        
-        // Disable se face doar pentru status approved (nu disabled)
-        if (status !== 'approved') {
-            return false;
-        }
-    }
-
-    // Pentru acțiunea "restore", verifică dacă versiunea este online și disabled
-    if (actionName === 'restore') {
-        // Restore se face doar pentru versiuni online care sunt disabled
-        if (!isSelectedVersionOnline || status !== 'disabled') {
-            return false;
-        }
-    }
 
     switch (userRole) {
         case 'contributor':
             switch (actionName) {
                 case 'view':
-                    // Contributor: toate approved si disabled + propriile draft/pending
-                    return status === 'approved' || status === 'disabled' || (isOwner && (status === 'draft' || status === 'pending'));
+                    // Contributor poate vedea TOATE articolele proprii (orice status)
+                    return isOwner;
                 case 'edit':
-                    // Contributor: propriile draft + versiuni online disabled (dacă sunt owner)
-                    if (isSelectedVersionOnline) {
-                        return status === 'disabled' && isOwner;
-                    }
-                    return status === 'draft' && isOwner;
+                    // Draft (propriu) și NU online
+                    return status === 'draft' && isOwner && !isSelectedVersionOnline;
                 case 'history':
-                    // Contributor: toate approved si disabled + propriile draft/pending
-                    return status === 'approved' || status === 'disabled' ||
-                           (isOwner && (status === 'draft' || status === 'pending'));
+                    // Toate articolele proprii
+                    return isOwner;
                 case 'approve':
-                    // Contributor: nu poate aproba
-                    return false;
                 case 'publish':
-                    // Contributor: nu poate publica
-                    return false;
                 case 'disable':
-                    // Contributor: nu poate dezactiva
-                    return false;
                 case 'restore':
-                    // Contributor: nu poate restaura
+                    // Contributor nu poate face aceste acțiuni
                     return false;
                 case 'delete':
-                    // Contributor: doar propriile draft
-                    return status === 'draft' && isOwner;
+                    // Draft (propriu) și NU online
+                    return status === 'draft' && isOwner && !isSelectedVersionOnline;
                 default:
                     return false;
             }
@@ -594,6 +575,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'editor':
             switch (actionName) {
                 case 'view':
+                case 'history':
                     // Editor: toate articolele în orice status
                     return true;
                 case 'edit':
@@ -602,24 +584,21 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                         return status === 'disabled';
                     }
                     return status === 'draft' || status === 'pending' || status === 'approved';
-                case 'history':
-                    // Editor: toate articolele
-                    return true;
                 case 'approve':
                     // Editor: doar pending
-                    return status === 'pending';
+                    return status === 'pending' && !isSelectedVersionOnline;
                 case 'publish':
                     // Editor: doar approved (și nu online)
-                    return status === 'approved';
+                    return status === 'approved' && !isSelectedVersionOnline;
                 case 'disable':
-                    // Editor: doar approved online
-                    return status === 'approved';
+                    // Editor: doar published online
+                    return status === 'published' && isSelectedVersionOnline;
                 case 'restore':
                     // Editor: doar disabled online
-                    return status === 'disabled';
+                    return status === 'disabled' && isSelectedVersionOnline;
                 case 'delete':
-                    // Editor: toate draft și pending
-                    return status === 'draft' || status === 'pending';
+                    // Editor: draft și pending (nu online)
+                    return (status === 'draft' || status === 'pending') && !isSelectedVersionOnline;
                 default:
                     return false;
             }
@@ -627,6 +606,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'moderator':
             switch (actionName) {
                 case 'view':
+                case 'history':
                     // Moderator: toate articolele în orice status
                     return true;
                 case 'edit':
@@ -635,24 +615,21 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                         return status === 'disabled';
                     }
                     return status === 'draft' || status === 'pending';
-                case 'history':
-                    // Moderator: toate articolele
-                    return true;
                 case 'approve':
                     // Moderator: doar pending
-                    return status === 'pending';
+                    return status === 'pending' && !isSelectedVersionOnline;
                 case 'publish':
                     // Moderator: doar approved (și nu online)
-                    return status === 'approved';
+                    return status === 'approved' && !isSelectedVersionOnline;
                 case 'disable':
-                    // Moderator: doar approved online
-                    return status === 'approved';
+                    // Moderator: doar published online
+                    return status === 'published' && isSelectedVersionOnline;
                 case 'restore':
                     // Moderator: doar disabled online
-                    return status === 'disabled';
+                    return status === 'disabled' && isSelectedVersionOnline;
                 case 'delete':
-                    // Moderator: toate draft și pending
-                    return status === 'draft' || status === 'pending';
+                    // Moderator: draft și pending (nu online)
+                    return (status === 'draft' || status === 'pending') && !isSelectedVersionOnline;
                 default:
                     return false;
             }
@@ -660,6 +637,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'admin':
             switch (actionName) {
                 case 'view':
+                case 'history':
                     // Admin: toate articolele în orice status
                     return true;
                 case 'edit':
@@ -668,24 +646,21 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                         return status === 'disabled';
                     }
                     return true;
-                case 'history':
-                    // Admin: toate articolele
-                    return true;
                 case 'approve':
                     // Admin: doar pending
-                    return status === 'pending';
+                    return status === 'pending' && !isSelectedVersionOnline;
                 case 'publish':
                     // Admin: doar approved (și nu online)
-                    return status === 'approved';
+                    return status === 'approved' && !isSelectedVersionOnline;
                 case 'disable':
-                    // Admin: doar approved online
-                    return status === 'approved';
+                    // Admin: doar published online
+                    return status === 'published' && isSelectedVersionOnline;
                 case 'restore':
                     // Admin: doar disabled online
-                    return status === 'disabled';
+                    return status === 'disabled' && isSelectedVersionOnline;
                 case 'delete':
-                    // Admin: toate versiunile în toate stările
-                    return true;
+                    // Admin: toate versiunile în toate stările (nu online)
+                    return !isSelectedVersionOnline;
                 default:
                     return false;
             }
@@ -693,6 +668,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
         case 'superadmin':
             switch (actionName) {
                 case 'view':
+                case 'history':
                     // Superadmin: toate articolele în orice status
                     return true;
                 case 'edit':
@@ -701,24 +677,21 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                         return status === 'disabled';
                     }
                     return true;
-                case 'history':
-                    // Superadmin: toate articolele
-                    return true;
                 case 'approve':
                     // Superadmin: doar pending
-                    return status === 'pending';
+                    return status === 'pending' && !isSelectedVersionOnline;
                 case 'publish':
                     // Superadmin: doar approved (și nu online)
-                    return status === 'approved';
+                    return status === 'approved' && !isSelectedVersionOnline;
                 case 'disable':
-                    // Superadmin: doar approved online
-                    return status === 'approved';
+                    // Superadmin: doar published online
+                    return status === 'published' && isSelectedVersionOnline;
                 case 'restore':
                     // Superadmin: doar disabled online
-                    return status === 'disabled';
+                    return status === 'disabled' && isSelectedVersionOnline;
                 case 'delete':
-                    // Superadmin: toate versiunile în toate stările
-                    return true;
+                    // Superadmin: toate versiunile în toate stările (nu online)
+                    return !isSelectedVersionOnline;
                 default:
                     return false;
             }
@@ -842,13 +815,33 @@ function getVersionDataFromRow(row, versionNumber) {
 function viewArticleWithVersion(articleId, onlineVersion = null) {
     const selectedVersion = getSelectedVersion(articleId);
     
-    // Pentru a determina is_online, ar fi ideal să ai acces la datele versiunii
-    // Pentru simplitate, poți presupune că selectedVersion == onlineVersion înseamnă is_online = 1
-    const isOnlineVersion = onlineVersion && selectedVersion == onlineVersion;
+    // Pentru a determina is_online, verifică dacă versiunea selectată este online
+    let isOnlineVersion = 0; // Default la 0 în loc de false
     
-    const url = `../view_article.php?id=${articleId}&version=${selectedVersion}&isonline=${isOnlineVersion ? 1 : 0}`;
+    // Găsește rândul curent în tabelul DataTables
+    const table = $('#articlesTable').DataTable();
+    const rowData = table.rows().data().toArray().find(row => row.article_id == articleId);
+    
+    if (rowData && rowData.versions) {
+        const versionData = rowData.versions.find(v => v.version_number == selectedVersion);
+        if (versionData && versionData.is_online == 1) {
+            isOnlineVersion = 1;
+        }
+    }
+    
+    console.log('View article:', {
+        articleId: articleId,
+        selectedVersion: selectedVersion,
+        onlineVersion: onlineVersion,
+        isOnlineVersion: isOnlineVersion,
+        rowData: rowData
+    });
+    
+    const url = `../view_article.php?id=${articleId}&version=${selectedVersion}&isonline=${isOnlineVersion}`;
+    console.log('Redirecting to:', url);
     window.location.href = url;
 }
+
 
 let currentPage = 1;
 let totalPages = 1;
@@ -990,14 +983,14 @@ function submitArticle2(submitType) {
         const isEditingOnlineVersion = parseInt(isOnlineVersion) || 0;
         
         // Debug logging
-        /*
+        
         console.log('Online version check (using is_online field):', {
             editVersion: editVersion,
             isOnlineVersion: isOnlineVersion,
             isEditingOnlineVersion: isEditingOnlineVersion,
             description: isEditingOnlineVersion ? 'Editing ONLINE version (is_online=1)' : 'Editing NON-ONLINE version (is_online=0)'
         });
-        */
+        
 
         formData.append('action', 'edit_article');
         formData.append('article_id', editId);
@@ -1010,8 +1003,26 @@ function submitArticle2(submitType) {
     }
     
     formData.append('submit_type', submitType);
+    
+    const action = formData.get('action');
+    let url = '';
+    
+    switch (action) {
+        case 'add_article':
+            url = '../api/bkd_article_add.php';
+            break;
+        case 'edit_article':
+            url = '../api/bkd_article_edit.php';
+            break;
+        default:
+            console.error('Unknown action:', action);
+            return;
+    }
 
-    fetch('../api/bkd_articles.php', {
+    //debug logging
+    console.log("action:", action, "url:", url);
+
+    fetch(url, {
         method: 'POST',
         body: formData
     })
@@ -1027,6 +1038,7 @@ function submitArticle2(submitType) {
             form.removeAttribute('data-is-online-version');
             setTimeout(closeArticleModal, 1200);
             reloadArticlesTable();
+            console.log('Article saved:', data['version_id'] ? `Version ID: ${data['version_id']}` : '', data);
         } else {
             document.getElementById('article-feedback').textContent = data.error || 'Eroare la salvare!';
             document.getElementById('article-feedback').classList.remove('d-none');
@@ -1048,7 +1060,11 @@ function changePublishAt(value, articleId) {
 }
 
 
+// actions: apporove, publish, disable, restore, delete(to be implemented)
+
 function articleAction(action, articleId, publishAt = '', version = null) {
+
+
     let body = `action=${encodeURIComponent(action)}&article_id=${encodeURIComponent(articleId)}&csrf_token=${encodeURIComponent(window.CSRF_TOKEN)}`;
     
     if (action === 'approve' && publishAt) {
@@ -1082,10 +1098,34 @@ function articleAction(action, articleId, publishAt = '', version = null) {
             return;
         }*/
         body += `&version=${encodeURIComponent(version)}`;
-        console.log('URL:', body);
+        
+    }
+    
+    let url = '';
+
+    switch(action) {
+        case 'approve':
+            url = '../api/bkd_article_approve.php';
+            break;
+        case 'publish':
+            url = '../api/bkd_article_publish.php';
+            break;
+        case 'disable':
+            url = '../api/bkd_article_disable.php';
+            break;
+        case 'restore':
+            url = '../api/bkd_article_restore.php';
+            break;
+        case 'delete':
+            url = '../api/bkd_article_delete.php';
+            break;
+        default:
+            console.error('Unknown action:', action);
+            return;
     }
 
-    fetch(`../api/bkd_articles.php`, {
+    console.log('URL:', url + body);
+    fetch(url, {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: body
