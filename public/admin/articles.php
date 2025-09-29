@@ -42,6 +42,13 @@ if ($lang === 'en') $lang = 'en-GB';
 <script>
 window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";
 window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
+
+// Debug session data for troubleshooting
+console.log('🔍 SESSION DEBUG:', {
+    user_id: <?= $_SESSION['user']['id'] ?? 'null' ?>,
+    user_role: "<?= $_SESSION['user']['role'] ?? 'not_set' ?>",
+    csrf_token: "<?= $_SESSION['csrf_token'] ?? 'not_set' ?>"
+});
 </script>
 
 <style>
@@ -429,6 +436,12 @@ function generatePublishAtForArticleWithVersionData(articleId, versionData) {
 function buildActionsHtml(articleId, status, publishAt, version = null, authorId = null, onlineVersion = null) {
     const currentUserId = <?= $_SESSION['user']['id'] ?? 0 ?>;
     const userRole = window.USER_ROLE || '';
+    
+    // Safeguard: Ensure we have valid session data
+    if (!currentUserId || currentUserId === 0) {
+        console.error('❌ Current user ID is not set correctly:', currentUserId);
+        return ''; // No actions if user session is invalid
+    }
     
     // Determină dacă versiunea selectată este online
     const isSelectedVersionOnline = version && onlineVersion && parseInt(version) === parseInt(onlineVersion);
