@@ -19,7 +19,7 @@ if (!isset($_SESSION['user']['id'])) {
     exit;
 }
 
-$ops = ['edit_article','disable_article','enable_article','create_article','approve_article','restore_article','publish_article'];
+$ops = ['edit_article','edit_own_article','disable_article','enable_article','create_article','approve_article','restore_article','publish_article'];
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
     http_response_code(403);
     echo json_encode(['error' => 'Access denied']);
