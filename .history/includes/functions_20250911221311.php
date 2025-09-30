@@ -1452,7 +1452,7 @@ function getArticleAuthorId(int $aid): ?int {
 }
 
 // returns the ID of an article by its title
-function getArticleIdByTitle(int $title): ?int {
+function getArticleIdByTitle(string $title): ?int {
     $db = new Database();
 
     $sql = "SELECT id FROM articles WHERE title = ?";
