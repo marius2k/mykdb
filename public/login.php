@@ -6,75 +6,92 @@ include APP_ROOT . 'includes/header.php';
 <!-- Overlay pentru login -->
 <div id="modalOverlayLogin" class="modal-overlay" style="display:block;"></div>
 
-<!-- Modalul de login -->
-<div id="loginModal" class="modal-login" style="display:flex;">
-    <div class="modal-content-login">
-        <form id="loginForm" method="POST" autocomplete="off">
-            <div class="modal-header-login">
-                <span class="modal-title-login"><?= lang('lang_login') ?></span>
-                <span class="modal-close-login" id="closeLoginModal">&times;</span>
-            </div>
-            <div class="modal-body-login">
-                <div class="modal-row-login">
-                    <label class="modal-label-login"><?= lang('lang_login_username') ?></label>
-                    <input class="modal-input-login" type="text" name="username" id="login-username" required>
+<!-- Container cu Login/Register Slider -->
+<div id="authContainer" class="auth-container" style="display:flex;">
+    <div class="auth-box">
+        <!-- Panou pentru Sign In -->
+        <div class="form-container sign-in-container">
+            <form id="loginForm" method="POST" autocomplete="off">
+                <h1><?= lang('lang_login') ?? 'Sign In' ?></h1>
+                <input type="text" name="username" id="login-username" placeholder="<?= lang('lang_login_username') ?? 'Username' ?>" required>
+                <div class="password-input-wrapper">
+                    <input type="password" name="password" id="login-password" placeholder="<?= lang('lang_login_password') ?? 'Password' ?>" required>
+                    <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('login-password', this)">👁️</button>
                 </div>
-                <div class="modal-row-login">
-                    <label class="modal-label-login"><?= lang('lang_login_password') ?></label>
-                    <div class="password-wrapper">
-                        <input class="modal-input-login" type="password" name="password" id="login-password" required>
-                        <button type="button" id="login-btn-password" class="toggle-password" onclick="togglePasswordVisibility('login-password','login-btn-password')">👁️</button>
-                    </div>
+                <a href="#" class="forgot-password"><?= lang('lang_forgot_password') ?? 'Forgot your password?' ?></a>
+                <button type="submit" class="auth-btn"><?= lang('lang_btn_login') ?? 'Sign In' ?></button>
+            </form>
+        </div>
+        
+        <!-- Panou pentru Sign Up -->
+        <div class="form-container sign-up-container">
+            <form id="registerForm" method="POST" autocomplete="off">
+                <h1><?= lang('lang_reg_msg_top') ?? 'Create Account' ?></h1>
+                <input type="text" name="first_name" id="first_name" placeholder="<?= lang('lang_reg_fname') ?? 'First Name' ?>" required>
+                <input type="text" name="last_name" id="last_name" placeholder="<?= lang('lang_reg_lname') ?? 'Last Name' ?>" required>
+                <input type="text" name="username" id="reg-username" placeholder="<?= lang('lang_reg_username') ?? 'Username' ?>" required>
+                <div class="password-input-wrapper">
+                    <input type="password" name="password" id="reg-password" placeholder="<?= lang('lang_reg_pass') ?? 'Password' ?>" required>
+                    <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('reg-password', this)">👁️</button>
+                </div>
+                <input type="password" name="confirm_password" id="confirm_password" placeholder="<?= lang('lang_reg_pass_confirm') ?? 'Confirm Password' ?>" required>
+                <small id="password-match-msg" style="display: none;"></small>
+                <button type="submit" class="auth-btn"><?= lang('lang_reg_btn_create') ?? 'Sign Up' ?></button>
+            </form>
+        </div>
+        
+        <!-- Panou overlay pentru slider -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1><?= lang('lang_welcome_back') ?? 'Welcome Back!' ?></h1>
+                    <p><?= lang('lang_signin_msg') ?? 'To keep connected with us please login with your personal info' ?></p>
+                    <button class="ghost-btn" id="signIn"><?= lang('lang_btn_login') ?? 'Sign In' ?></button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1><?= lang('lang_hello') ?? 'Hello, Friend!' ?></h1>
+                    <p><?= lang('lang_signup_msg') ?? 'Enter your personal details and start journey with us' ?></p>
+                    <button class="ghost-btn" id="signUp"><?= lang('lang_btn_signup') ?? 'Sign Up' ?></button>
                 </div>
             </div>
-            <div class="modal-footer-login">
-                <button type="submit" class="modal-btn-register primary"><?= lang('lang_btn_login') ?? 'Login' ?></button>
-            </div>
-        </form>
+        </div>
     </div>
+    <span class="auth-close" id="closeAuthModal">&times;</span>
 </div>
-
-<style>
-html, body {
-  height: 100%;
-  min-height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-</style>
 
 <script>
 const overlay = document.getElementById('modalOverlayLogin');
-const modal = document.getElementById('loginModal');
-const closeBtn = document.getElementById('closeLoginModal');
+const container = document.getElementById('authContainer');
+const closeBtn = document.getElementById('closeAuthModal');
+const signUpButton = document.getElementById('signUp');
+const signInButton = document.getElementById('signIn');
+const authBox = document.querySelector('.auth-box');
 
-function closeLoginModal() {
-    modal.style.display = "none";
+// Toggle between Sign In and Sign Up
+if (signUpButton) {
+    signUpButton.addEventListener('click', () => {
+        authBox.classList.add('right-panel-active');
+    });
+}
+
+if (signInButton) {
+    signInButton.addEventListener('click', () => {
+        authBox.classList.remove('right-panel-active');
+    });
+}
+
+function closeAuthModal() {
+    container.style.display = "none";
     overlay.style.display = "none";
     window.location.href = "index.php";
 }
 
-if (closeBtn) closeBtn.onclick = closeLoginModal;
-if (overlay) overlay.onclick = closeLoginModal;
+if (closeBtn) closeBtn.onclick = closeAuthModal;
+if (overlay) overlay.onclick = closeAuthModal;
 
-// Blochează închiderea modalului la click pe fundal sau Escape
-window.onclick = function(event) {
-  if (event.target === modal) {
-    // nu face nimic
-  }
-};
-document.onkeydown = function(e) {
-  if (e.key === "Escape") {
-    e.preventDefault();
-    return false;
-  }
-};
-
-// Toggle password
-function togglePasswordVisibility(inputId, btnId) {
+// Toggle password visibility
+function togglePasswordVisibility(inputId, btn) {
   const input = document.getElementById(inputId);
-  const btn = document.getElementById(btnId);
   if (input.type === "password") {
     input.type = "text";
     btn.textContent = "🙈";
@@ -84,12 +101,39 @@ function togglePasswordVisibility(inputId, btnId) {
   }
 }
 
+// Password validation for register form
+const password = document.getElementById('reg-password');
+const confirmPassword = document.getElementById('confirm_password');
+const message = document.getElementById('password-match-msg');
+const registerSubmitBtn = document.querySelector('#registerForm button[type="submit"]');
+
+function validatePasswords() {
+    if (confirmPassword.value.length === 0) {
+        message.style.display = "none";
+        if (registerSubmitBtn) registerSubmitBtn.disabled = false;
+        return;
+    }
+    if (password.value !== confirmPassword.value) {
+        message.style.display = "block";
+        message.textContent = "<?= lang('lang_reg_pass_nok') ?? 'Passwords do not match' ?>";
+        message.style.color = "red";
+        if (registerSubmitBtn) registerSubmitBtn.disabled = true;
+    } else {
+        message.style.display = "block";
+        message.textContent = "<?= lang('lang_reg_pass_ok') ?? 'Passwords match' ?> ✔️";
+        message.style.color = "green";
+        if (registerSubmitBtn) registerSubmitBtn.disabled = false;
+    }
+}
+
+if (password) password.addEventListener('input', validatePasswords);
+if (confirmPassword) confirmPassword.addEventListener('input', validatePasswords);
+
 // AJAX login
 document.getElementById('loginForm').onsubmit = async function(e) {
   e.preventDefault();
   const form = e.target;
   const data = new FormData(form);
-  // Adaugă aici gestionarea erorilor dacă ai nevoie
   const response = await fetch('api/bkd_login.php', {
     method: 'POST',
     body: data
@@ -98,8 +142,28 @@ document.getElementById('loginForm').onsubmit = async function(e) {
   if (result.success) {
     window.location.href = "index.php";
   } else {
-    alert(result.error || "Eroare necunoscută.");
+    alert(result.error || "<?= lang('lang_error_unknown') ?? 'Unknown error' ?>");
   }
+};
+
+// AJAX register
+document.getElementById('registerForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+
+    const response = await fetch('api/bkd_register.php', {
+        method: 'POST',
+        body: data
+    });
+    const result = await response.json();
+    if (result.success) {
+        alert("<?= lang('lang_reg_success') ?? 'Account created successfully! You can now login.' ?>");
+        authBox.classList.remove('right-panel-active');
+        form.reset();
+    } else {
+        alert(result.errors ? result.errors.join('\n') : "<?= lang('lang_error_unknown') ?? 'Unknown error' ?>");
+    }
 };
 </script>
 
