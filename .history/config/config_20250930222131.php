@@ -5,7 +5,7 @@
 define('APP_NAME','My KDB');
 //define('APP_ROOT','/opt/lampp/htdocs/mykdb/');
 define('APP_URL','http://192.168.1.178:8080/');
-define('APP_VERSION','Version 2.2');
+define('APP_VERSION','Version 2.1');
 
 // Setări constante pentru conexiunea la bază de date
 //define('DB_HOST', 'localhost');
