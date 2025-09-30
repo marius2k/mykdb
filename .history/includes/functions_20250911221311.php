@@ -184,8 +184,6 @@ function loadConfig(){
     if (!defined('APP_URL')) {
         define('APP_URL', 'http://localhost/mykdb/');
     }
-    exit;
-
 }
 // Initialize guest session if not already set
 // This function should be called at the start
