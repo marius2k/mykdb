@@ -546,7 +546,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
     
     // Enhanced validation and debugging
     if (userRole === 'contributor') {
-        //onlineVersion = 0;
+        onlineVersion = 0;
         console.log('🔍 CONTRIBUTOR ACTION CHECK:', {
             actionName: actionName,
             userRole: userRole,
@@ -568,7 +568,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
                     return isOwner;
                 case 'edit':
                     // Draft (propriu) și NU online
-                    return status === 'draft' && isOwner;
+                    return status === 'draft' && isOwner && !isSelectedVersionOnline;
                 case 'history':
                     // Toate articolele proprii
                     return isOwner;

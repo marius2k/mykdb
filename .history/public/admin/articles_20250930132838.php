@@ -546,7 +546,7 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
     
     // Enhanced validation and debugging
     if (userRole === 'contributor') {
-        //onlineVersion = 0;
+        onlineVersion = 0;
         console.log('🔍 CONTRIBUTOR ACTION CHECK:', {
             actionName: actionName,
             userRole: userRole,
