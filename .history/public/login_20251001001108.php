@@ -37,7 +37,6 @@ include APP_ROOT . 'includes/header.php';
                 </div>
                 <input type="password" name="confirm_password" id="confirm_password" placeholder="<?= lang('lang_reg_pass_confirm') ?? 'Confirm Password' ?>" required>
                 <small id="password-match-msg" style="display: none;"></small>
-                <br>
                 <button type="submit" class="auth-btn"><?= lang('lang_reg_btn_create') ?? 'Sign Up' ?></button>
             </form>
         </div>

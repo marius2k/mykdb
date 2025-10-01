@@ -80,39 +80,11 @@ a:hover {
 .btn-outline-primary {
     color: var(--primary-color);
     border-color: var(--primary-color);
-    border: 1px solid var(--primary-color) !important;
 }
 
 .btn-outline-primary:hover {
     background-color: var(--primary-color);
     color: white;
-    border-color: var(--primary-color);
-}
-
-/* Asigurare că butoanele din navigare păstrează borderele */
-.navbar .btn-outline-primary,
-nav .btn-outline-primary,
-.topnav .btn-outline-primary,
-.app-header .btn-outline-primary {
-    border: 1px solid var(--primary-color) !important;
-}
-
-.navbar .btn-outline-primary:hover,
-nav .btn-outline-primary:hover,
-.topnav .btn-outline-primary:hover,
-.app-header .btn-outline-primary:hover {
-    border: 1px solid var(--primary-color) !important;
-}
-
-/* Asigurare suplimentară pentru butoanele de header */
-header .btn-outline-primary,
-.header .btn-outline-primary {
-    border: 1px solid var(--primary-color) !important;
-}
-
-header .btn-outline-primary:hover,
-.header .btn-outline-primary:hover {
-    border: 1px solid var(--primary-color) !important;
 }
 
 /* 5. Carduri */
@@ -3424,7 +3396,6 @@ ul.top-articles .li-icon {
   max-width: 100%;
   min-height: 550px;
   z-index: 10502 !important;
-  border: none;
 }
 
 .auth-box form {
@@ -3436,8 +3407,6 @@ ul.top-articles .li-icon {
   padding: 0 40px;
   height: 100%;
   text-align: center;
-  border: none;
-  box-shadow: none;
 }
 
 .auth-box h1 {
@@ -3445,24 +3414,6 @@ ul.top-articles .li-icon {
   margin: 0 0 15px;
   color: #333;
   font-size: 1.8rem;
-}
-
-/* Eliminare complete a tuturor liniilor gri din auth-box - reguli specifice */
-.auth-box .form-container,
-.auth-box .sign-in-container,
-.auth-box .sign-up-container {
-  background: #ffffff !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-/* Eliminare borduri doar pentru elementele din interiorul modalului de autentificare */
-.auth-box .form-container *,
-.auth-box .sign-in-container *,
-.auth-box .sign-up-container * {
-  border: none !important;
-  outline: none !important;
 }
 
 .auth-box input {
@@ -3478,7 +3429,6 @@ ul.top-articles .li-icon {
 .auth-box input:focus {
   outline: none;
   background: #e0e0e0;
-  border: none !important;
 }
 
 .auth-btn {
@@ -3531,17 +3481,12 @@ ul.top-articles .li-icon {
   top: 0;
   height: 100%;
   transition: all 0.6s ease-in-out;
-  border: none;
-  background: #fff;
 }
 
 .sign-in-container {
   left: 0;
   width: 50%;
   z-index: 2;
-  background: #fff;
-  border: none;
-  box-shadow: none;
 }
 
 .auth-box.right-panel-active .sign-in-container {
@@ -3553,9 +3498,6 @@ ul.top-articles .li-icon {
   width: 50%;
   opacity: 0;
   z-index: 1;
-  background: #fff;
-  border: none;
-  box-shadow: none;
 }
 
 .auth-box.right-panel-active .sign-up-container {
@@ -3585,8 +3527,6 @@ ul.top-articles .li-icon {
   overflow: hidden;
   transition: transform 0.6s ease-in-out;
   z-index: 100;
-  border: none;
-  border-left: none;
 }
 
 .auth-box.right-panel-active .overlay-container {
@@ -3594,15 +3534,11 @@ ul.top-articles .li-icon {
 }
 
 .overlay {
-  background: 
-    linear-gradient(
-      rgba(70, 143, 153, 0.85), 
-      rgba(2, 138, 120, 0.411)
-    ),
-    url('../images/kdb_top.jpeg');
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: center;
+  background-position: 0 0;
   color: #fff;
   position: relative;
   left: -100%;
@@ -3622,7 +3558,7 @@ ul.top-articles .li-icon {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 0 30px;
+  padding: 0 40px;
   text-align: center;
   top: 0;
   height: 100%;
@@ -3648,31 +3584,6 @@ ul.top-articles .li-icon {
   transform: translateX(20%);
 }
 
-
-/* Pentru ecrane mai mici, ajustează responsive */
-@media (max-width: 768px) {
-  .auth-box {
-    width: 95vw;
-    min-height: 500px;
-  }
-  
-  .auth-box form {
-    padding: 0 20px;
-  }
-  
-  .overlay-panel {
-    padding: 0 20px;
-  }
-}
-
-/* Pentru ecrane foarte mari */
-@media (min-width: 1200px) {
-  .auth-box {
-    width: 1000px;
-    min-height: 600px;
-  }
-}
-
 .overlay-panel h1 {
   color: #fff;
   font-weight: 700;
@@ -3680,11 +3591,11 @@ ul.top-articles .li-icon {
 }
 
 .overlay-panel p {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 300;
-  line-height: 18px;
+  line-height: 20px;
   letter-spacing: 0.5px;
-  margin: 15px 0 25px;
+  margin: 20px 0 30px;
 }
 
 .forgot-password {

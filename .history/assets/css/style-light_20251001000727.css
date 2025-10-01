@@ -89,32 +89,6 @@ a:hover {
     border-color: var(--primary-color);
 }
 
-/* Asigurare că butoanele din navigare păstrează borderele */
-.navbar .btn-outline-primary,
-nav .btn-outline-primary,
-.topnav .btn-outline-primary,
-.app-header .btn-outline-primary {
-    border: 1px solid var(--primary-color) !important;
-}
-
-.navbar .btn-outline-primary:hover,
-nav .btn-outline-primary:hover,
-.topnav .btn-outline-primary:hover,
-.app-header .btn-outline-primary:hover {
-    border: 1px solid var(--primary-color) !important;
-}
-
-/* Asigurare suplimentară pentru butoanele de header */
-header .btn-outline-primary,
-.header .btn-outline-primary {
-    border: 1px solid var(--primary-color) !important;
-}
-
-header .btn-outline-primary:hover,
-.header .btn-outline-primary:hover {
-    border: 1px solid var(--primary-color) !important;
-}
-
 /* 5. Carduri */
 .card {
     border: none;

@@ -26,8 +26,7 @@ include APP_ROOT . 'includes/header.php';
         <!-- Panou pentru Sign Up -->
         <div class="form-container sign-up-container">
             <form id="registerForm" method="POST" autocomplete="off">
-                <h1><?= lang('lang_reg_msg_top') ?? 'Create Account' ?></h1>
-                <br>
+                <h4><?= lang('lang_reg_msg_top') ?? 'Create Account' ?></h4>
                 <input type="text" name="first_name" id="first_name" placeholder="<?= lang('lang_reg_fname') ?? 'First Name' ?>" required>
                 <input type="text" name="last_name" id="last_name" placeholder="<?= lang('lang_reg_lname') ?? 'Last Name' ?>" required>
                 <input type="text" name="username" id="reg-username" placeholder="<?= lang('lang_reg_username') ?? 'Username' ?>" required>
@@ -37,7 +36,6 @@ include APP_ROOT . 'includes/header.php';
                 </div>
                 <input type="password" name="confirm_password" id="confirm_password" placeholder="<?= lang('lang_reg_pass_confirm') ?? 'Confirm Password' ?>" required>
                 <small id="password-match-msg" style="display: none;"></small>
-                <br>
                 <button type="submit" class="auth-btn"><?= lang('lang_reg_btn_create') ?? 'Sign Up' ?></button>
             </form>
         </div>

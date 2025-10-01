@@ -104,17 +104,6 @@ nav .btn-outline-primary:hover,
     border: 1px solid var(--primary-color) !important;
 }
 
-/* Asigurare suplimentară pentru butoanele de header */
-header .btn-outline-primary,
-.header .btn-outline-primary {
-    border: 1px solid var(--primary-color) !important;
-}
-
-header .btn-outline-primary:hover,
-.header .btn-outline-primary:hover {
-    border: 1px solid var(--primary-color) !important;
-}
-
 /* 5. Carduri */
 .card {
     border: none;
