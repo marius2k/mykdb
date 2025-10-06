@@ -44,6 +44,43 @@ ON DUPLICATE KEY UPDATE role_id=role_id;
 
 ## Verification
 
+### Automated Verification
+Run the verification script to check if the permission has been correctly applied:
+
+```bash
+cd /path/to/mykdb
+php verify_moderator_permissions.php
+```
+
+Expected output:
+```
+=== Moderator Permission Verification ===
+
+✅ Found moderator role:
+   - ID: X
+   - Name: moderator
+   - Label: Moderator
+
+✅ Found approve_article operation:
+   - ID: Y
+   - Name: approve_article
+   - Description: ...
+
+✅ SUCCESS: Moderator role HAS approve_article permission!
+   Permission record found in role_permissions table
+
+📋 All moderator permissions (X total):
+   - approve_article
+   - approve_comment
+   - disable_user
+   - enable_user
+   - modify_own_user
+
+🎉 The fix has been successfully applied!
+   Moderators should now be able to approve pending articles.
+```
+
+### Manual Verification
 After applying the fix, verify that moderators can now approve articles:
 
 1. Log in with a moderator account
