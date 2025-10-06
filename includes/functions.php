@@ -1734,12 +1734,6 @@ function renderPendingArticles(array $pendingArticles,array $t): string {
             </div>
         </div>';
     } else {
-        // Check if user has permission to approve articles
-        $canApprove = false;
-        if (isset($_SESSION['user']['id'])) {
-            $canApprove = hasPermission($_SESSION['user']['id'], ['approve_article']);
-        }
-        
         // Începe generarea HTML-ului pentru articolele în așteptare
         $html = '<div class="custom-box-1">
                     <span class="corner-label-1">'.$t['lang_articles_in_pending'].' (' . count($pendingArticles) . ')</span>
@@ -1753,19 +1747,19 @@ function renderPendingArticles(array $pendingArticles,array $t): string {
                             <a href="view_article.php?id='.$article['article_id'].'&version='.$article['version_number'].'">' . htmlspecialchars($article['title']) . '</a><br>
                             <small class="text-muted">Autor: ' . htmlspecialchars($article['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($article['created_at'])) . '</small>
                         </div>
-                        <div style="align-items: right;">';
-            
-            // Only show approve/reject buttons if user has permission
-            if ($canApprove) {
-                $html .= '<a href="#" onclick="approveArticle('.$article['article_id'].','.$article['version_number'].');return false;">
-                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="' . $t['lang_article_approve']. '">
+                        <div style="align-items: right;">
+                            <a href="#" onclick="approveArticle('.$article['article_id'].','.$article['version_number'].');return false;">
+                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . $t['lang_article_approve']. '">
                             </a>
                             <a href="#" onclick="rejectArticle('.$article['article_id'].','.$article['version_number'].');return false;">
                                 <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="' . $t['lang_article_reject']. '">
-                            </a>';
-            }
-            
-            $html .= '</div>
+                            </a>
+                            <!--
+                            <a href="reject_article.php?id=' . $article['article_id'] . '&version=' . $article['version_number'] . '">
+                                <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="'.$t['lang_article_reject'].'">
+                            </a>
+                            -->
+                        </div>
                     </li>';
         }
 
@@ -1799,12 +1793,6 @@ function renderPendingComments(array $pendingComments,array $t): string {
             </div>
         </div>';
     } else {
-        // Check if user has permission to approve comments
-        $canApprove = false;
-        if (isset($_SESSION['user']['id'])) {
-            $canApprove = hasPermission($_SESSION['user']['id'], ['approve_comment']);
-        }
-        
         // Începe generarea HTML-ului pentru comentariile în așteptare
         $html = '<div class="custom-box-1">
                     <span class="corner-label-1">'.$t['lang_com_in_pending'].' (' . count($pendingComments) . ')</span>
@@ -1818,15 +1806,11 @@ function renderPendingComments(array $pendingComments,array $t): string {
                             <a href="view_comment.php?id=' . $comment['id'] . '">' . truncateText($comment['content'],80) . '</a><br>
                             <small style="font-size: 12px;">Autor: ' . htmlspecialchars($comment['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($comment['created_at'])) . '</small>
                         </div>
-                        <div style="align-items: right;">';
-            
-            // Only show approve/delete buttons if user has permission
-            if ($canApprove) {
-                $html .= '<img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_com_approve'].'" onclick="approveComment('.$comment['id'].'); return false;">
-                            <img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.$t['lang_com_reject'].'"  onclick="deleteComment('.$comment['id'].'); return false;">';
-            }
-            
-            $html .= '</div>
+                        <div style="align-items: right;">
+                            <img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_com_approve'].'" onclick="approveComment('.$comment['id'].'); return false;">
+                            <img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.$t['lang_com_reject'].'"  onclick="deleteComment('.$comment['id'].'); return false;">
+                           
+                        </div>
                     </li>';
         }
 

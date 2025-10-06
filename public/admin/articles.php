@@ -11,7 +11,7 @@ if (empty($_SESSION['csrf_token'])) {
 
 
 
-$ops = ['edit_article','disable_article','enable_article','create_article','edit_own_article'];
+$ops = ['edit_article','disable_article','enable_article','create_article','edit_own_article','approve_article'];
 
 if (!hasPermission($_SESSION['user']['id'],$ops)) {
     
