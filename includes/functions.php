@@ -1799,6 +1799,12 @@ function renderPendingComments(array $pendingComments,array $t): string {
             </div>
         </div>';
     } else {
+        // Check if user has permission to approve comments
+        $canApprove = false;
+        if (isset($_SESSION['user']['id'])) {
+            $canApprove = hasPermission($_SESSION['user']['id'], ['approve_comment']);
+        }
+        
         // Începe generarea HTML-ului pentru comentariile în așteptare
         $html = '<div class="custom-box-1">
                     <span class="corner-label-1">'.$t['lang_com_in_pending'].' (' . count($pendingComments) . ')</span>
@@ -1812,11 +1818,15 @@ function renderPendingComments(array $pendingComments,array $t): string {
                             <a href="view_comment.php?id=' . $comment['id'] . '">' . truncateText($comment['content'],80) . '</a><br>
                             <small style="font-size: 12px;">Autor: ' . htmlspecialchars($comment['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($comment['created_at'])) . '</small>
                         </div>
-                        <div style="align-items: right;">
-                            <img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_com_approve'].'" onclick="approveComment('.$comment['id'].'); return false;">
-                            <img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.$t['lang_com_reject'].'"  onclick="deleteComment('.$comment['id'].'); return false;">
-                           
-                        </div>
+                        <div style="align-items: right;">';
+            
+            // Only show approve/delete buttons if user has permission
+            if ($canApprove) {
+                $html .= '<img src="'.APP_URL.'assets/icons/icon-approve.svg" class="op-icon" title="'.$t['lang_com_approve'].'" onclick="approveComment('.$comment['id'].'); return false;">
+                            <img src="'.APP_URL.'assets/icons/icon-delete.svg" class="op-icon" title="'.$t['lang_com_reject'].'"  onclick="deleteComment('.$comment['id'].'); return false;">';
+            }
+            
+            $html .= '</div>
                     </li>';
         }
 
