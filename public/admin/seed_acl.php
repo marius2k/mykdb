@@ -18,7 +18,7 @@ $acl = [
     ],
     'contributor' => ['create_article', 'edit_own_article', 'modify_own_user'],
     'editor' => ['approve_article', 'edit_article', 'modify_own_user'],
-    'moderator' => ['disable_user', 'enable_user', 'approve_comment', 'modify_own_user'],
+    'moderator' => ['approve_article', 'disable_user', 'enable_user', 'approve_comment', 'modify_own_user'],
     'guest' => ['view_article', 'search']
 ];
 
