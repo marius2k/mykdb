@@ -314,15 +314,3 @@ Reluarea ciclului: După editare, versiunea modificată trebuie să parcurgă di
 **Ultima actualizare:** August 28, 2025  
 **Status:** Documentație completă conform regulilor oficiale de versioning  
 **Versiune:** 4.0 - Official Versioning Rules Implementation
-
-
-
-
-===============================
-- un articol are una sau mai multe versiuni.
-- exista 2 tabele in DB in care se tin versiunile articolelor:
-	1. tabela articles tine doar versiunile online cu status "published" sau "disabled"
-	2. tabela article_versions tine toate versiunile unui articol, incluzand si copia versiunii online; statusul verisunilor din article_versions poate fi: draft, pending, approved, disabled
-- versiunea online a unui articol din tabela article_versions are status = approved daca versiunea in tabela articles este "published" sau status=disabled daca versiunea corespunzatoare din articles este in status "disabled"
-- la un moment dat un articol poate sa aiba doar o versiune online (record in articles); in cazul asta va avea si un record in article_version care poate sa aiba status=approved daca versiune online are status=publised" sau status=disable daca versiunea online are status=disabled 
-- un articol poate nu aiba nici o versiune online si sa aiba una sau mai multe versiuni offline (in tabela article_versions); in cazul asta statusurile versiunilor pot fi: draft, pending, approved (NU disabled pentru ca daca e disabled inseamna ca are o versiune online care a fost dezactivata) 

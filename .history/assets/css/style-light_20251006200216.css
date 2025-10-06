@@ -4706,20 +4706,23 @@ ul.top-articles .li-icon {
     height: 40px !important;
 }
 
-/* Label pentru versiuni online și offline în prima coloană DataTables */
+/* Label pentru versiuni online și offline în DataTables */
 .online-label,
 .offline-label {
     color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.7em;
+    padding: 0;
+    border-radius: 3px;
+    font-size: 0.75em;
     font-weight: bold;
-    display: inline-block;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5em;
+    vertical-align: baseline;
+    width: 55px;
+    height: 18px;
     box-sizing: border-box;
-    width: 60px;
-    height: 20px;
-    line-height: 12px;
+    text-align: center;
 }
 
 .online-label {
@@ -4728,10 +4731,4 @@ ul.top-articles .li-icon {
 
 .offline-label {
     background: #e74c3c;
-}
-
-/* Centrează label-urile în prima coloană */
-#articlesTable td:first-child {
-    text-align: center;
-    vertical-align: middle;
 }

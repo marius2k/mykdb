@@ -250,7 +250,7 @@ $(document).ready(function() {
         },
         columns: [
             { 
-                data: 'rownum', 
+                data: null, 
                 orderable: false,
                 render: function(data, type, row) {
                     // Verifică dacă versiunea selectată are is_online = 1
@@ -359,8 +359,6 @@ $(document).ready(function() {
                 tr.find('td:nth-child(6) .version-status').text(data.status || '');
                 
                 // Actualizează coloana Publication Date (coloana 7) cu logica role-based
-                const table = tr.closest('table').DataTable();
-                const rowData = table.row(tr).data();
                 const publishAtHtml = generatePublishAtForArticleWithVersionData(articleId, data, rowData);
                 tr.find('td:nth-child(7)').html(publishAtHtml);
                 
@@ -393,32 +391,7 @@ $(document).ready(function() {
 // Funcție globală pentru a obține versiunea selectată pentru un articol din dropdown
 function getSelectedVersion(articleId) {
     const dropdown = document.querySelector(`.version-select[data-article-id="${articleId}"]`);
-    if (dropdown && dropdown.value) {
-        if (articleId == 15) {
-            console.log(`🔍 getSelectedVersion(${articleId}) - from dropdown: ${dropdown.value}`);
-        }
-        return dropdown.value;
-    }
-    
-    // Fallback: încearcă să găsești current_version din datele tabelului
-    if (typeof table !== 'undefined' && table) {
-        const rowData = table.rows().data().toArray().find(row => row.article_id == articleId);
-        if (rowData && rowData.current_version) {
-            if (articleId == 15) {
-                console.log(`🔍 getSelectedVersion(${articleId}) - from rowData.current_version: ${rowData.current_version}, rowData:`, rowData);
-            }
-            return rowData.current_version;
-        } else if (articleId == 15) {
-            console.log(`🔍 getSelectedVersion(${articleId}) - rowData not found or no current_version, rowData:`, rowData);
-        }
-    } else if (articleId == 15) {
-        console.log(`🔍 getSelectedVersion(${articleId}) - table not defined`);
-    }
-    
-    if (articleId == 15) {
-        console.log(`🔍 getSelectedVersion(${articleId}) - ultimate fallback: 1`);
-    }
-    return 1; // Ultimate fallback
+    return dropdown ? dropdown.value : 1;
 }
 
 // Funcție pentru actualizarea label-urilor "ONLINE/OFFLINE" în DataTables
@@ -446,66 +419,74 @@ function updateOnlineLabels() {
 
 // Funcție pentru generarea acțiunilor pentru un articol (folosită în DataTables render)
 function generateActionsForArticle(row) {
-    // Similar cu fix-ul pentru Publication Date, folosește direct versiunea corectă
-    // În loc să caute în DOM care încă nu este gata
-    const selectedVersion = row.current_version || 1;
-    const selectedVersionData = getVersionDataFromRow(row, selectedVersion);
-    const versionStatus = selectedVersionData ? selectedVersionData.status : row.status;
-    const versionIsOnline = selectedVersionData ? selectedVersionData.is_online : row.is_online;
-    // Pentru articolele care nu au versiune online, onlineVersion ar trebui să fie null
-    const onlineVersion = (row.is_online == 1) ? row.current_version : null;
-    
-    // DEBUG pentru primul articol problematic (id=27)
-    if (row.article_id == 27) {
-        console.log(`🔍 DEBUG Article 27 actions at initial load:`, {
-            selectedVersion: selectedVersion,
-            selectedVersionData: selectedVersionData,
-            versionStatus: versionStatus,
-            versionIsOnline: versionIsOnline,
-            onlineVersion: onlineVersion,
-            rowStatus: row.status,
-            rowCurrentVersion: row.current_version,
-            rowIsOnline: row.is_online
-        });
+    // La prima încărcare, presupune că versiunea selectată este cea online (current_version)
+    // Pentru că dropdown-ul încă nu există în DOM la momentul render-ului
+    let selectedVersion;
+    try {
+        const dropdownVersion = getSelectedVersion(row.article_id || 0);
+        // Dacă dropdown-ul există și are o valoare, folosește-o
+        // Altfel, folosește versiunea online ca default
+        selectedVersion = dropdownVersion || row.current_version || 1;
+    } catch (e) {
+        // Fallback la versiunea online
+        selectedVersion = row.current_version || 1;
     }
     
-    return buildActionsHtml(
-        row.article_id || 0, 
-        versionStatus, 
-        row.publish_at || '', 
-        selectedVersion, 
-        row.user_id || 0, 
-        onlineVersion
-    );
+    /*
+    console.log('🎯 generateActionsForArticle initial render:', {
+        articleId: row.article_id,
+        selectedVersion: selectedVersion,
+        currentVersion: row.current_version,
+        dropdownExists: !!document.querySelector(`.version-select[data-article-id="${row.article_id}"]`)
+    });
+    */
+
+    // Pentru prima încărcare, când dropdown-ul nu există încă, 
+    // presupune că se afișează versiunea online
+    if (!document.querySelector(`.version-select[data-article-id="${row.article_id}"]`)) {
+        //console.log('📋 First render - using online version data');
+        return buildActionsHtml(
+            row.article_id || 0, 
+            row.status, 
+            row.publish_at || '', 
+            row.current_version, 
+            row.user_id || 0, 
+            row.current_version || null
+        );
+    }
+    
+    // Pentru versiunea curentă/online, folosește statusul din rând
+    if (selectedVersion == row.current_version) {
+        //console.log('🎯 Using current version status:', row.status);
+        return buildActionsHtml(row.article_id || 0, row.status, row.publish_at || '', selectedVersion, row.user_id || 0, row.current_version || null);
+    }
+    
+    // Pentru alte versiuni, încearcă să obții datele din array-ul versions
+    const selectedVersionData = getVersionDataFromRow(row, selectedVersion);
+    const versionStatus = selectedVersionData ? selectedVersionData.status : row.status;
+    
+    /*
+    console.log('generateActionsForArticle with existing dropdown:', {
+        articleId: row.article_id,
+        selectedVersion: selectedVersion,
+        currentVersion: row.current_version,
+        versionStatus: versionStatus,
+        rowStatus: row.status,
+        selectedVersionData: selectedVersionData
+    });
+    */
+
+    return buildActionsHtml(row.article_id || 0, versionStatus, row.publish_at || '', selectedVersion, row.user_id || 0, row.current_version || null);
 }
 
 // Funcție pentru generarea Publication Date pentru un articol (folosită în DataTables render)
 function generatePublishAtForArticle(row) {
-    // Folosește direct current_version din row în loc să caute în DOM
-    const selectedVersion = row.current_version || 1;
+    const selectedVersion = getSelectedVersion(row.article_id || 0);
     const selectedVersionData = getVersionDataFromRow(row, selectedVersion);
     const versionStatus = selectedVersionData ? selectedVersionData.status : row.status;
-    const versionIsOnline = selectedVersionData ? selectedVersionData.is_online : row.is_online;
-    const versionPublishAt = selectedVersionData ? selectedVersionData.publish_at : row.publish_at;
     const onlineVersion = row.current_version || null;
     
-    // DEBUG: Pentru articolul problematic (id=15)
-    if (row.article_id == 15) {
-        console.log(`🔍 DEBUG Article 15 at initial load (FIXED):`, {
-            selectedVersion: selectedVersion,
-            selectedVersionData: selectedVersionData,
-            versionStatus: versionStatus,
-            versionIsOnline: versionIsOnline,
-            versionPublishAt: versionPublishAt,
-            onlineVersion: onlineVersion,
-            rowStatus: row.status,
-            rowIsOnline: row.is_online,
-            rowPublishAt: row.publish_at,
-            rowCurrentVersion: row.current_version
-        });
-    }
-    
-    return buildPublishAtHtml(row.article_id || 0, versionStatus, versionPublishAt || '', selectedVersion, onlineVersion, versionIsOnline);
+    return buildPublishAtHtml(row.article_id || 0, versionStatus, row.publish_at || '', selectedVersion, onlineVersion);
 }
 
 // Funcție pentru generarea acțiunilor cu date de versiune specifice (folosită în event handler)
@@ -516,9 +497,8 @@ function generateActionsForArticleWithVersionData(articleId, versionData, rowDat
 // Funcție pentru generarea Publication Date cu date de versiune specifice (folosită în event handler)  
 function generatePublishAtForArticleWithVersionData(articleId, versionData, rowData) {
     const onlineVersion = rowData.current_version || null;
-    const versionIsOnline = versionData.is_online || 0;
-    // Folosește publish_at din versionData (din article_versions) pentru data specifică versiunii
-    return buildPublishAtHtml(articleId, versionData.status, versionData.publish_at || '', versionData.version_number, onlineVersion, versionIsOnline);
+    // Folosește publish_at din rowData (care vine din DataTable), nu din versionData
+    return buildPublishAtHtml(articleId, versionData.status, rowData.publish_at || '', versionData.version_number, onlineVersion);
 }
 
 
@@ -533,18 +513,6 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     
     // Determină dacă versiunea selectată este online
     const isSelectedVersionOnline = version && onlineVersion && parseInt(version) === parseInt(onlineVersion);
-    
-    // DEBUG pentru primul articol problematic (id=27)
-    if (articleId == 27) {
-        console.log(`🔍 DEBUG Article 27 buildActionsHtml:`, {
-            articleId: articleId,
-            status: status,
-            version: version,
-            onlineVersion: onlineVersion,
-            isSelectedVersionOnline: isSelectedVersionOnline,
-            userRole: userRole
-        });
-    }
     
     // Pentru articole online, trebuie să transformăm statusul din article_versions în statusul din articles
     let displayStatus = status || 'draft';
@@ -828,15 +796,16 @@ function isActionEnabled(actionName, userRole, articleStatus, authorId, currentU
 }
 
 // Funcție pentru construirea HTML-ului Publication Date
-function buildPublishAtHtml(articleId, status, publishAt, version = null, onlineVersion = null, isOnline = null) {
-    // Logica corectă bazată pe maparea statusurilor între article_versions și articles
-    if (status === 'approved' && isOnline == 1) {
-        // Versiune online publicată (articles.status = "published") - readonly
-        return publishAt ? publishAt : '-';
-    } else if (status === 'approved' && isOnline == 0) {
-        // Versiune offline gata de publicare - editabil
+function buildPublishAtHtml(articleId, status, publishAt, version = null, onlineVersion = null) {
+    const data = publishAt || '';
+    const isSelectedVersionOnline = version && onlineVersion && parseInt(version) === parseInt(onlineVersion);
+    
+    // Cazul 1: Versiuni offline cu status "approved" (gata pentru publicare)
+    // SAU orice versiune care nu este online (is_online=0) și este approved
+    if ((status || '') === 'approved' && !isSelectedVersionOnline) {
+        // Pentru versiuni approved offline, permite întotdeauna editarea datei
         if (window.USER_ROLE === 'moderator' || window.USER_ROLE === 'admin' || window.USER_ROLE === 'editor') {
-            const currentValue = publishAt || '';
+            const currentValue = data || '';
             let defaultValue = currentValue;
             if (!defaultValue) {
                 const now = new Date();
@@ -848,19 +817,58 @@ function buildPublishAtHtml(articleId, status, publishAt, version = null, online
                 defaultValue = `${year}-${month}-${day}T${hours}:${minutes}`;
             } else {
                 // Convertește din format MySQL la datetime-local
-                defaultValue = publishAt.replace(' ', 'T').substring(0, 16);
+                defaultValue = data.replace(' ', 'T').substring(0, 16);
             }
             return `<input type="datetime-local" value="${defaultValue}" onchange="changePublishAt(this.value, ${articleId}, ${version})" title="Setează data când articolul va fi publicat">`;
         } else {
             // Pentru alte roluri, afișează doar data
-            return publishAt ? publishAt : '-';
+            if (data) {
+                const pubDate = new Date(data.replace(' ', 'T'));
+                const now = new Date();
+                if (pubDate > now) {
+                    return `<span style="color: #e67e22;" title="Programat pentru publicare">${data}</span>`;
+                } else {
+                    return `<span>${data}</span>`;
+                }
+            } else {
+                return `<span>-</span>`;
+            }
         }
-    } else if (status === 'disabled') {
-        // Versiune online dezactivată (articles.status = "disabled") - readonly
-        return publishAt ? publishAt : '-';
-    } else {
-        // Draft, pending - nu au fost niciodată publicate
-        return '-';
+    }
+    // Cazul 2: Versiuni online cu status "disabled" (care pot fi restaurate)
+    else if ((status || '') === 'disabled' && isSelectedVersionOnline) {
+        if (data) {
+            // Dacă există dată, afișează-o (cu culoare portocalie dacă este în viitor)
+            const pubDate = new Date(data.replace(' ', 'T'));
+            const now = new Date();
+            if (pubDate > now) {
+                return `<span style="color: #e67e22;" title="Publish At">${data}</span>`;
+            } else {
+                return `<span>${data}</span>`;
+            }
+        } else {
+            // Dacă nu există dată, permite setarea unei date (doar pentru roluri autorizate)
+            if (window.USER_ROLE === 'moderator' || window.USER_ROLE === 'admin' || window.USER_ROLE === 'editor') {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const defaultValue = `${year}-${month}-${day}T${hours}:${minutes}`;
+                return `<input type="datetime-local" value="${defaultValue}" onchange="changePublishAt(this.value, ${articleId}, ${version})">`;
+            } else {
+                return `<span>-</span>`;
+            }
+        }
+    }
+    // Pentru toate celelalte cazuri, afișează doar datele sau "-"
+    else {
+        if (data) {
+            return `<span>${data}</span>`;
+        } else {
+            return `<span>-</span>`;
+        }
     }
 }
 
@@ -884,8 +892,7 @@ function getVersionDataFromRow(row, versionNumber) {
             title: row.title,
             content: row.content,
             publish_at: row.publish_at,
-            updated_at: row.updated_at,
-            is_online: row.is_online // Adaugă is_online și aici
+            updated_at: row.updated_at
         };
     }
     
@@ -938,8 +945,7 @@ function getVersionDataFromRow(row, versionNumber) {
         title: row.title,
         content: row.content,
         publish_at: row.publish_at,
-        updated_at: row.updated_at,
-        is_online: row.is_online // Adaugă is_online în fallback
+        updated_at: row.updated_at
     };
 }
 
@@ -1040,7 +1046,7 @@ function renderArticlesTable(articles) {
         }
         
         // Folosește noua logică pentru Publication Date
-        const publishAtHtml = buildPublishAtHtml(a.id, a.status, a.publish_at || '', crtVersion, onlineVersion, null);
+        const publishAtHtml = buildPublishAtHtml(a.id, a.status, a.publish_at || '', crtVersion, onlineVersion);
         
         html += `<tr style="font-size: 0.8em;">
             <td align="center">${x}</td>

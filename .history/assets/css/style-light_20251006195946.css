@@ -4706,32 +4706,38 @@ ul.top-articles .li-icon {
     height: 40px !important;
 }
 
-/* Label pentru versiuni online și offline în prima coloană DataTables */
-.online-label,
-.offline-label {
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.7em;
-    font-weight: bold;
-    display: inline-block;
-    text-align: center;
-    box-sizing: border-box;
-    width: 60px;
-    height: 20px;
-    line-height: 12px;
-}
-
+/* Label pentru versiuni online în DataTables */
 .online-label {
     background: #2ecc71;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 0.75em;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 0.5em;
+    vertical-align: baseline;
+    width: 55px;
+    text-align: center;
+    height: 18px;
+    line-height: 12px;
+    box-sizing: border-box;
 }
 
+/* Label pentru versiuni offline în DataTables */
 .offline-label {
     background: #e74c3c;
-}
-
-/* Centrează label-urile în prima coloană */
-#articlesTable td:first-child {
+    color: white;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 0.75em;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 0.5em;
+    vertical-align: baseline;
+    width: 55px;
     text-align: center;
-    vertical-align: middle;
+    height: 18px;
+    line-height: 12px;
+    box-sizing: border-box;
 }

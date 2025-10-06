@@ -452,20 +452,18 @@ function generateActionsForArticle(row) {
     const selectedVersionData = getVersionDataFromRow(row, selectedVersion);
     const versionStatus = selectedVersionData ? selectedVersionData.status : row.status;
     const versionIsOnline = selectedVersionData ? selectedVersionData.is_online : row.is_online;
-    // Pentru articolele care nu au versiune online, onlineVersion ar trebui să fie null
-    const onlineVersion = (row.is_online == 1) ? row.current_version : null;
+    const onlineVersion = row.current_version || null;
     
-    // DEBUG pentru primul articol problematic (id=27)
-    if (row.article_id == 27) {
-        console.log(`🔍 DEBUG Article 27 actions at initial load:`, {
+    // DEBUG pentru primul articol problematic (id=14)
+    if (row.article_id == 14) {
+        console.log(`🔍 DEBUG Article 14 actions at initial load:`, {
             selectedVersion: selectedVersion,
             selectedVersionData: selectedVersionData,
             versionStatus: versionStatus,
             versionIsOnline: versionIsOnline,
             onlineVersion: onlineVersion,
             rowStatus: row.status,
-            rowCurrentVersion: row.current_version,
-            rowIsOnline: row.is_online
+            rowCurrentVersion: row.current_version
         });
     }
     
@@ -475,7 +473,8 @@ function generateActionsForArticle(row) {
         row.publish_at || '', 
         selectedVersion, 
         row.user_id || 0, 
-        onlineVersion
+        onlineVersion,
+        versionIsOnline
     );
 }
 
@@ -533,18 +532,6 @@ function buildActionsHtml(articleId, status, publishAt, version = null, authorId
     
     // Determină dacă versiunea selectată este online
     const isSelectedVersionOnline = version && onlineVersion && parseInt(version) === parseInt(onlineVersion);
-    
-    // DEBUG pentru primul articol problematic (id=27)
-    if (articleId == 27) {
-        console.log(`🔍 DEBUG Article 27 buildActionsHtml:`, {
-            articleId: articleId,
-            status: status,
-            version: version,
-            onlineVersion: onlineVersion,
-            isSelectedVersionOnline: isSelectedVersionOnline,
-            userRole: userRole
-        });
-    }
     
     // Pentru articole online, trebuie să transformăm statusul din article_versions în statusul din articles
     let displayStatus = status || 'draft';

@@ -452,8 +452,7 @@ function generateActionsForArticle(row) {
     const selectedVersionData = getVersionDataFromRow(row, selectedVersion);
     const versionStatus = selectedVersionData ? selectedVersionData.status : row.status;
     const versionIsOnline = selectedVersionData ? selectedVersionData.is_online : row.is_online;
-    // Pentru articolele care nu au versiune online, onlineVersion ar trebui să fie null
-    const onlineVersion = (row.is_online == 1) ? row.current_version : null;
+    const onlineVersion = row.current_version || null;
     
     // DEBUG pentru primul articol problematic (id=27)
     if (row.article_id == 27) {
@@ -464,8 +463,7 @@ function generateActionsForArticle(row) {
             versionIsOnline: versionIsOnline,
             onlineVersion: onlineVersion,
             rowStatus: row.status,
-            rowCurrentVersion: row.current_version,
-            rowIsOnline: row.is_online
+            rowCurrentVersion: row.current_version
         });
     }
     
