@@ -1734,6 +1734,12 @@ function renderPendingArticles(array $pendingArticles,array $t): string {
             </div>
         </div>';
     } else {
+        // Check if user has permission to approve articles
+        $canApprove = false;
+        if (isset($_SESSION['user']['id'])) {
+            $canApprove = hasPermission($_SESSION['user']['id'], ['approve_article']);
+        }
+        
         // Începe generarea HTML-ului pentru articolele în așteptare
         $html = '<div class="custom-box-1">
                     <span class="corner-label-1">'.$t['lang_articles_in_pending'].' (' . count($pendingArticles) . ')</span>
@@ -1747,19 +1753,19 @@ function renderPendingArticles(array $pendingArticles,array $t): string {
                             <a href="view_article.php?id='.$article['article_id'].'&version='.$article['version_number'].'">' . htmlspecialchars($article['title']) . '</a><br>
                             <small class="text-muted">Autor: ' . htmlspecialchars($article['username']) . ' | creat la ' . date('Y-m-d H:i', strtotime($article['created_at'])) . '</small>
                         </div>
-                        <div style="align-items: right;">
-                            <a href="#" onclick="approveArticle('.$article['article_id'].','.$article['version_number'].');return false;">
-                                <img src="' . APP_URL . 'assets/icons/icon-edit.svg" class="op-icon" title="' . $t['lang_article_approve']. '">
+                        <div style="align-items: right;">';
+            
+            // Only show approve/reject buttons if user has permission
+            if ($canApprove) {
+                $html .= '<a href="#" onclick="approveArticle('.$article['article_id'].','.$article['version_number'].');return false;">
+                                <img src="' . APP_URL . 'assets/icons/icon-approve.svg" class="op-icon" title="' . $t['lang_article_approve']. '">
                             </a>
                             <a href="#" onclick="rejectArticle('.$article['article_id'].','.$article['version_number'].');return false;">
                                 <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="' . $t['lang_article_reject']. '">
-                            </a>
-                            <!--
-                            <a href="reject_article.php?id=' . $article['article_id'] . '&version=' . $article['version_number'] . '">
-                                <img src="' . APP_URL . 'assets/icons/icon-art-reject.svg" class="op-icon" title="'.$t['lang_article_reject'].'">
-                            </a>
-                            -->
-                        </div>
+                            </a>';
+            }
+            
+            $html .= '</div>
                     </li>';
         }
 
