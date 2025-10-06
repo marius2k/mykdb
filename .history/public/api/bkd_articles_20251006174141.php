@@ -53,7 +53,9 @@ function canPerformAction($action, $userRole, $articleStatus, $authorId, $curren
                         ($status === 'disabled'); 
                 case 'edit':
                     // Draft (propriu) - doar versiuni care NU sunt online
-                    $result = $status === 'draft' && $isOwner && !$isOnlineVersion;
+                    //$result = $status === 'draft' && $isOwner && !$isOnlineVersion;
+                    $result = ($status === 'draft' && $isOwner && !$isOnlineVersion) || 
+                        ($status === 'pending');
                     error_log("canPerformAction - Contributor EDIT result: " . ($result ? 'ALLOWED' : 'DENIED'));
                     return $result;
                 case 'history':
@@ -109,7 +111,7 @@ function canPerformAction($action, $userRole, $articleStatus, $authorId, $curren
                     if ($isOnlineVersion) {
                         return $status === 'disabled';
                     }
-                    return ($status === 'draft') || ($status === 'pending');
+                    return $status === 'draft' || $status === 'pending';
                 case 'approve':
                     return $status === 'pending';
                 case 'publish':
