@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reading Tracker Test</title>
+</head>
+<body>
+    <h1>Test Article Content</h1>
+    <p>This is a test page to verify the reading tracker works.</p>
+    <p>Scroll down and wait at least 30 seconds to see if data is saved.</p>
+    
+    <div style="height: 2000px; background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);">
+        <p style="padding-top: 500px;">Keep scrolling...</p>
+        <p style="padding-top: 500px;">More content...</p>
+        <p style="padding-top: 500px;">Almost there...</p>
+    </div>
+
+    <script src="http://192.168.1.178:8080/assets/js/reading-tracker.js"></script>
+    <script>
+        console.log('Manual test page loaded');
+        
+        // Test the tracker directly
+        try {
+            const tracker = new ReadingTimeTracker(1, 'http://192.168.1.178:8080/');
+            console.log('Tracker created successfully for article 1');
+        } catch (error) {
+            console.error('Error creating tracker:', error);
+        }
+    </script>
+</body>
+</html>

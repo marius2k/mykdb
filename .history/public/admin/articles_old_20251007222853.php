@@ -338,7 +338,7 @@ $articles = $db->query("
 
                                         if (hasPermission($_SESSION['user']['id'],$op)){
                                     ?>
-                                            <a href="../view_article.php?id=<?= $a['id'] ?>"><img src="<?=APP_URL?>assets/icons/icon-view.svg" class="op-icon" title="<?= lang('lang_btn_view') ?>"></a>
+                                            <a href="../view_article.php?id=<?= $a['id'] ?>&admin_source=admin_preview"><img src="<?=APP_URL?>assets/icons/icon-view.svg" class="op-icon" title="<?= lang('lang_btn_view') ?>"></a>
                                     <?php } ?>
 
                                     <?php
