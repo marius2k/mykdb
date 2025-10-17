@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Analytics Test</title>
+</head>
+<body>
+    <h1>Search Analytics Test</h1>
+    <button onclick="testSearch()">Test Search Query</button>
+    <button onclick="testClick()">Test Result Click</button>
+    <pre id="output"></pre>
+
+    <script>
+        // Set APP_URL
+        var APP_URL = 'http://192.168.1.178:8080/';
+
+        function log(message) {
+            const output = document.getElementById('output');
+            output.textContent += message + '\n';
+            console.log(message);
+        }
+
+        async function testSearch() {
+            log('\n=== Testing Search Query ===');
+            
+            const searchData = {
+                action_type: 'search_query',
+                query: 'test search',
+                result_count: 5,
+                search_id: 'test_' + Date.now()
+            };
+            
+            log('Sending data: ' + JSON.stringify(searchData, null, 2));
+            
+            try {
+                const response = await fetch(APP_URL + 'public/api/bkd_search_analytics.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(searchData)
+                });
+                
+                log('Response status: ' + response.status);
+                const data = await response.json();
+                log('Response data: ' + JSON.stringify(data, null, 2));
+                
+                if (data.success) {
+                    log('✓ SUCCESS!');
+                } else {
+                    log('✗ FAILED: ' + data.error);
+                }
+            } catch (error) {
+                log('✗ ERROR: ' + error.message);
+            }
+        }
+
+        async function testClick() {
+            log('\n=== Testing Search Result Click ===');
+            
+            const clickData = {
+                action_type: 'search_result_click',
+                search_id: 'test_' + Date.now(),
+                query: 'test search',
+                result_url: 'view_article.php?id=123',
+                result_title: 'Test Article',
+                article_id: 123,
+                position: 1,
+                time_to_click: 1500
+            };
+            
+            log('Sending data: ' + JSON.stringify(clickData, null, 2));
+            
+            try {
+                const response = await fetch(APP_URL + 'public/api/bkd_search_analytics.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(clickData)
+                });
+                
+                log('Response status: ' + response.status);
+                const data = await response.json();
+                log('Response data: ' + JSON.stringify(data, null, 2));
+                
+                if (data.success) {
+                    log('✓ SUCCESS!');
+                } else {
+                    log('✗ FAILED: ' + data.error);
+                }
+            } catch (error) {
+                log('✗ ERROR: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<?php
+require_once '../../config/bootstrap.php';
+require_once APP_ROOT . 'includes/functions.php';
+
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
+// First check if the required tables exist
+function tablesExist($db) {
+    try {
+        $userActivityTable = $db->fetchSingle("SHOW TABLES LIKE 'user_activity_analytics'");
+        $userSummaryTable = $db->fetchSingle("SHOW TABLES LIKE 'user_activity_summary'");
+        $userReadingTable = $db->fetchSingle("SHOW TABLES LIKE 'user_reading_time'");
+        
+        // Log the results for debugging
+        error_log("Table check: user_activity_analytics: " . (!empty($userActivityTable) ? "EXISTS" : "NOT FOUND"));
+        error_log("Table check: user_activity_summary: " . (!empty($userSummaryTable) ? "EXISTS" : "NOT FOUND"));
+        error_log("Table check: user_reading_time: " . (!empty($userReadingTable) ? "EXISTS" : "NOT FOUND"));
+        
+        return (!empty($userActivityTable) && !empty($userSummaryTable) && !empty($userReadingTable));
+    } catch (Exception $e) {
+        error_log("Error checking tables: " . $e->getMessage());
+        return false;
+    }
+}
+
+try {
+    $db = new Database();
+    $action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+    // Check if tables exist before proceeding
+    if (!tablesExist($db) && $action != 'check_tables') {
+        throw new Exception('User analytics tables do not exist yet. Please run the migration script first.');
+    }
+
+    switch ($action) {
+        case 'check_tables':
+        case 'check_tables_exist':  // Support both endpoint names
+            $exists = tablesExist($db);
+            echo json_encode(['success' => true, 'tables_exist' => $exists]);
+            break;
+        case 'track_user_action':
+            trackUserAction($db);
+            break;
+        case 'get_user_analytics':
+            getUserAnalytics($db);
+            break;
+        case 'get_admin_activity':
+            getAdminActivity($db);
+            break;
+        case 'get_user_engagement':
+            getUserEngagement($db);
+            break;
+        default:
+            throw new Exception('Invalid action');
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+}
+
+/**
+ * Track various user actions on articles
+ */
+function trackUserAction($db) {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    
+    $articleId = (int)($data['article_id'] ?? 0);
+    $commentId = (int)($data['comment_id'] ?? 0);
+    $actionType = $data['action_type'] ?? '';
+    $actionValue = $data['action_value'] ?? null;
+    $actionMetadata = $data['action_metadata'] ?? null;
+    
+    $validActions = [
+        'view', 'bookmark', 'comment', 'rating', 'vote', 'edit', 
+        'publish', 'approve', 'save_pdf', 'usefulness_rating',
+        'reject', 'delete', 'restore'
+    ];
+    
+    if (!in_array($actionType, $validActions)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Invalid action type']);
+        return;
+    }
+    
+    if ($articleId <= 0 && $commentId <= 0) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Invalid article ID or comment ID']);
+        return;
+    }
+    
+    // Session is already started by bootstrap.php
+    $sessionId = session_id();
+    $userId = $_SESSION['user']['id'] ?? null;
+    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '';
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    
+    // Determine which table to use based on action type
+    $isAdminAction = in_array($actionType, ['edit', 'publish', 'approve', 'reject', 'delete', 'restore']);
+    $tableName = $isAdminAction ? 'admin_activity_analytics' : 'user_activity_analytics';
+    
+    try {
+        $metadataJson = $actionMetadata ? json_encode($actionMetadata) : null;
+        
+        $data = [
+            'user_id' => $userId,
+            'session_id' => $sessionId,
+            'action_type' => $actionType,
+            'ip_address' => $ipAddress,
+            'action_date' => date('Y-m-d H:i:s')
+        ];
+        
+        if ($articleId > 0) {
+            $data['article_id'] = $articleId;
+        }
+        
+        if ($commentId > 0) {
+            $data['comment_id'] = $commentId;
+        }
+        
+        if ($actionValue !== null) {
+            $data['value'] = $actionValue;
+        }
+        
+        $db->insert($tableName, $data);
+        
+        // For reading time tracking if applicable
+        if ($actionType === 'view' && isset($data['reading_time']) && $data['reading_time'] > 0) {
+            $db->insert('user_reading_time', [
+                'user_id' => $userId,
+                'article_id' => $articleId,
+                'reading_time' => (int)$data['reading_time'],
+                'session_id' => $sessionId,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        }
+        
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Get analytics about user interactions
+ */
+function getUserAnalytics($db) {
+    // Check permissions
+    if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'superadmin'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+        return;
+    }
+
+    // Optional filters
+    $articleId = (int)($_GET['article_id'] ?? 0);
+    $userId = (int)($_GET['user_id'] ?? 0);
+    $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
+    $endDate = $_GET['end_date'] ?? date('Y-m-d');
+    
+    $whereConditions = [];
+    $params = [];
+    
+    if ($articleId > 0) {
+        $whereConditions[] = 'article_id = ?';
+        $params[] = $articleId;
+    }
+    
+    if ($userId > 0) {
+        $whereConditions[] = 'user_id = ?';
+        $params[] = $userId;
+    }
+    
+    if ($startDate) {
+        $whereConditions[] = 'action_date >= ?';
+        $params[] = $startDate . ' 00:00:00';
+    }
+    
+    if ($endDate) {
+        $whereConditions[] = 'action_date <= ?';
+        $params[] = $endDate . ' 23:59:59';
+    }
+    
+    $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+    
+    try {
+        // Get overall stats
+        $overallStats = [
+            'bookmarks' => $db->fetchSingle("SELECT COUNT(*) as count FROM user_activity_analytics WHERE action_type = 'bookmark' $whereClause", $params)['count'] ?? 0,
+            'usefulness_ratings' => $db->fetchSingle("SELECT COUNT(*) as count FROM user_activity_analytics WHERE action_type = 'usefulness_rating' $whereClause", $params)['count'] ?? 0,
+            'avg_star_rating' => $db->fetchSingle("SELECT AVG(CAST(value AS DECIMAL(3,2))) as avg FROM user_activity_analytics WHERE action_type = 'rating' $whereClause", $params)['avg'] ?? 0,
+            'pdf_saves' => $db->fetchSingle("SELECT COUNT(*) as count FROM user_activity_analytics WHERE action_type = 'save_pdf' $whereClause", $params)['count'] ?? 0,
+            'comments' => $db->fetchSingle("SELECT COUNT(*) as count FROM user_activity_analytics WHERE action_type = 'comment' $whereClause", $params)['count'] ?? 0,
+            'useful_yes' => $db->fetchSingle("SELECT COUNT(*) as count FROM user_activity_analytics WHERE action_type = 'usefulness_rating' AND value = 1 $whereClause", $params)['count'] ?? 0,
+            'useful_no' => $db->fetchSingle("SELECT COUNT(*) as count FROM user_activity_analytics WHERE action_type = 'usefulness_rating' AND value = 0 $whereClause", $params)['count'] ?? 0
+        ];
+        
+        // Get daily activity for charts
+        $dailyActivity = $db->fetchAll(
+            "SELECT 
+                DATE(action_date) as date,
+                action_type,
+                COUNT(*) as count
+             FROM user_activity_analytics
+             $whereClause
+             GROUP BY DATE(action_date), action_type
+             ORDER BY DATE(action_date) DESC
+             LIMIT 30", 
+            $params
+        );
+        
+        // Top articles by interaction
+        $topArticles = $db->fetchAll(
+            "SELECT 
+                ua.article_id,
+                a.title,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'bookmark' THEN ua.id END) as bookmarks,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'save_pdf' THEN ua.id END) as pdf_saves,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'comment' THEN ua.id END) as comments,
+                AVG(CASE WHEN ua.action_type = 'rating' THEN CAST(ua.value AS DECIMAL(3,2)) ELSE NULL END) as avg_rating,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'usefulness_rating' AND ua.value = 1 THEN ua.id END) as useful_yes,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'usefulness_rating' AND ua.value = 0 THEN ua.id END) as useful_no
+             FROM user_activity_analytics ua
+             JOIN articles a ON ua.article_id = a.id
+             $whereClause
+             GROUP BY ua.article_id, a.title
+             ORDER BY COUNT(*) DESC
+             LIMIT 20", 
+            $params
+        );
+        
+        echo json_encode([
+            'success' => true,
+            'overall_stats' => $overallStats,
+            'daily_activity' => $dailyActivity,
+            'top_articles' => $topArticles
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Get admin activity analytics
+ */
+function getAdminActivity($db) {
+    // Check permissions
+    if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'superadmin'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+        return;
+    }
+    
+    $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
+    $endDate = $_GET['end_date'] ?? date('Y-m-d');
+    
+    try {
+        // Admin activity summary
+        $activitySummary = $db->fetchAll(
+            "SELECT 
+                u.username,
+                COUNT(CASE WHEN aa.action_type = 'edit' THEN 1 END) as edits,
+                COUNT(CASE WHEN aa.action_type = 'publish' THEN 1 END) as publishes,
+                COUNT(CASE WHEN aa.action_type = 'approve' THEN 1 END) as approvals,
+                COUNT(*) as total_actions
+             FROM admin_activity_analytics aa
+             JOIN users u ON aa.user_id = u.id
+             WHERE aa.action_date BETWEEN ? AND ?
+             GROUP BY u.id, u.username
+             ORDER BY total_actions DESC",
+            [$startDate . ' 00:00:00', $endDate . ' 23:59:59']
+        );
+        
+        // Daily admin activity
+        $dailyActivity = $db->fetchAll(
+            "SELECT 
+                DATE(action_date) as date,
+                action_type,
+                COUNT(*) as count
+             FROM admin_activity_analytics
+             WHERE action_date BETWEEN ? AND ?
+             GROUP BY DATE(action_date), action_type
+             ORDER BY DATE(action_date)",
+            [$startDate . ' 00:00:00', $endDate . ' 23:59:59']
+        );
+        
+        // Most active articles (most edited/published)
+        $activeArticles = $db->fetchAll(
+            "SELECT 
+                aa.article_id,
+                a.title,
+                COUNT(DISTINCT CASE WHEN aa.action_type = 'edit' THEN aa.id END) as edits,
+                COUNT(DISTINCT CASE WHEN aa.action_type = 'publish' THEN aa.id END) as publishes,
+                COUNT(DISTINCT CASE WHEN aa.action_type = 'approve' THEN aa.id END) as approvals,
+                MAX(aa.action_date) as last_action
+             FROM admin_activity_analytics aa
+             JOIN articles a ON aa.article_id = a.id
+             WHERE aa.action_date BETWEEN ? AND ?
+             GROUP BY aa.article_id, a.title
+             ORDER BY COUNT(*) DESC
+             LIMIT 20",
+            [$startDate . ' 00:00:00', $endDate . ' 23:59:59']
+        );
+        
+        echo json_encode([
+            'success' => true,
+            'activity_summary' => $activitySummary,
+            'daily_activity' => $dailyActivity,
+            'active_articles' => $activeArticles
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
+/**
+ * Get user engagement statistics
+ */
+function getUserEngagement($db) {
+    // Check permissions
+    if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'superadmin'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+        return;
+    }
+    
+    $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
+    $endDate = $_GET['end_date'] ?? date('Y-m-d');
+    
+    try {
+        // Most engaged users
+        $engagedUsers = $db->fetchAll(
+            "SELECT 
+                u.id,
+                u.username,
+                u.email,
+                u.role,
+                COUNT(DISTINCT ua.article_id) as articles_interacted,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'view' THEN ua.article_id END) as articles_viewed,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'bookmark' THEN ua.article_id END) as articles_bookmarked,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'comment' THEN ua.article_id END) as articles_commented,
+                COUNT(DISTINCT CASE WHEN ua.action_type = 'rating' THEN ua.article_id END) as articles_rated,
+                COUNT(*) as total_interactions
+             FROM user_activity_analytics ua
+             JOIN users u ON ua.user_id = u.id
+             WHERE ua.action_date BETWEEN ? AND ?
+             AND ua.user_id IS NOT NULL
+             GROUP BY u.id, u.username, u.email, u.role
+             ORDER BY total_interactions DESC
+             LIMIT 50",
+            [$startDate . ' 00:00:00', $endDate . ' 23:59:59']
+        );
+        
+        // User retention statistics (returning users)
+        $retention = $db->fetchAll(
+            "SELECT 
+                COUNT(DISTINCT user_id) as total_users,
+                COUNT(DISTINCT CASE WHEN visit_count >= 2 THEN user_id END) as returning_users,
+                COUNT(DISTINCT CASE WHEN visit_count >= 5 THEN user_id END) as frequent_users,
+                COUNT(DISTINCT CASE WHEN visit_count >= 10 THEN user_id END) as power_users
+             FROM (
+                 SELECT 
+                     user_id, 
+                     COUNT(DISTINCT DATE(action_date)) as visit_count
+                 FROM user_activity_analytics
+                 WHERE action_date BETWEEN ? AND ?
+                 AND user_id IS NOT NULL
+                 GROUP BY user_id
+             ) AS user_visits",
+            [$startDate . ' 00:00:00', $endDate . ' 23:59:59']
+        );
+        
+        // Engagement by role
+        $engagementByRole = $db->fetchAll(
+            "SELECT 
+                u.role,
+                COUNT(DISTINCT u.id) as user_count,
+                COUNT(DISTINCT ua.article_id) as articles_interacted,
+                ROUND(COUNT(*) / COUNT(DISTINCT u.id), 1) as avg_interactions_per_user
+             FROM user_activity_analytics ua
+             JOIN users u ON ua.user_id = u.id
+             WHERE ua.action_date BETWEEN ? AND ?
+             GROUP BY u.role
+             ORDER BY avg_interactions_per_user DESC",
+            [$startDate . ' 00:00:00', $endDate . ' 23:59:59']
+        );
+        
+        // Engagement over time
+        $engagementOverTime = $db->fetchAll(
+            "SELECT 
+                DATE(action_date) as date,
+                COUNT(DISTINCT user_id) as unique_users,
+                COUNT(DISTINCT article_id) as unique_articles,
+                COUNT(*) as total_interactions
+             FROM user_activity_analytics
+             WHERE action_date BETWEEN ? AND ?
+             GROUP BY DATE(action_date)
+             ORDER BY DATE(action_date)",
+            [$startDate . ' 00:00:00', $endDate . ' 23:59:59']
+        );
+        
+        echo json_encode([
+            'success' => true,
+            'engaged_users' => $engagedUsers,
+            'retention' => $retention[0] ?? [],
+            'engagement_by_role' => $engagementByRole,
+            'engagement_over_time' => $engagementOverTime
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+?>

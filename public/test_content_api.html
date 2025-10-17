@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Content Interactions API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        pre { background: #f5f5f5; padding: 10px; overflow: auto; max-height: 500px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Test Content Interactions API</h1>
+    <button onclick="testAPI()">Test API Call</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const startDate = '2025-09-17';
+                const endDate = '2025-10-17';
+                const url = `http://192.168.1.178:8080/public/api/bkd_user_analytics.php?action=get_user_analytics&start_date=${startDate}&end_date=${endDate}`;
+                
+                console.log('Fetching:', url);
+                
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                console.log('Response status:', response.status);
+                console.log('Response text:', text);
+                
+                let html = '<h2>Response Status: ' + response.status + '</h2>';
+                html += '<h3>Raw Response:</h3>';
+                html += '<pre>' + text + '</pre>';
+                
+                try {
+                    const data = JSON.parse(text);
+                    html += '<h3 class="success">JSON Parsed Successfully!</h3>';
+                    html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    
+                    if (data.success) {
+                        html += '<h3 class="success">API Success: true</h3>';
+                        html += '<p>Overall stats: ' + JSON.stringify(data.overall_stats) + '</p>';
+                        html += '<p>Daily activity records: ' + (data.daily_activity ? data.daily_activity.length : 0) + '</p>';
+                        html += '<p>Top articles: ' + (data.top_articles ? data.top_articles.length : 0) + '</p>';
+                    } else {
+                        html += '<h3 class="error">API Success: false</h3>';
+                        html += '<p>Error: ' + data.error + '</p>';
+                    }
+                } catch (e) {
+                    html += '<h3 class="error">JSON Parse Error!</h3>';
+                    html += '<p>' + e.message + '</p>';
+                }
+                
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                resultDiv.innerHTML = '<h3 class="error">Fetch Error!</h3><p>' + error.message + '</p>';
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

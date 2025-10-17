@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bookmark Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-container { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
+        button { padding: 10px; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow: auto; }
+        .log { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Bookmark Test Page</h1>
+    
+    <div class="test-container">
+        <h2>Test 1: Simple Bookmark Toggle</h2>
+        <p>This test calls the simplified bookmark toggle API directly.</p>
+        <label>Article ID: <input type="number" id="articleId" value="24" /></label>
+        <button onclick="testBookmarkToggle()">Toggle Bookmark</button>
+        <div id="result1" class="log"></div>
+    </div>
+
+    <script>
+    // Simple test function for bookmark toggle
+    function testBookmarkToggle() {
+        const articleId = document.getElementById('articleId').value;
+        const resultDiv = document.getElementById('result1');
+        
+        resultDiv.innerHTML += `<p>Testing bookmark toggle for article ID: ${articleId}</p>`;
+        
+        // Simple fetch request with minimal data
+        fetch('api/bkd_toggle_bookmark_simple.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `article_id=${encodeURIComponent(articleId)}`
+        })
+        .then(res => {
+            resultDiv.innerHTML += `<p>Response status: ${res.status} ${res.statusText}</p>`;
+            
+            if (!res.ok) {
+                return res.text().then(text => {
+                    resultDiv.innerHTML += `<pre>Response text: ${text}</pre>`;
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                });
+            }
+            return res.json();
+        })
+        .then(data => {
+            resultDiv.innerHTML += `<pre>Response data: ${JSON.stringify(data, null, 2)}</pre>`;
+            if (data.success) {
+                resultDiv.innerHTML += `<p>Bookmark toggled successfully: ${data.bookmarked ? 'Added' : 'Removed'}</p>`;
+            } else {
+                resultDiv.innerHTML += `<p>Error: ${data.error}</p>`;
+            }
+        })
+        .catch(error => {
+            resultDiv.innerHTML += `<p>Error: ${error.message}</p>`;
+            console.error('Bookmark toggle error:', error);
+        });
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+1. app is runing in a docker container (see Dockerfile and docker-compose.yml) 
+2. check the tables structure directly in DB (root/no pass), not in .sql files. the files might be not up to date
+3. 

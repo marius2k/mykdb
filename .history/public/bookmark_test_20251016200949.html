@@ -1,0 +1,31 @@
+<script>
+// Simple test function for bookmark toggle
+function testBookmarkToggle(articleId) {
+    console.log('Testing bookmark toggle for article ID:', articleId);
+    
+    // Simple fetch request with minimal data
+    fetch('api/bkd_toggle_bookmark_simple.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `article_id=${encodeURIComponent(articleId)}`
+    })
+    .then(res => {
+        if (!res.ok) {
+            console.error('Response not OK:', res.status);
+            return res.text().then(text => {
+                console.error('Response text:', text);
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            });
+        }
+        return res.json();
+    })
+    .then(data => {
+        console.log('Bookmark toggle response:', data);
+        alert('Bookmark toggled successfully: ' + (data.bookmarked ? 'Added' : 'Removed'));
+    })
+    .catch(error => {
+        console.error('Bookmark toggle error:', error);
+        alert('Error toggling bookmark: ' + error.message);
+    });
+}
+</script>
