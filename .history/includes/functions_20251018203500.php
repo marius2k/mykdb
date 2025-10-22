@@ -523,7 +523,11 @@ function generateNavBar2($uid) {
             $adminMenuItems .= '<a href="'.APP_URL.'public/admin/articles_analytics.php" class="dropdown-item">
                     <img src="'.APP_URL.'assets/icons/icon-analytics.svg" class="submenu-icon"> Article Analytics
                 </a>';
-        } 
+        } else {
+            $adminMenuItems .= '<a href="'.APP_URL.'public/admin/articles_analytics.php" class="dropdown-item disabled" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">
+                    <img src="'.APP_URL.'assets/icons/icon-analytics.svg" class="submenu-icon"> Article Analytics
+                </a>';
+        }
         
         $adminMenuItems .= '';
             
@@ -534,7 +538,12 @@ function generateNavBar2($uid) {
             $adminMenuItems .= '<a href="'.APP_URL.'public/admin/articles.php?modal=create" class="dropdown-item">
                     <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon"> '.lang('lang_create_article').'
                 </a>';
-        } 
+        } else {
+            // Alte roluri - disabled
+            $adminMenuItems .= '<a href="#" class="dropdown-item disabled" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Only Contributors can create articles">
+                    <img src="'.APP_URL.'assets/icons/icon-create-article.svg" class="submenu-icon" style="filter: grayscale(100%);"> '.lang('lang_create_article').'
+                </a>';
+        }
         
         $adminMenuItems .= '</div>
         </div>';

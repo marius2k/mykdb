@@ -140,9 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             logActivity($user_id, 'edit_version', 'User '. $_SESSION['user']['username'].' edited NON-ONLINE version '. $baseVersion .' of article ID '. $articleId);
             
-            // Track admin activity for analytics
-            trackAdminActivity($articleId, 'edit', $user_id);
-            
             echo json_encode([
                 'success' => true, 
                 'was_editing_online_version' => 0,

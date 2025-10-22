@@ -20,32 +20,6 @@ if (!hasPermission($_SESSION['user']['id'],$ops)) {
 
 $db = new Database();
 
-/**
- * Track admin activity for analytics
- */
-function trackAdminActivity($articleId, $actionType, $userId = null) {
-    if ($userId === null && isset($_SESSION['user']['id'])) {
-        $userId = $_SESSION['user']['id'];
-    }
-    
-    $sessionId = session_id();
-    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '';
-    
-    try {
-        $db = new Database();
-        $db->insert('admin_activity_analytics', [
-            'user_id' => $userId,
-            'article_id' => $articleId,
-            'session_id' => $sessionId,
-            'action_type' => $actionType,
-            'ip_address' => $ipAddress,
-            'action_date' => date('Y-m-d H:i:s')
-        ]);
-    } catch (Exception $e) {
-        error_log("Error tracking admin activity: " . $e->getMessage());
-    }
-}
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
@@ -139,9 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [$title, $clean_content, $category_id, $status, $change_note ?: "Modificare versiune {$baseVersion}", $articleId, $baseVersion]);
             
             logActivity($user_id, 'edit_version', 'User '. $_SESSION['user']['username'].' edited NON-ONLINE version '. $baseVersion .' of article ID '. $articleId);
-            
-            // Track admin activity for analytics
-            trackAdminActivity($articleId, 'edit', $user_id);
             
             echo json_encode([
                 'success' => true, 

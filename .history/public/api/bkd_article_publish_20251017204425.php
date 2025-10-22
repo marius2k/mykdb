@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         title = ?, 
                         content = ?, 
                         category_id = ?, 
-                        status = 'published',
+                        status = 'approved',
                         version = ?,
                         user_id = ?,
                         publish_at = ?,

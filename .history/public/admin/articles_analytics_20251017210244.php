@@ -2,7 +2,7 @@
 require_once '../../config/bootstrap.php';
 
 // Verifică permisiuni ÎNAINTE de a include header.php
-if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'moderator', 'editor', 'superadmin'])) {
+if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'moderator', 'superadmin'])) {
     header('Location: ' . APP_URL . 'public/login.php');
     exit;
 }

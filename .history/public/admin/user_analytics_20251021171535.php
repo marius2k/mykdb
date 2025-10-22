@@ -993,7 +993,7 @@ function displayRoleEngagementChart(roleData) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: USER_ANALYTICS_TRANSLATIONS.engagement_by_role
                 }
             },
@@ -1043,7 +1043,7 @@ function displayAdminActivityChart(activityData) {
                 responsive: true,
                 plugins: {
                     title: {
-                        display: false,
+                        display: true,
                         text: USER_ANALYTICS_TRANSLATIONS.admin_activity_over_time
                     }
                 }
@@ -1099,7 +1099,7 @@ function displayAdminActivityChart(activityData) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: USER_ANALYTICS_TRANSLATIONS.admin_activity_over_time
                 }
             },
@@ -1134,7 +1134,7 @@ function displayUserActionsChart(activityData) {
                 responsive: true,
                 plugins: {
                     title: {
-                        display: false,
+                        display: true,
                         text: USER_ANALYTICS_TRANSLATIONS.user_actions_over_time
                     }
                 }
@@ -1187,7 +1187,7 @@ function displayUserActionsChart(activityData) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: USER_ANALYTICS_TRANSLATIONS.user_actions_over_time
                 }
             },

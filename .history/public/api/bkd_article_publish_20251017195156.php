@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         title = ?, 
                         content = ?, 
                         category_id = ?, 
-                        status = 'published',
+                        status = 'approved',
                         version = ?,
                         user_id = ?,
                         publish_at = ?,
@@ -158,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     INSERT INTO articles (
                         id, title, content, category_id, 
                         status, version, user_id, publish_at, created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, 'published', ?, ?, ?, NOW(), NOW())
+                    ) VALUES (?, ?, ?, ?, 'approved', ?, ?, ?, NOW(), NOW())
                 ", [
                     $articleId,
                     $version_data['title'],
@@ -172,9 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // 8. Log the publish action
             logActivity($user_id, 'publish_article', 'User '. $_SESSION['user']['username'].' published version '. $version .' of article ID '. $articleId);
-            
-            // Track admin activity for analytics
-            trackAdminActivity($articleId, 'publish', $user_id);
             
             $db->commit();
             echo json_encode([

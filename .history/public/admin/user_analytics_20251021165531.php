@@ -285,13 +285,13 @@ table.dataTable tbody td {
         
         <!-- Engagement Over Time Chart -->
         <div class="chart-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-over-time.svg" width="40" >&nbsp;&nbsp;<?= lang('lang_analytics_engagement_over_time') ?></h4>
+            <h4><img src="<?=APP_URL?>assets/icons/icon-user-eng-over-time.svg" width="40" >&nbsp;&nbsp;<?= lang('lang_analytics_engagement_over_time') ?></h4>
             <canvas id="engagementChart" width="400" height="200"></canvas>
         </div>
         
         <!-- Most Engaged Users Table -->
         <div class="table-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-most.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_most_engaged_users') ?></h4>
+            <h4><img src="<?=APP_URL?>assets/icons/icon-user-eng-most.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_most_engaged_users') ?></h4>
             <table id="engagedUsersTable" class="articles-table" style="font-size: 0.85em; width:100%">
                 <thead>
                     <tr>
@@ -313,7 +313,7 @@ table.dataTable tbody td {
         
         <!-- Engagement by Role -->
         <div class="chart-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-by-role.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_engagement_by_role') ?></h4>
+            <h4><?= lang('lang_analytics_engagement_by_role') ?></h4>
             <canvas id="roleEngagementChart" width="400" height="200"></canvas>
         </div>
     </div>
@@ -322,13 +322,13 @@ table.dataTable tbody td {
     <div class="tab-content" id="admin-activity-tab">
         <!-- Admin Activity Chart -->
         <div class="chart-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-admin-activity-over-time.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_admin_activity_over_time') ?></h4>
+            <h4><img src="<?=APP_URL?>assets/icons/icon-analytics-detailed.svg" width="40"><?= lang('lang_analytics_admin_activity_over_time') ?></h4>
             <canvas id="adminActivityChart" width="400" height="200"></canvas>
         </div>
         
         <!-- Activity by Admin Table -->
         <div class="table-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-admin-activity.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_activity_by_admin') ?></h4>
+            <h4><img src="<?=APP_URL?>assets/icons/icon-analytics-detailed.svg" width="40"><?= lang('lang_analytics_activity_by_admin') ?></h4>
             <table id="adminActivityTable" class="articles-table" style="font-size: 0.85em; width:100%">
                 <thead>
                     <tr>
@@ -347,7 +347,7 @@ table.dataTable tbody td {
         
         <!-- Most Active Articles Table -->
         <div class="table-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-most-active-articles.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_most_active_articles') ?></h4>
+            <h4><img src="<?=APP_URL?>assets/icons/icon-analytics-detailed.svg" width="40"><?= lang('lang_analytics_most_active_articles') ?></h4>
             <table id="activeArticlesTable" class="articles-table" style="font-size: 0.85em; width:100%">
                 <thead>
                     <tr>
@@ -390,7 +390,7 @@ table.dataTable tbody td {
         
         <!-- User Actions Chart -->
         <div class="chart-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-actions-over-time.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_user_actions_over_time') ?></h4>
+            <h4><img src="<?=APP_URL?>assets/icons/icon-analytics-detailed.svg" width="40"><?= lang('lang_analytics_user_actions_over_time') ?></h4>
             <div id="content-loading-indicator" class="text-center my-3" style="display: none;">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden"><?= lang('lang_analytics_loading') ?></span>
@@ -402,7 +402,7 @@ table.dataTable tbody td {
         
         <!-- Top Articles by User Interaction -->
         <div class="table-container">
-            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-interactions.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_top_articles_by_interaction') ?></h4>
+            <h4><img src="<?=APP_URL?>assets/icons/icon-analytics-detailed.svg" width="40"><?= lang('lang_analytics_top_articles_by_interaction') ?></h4>
             <table id="articleInteractionTable" class="articles-table" style="font-size: 0.85em; width:100%">
                 <thead>
                     <tr>
@@ -945,7 +945,7 @@ function displayEngagementChart(engagementData) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: USER_ANALYTICS_TRANSLATIONS.engagement_over_time
                 }
             },
@@ -993,7 +993,7 @@ function displayRoleEngagementChart(roleData) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: USER_ANALYTICS_TRANSLATIONS.engagement_by_role
                 }
             },
@@ -1043,7 +1043,7 @@ function displayAdminActivityChart(activityData) {
                 responsive: true,
                 plugins: {
                     title: {
-                        display: false,
+                        display: true,
                         text: USER_ANALYTICS_TRANSLATIONS.admin_activity_over_time
                     }
                 }
@@ -1099,7 +1099,7 @@ function displayAdminActivityChart(activityData) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: USER_ANALYTICS_TRANSLATIONS.admin_activity_over_time
                 }
             },
@@ -1134,7 +1134,7 @@ function displayUserActionsChart(activityData) {
                 responsive: true,
                 plugins: {
                     title: {
-                        display: false,
+                        display: true,
                         text: USER_ANALYTICS_TRANSLATIONS.user_actions_over_time
                     }
                 }
@@ -1187,7 +1187,7 @@ function displayUserActionsChart(activityData) {
             responsive: true,
             plugins: {
                 title: {
-                    display: false,
+                    display: true,
                     text: USER_ANALYTICS_TRANSLATIONS.user_actions_over_time
                 }
             },

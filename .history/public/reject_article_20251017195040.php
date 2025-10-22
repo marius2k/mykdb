@@ -50,11 +50,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         if ($stmt->execute()) {
             // Respingerea a avut succes
             $_SESSION['message'] = 'Articolul a fost respins și trimis la editare.';
-            
-            // Track admin activity for analytics
-            if (isset($_SESSION['user']['id'])) {
-                trackAdminActivity($articleId, 'reject', $_SESSION['user']['id']);
-            }
         } else {
             // A apărut o eroare la respingerea articolului
             $_SESSION['message'] = 'Eroare la respingerea articolului. Te rugăm să încerci din nou.';

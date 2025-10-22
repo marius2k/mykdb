@@ -31,7 +31,7 @@ function trackAdminActivity($articleId, $actionType, $userId = null) {
     try {
         $db = new Database();
         $db->insert('admin_activity_analytics', [
-            'user_id' => $userId,
+            'user_id' => $articleId,
             'article_id' => $articleId,
             'session_id' => $sessionId,
             'action_type' => $actionType,
@@ -241,10 +241,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         }
 
         logActivity($user_id, 'approve_article', 'User '. $_SESSION['user']['username'].' approved version '. $version .' of article ID '. $articleId);
-        
-        // Track admin activity for analytics
-        trackAdminActivity($articleId, 'approve', $user_id);
-        
         echo json_encode(['success' => true]);
         exit;
     }

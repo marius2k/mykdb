@@ -31,7 +31,7 @@ function trackAdminActivity($articleId, $actionType, $userId = null) {
     try {
         $db = new Database();
         $db->insert('admin_activity_analytics', [
-            'user_id' => $userId,
+            'user_id' => $articleId,
             'article_id' => $articleId,
             'session_id' => $sessionId,
             'action_type' => $actionType,

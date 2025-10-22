@@ -1,0 +1,10 @@
+1. app is runing in a docker container (see Dockerfile and docker-compose.yml); 
+2. check the tables structure directly in DB (root/no pass), not in .sql files. the files might be not up to date;
+3. header and footer of each page is defined in includes/ (header.php and footer.php);
+4. database operations are managed with Database class, defined in assets/classes/Database.php;
+5. general configuration file for the app is assets/config/config.php;
+6. javascript files are in assets/js/;
+7. search page is public/index.php;
+8. admin panel is in public/admin/;
+9. analytics related code is in assets/js/analytics.js and assets/js/search-analytics.js;
+10. search analytics backend API is in public/api/bkd_search_analytics.php;

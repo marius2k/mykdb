@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         title = ?, 
                         content = ?, 
                         category_id = ?, 
-                        status = 'published',
+                        status = 'approved',
                         version = ?,
                         user_id = ?,
                         publish_at = ?,
@@ -158,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     INSERT INTO articles (
                         id, title, content, category_id, 
                         status, version, user_id, publish_at, created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, 'published', ?, ?, ?, NOW(), NOW())
+                    ) VALUES (?, ?, ?, ?, 'approved', ?, ?, ?, NOW(), NOW())
                 ", [
                     $articleId,
                     $version_data['title'],
