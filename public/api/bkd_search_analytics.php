@@ -11,18 +11,13 @@ ob_start();
 require_once '../../config/bootstrap.php';
 require_once APP_ROOT . '/includes/functions.php';
 
-// Ensure session is started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 // Clean any output that might have been generated
 ob_clean();
 
 // Set proper headers
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 
 // Handle preflight requests
@@ -30,6 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
+// Initialize database connection
+$db = new Database();
+
+// Handle GET requests for analytics data
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    handleGetRequest($db);
+    exit;
+}
+
+// Handle POST requests for tracking
 // Get JSON data from request
 $jsonData = file_get_contents('php://input');
 $data = json_decode($jsonData, true);
@@ -234,4 +239,204 @@ function extractArticleIdFromUrl($url) {
     }
     
     return null;
+}
+
+/**
+ * Handle GET requests for analytics data
+ * 
+ * @param Database $db Database connection
+ */
+function handleGetRequest($db) {
+    // Debug: Log session status
+    error_log("Search Analytics API - Session status: " . (isset($_SESSION['user']) ? "User logged in as " . $_SESSION['user']['role'] : "No user session"));
+    
+    // Check permissions
+    if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'editor', 'moderator', 'superadmin'])) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false, 
+            'error' => 'Unauthorized',
+            'debug' => [
+                'session_exists' => isset($_SESSION['user']),
+                'session_id' => session_id()
+            ]
+        ]);
+        exit;
+    }
+    
+    $action = $_GET['action'] ?? '';
+    
+    try {
+        switch ($action) {
+            case 'get_dashboard_data':
+                getDashboardData($db);
+                break;
+                
+            default:
+                throw new Exception('Invalid action: ' . htmlspecialchars($action));
+        }
+    } catch (Exception $e) {
+        error_log("Search Analytics API Error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+}
+
+/**
+ * Get all dashboard data for search analytics
+ * 
+ * @param Database $db Database connection
+ */
+function getDashboardData($db) {
+    // Date range filtering
+    $period = isset($_GET['period']) && is_numeric($_GET['period']) ? (int)$_GET['period'] : 7;
+    
+    try {
+        // 1. Total metrics for the period
+        $totalMetrics = $db->fetchSingle("
+            SELECT 
+                COUNT(*) as total_searches,
+                COUNT(DISTINCT user_id) as unique_users,
+                COUNT(DISTINCT query) as unique_queries,
+                SUM(result_count) as total_results,
+                AVG(result_count) as avg_results
+            FROM search_queries
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+        ", [$period]);
+        
+        // 2. Top searches
+        $topSearches = $db->fetchAll("
+            SELECT 
+                query, 
+                COUNT(*) as search_count, 
+                SUM(result_count) as total_results,
+                AVG(result_count) as avg_results,
+                COUNT(DISTINCT user_id) as unique_users,
+                MAX(created_at) as last_search
+            FROM search_queries
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            GROUP BY query
+            ORDER BY search_count DESC
+            LIMIT 20
+        ", [$period]);
+        
+        // 3. Zero result searches
+        $zeroResults = $db->fetchAll("
+            SELECT 
+                query, 
+                COUNT(*) as count, 
+                MAX(created_at) as last_search,
+                COUNT(DISTINCT user_id) as unique_users
+            FROM search_queries
+            WHERE result_count = 0 
+            AND created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            GROUP BY query
+            ORDER BY count DESC
+            LIMIT 20
+        ", [$period]);
+        
+        // 4. Click-through rates
+        $ctrData = $db->fetchAll("
+            SELECT 
+                sq.query,
+                COUNT(DISTINCT sq.id) as total_searches,
+                COUNT(DISTINCT src.id) as total_clicks,
+                ROUND(COUNT(DISTINCT src.id) / COUNT(DISTINCT sq.id) * 100, 2) as ctr
+            FROM search_queries sq
+            LEFT JOIN search_result_clicks src ON sq.search_id = src.search_id
+            WHERE sq.created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            GROUP BY sq.query
+            HAVING total_searches >= 3
+            ORDER BY ctr DESC
+            LIMIT 20
+        ", [$period]);
+        
+        // 5. Daily search trends
+        $trends = $db->fetchAll("
+            SELECT 
+                DATE(created_at) as date,
+                COUNT(*) as search_count,
+                COUNT(DISTINCT user_id) as unique_users,
+                SUM(result_count) as total_results
+            FROM search_queries
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            GROUP BY DATE(created_at)
+            ORDER BY date ASC
+        ", [$period]);
+        
+        // 6. Most clicked articles from search
+        $topClickedArticles = $db->fetchAll("
+            SELECT 
+                src.article_id,
+                a.title,
+                COUNT(*) as click_count,
+                AVG(src.position) as avg_position,
+                COUNT(DISTINCT src.user_id) as unique_users
+            FROM search_result_clicks src
+            LEFT JOIN articles a ON src.article_id = a.id
+            WHERE src.created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            AND src.article_id IS NOT NULL
+            GROUP BY src.article_id, a.title
+            ORDER BY click_count DESC
+            LIMIT 20
+        ", [$period]);
+        
+        // 7. Click position distribution
+        $positionStats = $db->fetchAll("
+            SELECT 
+                position,
+                COUNT(*) as clicks
+            FROM search_result_clicks
+            WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            AND position IS NOT NULL
+            AND position <= 10
+            GROUP BY position
+            ORDER BY position ASC
+        ", [$period]);
+        
+        // 8. User search statistics
+        $userSearchStats = $db->fetchAll("
+            SELECT 
+                COALESCE(u.username, CONCAT('Guest-', SUBSTRING(sq.session_id, 1, 8))) as username,
+                u.id as user_id,
+                u.role_id,
+                r.name as role,
+                COUNT(DISTINCT sq.id) as total_searches,
+                COUNT(DISTINCT sq.query) as unique_queries,
+                AVG(sq.result_count) as avg_results,
+                COUNT(DISTINCT src.id) as total_clicks,
+                COUNT(DISTINCT src.article_id) as unique_articles_clicked,
+                ROUND(COUNT(DISTINCT src.id) * 100.0 / COUNT(DISTINCT sq.id), 1) as click_through_rate
+            FROM search_queries sq
+            LEFT JOIN users u ON sq.user_id = u.id
+            LEFT JOIN roles r ON u.role_id = r.id
+            LEFT JOIN search_result_clicks src ON sq.id = src.search_id
+            WHERE sq.created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            GROUP BY u.id, u.username, sq.session_id, u.role_id, r.name
+            HAVING total_searches > 0
+            ORDER BY total_searches DESC
+            LIMIT 50
+        ", [$period]);
+        
+        // Return all data
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'total_metrics' => $totalMetrics ?: [],
+                'top_searches' => $topSearches ?: [],
+                'zero_results' => $zeroResults ?: [],
+                'ctr_data' => $ctrData ?: [],
+                'trends' => $trends ?: [],
+                'top_clicked_articles' => $topClickedArticles ?: [],
+                'position_stats' => $positionStats ?: [],
+                'user_search_stats' => $userSearchStats ?: []
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        throw new Exception('Failed to fetch dashboard data: ' . $e->getMessage());
+    }
 }

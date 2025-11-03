@@ -1,0 +1,21 @@
+1. mykdb is runing in a docker container, check Dockerfile and docker-compose.yml for setup details; 
+2. check the tables structure directly in database "knowledge_db" (root/no pass), not in .sql files. the files might not be up to date;
+3. header and footer of each page is defined in includes/ (header.php and footer.php);
+4. database operations are managed with Database class, defined in assets/classes/Database.php;
+5. general configuration file for the app is assets/config/config.php;
+6. javascript files are in assets/js/;
+7. search page is public/index.php;
+8. admin panel is in public/admin/;
+9. analytics related code is in assets/js/analytics.js and assets/js/search-analytics.js;
+10. search analytics backend API is in public/api/bkd_search_analytics.php;
+11. articles are stored in database table 'articles' and article_versions;
+12. articles table contains all versions of articles which are online, visible by visitors on main page;
+13. article_versions table contains all historical versions of articles, including drafts and unpublished changes;
+14. online version of an article has status = published or disabled in articles table. if status = disabled, article is not visible to visitors;
+15. article_versions contains all versions of articles and have possible statuses: draft, pending, approved and disabled;
+16. article_versions contains also the copy of the online version of the article, with is_online=1; the other versions of an article have is_online=0;
+17. article_versions.article_id is foreign key to articles.id;
+18. the flow of an article is: draft -> pending -> approved -> published (in articles table). an article can be disabled only if it is online (is_online=1); by disableing an article, it is removed from public view but its data is kept in the database: set articles.status = disabled and article_versions.status = disabled for the online version (is_online=1);
+19. creation of a new article is done by inserting a new record in articles table with status = disabled and a new record in article_versions with is_online=0 and status = draft or pending;
+20. publishing an article is done by updating fields in articles table and setting articles.status = published and article_versions.is_online=1 and article_versions.status = approved for the online version; previous online version is kept in article_versions with is_online=0;
+
