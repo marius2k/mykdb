@@ -147,6 +147,10 @@ try {
     width: 130px;
 }
 
+.filter-section .btn {
+    margin-left: auto;
+}
+
 /* Tab styling */
 .analytics-tabs {
     display: flex;
@@ -186,6 +190,11 @@ try {
         flex-direction: column;
         align-items: stretch;
     }
+    
+    .filter-section .btn {
+        margin-left: 0;
+        width: 100%;
+    }
 }
 </style>
 
@@ -216,8 +225,18 @@ try {
 
 <div class="analytics-container" >
     <!-- Filter Section -->
-    <div class="filter-section" style="justify-content: right;">
-        <div class="form-group" style="white-space: nowrap;">
+    <div class="filter-section">
+        <div class="form-group" style="nowrap;">
+            <label for="start-date"><?= lang('lang_analytics_start_date') ?>:</label>
+            <input type="date" id="start-date" class="form-control" value="<?= date('Y-m-d', strtotime('-30 days')) ?>">
+        </div>
+        
+        <div class="form-group">
+            <label for="end-date"><?= lang('lang_analytics_end_date') ?>:</label>
+            <input type="date" id="end-date" class="form-control" value="<?= date('Y-m-d') ?>">
+        </div>
+        
+        <div class="form-group">
             <label for="role-filter"><?= lang('lang_analytics_role') ?>:</label>
             <select id="role-filter" class="form-control">
                 <option value="all"><?= lang('lang_analytics_all_roles') ?></option>
@@ -227,16 +246,8 @@ try {
                 <option value="user"><?= lang('lang_analytics_user') ?></option>
             </select>
         </div>
-        <div class="form-group" style="white-space: nowrap;">
-            <label for="time-period"><?= lang('lang_analytics_time_period')?></label>&nbsp;
-            <select id="time-period" class="form-control">
-                <option value="7" selected><?= lang('lang_analytics_last_7_days') ?></option>
-                <option value="30"><?= lang('lang_analytics_last_30_days') ?></option>
-                <option value="90"><?= lang('lang_analytics_last_90_days') ?></option>
-            </select>
-        </div>
         
-        
+        <button type="button" id="update-filters" class="btn btn-primary"><?= lang('lang_analytics_update') ?></button>
     </div>
     
     <!-- Tabs -->
@@ -452,24 +463,6 @@ const USER_ANALYTICS_TRANSLATIONS = {
     loading_data: '<?= lang('lang_analytics_loading_data') ?? 'Loading data...' ?>',
     user_actions_over_time: '<?= lang('lang_analytics_user_actions_over_time') ?>',
     data_incomplete: '<?= lang('lang_analytics_data_incomplete') ?? 'Some data could not be loaded. The information displayed may be incomplete.' ?>',
-    all_roles: '<?= lang('lang_analytics_all_roles') ?>',
-    role_label: '<?= lang('lang_analytics_role') ?>',
-    most_engaged_users: '<?= lang('lang_analytics_most_engaged_users') ?>',
-    activity_by_admin: '<?= lang('lang_analytics_activity_by_admin') ?>',
-    most_active_articles: '<?= lang('lang_analytics_most_active_articles') ?>',
-    top_articles_by_interaction: '<?= lang('lang_analytics_top_articles_by_interaction') ?>',
-};
-
-// Store base titles for dynamic updates
-const BASE_TITLES = {
-    'title-engagement-over-time': USER_ANALYTICS_TRANSLATIONS.engagement_over_time,
-    'title-most-engaged-users': USER_ANALYTICS_TRANSLATIONS.most_engaged_users,
-    'title-engagement-by-role': USER_ANALYTICS_TRANSLATIONS.engagement_by_role,
-    'title-admin-activity-over-time': USER_ANALYTICS_TRANSLATIONS.admin_activity_over_time,
-    'title-activity-by-admin': USER_ANALYTICS_TRANSLATIONS.activity_by_admin,
-    'title-most-active-articles': USER_ANALYTICS_TRANSLATIONS.most_active_articles,
-    'title-user-actions-over-time': USER_ANALYTICS_TRANSLATIONS.user_actions_over_time,
-    'title-top-articles-by-interaction': USER_ANALYTICS_TRANSLATIONS.top_articles_by_interaction,
 };
 
 // Chart objects
@@ -478,86 +471,29 @@ let roleEngagementChart = null;
 let adminActivityChart = null;
 let userActionsChart = null;
 
-// Function to update all section titles with role filter info
-function updateSectionTitles() {
-    const roleSelect = document.getElementById('role-filter');
-    const selectedRole = roleSelect.value;
-    const roleText = roleSelect.options[roleSelect.selectedIndex].text;
-    
-    const timePeriodSelect = document.getElementById('time-period');
-    const timePeriodText = timePeriodSelect.options[timePeriodSelect.selectedIndex].text;
-    
-    // Determine the suffix based on role selection
-    let suffix = '';
-    if (selectedRole === 'all') {
-        suffix = ' - ' + USER_ANALYTICS_TRANSLATIONS.all_roles;
-    } else {
-        suffix = ' - ' + USER_ANALYTICS_TRANSLATIONS.role_label + ': ' + roleText;
-    }
-    
-    // Add time period to suffix
-    suffix += ' - ' + timePeriodText;
-    
-    // Update all title elements
-    Object.keys(BASE_TITLES).forEach(titleId => {
-        const element = document.getElementById(titleId);
-        if (element) {
-            element.textContent = BASE_TITLES[titleId] + suffix;
-        }
-    });
-}
-
-// Helper function to calculate date range based on time period
-function getDateRange() {
-    const timePeriod = parseInt(document.getElementById('time-period').value);
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - timePeriod);
-    
-    return {
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0]
-    };
-}
-
-// Helper function to reload data for active tab
-function reloadActiveTabData() {
-    const activeTab = document.querySelector('.tab.active').dataset.tab;
-    
-    // Update section titles with current role filter
-    updateSectionTitles();
-    
-    switch (activeTab) {
-        case 'user-engagement':
-            loadUserEngagementData();
-            break;
-        case 'admin-activity':
-            loadAdminActivityData();
-            break;
-        case 'content-interaction':
-            loadContentInteractionData();
-            break;
-    }
-}
-
 // Document ready function
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize tabs
     initTabs();
     
-    // Update titles on initial load
-    updateSectionTitles();
-    
     // Load initial data
     loadUserEngagementData();
     
-    // Add event listeners for automatic reload on filter change
-    document.getElementById('time-period').addEventListener('change', function() {
-        reloadActiveTabData();
-    });
-    
-    document.getElementById('role-filter').addEventListener('change', function() {
-        reloadActiveTabData();
+    // Add event listeners
+    document.getElementById('update-filters').addEventListener('click', function() {
+        const activeTab = document.querySelector('.tab.active').dataset.tab;
+        
+        switch (activeTab) {
+            case 'user-engagement':
+                loadUserEngagementData();
+                break;
+            case 'admin-activity':
+                loadAdminActivityData();
+                break;
+            case 'content-interaction':
+                loadContentInteractionData();
+                break;
+        }
     });
 });
 
@@ -643,9 +579,8 @@ async function checkTablesExist() {
 
 // Function to load user engagement data
 async function loadUserEngagementData() {
-    const dateRange = getDateRange();
-    const startDate = dateRange.startDate;
-    const endDate = dateRange.endDate;
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
     const role = document.getElementById('role-filter').value;
     
     try {
@@ -691,9 +626,8 @@ async function loadUserEngagementData() {
 
 // Function to load admin activity data
 async function loadAdminActivityData() {
-    const dateRange = getDateRange();
-    const startDate = dateRange.startDate;
-    const endDate = dateRange.endDate;
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
     const role = document.getElementById('role-filter').value;
     
     try {
@@ -775,9 +709,8 @@ async function loadContentInteractionData() {
         }
         
         // Prepare the date range
-        const dateRange = getDateRange();
-        const startDate = dateRange.startDate;
-        const endDate = dateRange.endDate;
+        const startDate = document.getElementById('start-date')?.value || '<?= date('Y-m-d', strtotime('-30 days')) ?>';
+        const endDate = document.getElementById('end-date')?.value || '<?= date('Y-m-d') ?>';
         const role = document.getElementById('role-filter')?.value || 'all';
         
         console.log(`Fetching content interaction data for date range: ${startDate} to ${endDate}, role: ${role}...`);

@@ -147,6 +147,10 @@ try {
     width: 130px;
 }
 
+.filter-section .btn {
+    margin-left: auto;
+}
+
 /* Tab styling */
 .analytics-tabs {
     display: flex;
@@ -186,6 +190,11 @@ try {
         flex-direction: column;
         align-items: stretch;
     }
+    
+    .filter-section .btn {
+        margin-left: 0;
+        width: 100%;
+    }
 }
 </style>
 
@@ -216,8 +225,17 @@ try {
 
 <div class="analytics-container" >
     <!-- Filter Section -->
-    <div class="filter-section" style="justify-content: right;">
-        <div class="form-group" style="white-space: nowrap;">
+    <div class="filter-section">
+        <div class="form-group">
+            <label for="time-period"><?= lang('lang_analytics_time_period') ?>:</label>
+            <select id="time-period" class="form-control">
+                <option value="7"><?= lang('lang_analytics_last_7_days') ?></option>
+                <option value="30" selected><?= lang('lang_analytics_last_30_days') ?></option>
+                <option value="90"><?= lang('lang_analytics_last_90_days') ?></option>
+            </select>
+        </div>
+        
+        <div class="form-group">
             <label for="role-filter"><?= lang('lang_analytics_role') ?>:</label>
             <select id="role-filter" class="form-control">
                 <option value="all"><?= lang('lang_analytics_all_roles') ?></option>
@@ -227,16 +245,6 @@ try {
                 <option value="user"><?= lang('lang_analytics_user') ?></option>
             </select>
         </div>
-        <div class="form-group" style="white-space: nowrap;">
-            <label for="time-period"><?= lang('lang_analytics_time_period')?></label>&nbsp;
-            <select id="time-period" class="form-control">
-                <option value="7" selected><?= lang('lang_analytics_last_7_days') ?></option>
-                <option value="30"><?= lang('lang_analytics_last_30_days') ?></option>
-                <option value="90"><?= lang('lang_analytics_last_90_days') ?></option>
-            </select>
-        </div>
-        
-        
     </div>
     
     <!-- Tabs -->
@@ -484,9 +492,6 @@ function updateSectionTitles() {
     const selectedRole = roleSelect.value;
     const roleText = roleSelect.options[roleSelect.selectedIndex].text;
     
-    const timePeriodSelect = document.getElementById('time-period');
-    const timePeriodText = timePeriodSelect.options[timePeriodSelect.selectedIndex].text;
-    
     // Determine the suffix based on role selection
     let suffix = '';
     if (selectedRole === 'all') {
@@ -494,9 +499,6 @@ function updateSectionTitles() {
     } else {
         suffix = ' - ' + USER_ANALYTICS_TRANSLATIONS.role_label + ': ' + roleText;
     }
-    
-    // Add time period to suffix
-    suffix += ' - ' + timePeriodText;
     
     // Update all title elements
     Object.keys(BASE_TITLES).forEach(titleId => {
@@ -775,9 +777,8 @@ async function loadContentInteractionData() {
         }
         
         // Prepare the date range
-        const dateRange = getDateRange();
-        const startDate = dateRange.startDate;
-        const endDate = dateRange.endDate;
+        const startDate = document.getElementById('start-date')?.value || '<?= date('Y-m-d', strtotime('-30 days')) ?>';
+        const endDate = document.getElementById('end-date')?.value || '<?= date('Y-m-d') ?>';
         const role = document.getElementById('role-filter')?.value || 'all';
         
         console.log(`Fetching content interaction data for date range: ${startDate} to ${endDate}, role: ${role}...`);
