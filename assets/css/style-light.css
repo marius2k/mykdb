@@ -170,7 +170,7 @@ header .btn-outline-primary:hover,
     font-weight: 700;
     padding: 1rem;
     text-align: left;
-    border-bottom: 2px solid #e3e6f0;
+    border-bottom: 1px solid #e3e6f0;
 }
 
 .table td {
@@ -1486,7 +1486,7 @@ button[disabled],
   .topnav a.active {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #f8f9fc;
+    background-color: #e8f4f8;
     color: rgb(0, 0, 0);
   }
 
@@ -1516,7 +1516,7 @@ button[disabled],
   .topnav .dropdown .dropdown-toggle.active {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #f8f9fc;
+    background-color: #e8f4f8;
     color: rgb(0, 0, 0);
   }
 
@@ -4757,4 +4757,10 @@ table.dataTable tbody td {
 #articlesTable td:first-child {
     text-align: center;
     vertical-align: middle;
+}
+
+/* Breadcrumb and filter section background */
+.breadcrumb-filter-section {
+    background-color: #e8f4f8;
+    border-bottom: 1px solid #b0d4e3;
 }

@@ -142,7 +142,7 @@ a:hover {
     font-weight: 700;
     padding: 1rem;
     text-align: left;
-    border-bottom: 2px solid #e3e6f0;
+    border-bottom: 1px solid #e3e6f0;
 }
 
 .table td {
@@ -2988,7 +2988,7 @@ table.dataTable tbody td {
 .article-title-header {
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #555;
+    border-bottom: 1px solid #555;
 }
 
 .article-title {
@@ -3943,4 +3943,10 @@ table.dataTable tbody td {
 
 .form-group-compact .select2-container .select2-selection--single .select2-selection__arrow {
     height: 40px !important;
+}
+
+/* Breadcrumb and filter section background - Dark Theme */
+.breadcrumb-filter-section {
+    background-color: #2d3748;
+    border-bottom: 1px solid #4a5568;
 }

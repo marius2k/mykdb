@@ -142,7 +142,7 @@ a:hover {
     font-weight: 700;
     padding: 1rem;
     text-align: left;
-    border-bottom: 2px solid #d5d5d5;
+    border-bottom: 1px solid #d5d5d5;
 }
 
 .table td {
@@ -4439,4 +4439,10 @@ a.nav-link.dropdown-toggle.d-flex.align-items-center[aria-expanded="true"] {
 
 .form-group-compact .select2-container .select2-selection--single .select2-selection__arrow {
     height: 40px !important;
+}
+
+/* Breadcrumb and filter section background - Gray Theme */
+.breadcrumb-filter-section {
+    background-color: #e2e8f0;
+    border-bottom: 1px solid #cbd5e0;
 }
