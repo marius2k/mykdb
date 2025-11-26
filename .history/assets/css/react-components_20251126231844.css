@@ -1,0 +1,257 @@
+/* Dashboard Statistics Component Styles */
+
+.dashboard-stats-container {
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.dashboard-stats-container h3 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 1.5em;
+}
+
+.stats-loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .stat-icon {
+  font-size: 2.5em;
+  line-height: 1;
+}
+
+.stat-card .stat-content {
+  flex: 1;
+}
+
+.stat-card h4 {
+  margin: 0 0 10px 0;
+  color: #34495e;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+/* Articles Card */
+.articles-card {
+  border-left: 4px solid #3498db;
+}
+
+.stat-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.stat-label {
+  color: #7f8c8d;
+  font-size: 0.9em;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1.1em;
+}
+
+/* Total Articles Card */
+.total-card {
+  border-left: 4px solid #27ae60;
+}
+
+.stat-number {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #2c3e50;
+  line-height: 1;
+  margin: 10px 0;
+}
+
+.stat-subtitle {
+  color: #7f8c8d;
+  font-size: 0.9em;
+  margin: 0;
+}
+
+/* Users Card */
+.users-card {
+  border-left: 4px solid #e74c3c;
+}
+
+.online-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #27ae60;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.online-indicator {
+  font-size: 0.8em;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   React Button Component Styles
+   ============================================ */
+
+.react-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.react-button:hover:not(.react-button--disabled):not(.react-button--loading) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.react-button:active:not(.react-button--disabled):not(.react-button--loading) {
+  transform: translateY(0);
+}
+
+/* Button Variants */
+.react-button--primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.react-button--primary:hover:not(.react-button--disabled) {
+  background-color: #2980b9;
+}
+
+.react-button--danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.react-button--danger:hover:not(.react-button--disabled) {
+  background-color: #c0392b;
+}
+
+.react-button--warning {
+  background-color: #f39c12;
+  color: white;
+}
+
+.react-button--warning:hover:not(.react-button--disabled) {
+  background-color: #e67e22;
+}
+
+.react-button--success {
+  background-color: #27ae60;
+  color: white;
+}
+
+.react-button--success:hover:not(.react-button--disabled) {
+  background-color: #229954;
+}
+
+/* Button Sizes */
+.react-button--small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.react-button--medium {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.react-button--large {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+/* Button States */
+.react-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.react-button--loading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.button-icon {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.button-spinner {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

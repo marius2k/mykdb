@@ -21,11 +21,11 @@ if ($lang === 'en') $lang = 'en-GB';
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-<!-- React Component Styles -->
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/Button.css">
+<!-- React Components CSS -->
+<link rel="stylesheet" href="<?= APP_URL ?>assets/css/react-components.css">
 
-<!-- Button Component (Compiled from JSX) -->
-<script src="<?= APP_URL ?>assets/js/react-components-dist/Button.js"></script>
+<!-- Button Component -->
+<script src="<?= APP_URL ?>assets/js/react-components/Button.jsx"></script>
 
 <div class="breadcrumb-filter-section" style="display: flex; justify-content: space-between; align-items: center; width: 100vw; padding: 6px 20px; margin-top: 0; margin-bottom: 0; margin-left: calc(-50vw + 50%);">
     <!-- Breadcrumb on the left -->
@@ -272,36 +272,6 @@ function toggleAllLogs(checkbox) {
     document.querySelectorAll('input[name="log_ids[]"]').forEach(cb => cb.checked = checkbox.checked);
 }
 
-// Render React Button components
-setTimeout(() => {
-    if (window.Button && window.React && window.ReactDOM) {
-        const archiveRoot = ReactDOM.createRoot(document.getElementById('archive-button-root'));
-        const deleteRoot = ReactDOM.createRoot(document.getElementById('delete-button-root'));
-        
-        archiveRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_log_archive_selected') ?>',
-                onClick: () => submitBulkLogs('archive'),
-                variant: 'warning',
-                icon: '📦',
-                size: 'medium'
-            })
-        );
-        
-        deleteRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_log_delete_selected') ?>',
-                onClick: () => submitBulkLogs('delete'),
-                variant: 'danger',
-                icon: '🗑️',
-                size: 'medium'
-            })
-        );
-    } else {
-        console.error('React components not loaded:', { Button: window.Button, React: window.React, ReactDOM: window.ReactDOM });
-    }
-}, 100);
-
 /*
 // Inițializează custom boxes dacă ai nevoie
 document.addEventListener('DOMContentLoaded', () => {
@@ -311,6 +281,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 */
+
+// Render React Button components
+document.addEventListener('DOMContentLoaded', () => {
+    const archiveRoot = ReactDOM.createRoot(document.getElementById('archive-button-root'));
+    const deleteRoot = ReactDOM.createRoot(document.getElementById('delete-button-root'));
+    
+    archiveRoot.render(
+        React.createElement(Button, {
+            text: '<?= lang('lang_log_archive_selected') ?>',
+            onClick: () => submitBulkLogs('archive'),
+            variant: 'warning',
+            icon: '📦',
+            size: 'medium'
+        })
+    );
+    
+    deleteRoot.render(
+        React.createElement(Button, {
+            text: '<?= lang('lang_log_delete_selected') ?>',
+            onClick: () => submitBulkLogs('delete'),
+            variant: 'danger',
+            icon: '🗑️',
+            size: 'medium'
+        })
+    );
+});
 
 </script>
 

@@ -1,0 +1,14 @@
+{
+  "name": "mykdb-react",
+  "version": "1.0.0",
+  "description": "React components for mykdb",
+  "scripts": {
+    "build": "babel assets/js/react-components --out-dir assets/js/react-components-dist --presets=@babel/preset-react",
+    "watch": "babel assets/js/react-components --out-dir assets/js/react-components-dist --presets=@babel/preset-react --watch"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-react": "^7.23.0"
+  }
+}

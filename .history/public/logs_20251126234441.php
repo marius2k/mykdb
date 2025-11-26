@@ -20,12 +20,13 @@ if ($lang === 'en') $lang = 'en-GB';
 <!-- React CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- React Component Styles -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/Button.css">
 
-<!-- Button Component (Compiled from JSX) -->
-<script src="<?= APP_URL ?>assets/js/react-components-dist/Button.js"></script>
+<!-- Button Component (Plain JS - no JSX) -->
+<script src="<?= APP_URL ?>assets/js/react-components/Button.js"></script>
 
 <div class="breadcrumb-filter-section" style="display: flex; justify-content: space-between; align-items: center; width: 100vw; padding: 6px 20px; margin-top: 0; margin-bottom: 0; margin-left: calc(-50vw + 50%);">
     <!-- Breadcrumb on the left -->

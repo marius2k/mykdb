@@ -20,12 +20,47 @@ if ($lang === 'en') $lang = 'en-GB';
 <!-- React CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- React Component Styles -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/Button.css">
 
-<!-- Button Component (Compiled from JSX) -->
-<script src="<?= APP_URL ?>assets/js/react-components-dist/Button.js"></script>
+<script type="text/babel">
+// Button Component
+const Button = ({ text, onClick, variant = 'primary', disabled = false, icon = null, size = 'medium', loading = false, className = '' }) => {
+  const handleClick = (e) => {
+    if (disabled || loading) {
+      return;
+    }
+    onClick(e);
+  };
+
+  const buttonClass = [
+    'react-button',
+    `react-button--${variant}`,
+    `react-button--${size}`,
+    disabled && 'react-button--disabled',
+    loading && 'react-button--loading',
+    className
+  ].filter(Boolean).join(' ');
+
+  return (
+    <button className={buttonClass} onClick={handleClick} disabled={disabled}>
+      {loading ? (
+        <span className="button-spinner">⟳</span>
+      ) : (
+        <>
+          {icon && <span className="button-icon">{icon}</span>}
+          {text}
+        </>
+      )}
+    </button>
+  );
+};
+
+// Make Button available globally
+window.Button = Button;
+</script>
 
 <div class="breadcrumb-filter-section" style="display: flex; justify-content: space-between; align-items: center; width: 100vw; padding: 6px 20px; margin-top: 0; margin-bottom: 0; margin-left: calc(-50vw + 50%);">
     <!-- Breadcrumb on the left -->
@@ -272,36 +307,6 @@ function toggleAllLogs(checkbox) {
     document.querySelectorAll('input[name="log_ids[]"]').forEach(cb => cb.checked = checkbox.checked);
 }
 
-// Render React Button components
-setTimeout(() => {
-    if (window.Button && window.React && window.ReactDOM) {
-        const archiveRoot = ReactDOM.createRoot(document.getElementById('archive-button-root'));
-        const deleteRoot = ReactDOM.createRoot(document.getElementById('delete-button-root'));
-        
-        archiveRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_log_archive_selected') ?>',
-                onClick: () => submitBulkLogs('archive'),
-                variant: 'warning',
-                icon: '📦',
-                size: 'medium'
-            })
-        );
-        
-        deleteRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_log_delete_selected') ?>',
-                onClick: () => submitBulkLogs('delete'),
-                variant: 'danger',
-                icon: '🗑️',
-                size: 'medium'
-            })
-        );
-    } else {
-        console.error('React components not loaded:', { Button: window.Button, React: window.React, ReactDOM: window.ReactDOM });
-    }
-}, 100);
-
 /*
 // Inițializează custom boxes dacă ai nevoie
 document.addEventListener('DOMContentLoaded', () => {
@@ -311,6 +316,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 */
+
+// Render React Button components
+document.addEventListener('DOMContentLoaded', () => {
+    const archiveRoot = ReactDOM.createRoot(document.getElementById('archive-button-root'));
+    const deleteRoot = ReactDOM.createRoot(document.getElementById('delete-button-root'));
+    
+    archiveRoot.render(
+        React.createElement(Button, {
+            text: '<?= lang('lang_log_archive_selected') ?>',
+            onClick: () => submitBulkLogs('archive'),
+            variant: 'warning',
+            icon: '📦',
+            size: 'medium'
+        })
+    );
+    
+    deleteRoot.render(
+        React.createElement(Button, {
+            text: '<?= lang('lang_log_delete_selected') ?>',
+            onClick: () => submitBulkLogs('delete'),
+            variant: 'danger',
+            icon: '🗑️',
+            size: 'medium'
+        })
+    );
+});
 
 </script>
 
