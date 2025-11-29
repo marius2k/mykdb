@@ -17,14 +17,8 @@ if ($lang === 'en') $lang = 'en-GB';
 $theme = $_SESSION['settings']['theme'] ?? 'light';
 
 ?>
-<script>
+<script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
 
-    window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";
-
-    // Make APP_URL available to JavaScript
-    window.APP_URL = '<?= APP_URL ?>';
-
-</script>
 <!-- Component CSS -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/Button.css">
 
@@ -290,8 +284,8 @@ setTimeout(() => {
             React.createElement(Button, {
                 text: '<?= lang('lang_log_archive_selected') ?>',
                 onClick: () => submitBulkLogs('archive'),
-                variant: 'primary',
-                icon: 'icon-archive.svg',
+                variant: 'warning',
+                icon: '📦',
                 size: 'medium'
             })
         );
@@ -300,8 +294,8 @@ setTimeout(() => {
             React.createElement(Button, {
                 text: '<?= lang('lang_log_delete_selected') ?>',
                 onClick: () => submitBulkLogs('delete'),
-                variant: 'primary',
-                icon: 'icon-delete.svg',
+                variant: 'danger',
+                icon: '🗑️',
                 size: 'medium'
             })
         );

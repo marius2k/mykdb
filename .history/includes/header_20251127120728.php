@@ -148,33 +148,13 @@ if ($userId) {
 <head>
     <meta charset="UTF-8">
     <title><?= APP_NAME ?></title>
-    <style>
-        /* Styles for dropdown submenus */
-        .dropdown-submenu .dropdown-menu {
-            display: none;
-            position: absolute;
-            left: 100%;
-            top: 0;
-            margin-top: 0;
-            margin-left: -1px;
-            border-radius: 0 6px 6px 6px;
-        }
-        
-        /* Style for mobile view */
-        @media (max-width: 768px) {
-            .dropdown-submenu .dropdown-menu {
-                position: relative;
-                left: 0;
-                top: 0;
-                margin-left: 15px;
-                border-radius: 0;
-            }
-        }
-    </style>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Theme Variables (loaded first) -->
+    <link rel="stylesheet" href="<?= APP_URL?>assets/css/themes/theme-<?=$theme?>.css?v=<?= time() ?>">
+    <!-- Main Theme Styles -->
     <link rel="stylesheet" href="<?= APP_URL?>assets/css/style-<?=$theme?>.css?v=<?= time() ?>">
     <!-- Force breadcrumb alignment fix after all other CSS -->
     <style>
@@ -362,7 +342,7 @@ if ($userId) {
                 echo $navbar;
             ?>
             </div>
-        </div>
+        </div>   
         
 
 

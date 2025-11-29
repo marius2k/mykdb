@@ -1,0 +1,19 @@
+/* Theme Variables - Gray Theme */
+:root {
+    --primary-color: #6c757d;
+    --primary-dark: #5a6268;
+    --secondary-color: #858796;
+    --success-color: #1cc88a;
+    --success-dark: #17a673;
+    --danger-color: #e74a3b;
+    --danger-dark: #c0392b;
+    --warning-color: #f6c23e;
+    --warning-dark: #e67e22;
+    --info-color: #36b9cc;
+    --light-color: #f8f9fc;
+    --dark-color: #5a5c69;
+    --body-bg: #f8f9fc;
+    --card-bg: #ffffff;
+    --text-color: #5a5c69;
+    --border-color: #e3e6f0;
+}

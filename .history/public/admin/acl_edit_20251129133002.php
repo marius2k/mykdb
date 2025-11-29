@@ -112,10 +112,7 @@ $roles = $db->fetchAll("SELECT id, name, label FROM roles");
 ?>
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
-<script>
-// Make APP_URL available to JavaScript
-window.APP_URL = '<?= APP_URL ?>';
-</script>
+
 
 <!-- Component CSS -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/Button.css">
@@ -272,7 +269,7 @@ setTimeout(() => {
                 text: '<?= lang('lang_btn_save') ?>',
                 onClick: () => submitOperations(),
                 variant: 'primary',
-                icon: 'icon-save.svg',
+                icon: '<?= APP_URL ?>assets/icons/icon-save.svg',
                 size: 'medium'
             })
         );

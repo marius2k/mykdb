@@ -1,4 +1,4 @@
-/* React Button Component Styles */
+/* React Button Component - Theme-aware */
 
 .react-button {
   display: inline-flex;
@@ -24,41 +24,41 @@
   transform: translateY(0);
 }
 
-/* Button Variants */
+/* Button Variants - Uses theme CSS variables */
 .react-button--primary {
-  background-color: #3498db;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .react-button--primary:hover:not(.react-button--disabled) {
-  background-color: #2980b9;
+  background-color: var(--primary-dark);
 }
 
 .react-button--danger {
-  background-color: #e74c3c;
+  background-color: var(--danger-color);
   color: white;
 }
 
 .react-button--danger:hover:not(.react-button--disabled) {
-  background-color: #c0392b;
+  background-color: var(--danger-dark);
 }
 
 .react-button--warning {
-  background-color: #f39c12;
+  background-color: var(--warning-color);
   color: white;
 }
 
 .react-button--warning:hover:not(.react-button--disabled) {
-  background-color: #e67e22;
+  background-color: var(--warning-dark);
 }
 
 .react-button--success {
-  background-color: #27ae60;
+  background-color: var(--success-color);
   color: white;
 }
 
 .react-button--success:hover:not(.react-button--disabled) {
-  background-color: #229954;
+  background-color: var(--success-dark);
 }
 
 /* Button Sizes */
@@ -94,11 +94,11 @@
 }
 
 .button-spinner {
-  animation: spin 1s linear infinite;
+  animation: button-spin 1s linear infinite;
   display: inline-block;
 }
 
-@keyframes spin {
+@keyframes button-spin {
   from {
     transform: rotate(0deg);
   }

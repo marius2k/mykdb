@@ -21,9 +21,6 @@ COPY . /var/www/html/
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Fix Apache ServerName warning
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer require dompdf/dompdf
 

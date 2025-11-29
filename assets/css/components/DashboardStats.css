@@ -1,4 +1,4 @@
-/* Dashboard Statistics Component Styles */
+/* React DashboardStats Component - Theme-aware */
 
 .dashboard-stats-container {
   padding: 20px;
@@ -7,14 +7,14 @@
 
 .dashboard-stats-container h3 {
   margin-bottom: 20px;
-  color: #2c3e50;
+  color: var(--dark-color);
   font-size: 1.5em;
 }
 
 .stats-loading {
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: var(--secondary-color);
 }
 
 .stats-grid {
@@ -25,7 +25,7 @@
 }
 
 .stat-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -51,14 +51,14 @@
 
 .stat-card h4 {
   margin: 0 0 10px 0;
-  color: #34495e;
+  color: var(--dark-color);
   font-size: 1.1em;
   font-weight: 600;
 }
 
 /* Articles Card */
 .articles-card {
-  border-left: 4px solid #3498db;
+  border-left: 4px solid var(--primary-color);
 }
 
 .stat-details {
@@ -76,38 +76,38 @@
 }
 
 .stat-label {
-  color: #7f8c8d;
+  color: var(--secondary-color);
   font-size: 0.9em;
 }
 
 .stat-value {
   font-weight: bold;
-  color: #2c3e50;
+  color: var(--dark-color);
   font-size: 1.1em;
 }
 
 /* Total Articles Card */
 .total-card {
-  border-left: 4px solid #27ae60;
+  border-left: 4px solid var(--success-color);
 }
 
 .stat-number {
   font-size: 2.5em;
   font-weight: bold;
-  color: #2c3e50;
+  color: var(--dark-color);
   line-height: 1;
   margin: 10px 0;
 }
 
 .stat-subtitle {
-  color: #7f8c8d;
+  color: var(--secondary-color);
   font-size: 0.9em;
   margin: 0;
 }
 
 /* Users Card */
 .users-card {
-  border-left: 4px solid #e74c3c;
+  border-left: 4px solid var(--danger-color);
 }
 
 .online-status {
@@ -115,17 +115,17 @@
   align-items: center;
   gap: 8px;
   margin-top: 10px;
-  color: #27ae60;
+  color: var(--success-color);
   font-size: 0.95em;
   font-weight: 500;
 }
 
 .online-indicator {
   font-size: 0.8em;
-  animation: pulse 2s ease-in-out infinite;
+  animation: stats-pulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes stats-pulse {
   0%, 100% {
     opacity: 1;
   }

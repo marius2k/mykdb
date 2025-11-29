@@ -8,7 +8,8 @@ $theme = $_SESSION['settings']['theme'] ?? 'light';
 
 ?>
 
-<!-- Component CSS -->
+<!-- Theme CSS -->
+<link rel="stylesheet" href="<?= APP_URL ?>assets/css/themes/theme-<?= $theme ?>.css">
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/DashboardStats.css">
 
 <!-- Load React and ReactDOM from CDN -->

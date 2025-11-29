@@ -1,0 +1,23 @@
+/* Theme Variables - Gray Theme */
+:root {
+    --primary-color: #5a6c7d;
+    --primary-dark: #455a64;
+    --secondary-color: #90a4ae;
+    --success-color: #66bb6a;
+    --success-dark: #229954;
+    --danger-color: #ef5350;
+    --danger-dark: #c0392b;
+    --warning-color: #ffca28;
+    --warning-dark: #e67e22;
+    --info-color: #42a5f5;
+    --light-color: #fafafa;
+    --dark-color: #37474f;
+    --body-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-color: #37474f;
+    --border-color: #dee2e6;
+    --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --border-radius: 0.35rem;
+    --box-shadow: 0 0.15rem 1.75rem 0 rgba(55, 71, 79, 0.15);
+}

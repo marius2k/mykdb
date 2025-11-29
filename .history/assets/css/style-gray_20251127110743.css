@@ -1,20 +1,20 @@
-/* 1. Variabile și stiluri de bază */
+/* 1. Variabile și stiluri de bază - Gray Theme */
 :root {
-    --primary-color: #48bec7;
-    --primary-dark: #31a3a3;
-    --secondary-color: #858796;
-    --success-color: #1cc88a;
-    --danger-color: #e74a3b;
-    --warning-color: #f6c23e;
-    --info-color: #36b9cc;
-    --light-color: #f8f9fc;
-    --dark-color: #5a5c69;
-    --body-bg: #f8f9fc;
+    --primary-color: #5a6c7d;
+    --primary-dark: #455a64;
+    --secondary-color: #90a4ae;
+    --success-color: #66bb6a;
+    --danger-color: #ef5350;
+    --warning-color: #ffca28;
+    --info-color: #42a5f5;
+    --light-color: #fafafa;
+    --dark-color: #37474f;
+    --body-bg: #f8f9fa;
     --card-bg: #ffffff;
     --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
     --border-radius: 0.35rem;
-    --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    --box-shadow: 0 0.15rem 1.75rem 0 rgba(55, 71, 79, 0.15);
 }
 
 /* 2. Reset și stiluri de bază */
@@ -97,8 +97,8 @@ a:hover {
 }
 
 .card-header {
-    background-color: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #d5d5d5;
     padding: 1rem 1.35rem;
     border-radius: calc(var(--border-radius) calc(var(--border-radius)) 0 0) !important;
 }
@@ -137,12 +137,12 @@ a:hover {
 }
 
 .table th {
-    background-color: #f8f9fc;
+    background-color: #f5f5f5;
     color: var(--dark-color);
     font-weight: 700;
     padding: 1rem;
     text-align: left;
-    border-bottom: 2px solid #e3e6f0;
+    border-bottom: 1px solid #d5d5d5;
 }
 
 .table td {
@@ -178,17 +178,30 @@ a:hover {
 /* 9. Navigație */
 .navbar {
     padding: 0.5rem 1rem;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(55, 71, 79, 0.15);
+    background-color: #e0e0e0 !important;
+    border-bottom: 1px solid #d5d5d5;
 }
 
 .navbar-brand {
     font-weight: 800;
     font-size: 1.25rem;
+    color: #37474f !important;
 }
 
 .nav-link {
     font-weight: 600;
     padding: 0.75rem 1rem;
+    color: #546e7a !important;
+    border-radius: var(--border-radius);
+    margin: 0 0.125rem;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: #37474f !important;
+    background-color: #d6d6d6;
 }
 
 /* 10. Footer */
@@ -333,7 +346,7 @@ ol.breadcrumb {
     margin-right: 8px;
     vertical-align: middle;
     opacity: 0.6;
-    filter: brightness(0) saturate(100%) invert(69%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(89%);
+    filter: brightness(0) saturate(100%) invert(43%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(89%);
 }
 
 /* Override default Bootstrap breadcrumb separator */
@@ -356,7 +369,7 @@ ol.breadcrumb {
 .progress {
     height: 1rem;
     border-radius: 0.35rem;
-    background-color: #eaecf4;
+    background-color: #e8e8e8;
 }
 
 .progress-bar {
@@ -927,6 +940,20 @@ ol.breadcrumb {
     transform: rotate(90deg);
 }
 
+.btn-useful-grey {
+    
+    background-color: #e9e8e6;
+    color: #4d4c4c;
+    border: 1px solid #696968;
+    border-radius: 3px;
+    width: 90px;
+}
+
+.btn-useful-grey:hover {
+    background-color: #b6b5b5;
+    color: rgb(0, 0, 0);
+}
+
 
 .pagination {
     text-align: center;
@@ -1405,9 +1432,9 @@ button[disabled],
 }
 
 
-/* Add a black background color to the top navigation */
+/* Add a gray background color to the top navigation */
 .topnav {
-    background-color: #1697ad;
+    background-color: #707070;
     /*background-color: linear-gradient(to right,rgb(25, 108, 141),rgb(67, 190, 238));*/
     overflow: visible;
     position: relative;
@@ -1434,7 +1461,7 @@ button[disabled],
   
   /* Change the color of links on hover */
   .topnav a:hover {
-    background-color: #36cdc8;
+    background-color: transparent;
     color: rgb(255, 255, 255);
   }
   
@@ -1442,7 +1469,7 @@ button[disabled],
   .topnav a.active {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #e9ecef;
+    background-color: #f5f5f5;
     color: rgb(0, 0, 0);
   }
 
@@ -1465,14 +1492,14 @@ button[disabled],
   }
 
   .topnav .dropdown .dropdown-toggle:hover {
-    background-color: #36cdc8;
+    background-color: transparent;
     color: rgb(255, 255, 255);
   }
 
   .topnav .dropdown .dropdown-toggle.active {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    background-color: #e9ecef;
+    background-color: #f5f5f5;
     color: rgb(0, 0, 0);
   }
 
@@ -1484,10 +1511,10 @@ button[disabled],
     min-width: 160px;
     padding: 5px 0;
     margin: 0;
-    background-color: #2c2c2c;
-    border: 1px solid #3a3a3a;
+    background-color: #f5f5f5;
+    border: 1px solid #d5d5d5;
     border-radius: 0.375rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.375);
+    box-shadow: 0 0.5rem 1rem rgba(55, 71, 79, 0.175);
     display: none;
   }
 
@@ -1502,7 +1529,7 @@ button[disabled],
     padding: 0.5rem 1rem;
     clear: both;
     font-weight: 400;
-    color: #f8f9fa;
+    color: #37474f;
     text-align: inherit;
     text-decoration: none;
     white-space: nowrap;
@@ -1511,14 +1538,14 @@ button[disabled],
   }
 
   .topnav .dropdown .dropdown-item:hover {
-    background-color: #4a9b97;
-    color: #ffffff;
+    background-color: #b0bec5;
+    color: #263238;
   }
 
   /* Special styling for admin submenu triggers - same as regular dropdown items */
   .topnav .dropdown .dropdown-item.admin-submenu-trigger:hover {
-    background-color: #4a9b97 !important;
-    color: #ffffff !important;
+    background-color: #b0bec5 !important;
+    color: #263238 !important;
     border-radius: 4px;
   }
 
@@ -1532,8 +1559,6 @@ button[disabled],
     left: 100%;
     margin-top: -1px;
     border-radius: 0.375rem;
-    background-color: #2c2c2c;
-    border: 1px solid #3a3a3a;
     display: none;
     position: absolute;
   }
@@ -1547,12 +1572,10 @@ button[disabled],
   .topnav .dropdown .dropdown-submenu:hover .language-submenu {
     display: block;
   }
-
   /* Show categories submenu only when hovering over categories item */
   .topnav .dropdown .dropdown-submenu:hover .users-submenu {
     display: block;
   }
-
   /* Show categories submenu only when hovering over categories item */
   .topnav .dropdown .dropdown-submenu:hover .categories-submenu {
     display: block;
@@ -1565,6 +1588,11 @@ button[disabled],
 
   /* Show tags submenu only when hovering over tags item */
   .topnav .dropdown .dropdown-submenu:hover .tags-submenu {
+    display: block;
+  }
+
+  /* Show analytics submenu only when hovering over analytics item */
+  .topnav .dropdown .dropdown-submenu:hover .analytics-submenu {
     display: block;
   }
 
@@ -1589,7 +1617,6 @@ button[disabled],
   .users-submenu {
     min-width: 180px;
   }
-
   .categories-submenu {
     min-width: 180px;
   }
@@ -1816,8 +1843,8 @@ button[disabled],
 }
 
 .op-icon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     padding-right: 10px;
     filter: grayscale(100%);
     transition: 0.2s ease;
@@ -2308,7 +2335,11 @@ ul.top-articles .li-icon {
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
 }
-
+@media (max-width: 768px) {
+  .dashboard-right {
+    grid-template-columns: 1fr; /* Pe ecrane mici, o singură coloană */
+  }
+}
 .list-item {
     display: flex; /* Asigură-te că elementele sunt flexibile */
     align-items: center; /* Aliniază vertical elementele */
@@ -2353,15 +2384,26 @@ ul.top-articles .li-icon {
     margin-top: -5px
 }
 
-/* DataTable header colors*/
+/* DataTable header color for Logs */
 #logsTable thead th,
 #categoriesTable thead th,
 #articlesTable thead th,
 #commentsTable thead th,
-#tagsTable thead th,
-#usersTable thead th {
-  background-color: #4d4d4d; /* Example: blue */
+#usersTable thead th,
+#tagsTable thead th {
+  background-color: #777777; /* Example: blue */
   color: #fff;               /* Example: white text */
+}
+
+/* Generic DataTable styling for analytics pages */
+table.dataTable thead th {
+    background-color: #6c757d !important;
+    color: white !important;
+    padding: 10px !important;
+}
+
+table.dataTable tbody td {
+    padding: 10px !important;
 }
 
 #modalOverlay {
@@ -2916,7 +2958,7 @@ ul.top-articles .li-icon {
     height: 32px !important;
 }
 
-/* Article History Modal Styles - Dark Theme */
+/* Article History Modal Styles - Grey Theme */
 .modal-header-history {
     display: flex;
     align-items: center;
@@ -2924,13 +2966,13 @@ ul.top-articles .li-icon {
     padding: 25px 15px 0 25px;
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
-    background: #3c3c3c;
+    background: #f8f8f8;
 }
 
 .modal-title-history {
     font-size: 1.22em;
     font-weight: 600;
-    color: #e8e8e8;
+    color: #333;
 }
 
 .modal-close-history {
@@ -2940,20 +2982,20 @@ ul.top-articles .li-icon {
     align-items: center;
     justify-content: center;
     font-size: 1.3em;
-    color: #ccc;
+    color: #666;
     cursor: pointer;
     border-radius: 8px;
-    background: #4a4a4a;
-    border: 1px solid #666;    
+    background: #e8e8e8;
+    border: 1px solid #ccc;    
     transition: background 0.15s, color 0.15s, box-shadow 0.15s;
     box-shadow: none;
     margin-left: 12px;
 }
 
 .modal-close-history:hover {
-    background: #555;
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    background: #ddd;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .modal-content-history {
@@ -2964,7 +3006,7 @@ ul.top-articles .li-icon {
     gap: 20px;
     width: 100%;
     margin: 0 auto;
-    background: #2e2e2e;
+    background: #f5f5f5;
     max-height: 500px;
     overflow-y: auto;
 }
@@ -2972,13 +3014,13 @@ ul.top-articles .li-icon {
 .article-title-header {
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #555;
+    border-bottom: 1px solid #ddd;
 }
 
 .article-title {
     font-size: 1.4em;
     font-weight: 600;
-    color: #e8e8e8;
+    color: #333;
     margin: 0;
     text-align: center;
 }
@@ -2990,17 +3032,17 @@ ul.top-articles .li-icon {
 }
 
 .version-item {
-    background: #3a3a3a;
-    border: 1px solid #555;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 12px 15px;
     transition: all 0.2s ease;
 }
 
 .version-item:hover {
-    background: #404040;
-    border-color: #666;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    background: #fafafa;
+    border-color: #bbb;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .version-header {
@@ -3023,12 +3065,12 @@ ul.top-articles .li-icon {
 }
 
 .version-date {
-    color: #aaa;
+    color: #888;
     font-size: 0.9em;
 }
 
 .version-meta {
-    color: #ccc;
+    color: #666;
     font-size: 0.85em;
     margin-bottom: 6px;
 }
@@ -3036,11 +3078,11 @@ ul.top-articles .li-icon {
 .version-title {
     font-weight: 500;
     margin-bottom: 8px;
-    color: #e8e8e8;
+    color: #333;
 }
 
 .version-excerpt {
-    color: #bbb;
+    color: #666;
     font-size: 0.95em;
     line-height: 1.4;
     margin-bottom: 15px;
@@ -3050,7 +3092,7 @@ ul.top-articles .li-icon {
 }
 
 .version-note {
-    color: #bbb;
+    color: #666;
     font-size: 0.9em;
     margin-top: 6px;
     margin-bottom: 10px;
@@ -3079,21 +3121,21 @@ ul.top-articles .li-icon {
 }
 
 .version-status.approved {
-    background: #2d5a2d;
-    color: #90ee90;
-    border: 1px solid #4a8f4a;
+    background: #e8f5e8;
+    color: #2d7d2d;
+    border: 1px solid #90c290;
 }
 
 .version-status.pending {
-    background: #5a5a2d;
-    color: #ffd700;
-    border: 1px solid #8f8f4a;
+    background: #fff8e1;
+    color: #b8860b;
+    border: 1px solid #ddbf47;
 }
 
 .version-status.rejected {
-    background: #5a2d2d;
-    color: #ff9090;
-    border: 1px solid #8f4a4a;
+    background: #ffeaea;
+    color: #c53030;
+    border: 1px solid #f56565;
 }
 
 .version-actions {
@@ -3124,39 +3166,39 @@ ul.top-articles .li-icon {
 }
 
 .version-action-btn.approve {
-    background: #4a8f4a;
+    background: #48bb78;
     color: #fff;
 }
 
 .version-action-btn.approve:hover {
-    background: #3a7a3a;
+    background: #38a169;
 }
 
 .version-action-btn.reject {
-    background: #8f4a4a;
+    background: #f56565;
     color: #fff;
 }
 
 .version-action-btn.reject:hover {
-    background: #7a3a3a;
+    background: #e53e3e;
 }
 
 .version-action-btn.edit {
-    background: #8f8f4a;
+    background: #ed8936;
     color: #fff;
 }
 
 .version-action-btn.edit:hover {
-    background: #7a7a3a;
+    background: #dd6b20;
 }
 
 .version-action-btn.delete {
-    background: #aa4e4e;
+    background: #e53e3e;
     color: #fff;
 }
 
 .version-action-btn.delete:hover {
-    background: #883a3a;
+    background: #c53030;
 }
 
 .modal-footer-history {
@@ -3167,7 +3209,7 @@ ul.top-articles .li-icon {
     padding: 30px 22px 30px 22px;
     border-bottom-left-radius: 18px;
     border-bottom-right-radius: 18px;
-    background: #333;
+    background: #eee;
     margin-top: 18px;
 }
 
@@ -3179,8 +3221,8 @@ ul.top-articles .li-icon {
     padding: 10px 0;
     border: none;
     border-radius: 7px;
-    background: #555;
-    color: #ccc;
+    background: #c9c8c8;
+    color: #444;
     font-weight: 500;
     font-size: 1em;
     cursor: pointer;
@@ -3192,12 +3234,12 @@ ul.top-articles .li-icon {
 }
 
 .modal-btn-history:hover {
-    background: #666;
-    color: #fff;
+    background: #b8b7b7;
+    color: #333;
 }
 
 /* =================================== */
-/* ARTICLE EDIT MODAL STYLES - DARK    */
+/* ARTICLE EDIT MODAL STYLES - GRAY    */
 /* =================================== */
 
 /* Overlay pentru modalul de editare articol */
@@ -3205,7 +3247,7 @@ ul.top-articles .li-icon {
     position: fixed;
     left: 0; top: 0;
     width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.32);
     z-index: 9998;
 }
 
@@ -3214,13 +3256,13 @@ ul.top-articles .li-icon {
     position: fixed;
     left: 50%; top: 50%;
     transform: translate(-50%, -50%);
-    background: #3c3c3c;
+    background: #f2f2f2;
     border-radius: 18px;
     min-width: 850px;
     max-width: 90vw;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.20);
     z-index: 9999;
     font-family: inherit;
     animation: modalPop 0.18s cubic-bezier(.4,1.6,.6,1) 1;
@@ -3235,13 +3277,13 @@ ul.top-articles .li-icon {
     padding: 25px 15px 0 25px;
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
-    background: #3c3c3c;
+    background: #f2f2f2;
 }
 
 .modal-title-edit {
     font-size: 1.22em;
     font-weight: 600;
-    color: #e8e8e8;
+    color: #444;
 }
 
 .modal-close-edit {
@@ -3251,20 +3293,20 @@ ul.top-articles .li-icon {
     align-items: center;
     justify-content: center;
     font-size: 1.3em;
-    color: #ccc;
+    color: #666;
     cursor: pointer;
     border-radius: 8px;
-    background: #525252;
-    border: 1px solid #666;    
+    background: #e6e6e6;
+    border: 1px solid #ccc;    
     transition: background 0.15s, color 0.15s, box-shadow 0.15s;
     box-shadow: none;
     margin-left: 12px;
 }
 
 .modal-close-edit:hover {
-    background: #666;
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background: #d9d9d9;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
 
 .modal-content-edit {
@@ -3274,7 +3316,7 @@ ul.top-articles .li-icon {
     flex-direction: column;
     overflow-y: auto;
     max-height: calc(90vh - 120px);
-    background: #3c3c3c;
+    background: #f2f2f2;
 }
 
 .modal-footer-edit {
@@ -3285,7 +3327,7 @@ ul.top-articles .li-icon {
     padding: 30px 22px 30px 22px;
     border-bottom-left-radius: 18px;
     border-bottom-right-radius: 18px;
-    background: #2a2a2a;
+    background: #e0e0e0;
     margin-top: 18px;
 }
 
@@ -3297,8 +3339,8 @@ ul.top-articles .li-icon {
     padding: 10px 0;
     border: none;
     border-radius: 7px;
-    background: #525252;
-    color: #e8e8e8;
+    background: #d1d0d0;
+    color: #555;
     font-weight: 500;
     font-size: 1em;
     cursor: pointer;
@@ -3310,8 +3352,8 @@ ul.top-articles .li-icon {
 }
 
 .modal-btn-edit:hover {
-    background: #666;
-    color: #fff;
+    background: #b8b7b7;
+    color: #333;
 }
 
 #modalAddCategory .select2-container {
@@ -3419,6 +3461,453 @@ ul.top-articles .li-icon {
     min-height: 32px !important;
 }
 
+
+#modalOverlayRegister {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+    display: none;
+}
+
+/* Modalul principal */
+.modal-register {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  min-width: 600px;
+  max-width: 95vw;
+  max-height: 95vh;
+  height: auto;         
+  overflow-y: auto;
+  display: none;
+  
+}
+
+#registerForm.form-styled {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header, content, footer */
+.modal-header-register {
+  padding: 1em 1.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-content-register {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.modal-body-register {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.modal-footer-register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 30px 20px 20px 22px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background: #f2f2f3;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+/* Rânduri și inputuri */
+.modal-row-register {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.modal-label-register {
+  min-width: 150px;
+  text-align: right;
+  margin-bottom: 0;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+}
+.modal-input-register {
+  width: 250px;
+  min-height: 32px;
+  min-width: 0;
+  height: 32px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  font-size: 1em;
+  background: #fafbfc;
+  margin: 0;
+  padding: 4px 8px;
+}
+
+/* Password wrapper */
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  width: 250px;
+  position: relative;
+}
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding-right: 40px;
+  box-sizing: border-box;
+  padding-right: 36px; 
+}
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #888;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mesajul de potrivire parolă sub input */
+#password-match-msg {
+  display: block;
+  font-size: 0.97em;
+  margin-left: 150px; /* la fel ca min-width label */
+  margin-top: 4px;
+  color: red;
+}
+
+.modal-title-register {
+    font-size: 1.22em;
+    font-weight: 600;
+    color: #222;
+}
+.modal-close-register {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #444;
+    cursor: pointer;
+    border-radius: 8px;
+    background: #f7f7fa;
+    border: 1px solid #bfc7d1;    
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    margin-left: 12px;
+}
+.modal-close-register:hover {
+    background: #ececec;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.modal-btn-register {
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 180px;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-radius: 7px;
+    background: #c9c8c8;
+    color: #444;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+.modal-btn-register.primary {
+    background: #4e9faa;
+    color: #fff;
+}
+.modal-btn-register.primary:hover {
+    background: #408188;
+}
+
+
+.modal-btn-register.cancel {
+    background: #d4d4d4;
+    color: #444;
+}
+.modal-btn-register.cancel:hover {
+    background: #e0e0e0;
+}
+
+
+/* Centrare perfectă pentru login modal */
+.modal-overlay {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 998;
+  display: none;
+}
+.modal-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.modal-content-login {
+  background: #fff;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 2px 8px #0002;
+  animation: fadeIn .2s;
+  max-width: 400px;
+  width: 100%;
+  margin: 0;
+}
+@media (min-width: 600px) {
+  .modal-content-login {
+    width: 400px;
+  }
+}
+.modal-header-login {
+  padding: 1em 1.5em;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-title-login {
+  font-size: 1.3em;
+  font-weight: 600;
+}
+.modal-close-login {
+  font-size: 1.7em;
+  color: #444;
+  cursor: pointer;
+  border-radius: 8px;
+  background: #f7f7fa;
+  border: 1px solid #bfc7d1;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  box-shadow: none;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+.modal-close-login:hover {
+  background: #ececec;
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.modal-body-login {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.modal-row-login {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.modal-label-login {
+  min-width: 150px;
+  text-align: right;
+  margin-bottom: 0;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+}
+.modal-input-login {
+  width: 250px;
+  min-height: 32px;
+  min-width: 0;
+  height: 32px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  font-size: 1em;
+  background: #fafbfc;
+  margin: 0;
+  padding: 4px 8px;
+}
+.modal-footer-login {
+  padding: 24px 30px;
+  background: #f7f7fa;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.article-header {
+    max-width: 80%;
+    margin: 20px auto;
+}
+
+
+.article-rating {
+    /*margin-top: 8px;*/
+    color: #048eb1;
+    font-size: 0.9rem;
+}
+
+.article-rating .star {
+    font-size: 1.7rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+}
+
+.article-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.article-meta {
+    font-style: italic;
+    color: #048eb1;
+    font-size: 0.75rem;
+}
+.article-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.article-rating .star.selected,
+.article-rating .star.hovered {
+    color: #f7d106;
+}
+.article-useful button {
+    margin-right: 5px;
+}
+
+.bookmark-icon {
+    transition: filter 0.2s;
+}
+.bookmark-icon:hover {
+    filter: brightness(0.8);
+}
+
+.tag-badge {
+    background: linear-gradient(135deg, #e3f2fd, #a6e0e4ff) !important;
+    color: rgb(1, 80, 100) !important;
+    padding: 3px 6px !important;
+    border-radius: 10px !important;
+    font-size: 0.85em !important;
+    margin-right: 6px !important;
+    margin-bottom: 4px !important;
+    display: inline-block !important;
+    border: 1px solid #08a8bdff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.tag-badge:hover {
+    background: linear-gradient(135deg, #bbdefb, #90caf9) !important;
+    color: #0894a7 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+    text-decoration: none !important;
+}
+
+/* Badge styling ca în Related Articles, redenumit tag-badge-1 */
+.tag-badge-1 {
+    display: inline-block;
+    background: #ffffff;
+    color: rgb(46, 106, 117);
+    border-radius: 7px;
+    padding: 1px 10px;
+    margin: 2px 6px 2px 0;
+    font-size: 0.88em;
+    font-weight: 500;
+    border: 1px solid rgb(66, 148, 148);
+    box-shadow: 0 1px 2px rgba(21,101,192,0.08);
+    letter-spacing: 0.01em;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    vertical-align: middle;
+}
+.tag-badge-1:hover {
+    background: #f0efef;
+    color: rgb(46, 95, 117);
+    box-shadow: 0 2px 8px rgba(25,118,210,0.12);
+}
+
+.article-tags strong {
+    color: #424242;
+    margin-right: 8px;
+}
+
+/* Stiluri pentru articles_by_tag.php */
+.article-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.article-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.article-card .article-title {
+    margin-bottom: 10px;
+}
+
+.article-card .article-meta {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.article-card .article-excerpt {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.article-card .article-tags {
+    margin-bottom: 10px;
+}
+
 /* ========================================
    GAMIFICATION STYLES
    ======================================== */
@@ -3516,15 +4005,15 @@ ul.top-articles .li-icon {
 
 /* Style header dropdown menu to match topnav dropdown style */
 .app-header .dropdown-menu {
-    background-color: #2c2c2c !important;
-    border: 1px solid #3a3a3a !important;
+    background-color: #f5f5f5 !important;
+    border: 1px solid #d5d5d5 !important;
     border-radius: 0.375rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.375);
+    box-shadow: 0 0.5rem 1rem rgba(55, 71, 79, 0.175);
     padding: 5px 0;
 }
 
 .app-header .dropdown-menu .dropdown-item {
-    color: #f8f9fa !important;
+    color: #37474f !important;
     padding: 0.5rem 1rem;
     text-decoration: none;
     display: block;
@@ -3535,17 +4024,36 @@ ul.top-articles .li-icon {
 }
 
 .app-header .dropdown-menu .dropdown-item:hover {
-    background-color: #4a9b97 !important;
-    color: #ffffff !important;
+    background-color: #d6d6d6 !important;
+    color: #263238 !important;
 }
 
 .app-header .dropdown-menu .dropdown-item:focus {
-    background-color: #4a9b97 !important;
-    color: #ffffff !important;
+    background-color: #d6d6d6 !important;
+    color: #263238 !important;
+}
+
+/* Anulează hover-ul pe zona cu profilul din header */
+.navbar .nav-link.dropdown-toggle:hover,
+.navbar .nav-link.dropdown-toggle:focus,
+.navbar .nav-link.dropdown-toggle:active,
+.navbar .nav-link.dropdown-toggle[aria-expanded="true"] {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+/* Regulă foarte specifică pentru a anula complet hover-ul pe zona cu profilul */
+a.nav-link.dropdown-toggle.d-flex.align-items-center:hover,
+a.nav-link.dropdown-toggle.d-flex.align-items-center:focus,
+a.nav-link.dropdown-toggle.d-flex.align-items-center:active,
+a.nav-link.dropdown-toggle.d-flex.align-items-center[aria-expanded="true"] {
+    background-color: transparent !important;
+    color: inherit !important;
+    text-decoration: none !important;
 }
 
 /* ================================================
-   GAMIFICATION PROFILE STYLES - DARK THEME
+   GAMIFICATION PROFILE STYLES - GRAY THEME
    ================================================ */
 
 /* Two Column Layout Styles */
@@ -3553,55 +4061,55 @@ ul.top-articles .li-icon {
     max-width: 100%;
 }
 
-/* Stats Cards - Dark Theme */
+/* Stats Cards - Gray Theme */
 .stat-card {
-    background: linear-gradient(135deg, #2c2c2c 0%, #1e1e1e 100%);
+    background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
     padding: 1rem;
     border-radius: 8px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.3);
-    border: 1px solid #404040;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+    border: 1px solid #d0d0d0;
 }
 
 .stat-card h3 {
     font-size: 1.8rem;
     font-weight: bold;
     margin-bottom: 0.25rem;
-    color: #e0e0e0;
+    color: #37474f;
 }
 
 .stat-card p {
     font-size: 0.85rem;
     margin-bottom: 0;
-    color: #b0b0b0;
+    color: #546e7a;
 }
 
-/* Badge Cards - Dark Theme */
+/* Badge Cards - Gray Theme */
 .progress-badge-card {
-    background: #2a2a2a;
-    border: 1px solid #404040;
+    background: #fafafa;
+    border: 1px solid #d0d0d0;
     padding: 0.75rem;
     border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     transition: transform 0.2s ease;
 }
 
 .progress-badge-card:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .progress-badge-card.earned-badge {
-    background: linear-gradient(135deg, #2a2a2a 0%, #3d2914 100%);
-    border: 2px solid #ffa000;
-    box-shadow: 0 4px 15px rgba(255, 160, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #fafafa 0%, #fff8e1 100%);
+    border: 2px solid #ffb300;
+    box-shadow: 0 4px 15px rgba(255, 179, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .progress-badge-card.earned-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 160, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 20px rgba(255, 179, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Badge Icons - Dark Theme */
+/* Badge Icons - Gray Theme */
 .badge-icon-medium {
     width: 35px;
     height: 35px;
@@ -3610,30 +4118,30 @@ ul.top-articles .li-icon {
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
-    background: linear-gradient(135deg, #404040 0%, #2c2c2c 100%);
-    color: #b0b0b0;
+    background: linear-gradient(135deg, #eeeeee 0%, #d0d0d0 100%);
+    color: #607d8b;
 }
 
 .badge-icon-medium.earned {
-    background: linear-gradient(135deg, #ffa000 0%, #ff8f00 100%);
-    color: #1a1a1a;
-    box-shadow: 0 1px 4px rgba(255, 160, 0, 0.4);
+    background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%);
+    color: #fff;
+    box-shadow: 0 1px 4px rgba(255, 179, 0, 0.4);
 }
 
-/* Badge Text - Dark Theme */
+/* Badge Text - Gray Theme */
 .badge-title {
     font-weight: 600;
     margin-bottom: 0.25rem;
-    color: #e0e0e0;
+    color: #37474f;
     font-size: 0.9rem;
 }
 
 .badge-title.earned {
-    color: #ffb74d;
+    color: #e65100;
 }
 
 .badge-description {
-    color: #b0b0b0;
+    color: #607d8b;
     font-size: 0.75rem;
     line-height: 1.2;
 }
@@ -3642,9 +4150,9 @@ ul.top-articles .li-icon {
     font-size: 1rem;
 }
 
-/* Progress Bars - Dark Theme */
+/* Progress Bars - Gray Theme */
 .progress {
-    background-color: rgba(176, 176, 176, 0.2);
+    background-color: rgba(96, 125, 139, 0.2);
     border-radius: 6px;
     height: 8px;
 }
@@ -3654,47 +4162,51 @@ ul.top-articles .li-icon {
     transition: width 0.6s ease;
 }
 
-/* Section Headers - Dark Theme */
+/* Section Headers - Gray Theme */
 .gaming-column h5 {
     font-size: 1rem;
     margin-bottom: 0.75rem;
-    color: #e0e0e0;
+    color: #37474f;
 }
 
-/* Progress Text - Dark Theme */
+/* Progress Text - Gray Theme */
 .progress-badge-card small {
     font-size: 0.7rem;
-    color: #b0b0b0;
+    color: #546e7a;
 }
 
-/* Related Articles Section - Dark Theme */
+@media (max-width: 991.98px) {
+    /* No .gaming-column rules needed here */
+}
+
+/* Related Articles Section - Gray Theme */
 #related-articles-section h4 {
-    color: #4dd0e1;
+    color: #048eb1;
     font-weight: 600;
     margin-bottom: 20px;
     padding-bottom: 10px;
 }
 
 #related-articles-section .card {
-    border: 1px solid #424242;
+    border: 1px solid #cfd8dc;
     border-radius: 8px;
     transition: all 0.3s ease;
-    background-color: #3a3a3a;
-    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+    background-color: #f5f5f5;
+    box-shadow: 0 1px 3px rgba(96, 125, 139, 0.2);
     height: 140px;
     display: flex;
     flex-direction: column;
 }
 
 #related-articles-section .card:hover {
-    border-color: #4dd0e1;
-    box-shadow: 0 4px 12px rgba(77, 208, 225, 0.3);
+    border-color: #048eb1;
+    box-shadow: 0 4px 12px rgba(4, 142, 177, 0.25);
     transform: translateY(-2px);
-    background-color: #383838;
+    background-color: #ffffff;
 }
 
 #related-articles-section .card-title a {
-    color: #4dd0e1;
+    color: #048eb1;
     font-weight: 500;
     line-height: 1.4;
     display: -webkit-box;
@@ -3705,7 +4217,7 @@ ul.top-articles .li-icon {
 }
 
 #related-articles-section .card-title a:hover {
-    color: #80e5f0;
+    color: #036a85;
     text-decoration: underline;
 }
 
@@ -3715,7 +4227,7 @@ ul.top-articles .li-icon {
 }
 
 #related-articles-section .text-muted {
-    color: #b0b0b0 !important;
+    color: #607d8b !important;
     font-size: 0.85em;
 }
 
@@ -3785,11 +4297,11 @@ ul.top-articles .li-icon {
 }
 
 .related-article-card {
-    border: 1px solid #444;
+    border: 1px solid #505050;
     border-radius: 8px;
     transition: all 0.3s ease;
-    background-color: #2d3748;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    background-color: #5a5a5a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     height: 140px !important;
     display: flex;
     flex-direction: column;
@@ -3798,7 +4310,7 @@ ul.top-articles .li-icon {
 
 .related-article-card:hover {
     border-color: #048eb1;
-    box-shadow: 0 4px 12px rgba(4, 142, 177, 0.3);
+    box-shadow: 0 4px 12px rgba(4, 142, 177, 0.25);
     transform: translateY(-2px);
 }
 
@@ -3853,7 +4365,7 @@ ul.top-articles .li-icon {
     margin: -0.5rem -0.5rem -0.5rem -0.5rem !important;
 }
 
-/* Article Form Redesign - Dark Theme */
+/* Article Form Redesign - Grey Theme */
 .form-section {
     margin-bottom: 20px;
 }
@@ -3877,7 +4389,7 @@ ul.top-articles .li-icon {
     display: block;
     font-weight: 500;
     font-size: 0.9em;
-    color: #e8e8e8;
+    color: #333;
     margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -3886,11 +4398,11 @@ ul.top-articles .li-icon {
 .form-input, .form-select {
     width: 100%;
     padding: 10px 12px;
-    border: 2px solid #555;
+    border: 2px solid #ccc;
     border-radius: 6px;
     font-size: 0.95em;
-    background: #3a3a3a;
-    color: #e8e8e8;
+    background: #f8f8f8;
+    color: #333;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
 }
@@ -3898,11 +4410,11 @@ ul.top-articles .li-icon {
 .form-input:focus, .form-select:focus {
     outline: none;
     border-color: #4e9faa;
-    box-shadow: 0 0 0 3px rgba(78, 159, 170, 0.2);
+    box-shadow: 0 0 0 3px rgba(78, 159, 170, 0.1);
 }
 
 .form-input:hover, .form-select:hover {
-    border-color: #666;
+    border-color: #999;
 }
 
 /* Select2 integration */
@@ -3912,19 +4424,137 @@ ul.top-articles .li-icon {
 
 .form-group-compact .select2-container .select2-selection--single {
     height: 42px !important;
-    border: 2px solid #555 !important;
+    border: 2px solid #ccc !important;
     border-radius: 6px !important;
     padding: 10px 12px !important;
-    background: #3a3a3a !important;
-    color: #e8e8e8 !important;
+    background: #f8f8f8 !important;
+    color: #333 !important;
 }
 
 .form-group-compact .select2-container .select2-selection--single .select2-selection__rendered {
     line-height: 20px !important;
     padding-left: 0 !important;
-    color: #e8e8e8 !important;
+    color: #333 !important;
 }
 
 .form-group-compact .select2-container .select2-selection--single .select2-selection__arrow {
     height: 40px !important;
 }
+
+/* Breadcrumb and filter section background - Gray Theme */
+.breadcrumb-filter-section {
+    background-color: #e2e8f0;
+    border-bottom: 1px solid #cbd5e0;
+}
+
+/* ============================================
+   React Button Component - Gray Theme
+   ============================================ */
+
+.react-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.react-button:hover:not(.react-button--disabled):not(.react-button--loading) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.react-button:active:not(.react-button--disabled):not(.react-button--loading) {
+  transform: translateY(0);
+}
+
+/* Button Variants - Gray Theme */
+.react-button--primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.react-button--primary:hover:not(.react-button--disabled) {
+  background-color: var(--primary-dark);
+}
+
+.react-button--danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.react-button--danger:hover:not(.react-button--disabled) {
+  background-color: #c0392b;
+}
+
+.react-button--warning {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.react-button--warning:hover:not(.react-button--disabled) {
+  background-color: #e67e22;
+}
+
+.react-button--success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.react-button--success:hover:not(.react-button--disabled) {
+  background-color: #229954;
+}
+
+/* Button Sizes */
+.react-button--small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.react-button--medium {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.react-button--large {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+/* Button States */
+.react-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.react-button--loading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.button-icon {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.button-spinner {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

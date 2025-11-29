@@ -17,14 +17,8 @@ if ($lang === 'en') $lang = 'en-GB';
 $theme = $_SESSION['settings']['theme'] ?? 'light';
 
 ?>
-<script>
+<script>window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";</script>
 
-    window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";
-
-    // Make APP_URL available to JavaScript
-    window.APP_URL = '<?= APP_URL ?>';
-
-</script>
 <!-- Component CSS -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/Button.css">
 

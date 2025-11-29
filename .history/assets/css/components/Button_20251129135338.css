@@ -1,0 +1,108 @@
+/* React Button Component - Theme-aware */
+
+.react-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.react-button:hover:not(.react-button--disabled):not(.react-button--loading) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.react-button:active:not(.react-button--disabled):not(.react-button--loading) {
+  transform: translateY(0);
+}
+
+/* Button Variants - Uses theme CSS variables */
+.react-button--primary {
+  background-color: var(--primary-color);
+  color: rgb(7, 7, 7);
+}
+
+.react-button--primary:hover:not(.react-button--disabled) {
+  background-color: var(--primary-dark);
+}
+
+.react-button--danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.react-button--danger:hover:not(.react-button--disabled) {
+  background-color: var(--danger-dark);
+}
+
+.react-button--warning {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.react-button--warning:hover:not(.react-button--disabled) {
+  background-color: var(--warning-dark);
+}
+
+.react-button--success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.react-button--success:hover:not(.react-button--disabled) {
+  background-color: var(--success-dark);
+}
+
+/* Button Sizes */
+.react-button--small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.react-button--medium {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.react-button--large {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+/* Button States */
+.react-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.react-button--loading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.button-icon {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.button-spinner {
+  animation: button-spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes button-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

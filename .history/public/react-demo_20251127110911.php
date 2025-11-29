@@ -3,13 +3,7 @@ require_once '../config/bootstrap.php';
 require_login();
 
 include APP_ROOT . 'includes/header.php';
-
-$theme = $_SESSION['settings']['theme'] ?? 'light';
-
 ?>
-
-<!-- Component CSS -->
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/DashboardStats.css">
 
 <!-- Load React and ReactDOM from CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>

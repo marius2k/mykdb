@@ -2,31 +2,27 @@
 
 require_once '../../config/bootstrap.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
-    header("Location: " . APP_URL . "public/login.php");
-    exit;
-}
-
-// Check if user is guest
-if (($_SESSION['user']['role'] ?? 'guest') === 'guest') {
-    header("Location: " . APP_URL . "public/login.php");
-    exit;
-}
-
 $ops = ['edit_acl'];
 
-// Check permissions
-if (!hasPermission($_SESSION['user']['id'], $ops)) {
-    $_SESSION['flash'] = "⚠️ Access Denied";
-    $referer = $_SERVER['HTTP_REFERER'] ?? APP_URL . 'public/index.php';
+if (!hasPermission($_SESSION['user']['id'],$ops)) {
     
-    echo "<script>
+  $_SESSION['flash'] = "⚠️ Access Denied";
+  $referer = $_SERVER['HTTP_REFERER'] ?? '/mykdb/public/index.php';
+
+  echo "<script>
           alert('⚠️ Access Denied');
           window.location.href = '$referer';
       </script>";
-    exit;     
+  exit;     
+}   
+
+if ($_SESSION['user']['role'] === 'guest') {
+    header("Location:".APP_URL. "publc/login.php");
+    exit;
 }
+
+
+
 
 $db = new Database();
 
@@ -112,10 +108,7 @@ $roles = $db->fetchAll("SELECT id, name, label FROM roles");
 ?>
 <?php include APP_ROOT . 'includes/header.php'; ?>
 
-<script>
-// Make APP_URL available to JavaScript
-window.APP_URL = '<?= APP_URL ?>';
-</script>
+
 
 <!-- Component CSS -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/Button.css">
@@ -178,6 +171,7 @@ window.APP_URL = '<?= APP_URL ?>';
       <div style="float: right;">    
         <br><br>
         <div id="button-save-changes"></div>
+        <button type="submit" class="btn btn-primary">Salvează</button>
       </div>
     </form>
   </div>
@@ -269,10 +263,10 @@ setTimeout(() => {
         
         saveRoot.render(
             React.createElement(Button, {
-                text: '<?= lang('lang_btn_save') ?>',
+                text: '<?= lang('lang_save') ?>',
                 onClick: () => submitOperations(),
                 variant: 'primary',
-                icon: 'icon-save.svg',
+                icon: '�',
                 size: 'medium'
             })
         );
