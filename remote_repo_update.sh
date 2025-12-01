@@ -64,26 +64,32 @@ fi
 echo "Remote 'origin' este configurat."
 
 
-# --- 4. Adaugă (git add .) ---
+# --- 4. Verifică dacă există modificări de comitat (NEW CHECK) ---
+log_step "3/4: Verificare modificări înainte de Commit"
+
+# Verifică dacă există fișiere unstaged/staged. Dacă este gol, nu sunt modificări.
+if [ -z "$(git status --porcelain)" ]; then
+    echo "⚠️ Avertisment: Nu au fost detectate modificări sau fișiere noi de comitat. Sărit peste Commit și Push."
+    log_step "FINAL: Nicio modificare. Scriptul s-a încheiat."
+    exit 0
+fi
+echo "Modificări detectate. Se continuă cu Commit."
+
+
+# --- 5. Adaugă (git add .) ---
 log_step "3/4: Adaugă fișiere la staging (git add .)"
 git add .
 
-# --- 5. Comite (git commit) ---
+# --- 6. Comite (git commit) ---
 log_step "3/4: Execută commit (git commit -m \"$COMMIT_MESSAGE\")"
 git commit -m "$COMMIT_MESSAGE"
 
 if [ $? -ne 0 ]; then
-    # Verifică dacă eșecul este din cauza lipsei de modificări
-    if git status --porcelain | grep -q '^\s*$'; then
-        echo "⚠️ Avertisment: Nu au existat modificări de comitat. Sărit peste 'git push'."
-        exit 0
-    else
-        echo "❌ EROARE: Comanda 'git commit' a eșuat."
-        exit 1
-    fi
+    echo "❌ EROARE FATALĂ: Comanda 'git commit' a eșuat din motive neașteptate (cod de eroare non-zero)."
+    exit 1
 fi
 
-# --- 6. Trimite (git push) ---
+# --- 7. Trimite (git push) ---
 log_step "4/4: Trimitere modificări (git push)"
 git push
 
