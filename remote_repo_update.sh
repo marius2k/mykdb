@@ -44,7 +44,7 @@ log_step "Commit mesage taken: \"$COMMIT_MESSAGE\" | Target Branch: $GIT_BRANCH"
 
 # --- 2. Inițializare (git init) ---
 if [ ! -d .git ]; then
-    log_step "1/4: Repo inititalization (git init)..."
+    log_step "Repository inititalization (git init)..."
     git init -b $GIT_BRANCH
     if [ $? -ne 0 ]; then
         log_step "ERROR: git init failed..."
@@ -53,10 +53,10 @@ if [ ! -d .git ]; then
 fi
 
 # --- 3. Verifică Remote (git remote) ---
-log_step "2/4: Checking remote connection 'origin'..."
+log_step "Checking remote connection 'origin'..."
 if ! git remote get-url origin > /dev/null 2>&1; then
     log_step "ERROR: Local repository in NOT connected to an online repository (remote)..."
-    #log_step ""
+    log_step ""
     log_step "Please run manually: git remote add origin <repo URL>"
     exit 1
 fi
@@ -64,7 +64,7 @@ log_step "Remote 'origin' is configured..."
 
 
 # --- 4. Verifică dacă există modificări de comitat (NEW CHECK) ---
-log_step "3/4: Checking for modifications before commit..."
+log_step "Checking for modifications before commit..."
 
 # Verifică dacă există fișiere unstaged/staged. Dacă este gol, nu sunt modificări.
 if [ -z "$(git status --porcelain)" ]; then
@@ -76,11 +76,11 @@ log_step "Updates detected. Continue with Commit..."
 
 
 # --- 5. Adaugă (git add .) ---
-log_step "3/4: Add files at staging (git add .)..."
+log_step "Add files at staging (git add .)..."
 git add .
 
 # --- 6. Comite (git commit) ---
-log_step "3/4: Execute commit (git commit -m \"$COMMIT_MESSAGE\")..."
+log_step "Execute commit (git commit -m \"$COMMIT_MESSAGE\")..."
 git commit -m "$COMMIT_MESSAGE"
 
 if [ $? -ne 0 ]; then
@@ -89,7 +89,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # --- 7. Trimite (git push) ---
-log_step "4/4: Send updates (git push)"
+log_step "Send updates (git push)"
 git push
 
 if [ $? -ne 0 ]; then
@@ -97,4 +97,5 @@ if [ $? -ne 0 ]; then
     exit 1
 else
     log_step "FINAL: Updates sucessfully saved on remote repository."
+    log_step ""
 fi
