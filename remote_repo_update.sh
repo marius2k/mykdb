@@ -27,7 +27,7 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 log_step() {
     #echo ""
     #echo "======================================================================"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Step: $1"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
     #echo "======================================================================"
 }
 
@@ -35,8 +35,7 @@ log_step "Script execution is starting..."
 
 # 1. Verifică argumentul (Mesajul de Commit)
 if [ -z "$1" ]; then
-    echo "ERROR: Please provide the commit message!"
-    echo "Usage: $0 \"Your message\""
+    log_step "ERROR: Please provide the commit message! USAGE: $0 \"Your message\""
     exit 1
 fi
 
@@ -48,7 +47,7 @@ if [ ! -d .git ]; then
     log_step "1/4: Repo inititalization (git init)..."
     git init -b $GIT_BRANCH
     if [ $? -ne 0 ]; then
-        echo "ERROR: git init failed..."
+        log_step "ERROR: git init failed..."
         exit 1
     fi
 fi
@@ -56,12 +55,12 @@ fi
 # --- 3. Verifică Remote (git remote) ---
 log_step "2/4: Checking remote connection 'origin'..."
 if ! git remote get-url origin > /dev/null 2>&1; then
-    echo "ERROR: Local repo in NOT connected to an online repo (remote)..."
-    echo ""
-    echo "Please run manually: git remote add origin <repo URL>"
+    log_step "ERROR: Local repository in NOT connected to an online repository (remote)..."
+    #log_step ""
+    log_step "Please run manually: git remote add origin <repo URL>"
     exit 1
 fi
-echo "Remote 'origin' is configured..."
+log_step "Remote 'origin' is configured..."
 
 
 # --- 4. Verifică dacă există modificări de comitat (NEW CHECK) ---
@@ -69,11 +68,11 @@ log_step "3/4: Checking for modifications before commit..."
 
 # Verifică dacă există fișiere unstaged/staged. Dacă este gol, nu sunt modificări.
 if [ -z "$(git status --porcelain)" ]; then
-    echo "WARNING: No modifications found or new files for update. Skiping Commit and Push..."
+    log_step "WARNING: No modifications found or new files for update. Skiping Commit and Push..."
     log_step "FINAL: No modificatoins. Script terminated..."
     exit 0
 fi
-echo "Updates detected. Continue with Commit..."
+log_step "Updates detected. Continue with Commit..."
 
 
 # --- 5. Adaugă (git add .) ---
@@ -85,7 +84,7 @@ log_step "3/4: Execute commit (git commit -m \"$COMMIT_MESSAGE\")..."
 git commit -m "$COMMIT_MESSAGE"
 
 if [ $? -ne 0 ]; then
-    echo "FATAL ERROR: 'git commit' command has failed with unexpected reason (error code non-zero)..."
+    log_step "FATAL ERROR: 'git commit' command has failed with unexpected reason (error code non-zero)..."
     exit 1
 fi
 
@@ -94,7 +93,7 @@ log_step "4/4: Send updates (git push)"
 git push
 
 if [ $? -ne 0 ]; then
-    echo "ERROR: 'git push' command has failed. Check setting or branch permissions..."
+    log_step "ERROR: 'git push' command has failed. Check setting or branch permissions..."
     exit 1
 else
     log_step "FINAL: Updates sucessfully saved on remote repository."
