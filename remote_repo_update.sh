@@ -56,7 +56,6 @@ fi
 log_step "Checking remote connection 'origin'..."
 if ! git remote get-url origin > /dev/null 2>&1; then
     log_step "ERROR: Local repository in NOT connected to an online repository (remote)..."
-    log_step ""
     log_step "Please run manually: git remote add origin <repo URL>"
     exit 1
 fi
@@ -97,5 +96,4 @@ if [ $? -ne 0 ]; then
     exit 1
 else
     log_step "FINAL: Updates sucessfully saved on remote repository."
-    log_step ""
 fi
