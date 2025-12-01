@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =======================================================
-# SINTAXA: ./remote_repo_update.sh "Mesajul dumneavoastra de commit"
+# SINTAXA: ./remote_repo_update.sh "Please provide commit message"
 # =======================================================
 
 # --- CONFIGURARE ---
@@ -27,75 +27,75 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 log_step() {
     #echo ""
     #echo "======================================================================"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - PAS: $1"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - Step: $1"
     #echo "======================================================================"
 }
 
-log_step "START: Începe execuția scriptului"
+log_step "Script execution is starting..."
 
 # 1. Verifică argumentul (Mesajul de Commit)
 if [ -z "$1" ]; then
-    echo "❌ EROARE: Vă rugăm să furnizați un mesaj de commit."
-    echo "Utilizare: $0 \"Mesajul dumneavoastra\""
+    echo "ERROR: Please provide the commit message!"
+    echo "Usage: $0 \"Your message\""
     exit 1
 fi
 
 COMMIT_MESSAGE="$1"
-log_step "Mesaj Commit preluat: \"$COMMIT_MESSAGE\" | Ramura țintă: $GIT_BRANCH"
+log_step "Commit mesage taken: \"$COMMIT_MESSAGE\" | Target Branch: $GIT_BRANCH"
 
 # --- 2. Inițializare (git init) ---
 if [ ! -d .git ]; then
-    log_step "1/4: Inițializare depozit (git init)"
+    log_step "1/4: Repo inititalization (git init)..."
     git init -b $GIT_BRANCH
     if [ $? -ne 0 ]; then
-        echo "❌ EROARE: Inițializarea Git a eșuat."
+        echo "ERROR: git init failed..."
         exit 1
     fi
 fi
 
 # --- 3. Verifică Remote (git remote) ---
-log_step "2/4: Verificare conexiune remote 'origin'"
+log_step "2/4: Checking remote connection 'origin'..."
 if ! git remote get-url origin > /dev/null 2>&1; then
-    echo "❌ EROARE: Depozitul local NU este conectat la un depozit online (remote)."
+    echo "ERROR: Local repo in NOT connected to an online repo (remote)..."
     echo ""
-    echo "Vă rugăm să executați manual: git remote add origin <URL-ul depozitului>"
+    echo "Please run manually: git remote add origin <repo URL>"
     exit 1
 fi
-echo "Remote 'origin' este configurat."
+echo "Remote 'origin' is configured..."
 
 
 # --- 4. Verifică dacă există modificări de comitat (NEW CHECK) ---
-log_step "3/4: Verificare modificări înainte de Commit"
+log_step "3/4: Checking for modifications before commit..."
 
 # Verifică dacă există fișiere unstaged/staged. Dacă este gol, nu sunt modificări.
 if [ -z "$(git status --porcelain)" ]; then
-    echo "⚠️ Avertisment: Nu au fost detectate modificări sau fișiere noi de comitat. Sărit peste Commit și Push."
-    log_step "FINAL: Nicio modificare. Scriptul s-a încheiat."
+    echo "WARNING: No modifications found or new files for update. Skiping Commit and Push..."
+    log_step "FINAL: No modificatoins. Script terminated..."
     exit 0
 fi
-echo "Modificări detectate. Se continuă cu Commit."
+echo "Updates detected. Continue with Commit..."
 
 
 # --- 5. Adaugă (git add .) ---
-log_step "3/4: Adaugă fișiere la staging (git add .)"
+log_step "3/4: Add files at staging (git add .)..."
 git add .
 
 # --- 6. Comite (git commit) ---
-log_step "3/4: Execută commit (git commit -m \"$COMMIT_MESSAGE\")"
+log_step "3/4: Execute commit (git commit -m \"$COMMIT_MESSAGE\")..."
 git commit -m "$COMMIT_MESSAGE"
 
 if [ $? -ne 0 ]; then
-    echo "❌ EROARE FATALĂ: Comanda 'git commit' a eșuat din motive neașteptate (cod de eroare non-zero)."
+    echo "FATAL ERROR: 'git commit' command has failed with unexpected reason (error code non-zero)..."
     exit 1
 fi
 
 # --- 7. Trimite (git push) ---
-log_step "4/4: Trimitere modificări (git push)"
+log_step "4/4: Send updates (git push)"
 git push
 
 if [ $? -ne 0 ]; then
-    echo "❌ EROARE: Comanda 'git push' a eșuat. Verificați permisiunile sau setările ramurii."
+    echo "ERROR: 'git push' command has failed. Check setting or branch permissions..."
     exit 1
 else
-    log_step "FINAL: Modificările au fost trimise cu succes la remote."
+    log_step "FINAL: Updates sucessfully saved on remote repository."
 fi
