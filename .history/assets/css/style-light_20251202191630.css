@@ -3966,57 +3966,10 @@ table.dataTable tbody td {
 /* Two Column Layout Styles */
 .profile-container {
     max-width: 100%;
-    padding-left: 2px;
-    padding-right: 2px;
 }
 
-/* Space between columns */
-.profile-columns-row {
-    margin-left: 0;
-    margin-right: 0;
-}
 
-.profile-columns-row > [class*='col-'] {
-    padding-left: 12px;
-    padding-right: 12px;
-}
 
-/* Profile form styles */
-#profile-form .col-form-label,
-#password-form .col-form-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-#profile-form .form-control,
-#password-form .form-control {
-    font-size: 0.9rem;
-}
-
-#profile-form small,
-#password-form small {
-    font-size: 0.75rem;
-}
-
-/* Content box with header - Global component */
-.content-box-with-header {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.content-box-with-header h4 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-}
-
-.content-box-with-header h4 img {
-    margin-right: 10px;
-}
 
 /* Stats Cards - Light Theme */
 .stat-card {

@@ -363,18 +363,6 @@ function showFlash(message, type = 'success') {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Update profile photo preview when file is selected
-document.getElementById('profile_picture').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            document.getElementById('profile-pic-display').src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
 // Handle profile form submission
 document.getElementById('profile-form').addEventListener('submit', async (e) => {
     e.preventDefault();

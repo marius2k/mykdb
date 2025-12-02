@@ -99,7 +99,7 @@ window.APP_URL = '<?= APP_URL ?>';
             <div class="gaming-column">
                 <div class="content-box-with-header">
                     <h4 style="font-size: 1.5em;">
-                        <img src="<?=APP_URL?>assets/icons/icon-gaming.svg" width="40">
+                        <img src="<?=APP_URL?>assets/icons/icon-user.svg" width="40">
                         &nbsp;&nbsp;My Gaming Progress
                     </h4>
                     
@@ -235,7 +235,7 @@ window.APP_URL = '<?= APP_URL ?>';
                 <div class="content-box-with-header mb-4">
                     <h4 style="font-size: 1.5em;">
                         <img src="<?=APP_URL?>assets/icons/icon-user.svg" width="40">
-                        &nbsp;&nbsp;<?= lang('lang_prof_msg_top_info') ?>
+                        &nbsp;&nbsp;👤 <?= lang('lang_prof_msg_top_info') ?>
                     </h4>
                     
                     <!-- Box Body -->
@@ -269,11 +269,14 @@ window.APP_URL = '<?= APP_URL ?>';
                                          src="<?= !empty($_SESSION['user']['profile_picture']) 
                                              ? APP_URL . 'uploads/profile_pics/' . htmlspecialchars($_SESSION['user']['profile_picture']) 
                                              : APP_URL . 'uploads/profile_pics/default-profile.png' ?>" 
-                                         class="avatar" alt="Avatar" width="60" height="60" 
-                                         style="border-radius: 50%; cursor: pointer;"
-                                         onclick="document.getElementById('profile_picture').click()"
-                                         title="Click to change photo">
-                                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*" style="display: none;">
+                                         class="avatar" alt="Avatar" width="60" height="60" style="border-radius: 50%;">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <label class="col-sm-6 col-form-label"><?= lang('lang_prof_photo_change') ?></label>
+                                <div class="col-sm-6">
+                                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="form-control">
                                 </div>
                             </div>
                             
@@ -283,19 +286,13 @@ window.APP_URL = '<?= APP_URL ?>';
                                 </div>
                             </div>
                         </form>
-                    </div>
-                    <!-- End Box Body -->
+                    </div>  
                 </div>
 
                 <!-- Change Password Form -->
-                <div class="content-box-with-header">
-                    <h4 style="font-size: 1.5em;">
-                        <img src="<?=APP_URL?>assets/icons/icon-password.svg" width="40">
-                        &nbsp;&nbsp;<?= lang('lang_prof_msg_top_pass') ?>
-                    </h4>
-                    
-                    <!-- Box Body -->
-                    <div style="padding: 20px 0;">
+                <div class="custom-box-1">
+                    <div class="corner-label-1">🔒 <?= lang('lang_prof_msg_top_pass') ?></div>
+                    <div class="box-content-1" style="padding: 30px;">
                         <form id="password-form">
                             <div class="row mb-3 password-toggle-group">
                                 <label for="current_password" class="col-sm-6 col-form-label"><?= lang('lang_prof_pass_crt') ?></label>
@@ -335,7 +332,6 @@ window.APP_URL = '<?= APP_URL ?>';
                             </div>
                         </form>
                     </div>
-                    <!-- End Box Body -->
                 </div>
 
             </div>
@@ -362,18 +358,6 @@ function showFlash(message, type = 'success') {
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-// Update profile photo preview when file is selected
-document.getElementById('profile_picture').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            document.getElementById('profile-pic-display').src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
 
 // Handle profile form submission
 document.getElementById('profile-form').addEventListener('submit', async (e) => {

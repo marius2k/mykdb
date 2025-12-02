@@ -92,19 +92,14 @@ window.APP_URL = '<?= APP_URL ?>';
     </div>
 
     <!-- Two Column Layout -->
-    <div class="row profile-columns-row">
+    <div class="row">
         
         <!-- Left Column: Gaming Progress (60% width) -->
         <div class="col-lg-7 mb-4">
             <div class="gaming-column">
-                <div class="content-box-with-header">
-                    <h4 style="font-size: 1.5em;">
-                        <img src="<?=APP_URL?>assets/icons/icon-gaming.svg" width="40">
-                        &nbsp;&nbsp;My Gaming Progress
-                    </h4>
-                    
-                    <!-- Box Body -->
-                    <div style="padding: 20px 0;">
+                <div class="custom-box-1">
+                    <div class="corner-label-1">🏆 My Gaming Progress</div>
+                    <div class="box-content-1" style="padding: 30px;">
                         <!-- User Stats Summary -->
                         <div class="row mb-3">
                             <div class="col-md-4 text-center">
@@ -222,7 +217,6 @@ window.APP_URL = '<?= APP_URL ?>';
                             </div>
                         </div>
                     </div>
-                    <!-- End Box Body -->
                 </div>
             </div>
         </div>
@@ -232,74 +226,67 @@ window.APP_URL = '<?= APP_URL ?>';
             <div class="forms-column">
                 
                 <!-- Profile Information Form -->
-                <div class="content-box-with-header mb-4">
-                    <h4 style="font-size: 1.5em;">
-                        <img src="<?=APP_URL?>assets/icons/icon-user.svg" width="40">
-                        &nbsp;&nbsp;<?= lang('lang_prof_msg_top_info') ?>
-                    </h4>
+                <div class="custom-box-1 mb-4"> 
+                    <div class="corner-label-1">👤 <?= lang('lang_prof_msg_top_info') ?></div>
                     
-                    <!-- Box Body -->
-                    <div style="padding: 20px 0;">
+                    <div class="box-content-1" style="padding: 30px;">
                         <form id="profile-form" enctype="multipart/form-data">
                             <div class="row mb-3">
-                                <label class="col-sm-6 col-form-label"><?= lang('lang_prof_fname') ?></label>
-                                <div class="col-sm-6">
+                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_fname') ?></label>
+                                <div class="col-sm-9">
                                     <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($user['first_name']) ?>" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
-                                <label class="col-sm-6 col-form-label"><?= lang('lang_prof_lname') ?></label>
-                                <div class="col-sm-6">
+                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_lname') ?></label>
+                                <div class="col-sm-9">
                                     <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($user['last_name']) ?>" required>
                                 </div>
                             </div>
                             
                             <div class="row mb-3">
-                                <label class="col-sm-6 col-form-label"><?= lang('lang_prof_email') ?></label>
-                                <div class="col-sm-6">
+                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_email') ?></label>
+                                <div class="col-sm-9">
                                     <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
                                 </div>
                             </div>
                             
                             <div class="row mb-3">
-                                <label class="col-sm-6 col-form-label"><?= lang('lang_prof_photo') ?></label>
-                                <div class="col-sm-6">
+                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_photo') ?></label>
+                                <div class="col-sm-9">
                                     <img id="profile-pic-display" 
                                          src="<?= !empty($_SESSION['user']['profile_picture']) 
                                              ? APP_URL . 'uploads/profile_pics/' . htmlspecialchars($_SESSION['user']['profile_picture']) 
                                              : APP_URL . 'uploads/profile_pics/default-profile.png' ?>" 
-                                         class="avatar" alt="Avatar" width="60" height="60" 
-                                         style="border-radius: 50%; cursor: pointer;"
-                                         onclick="document.getElementById('profile_picture').click()"
-                                         title="Click to change photo">
-                                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*" style="display: none;">
+                                         class="avatar" alt="Avatar" width="60" height="60" style="border-radius: 50%;">
                                 </div>
                             </div>
                             
-                            <div class="row" style="padding-top: 20px;">
+                            <div class="row mb-3">
+                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_photo_change') ?></label>
+                                <div class="col-sm-9">
+                                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
                                 <div class="col-sm-12 text-end">
                                     <div id="update-profile-button"></div>
                                 </div>
                             </div>
                         </form>
-                    </div>
-                    <!-- End Box Body -->
+                    </div>  
                 </div>
 
                 <!-- Change Password Form -->
-                <div class="content-box-with-header">
-                    <h4 style="font-size: 1.5em;">
-                        <img src="<?=APP_URL?>assets/icons/icon-password.svg" width="40">
-                        &nbsp;&nbsp;<?= lang('lang_prof_msg_top_pass') ?>
-                    </h4>
-                    
-                    <!-- Box Body -->
-                    <div style="padding: 20px 0;">
+                <div class="custom-box-1">
+                    <div class="corner-label-1">🔒 <?= lang('lang_prof_msg_top_pass') ?></div>
+                    <div class="box-content-1" style="padding: 30px;">
                         <form id="password-form">
                             <div class="row mb-3 password-toggle-group">
-                                <label for="current_password" class="col-sm-6 col-form-label"><?= lang('lang_prof_pass_crt') ?></label>
-                                <div class="col-sm-6">
+                                <label for="current_password" class="col-sm-4 col-form-label"><?= lang('lang_prof_pass_crt') ?></label>
+                                <div class="col-sm-8">
                                     <div class="password-wrapper">    
                                         <input type="password" name="current_password" id="current_password" class="form-control" required>
                                         <button type="button" id="btn-current-password" class="toggle-password" onclick="togglePasswordVisibility('current_password','btn-current-password')">👁️</button>
@@ -308,8 +295,8 @@ window.APP_URL = '<?= APP_URL ?>';
                             </div>
                             
                             <div class="row mb-3 password-toggle-group">
-                                <label for="new_password" class="col-sm-6 col-form-label"><?= lang('lang_prof_pass_new') ?></label>
-                                <div class="col-sm-6">
+                                <label for="new_password" class="col-sm-4 col-form-label"><?= lang('lang_prof_pass_new') ?></label>
+                                <div class="col-sm-8">
                                     <div class="password-wrapper">
                                         <input type="password" name="new_password" id="new_password" class="form-control" required>
                                         <button type="button" id="btn-new-password" class="toggle-password" onclick="togglePasswordVisibility('new_password','btn-new-password')">👁️</button>
@@ -318,8 +305,8 @@ window.APP_URL = '<?= APP_URL ?>';
                             </div>
                             
                             <div class="row mb-3 password-toggle-group">
-                                <label for="confirm_password" class="col-sm-6 col-form-label"><?= lang('lang_prof_pass_confirm') ?></label>
-                                <div class="col-sm-6">
+                                <label for="confirm_password" class="col-sm-4 col-form-label"><?= lang('lang_prof_pass_confirm') ?></label>
+                                <div class="col-sm-8">
                                     <div class="password-wrapper">    
                                         <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
                                         <button type="button" id="btn-confirm-password" class="toggle-password" onclick="togglePasswordVisibility('confirm_password','btn-confirm-password')">👁️</button>
@@ -328,14 +315,13 @@ window.APP_URL = '<?= APP_URL ?>';
                                 </div>
                             </div>
 
-                            <div class="row" style="padding-top: 20px;">
+                            <div class="row">
                                 <div class="col-sm-12 text-end">
                                     <div id="change-password-button"></div>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <!-- End Box Body -->
                 </div>
 
             </div>
@@ -362,18 +348,6 @@ function showFlash(message, type = 'success') {
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-// Update profile photo preview when file is selected
-document.getElementById('profile_picture').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            document.getElementById('profile-pic-display').src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
 
 // Handle profile form submission
 document.getElementById('profile-form').addEventListener('submit', async (e) => {
@@ -478,7 +452,7 @@ function renderChangePasswordButton(disabled = false) {
                 variant: 'primary',
                 icon: 'icon-save.svg',
                 size: 'medium',
-                disabled: disabled,
+                disabled: disabled
                 loading: disabled ? true : false
             })
         );

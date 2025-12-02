@@ -3970,15 +3970,15 @@ table.dataTable tbody td {
     padding-right: 2px;
 }
 
-/* Space between columns */
+/* Reduce space between columns */
 .profile-columns-row {
     margin-left: 0;
     margin-right: 0;
 }
 
 .profile-columns-row > [class*='col-'] {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 /* Profile form styles */
