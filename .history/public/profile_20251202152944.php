@@ -70,16 +70,6 @@ $stats = $db->query("
 window.APP_URL = '<?= APP_URL ?>';
 </script>
 
-<!-- Component CSS -->
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/Button.css">
-
-<!-- React CDN -->
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-<!-- Button Component (Compiled from JSX) -->
-<script src="<?= APP_URL ?>assets/js/react-components-dist/Button.js"></script>
-
 <div class="container mt-4 profile-container" >
     
     <!-- Flash Messages -->
@@ -272,7 +262,7 @@ window.APP_URL = '<?= APP_URL ?>';
                             
                             <div class="row">
                                 <div class="col-sm-12 text-end">
-                                    <div id="update-profile-button"></div>
+                                    <button type="submit" class="btn btn-primary"><?= lang('lang_prof_btn_save') ?></button>
                                 </div>
                             </div>
                         </form>
@@ -317,7 +307,7 @@ window.APP_URL = '<?= APP_URL ?>';
 
                             <div class="row">
                                 <div class="col-sm-12 text-end">
-                                    <div id="change-password-button"></div>
+                                    <button type="submit" id="change_password" class="btn btn-primary"><?= lang('lang_prof_btn_pass') ?></button>
                                 </div>
                             </div>
                         </form>
@@ -477,43 +467,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeCustomBox1(box);
     });
 });
-
-// Initialize React Buttons
-setTimeout(() => {
-    if (window.Button && window.React && window.ReactDOM) {
-        // Update Profile button
-        const updateProfileRoot = ReactDOM.createRoot(document.getElementById('update-profile-button'));
-        updateProfileRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_prof_btn_save') ?>',
-                onClick: (e) => {
-                    e.preventDefault();
-                    document.getElementById('profile-form').dispatchEvent(new Event('submit'));
-                },
-                variant: 'primary',
-                icon: 'icon-save.svg',
-                size: 'medium'
-            })
-        );
-        
-        // Change Password button
-        const changePasswordRoot = ReactDOM.createRoot(document.getElementById('change-password-button'));
-        changePasswordRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_prof_btn_pass') ?>',
-                onClick: (e) => {
-                    e.preventDefault();
-                    document.getElementById('password-form').dispatchEvent(new Event('submit'));
-                },
-                variant: 'primary',
-                icon: 'icon-save.svg',
-                size: 'medium'
-            })
-        );
-    } else {
-        console.error('React components not loaded:', { Button: window.Button, React: window.React, ReactDOM: window.ReactDOM });
-    }
-}, 100);
 </script>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

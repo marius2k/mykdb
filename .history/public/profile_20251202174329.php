@@ -477,43 +477,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeCustomBox1(box);
     });
 });
-
-// Initialize React Buttons
-setTimeout(() => {
-    if (window.Button && window.React && window.ReactDOM) {
-        // Update Profile button
-        const updateProfileRoot = ReactDOM.createRoot(document.getElementById('update-profile-button'));
-        updateProfileRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_prof_btn_save') ?>',
-                onClick: (e) => {
-                    e.preventDefault();
-                    document.getElementById('profile-form').dispatchEvent(new Event('submit'));
-                },
-                variant: 'primary',
-                icon: 'icon-save.svg',
-                size: 'medium'
-            })
-        );
-        
-        // Change Password button
-        const changePasswordRoot = ReactDOM.createRoot(document.getElementById('change-password-button'));
-        changePasswordRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_prof_btn_pass') ?>',
-                onClick: (e) => {
-                    e.preventDefault();
-                    document.getElementById('password-form').dispatchEvent(new Event('submit'));
-                },
-                variant: 'primary',
-                icon: 'icon-save.svg',
-                size: 'medium'
-            })
-        );
-    } else {
-        console.error('React components not loaded:', { Button: window.Button, React: window.React, ReactDOM: window.ReactDOM });
-    }
-}, 100);
 </script>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>

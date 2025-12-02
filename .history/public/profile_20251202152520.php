@@ -70,16 +70,6 @@ $stats = $db->query("
 window.APP_URL = '<?= APP_URL ?>';
 </script>
 
-<!-- Component CSS -->
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/Button.css">
-
-<!-- React CDN -->
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-<!-- Button Component (Compiled from JSX) -->
-<script src="<?= APP_URL ?>assets/js/react-components-dist/Button.js"></script>
-
 <div class="container mt-4 profile-container" >
     
     <!-- Flash Messages -->
@@ -231,49 +221,36 @@ window.APP_URL = '<?= APP_URL ?>';
                     
                     <div class="box-content-1" style="padding: 30px;">
                         <form id="profile-form" enctype="multipart/form-data">
-                            <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_fname') ?></label>
-                                <div class="col-sm-9">
-                                    <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($user['first_name']) ?>" required>
-                                </div>
+                            <div class="form-group">
+                                <label><?= lang('lang_prof_fname') ?></label>
+                                <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($user['first_name']) ?>" required>
                             </div>
 
-                            <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_lname') ?></label>
-                                <div class="col-sm-9">
-                                    <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($user['last_name']) ?>" required>
-                                </div>
+                            <div class="form-group">
+                                <label><?= lang('lang_prof_lname') ?></label>
+                                <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($user['last_name']) ?>" required>
                             </div>
                             
-                            <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_email') ?></label>
-                                <div class="col-sm-9">
-                                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
-                                </div>
+                            <div class="form-group">
+                                <label><?= lang('lang_prof_email') ?></label>
+                                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
                             </div>
                             
-                            <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_photo') ?></label>
-                                <div class="col-sm-9">
+                            <div class="form-group-1">
+                                <div><?= lang('lang_prof_photo') ?>
                                     <img id="profile-pic-display" 
                                          src="<?= !empty($_SESSION['user']['profile_picture']) 
                                              ? APP_URL . 'uploads/profile_pics/' . htmlspecialchars($_SESSION['user']['profile_picture']) 
                                              : APP_URL . 'uploads/profile_pics/default-profile.png' ?>" 
-                                         class="avatar" alt="Avatar" width="60" height="60" style="border-radius: 50%;">
+                                         class="avatar" alt="Avatar" width="60" height="60">
+                                </div>
+                                <div><?= lang('lang_prof_photo_change') ?>
+                                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="form-control mb-2">
                                 </div>
                             </div>
                             
-                            <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label"><?= lang('lang_prof_photo_change') ?></label>
-                                <div class="col-sm-9">
-                                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*" class="form-control">
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-sm-12 text-end">
-                                    <div id="update-profile-button"></div>
-                                </div>
+                            <div align="right">
+                                <button type="submit" class="btn btn-primary"><?= lang('lang_prof_btn_save') ?></button>
                             </div>
                         </form>
                     </div>  
@@ -284,41 +261,33 @@ window.APP_URL = '<?= APP_URL ?>';
                     <div class="corner-label-1">🔒 <?= lang('lang_prof_msg_top_pass') ?></div>
                     <div class="box-content-1" style="padding: 30px;">
                         <form id="password-form">
-                            <div class="row mb-3 password-toggle-group">
-                                <label for="current_password" class="col-sm-4 col-form-label"><?= lang('lang_prof_pass_crt') ?></label>
-                                <div class="col-sm-8">
-                                    <div class="password-wrapper">    
-                                        <input type="password" name="current_password" id="current_password" class="form-control" required>
-                                        <button type="button" id="btn-current-password" class="toggle-password" onclick="togglePasswordVisibility('current_password','btn-current-password')">👁️</button>
-                                    </div>
+                            <div class="form-group password-toggle-group">
+                                <label for="current_password"><?= lang('lang_prof_pass_crt') ?></label>
+                                <div class="password-wrapper">    
+                                    <input type="password" name="current_password" id="current_password" required>
+                                    <button type="button" id="btn-current-password" class="toggle-password" onclick="togglePasswordVisibility('current_password','btn-current-password')">👁️</button>
                                 </div>
                             </div>
                             
-                            <div class="row mb-3 password-toggle-group">
-                                <label for="new_password" class="col-sm-4 col-form-label"><?= lang('lang_prof_pass_new') ?></label>
-                                <div class="col-sm-8">
-                                    <div class="password-wrapper">
-                                        <input type="password" name="new_password" id="new_password" class="form-control" required>
-                                        <button type="button" id="btn-new-password" class="toggle-password" onclick="togglePasswordVisibility('new_password','btn-new-password')">👁️</button>
-                                    </div>
+                            <div class="form-group password-toggle-group">
+                                <label for="new_password"><?= lang('lang_prof_pass_new') ?></label>
+                                <div class="password-wrapper">
+                                    <input type="password" name="new_password" id="new_password" required>
+                                    <button type="button" id="btn-new-password" class="toggle-password" onclick="togglePasswordVisibility('new_password','btn-new-password')">👁️</button>
                                 </div>  
                             </div>
                             
-                            <div class="row mb-3 password-toggle-group">
-                                <label for="confirm_password" class="col-sm-4 col-form-label"><?= lang('lang_prof_pass_confirm') ?></label>
-                                <div class="col-sm-8">
-                                    <div class="password-wrapper">    
-                                        <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
-                                        <button type="button" id="btn-confirm-password" class="toggle-password" onclick="togglePasswordVisibility('confirm_password','btn-confirm-password')">👁️</button>
-                                    </div>
-                                    <small id="password-match-msg" style="display: none; margin-top: 5px; font-weight: 600;"><?= lang('lang_prof_pass_nomatch') ?></small>
+                            <div class="form-group password-toggle-group">
+                                <label for="confirm_password"><?= lang('lang_prof_pass_confirm') ?></label>
+                                <div class="password-wrapper">    
+                                    <input type="password" name="confirm_password" id="confirm_password" required>
+                                    <button type="button" id="btn-confirm-password" class="toggle-password" onclick="togglePasswordVisibility('confirm_password','btn-confirm-password')">👁️</button>
                                 </div>
+                                <small id="password-match-msg" style="display: none; margin-top: 5px; font-weight: 600;"><?= lang('lang_prof_pass_nomatch') ?></small>
                             </div>
 
-                            <div class="row">
-                                <div class="col-sm-12 text-end">
-                                    <div id="change-password-button"></div>
-                                </div>
+                            <div align="right">
+                                <button type="submit" id="change_password" class="btn btn-primary"><?= lang('lang_prof_btn_pass') ?></button>
                             </div>
                         </form>
                     </div>
@@ -477,43 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeCustomBox1(box);
     });
 });
-
-// Initialize React Buttons
-setTimeout(() => {
-    if (window.Button && window.React && window.ReactDOM) {
-        // Update Profile button
-        const updateProfileRoot = ReactDOM.createRoot(document.getElementById('update-profile-button'));
-        updateProfileRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_prof_btn_save') ?>',
-                onClick: (e) => {
-                    e.preventDefault();
-                    document.getElementById('profile-form').dispatchEvent(new Event('submit'));
-                },
-                variant: 'primary',
-                icon: 'icon-save.svg',
-                size: 'medium'
-            })
-        );
-        
-        // Change Password button
-        const changePasswordRoot = ReactDOM.createRoot(document.getElementById('change-password-button'));
-        changePasswordRoot.render(
-            React.createElement(Button, {
-                text: '<?= lang('lang_prof_btn_pass') ?>',
-                onClick: (e) => {
-                    e.preventDefault();
-                    document.getElementById('password-form').dispatchEvent(new Event('submit'));
-                },
-                variant: 'primary',
-                icon: 'icon-save.svg',
-                size: 'medium'
-            })
-        );
-    } else {
-        console.error('React components not loaded:', { Button: window.Button, React: window.React, ReactDOM: window.ReactDOM });
-    }
-}, 100);
 </script>
 
 <?php include APP_ROOT . 'includes/footer.php'; ?>
