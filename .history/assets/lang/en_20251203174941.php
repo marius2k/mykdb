@@ -82,7 +82,7 @@ return [
     'lang_db_analytics' => 'Analytics Dashboard',
     'lang_db_top5_views' => 'Top View Articles in last ',
     'lang_db_top5_likes' => 'Top Like Articles in last ',
-    'lang_db_comments_today' => 'Comments received today',
+    'lang_db_comments_today' => 'Comments recived today',
     'lang_db_comments_last7days' => 'Comments within last 7 days',
     'lang_db_comments_last_month' => 'Comments within last 30 days',
     'lang_db_recent_comments' => 'Comments',
