@@ -160,7 +160,7 @@ return [
     'lang_art_view' => 'Vizualizează',
     'lang_art_history' => 'Istoricul Versiunilor',
     'lang_art_no_change_note' => 'Fără notă de modificare',
-    'lang_art_restore' => 'Restaurează Online',
+    'lang_art_restore' => 'Restaurează',
     'lang_art_edit' => 'Editeaza',
     'lang_art_delete' => 'Sterge',
     'lang_art_disable' => 'Dezactiveaza',

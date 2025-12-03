@@ -212,9 +212,6 @@ $username = isset($_SESSION['user']['username']) ? htmlspecialchars($_SESSION['u
 var APP_URL = '<?= APP_URL ?>';
 </script>
 
-<!-- ArticleBox Component Styles -->
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/ArticleBox.css">
-
 <!-- React CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -317,128 +314,111 @@ getUserLocationAndWeather();
                         <p><?= lang('lang_no_articles') ?></p>
                 <?php else: ?>
                     
-                    <?php
-                    // Prepare articles data for React
-                    $articlesData = [];
-                    $userId = $_SESSION['user']['id'] ?? null;
                     
-                    foreach ($articles as $a) {
-                        $content = $a['content'];
-                        $textOnly = strip_tags($content);
-                        $shortText = shortenText(strip_tags(html_entity_decode($a['content'])), 500);
-                        
-                        $votes = getArticleLikesDislikes($a['id']);
-                        $currentVote = $userId ? getUserVote($a['id'], $userId) : null;
-                        $isBookmarked = is_article_bookmarked($a['id'], $userId);
-                        
-                        $articlesData[] = [
-                            'id' => $a['id'],
-                            'title' => $a['title'],
-                            'icon' => $a['icon'] ?? null,
-                            'catid' => $a['catid'],
-                            'category' => $a['category'],
-                            'username' => $a['username'],
-                            'shortText' => $shortText,
-                            'tags' => $a['tags'] ?? [],
-                            'publishedAt' => formatDate($a['publish_at']),
-                            'updatedAt' => formatDate($a['updated_at']),
-                            'version' => $a['version'],
-                            'viewsCount' => getArticleViewsCount($a['id']),
-                            'commentsCount' => getCommentCount($a['id']),
-                            'likes' => $votes['like'],
-                            'dislikes' => $votes['dislike'],
-                            'currentVote' => $currentVote,
-                            'isBookmarked' => $isBookmarked
-                        ];
-                    }
-                    ?>
-                    
-                    <!-- React will render articles here -->
-                    <div id="articles-container" class="article-grid"></div>
-                    
-                    <script>
-                    // Articles data from PHP
-                    const articlesData = <?= json_encode($articlesData) ?>;
-                    const appUrl = '<?= APP_URL ?>';
-                    
-                    // Render all articles using React
-                    const container = document.getElementById('articles-container');
-                    const root = ReactDOM.createRoot(container);
-                    
-                    // Handle bookmark toggle
-                    function handleBookmarkToggle(articleId) {
-                        fetch('api/bkd_toggle_bookmark.php', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                            body: 'article_id=' + encodeURIComponent(articleId)
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Find and update the article in our data
-                                const articleIndex = articlesData.findIndex(a => a.id === articleId);
-                                if (articleIndex !== -1) {
-                                    articlesData[articleIndex].isBookmarked = data.bookmarked;
-                                    // Re-render
-                                    renderArticles();
-                                }
-                            }
-                        });
-                    }
-                    
-                    // Handle vote
-                    function handleVote(articleId, voteType) {
-                        fetch('vote_article.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `aid=${articleId}&vote=${voteType}`
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.status === 'ok') {
-                                // Update article data
-                                const articleIndex = articlesData.findIndex(a => a.id === articleId);
-                                if (articleIndex !== -1) {
-                                    articlesData[articleIndex].likes = data.likes;
-                                    articlesData[articleIndex].dislikes = data.dislikes;
-                                    articlesData[articleIndex].currentVote = voteType;
-                                    // Re-render
-                                    renderArticles();
-                                }
-                            } else {
-                                alert(data.message || 'Error voting!');
-                            }
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert('AJAX Error!');
-                        });
-                    }
-                    
-                    // Render function
-                    function renderArticles() {
-                        root.render(
-                            React.createElement(React.Fragment, null,
-                                articlesData.map(article =>
-                                    React.createElement(ArticleBox, {
-                                        key: article.id,
-                                        article: article,
-                                        onBookmarkToggle: handleBookmarkToggle,
-                                        onVote: handleVote,
-                                        isBookmarked: article.isBookmarked,
-                                        currentVote: article.currentVote,
-                                        appUrl: appUrl
-                                    })
-                                )
-                            )
-                        );
-                    }
-                    
-                    // Initial render
-                    renderArticles();
-                    </script>
+                <div class="article-grid">
+                            <?php 
+                            foreach ($articles as $a): 
+                            
+                                    $content = $a['content'];
+
+                                    // Extragem prima imagine (dacă există)
+                                    preg_match('/<img[^>]+src="([^">]+)"/i', $content, $matches);
+                                    $image = $matches[1] ?? null;
+                                    
+                                    // Extragem textul fără HTML
+                                    $textOnly = strip_tags($content);
+                                    
+                                    // Scurtăm textul
+                                    //$shortText = shortenText($textOnly, 500);
+                                    $shortText = shortenText(strip_tags(html_entity_decode($a['content'])), 500);
+
+                                    $preview = truncateHtmlWithImages($a['content'], 100);
+                                    ?>
+                                    <div class="article-card">
+                                          <div style="display: flex; justify-content: space-between;">
+                                              <div>
+                                                <h3 class="article-title">
+                                                    <?php if (!empty($a['icon'])): ?>
+                                                            <?php if (str_starts_with($a['icon'], 'http') || str_ends_with($a['icon'], '.png') || str_ends_with($a['icon'], '.svg')): ?>
+                                                                <a href="index.php?fcategory=<?=$a['catid']?>" title="<?=$a['category']?>"><img src="<?=APP_URL?>assets/icons/categories/<?= $a['icon'] ?>" alt="icon" class="me-1" style="width: 35px; vertical-align: middle;"></a>
+                                                                <?php else: ?>
+                                                                <span class="me-1"><?= htmlspecialchars($a['icon']) ?></span>
+                                                            <?php endif; ?>
+                                                    <?php endif; ?><?= escape($a['title']) ?>
+                                                </h3>
+                                              </div>
+                                              <div>
+                                                <?php if(is_article_bookmarked($a['id'], $_SESSION['user']['id'] ?? null)): ?>
+                                                    <img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-full.svg" alt="Bookmark" class="bookmark-icon"  style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(<?= $a['id'] ?>, this)" title="<?=lang('lang_favorites_remove')?>" >
+                                                <?php else: ?>
+                                                    <img id="bookmark-img" src="<?=APP_URL?>assets/icons/icon-bookmark-empty.svg" alt="Bookmark" class="bookmark-icon"  style="cursor:pointer; width:30px; height:auto;" onclick="toggleBookmark(<?= $a['id'] ?>, this)" title="<?=lang('lang_favorites_add')?>" >
+                                                <?php endif; ?>
+                                              </div>
+                                          </div>
+
+                                          <div>
+                                                <?php if (!empty($a['tags'])): ?>
+                                                    <div class="article-tags" style="margin: 6px 10px; padding-bottom: 10px;">
+                                                        <?php foreach ($a['tags'] as $tag): ?>
+                                                            <span class="tag-badge-1"><a href="articles_by_tag.php?tag=<?= urlencode($tag) ?>"><?= htmlspecialchars($tag) ?></a></span>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                          </div>
+                                          <div class="article-body" id="article<?=$a['id']?>">
+
+                                            
+                                                <p><?= nl2br($shortText) ?><a href="view_article.php?id=<?= (int)$a['id'] ?>"><img width="24" height="auto" src="<?=APP_URL?>assets/icons/icon-read-more.svg" title="<?= lang('lang_read_more') ?>"> </a></p>                                            
+                                          </div>
+                                            
+                                            <div class="article-footer">
+                                                <div>
+                                                    <span class="article-meta"><?= lang('lang_article_author') ?>:<?=escape($a['username']) ?> | <?= lang('lang_article_category') ?>:<?=escape($a['category']) ?> | <?= lang('lang_article_published') ?>:<?=formatDate($a['publish_at']) ?> | <?= lang('lang_article_updated') ?>:<?=formatDate($a['updated_at'])?></span>
+                                                </div>
+                                                <div class="vote-buttons-container"> 
+                                                            <div class="vote-buttons" id="meta-<?=$a['id']?>">
+                                                                <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>&version=<?= (int)$a['version'] ?>&isonline=1">
+                                                                <img src="<?=APP_URL?>assets/images/icon-view.png" title="<?= lang('lang_article_views') ?>" class="vote-icon"></a>
+                                                                <span class="view-count"><?= getArticleViewsCount($a['id']) ?></span>
+
+                                                                <a href="<?=APP_URL?>public/view_article.php?id=<?= (int)$a['id'] ?>#comments">
+                                                                <img src="<?=APP_URL?>assets/images/icon-comm.png" title="<?= lang('lang_article_add_comments') ?>" class="vote-icon"></a>
+                                                                <span class="comments-count"><?=getCommentCount($a['id'])?></span>
+                                                            </div>
+                                                            
+                                                            <div class="vote-buttons">
+                                                                
+                                                                <?php
+                                                                    $votes = getArticleLikesDislikes($a['id']);
+                                                                    $currentVote = $userId ? getUserVote($a['id'], $userId) : null;
+                                                                    //echo "crt vote:".$currentVote;
+
+                                                                ?>
+
+                                                                <!-- LIKE -->
+                                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'like', this); return false; updateArticleMeta(<?=$a['id']?>);">
+                                                                    <img src="<?=APP_URL?>assets/images/icon-like.png" class="vote-icon <?= $currentVote === 'like' ? 'active' : '' ?>" width="20" high="auto" title="<?= lang('lang_article_like') ?>">  
+                                                                </a>
+                                                                <span class="like-count"><?= $votes['like'] ?></span>
+                                                                
+                                                                <!-- DISLIKE -->
+                                                                <a href="#" onclick="voteArticle(<?= $a['id'] ?>, 'dislike', this); return false; updateArticleMeta(<?=$a['id']?>);">
+                                                                    <img src="<?=APP_URL?>assets/images/icon-dlike.png" class="vote-icon <?= $currentVote === 'dislike' ? 'active' : '' ?>" width="20" height="auto" title="<?= lang('lang_article_dislike') ?>">    
+                                                                
+                                                                </a>
+                                                                <span class="dislike-count"><?= $votes['dislike'] ?></span>
+
+                                                            </div>
+                                                </div>                               
+
+                                                
+                                                
+                                            </div>
+                                    </div>
+
+
+                            <?php endforeach; ?>
+                </div>
 
                 <div id="pagination-results">
                         <?php 

@@ -1,0 +1,424 @@
+/**
+ * ArticleBox Component Styles
+ * 
+ * This file contains all styles for the ArticleBox React component.
+ * Used in: public/index.php, favorites.php, and other article listing pages
+ * 
+ * Component Structure:
+ * - .article-card (main container)
+ *   - Header (icon + title + bookmark)
+ *   - .article-tags (tags section)
+ *   - .article-body (content)
+ *   - .article-footer (meta info + voting)
+ */
+
+/* ========================================
+   ARTICLE CARD - Main Container
+   ======================================== */
+
+.article-card {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: auto;
+    width: 100%;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.article-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   ARTICLE HEADER - Title & Bookmark
+   ======================================== */
+
+.article-title {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    font-weight: bold;
+    color: #000000;
+    padding-left: 25px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-family: var(--font-main, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+    vertical-align: center;
+}
+
+.article-title img {
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.article-title span {
+    font-size: 18px;
+}
+
+/* Bookmark Icon */
+.bookmark-icon {
+    transition: filter 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.bookmark-icon:hover {
+    filter: brightness(0.8);
+    transform: scale(1.1);
+}
+
+/* ========================================
+   ARTICLE TAGS
+   ======================================== */
+
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 6px 10px;
+    padding-bottom: 10px;
+}
+
+.tag-badge-1 {
+    display: inline-block;
+    background: #ffffff;
+    color: rgb(46, 106, 117);
+    border-radius: 4px;
+    padding: 0px 5px;
+    margin: 2px 2px 2px 0;
+    font-size: 0.85em;
+    font-weight: 500;
+    border: 1px solid rgb(66, 148, 148);
+    box-shadow: 0 1px 2px rgba(21, 101, 192, 0.08);
+    letter-spacing: 0.01em;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.tag-badge-1 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.tag-badge-1:hover {
+    background: var(--primary-color, #048eb1);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
+    transform: scale(1.03);
+}
+
+/* ========================================
+   ARTICLE BODY - Content
+   ======================================== */
+
+.article-body {
+    flex-grow: 1;
+    font-size: 0.85rem;
+    color: #444;
+    overflow: hidden;
+    
+    /* Multi-line ellipsis support */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    box-orient: vertical;
+    
+    /* Fallback for old browsers */
+    max-height: 6.2em;
+    line-height: 1.24em;
+    text-overflow: ellipsis;
+    padding: 5px 10px;
+}
+
+.article-body p {
+    margin: 0;
+}
+
+.article-body a {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+.article-body a img {
+    transition: transform 0.2s ease;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.article-body a:hover img {
+    transform: translateX(3px);
+}
+
+/* ========================================
+   ARTICLE FOOTER - Meta & Voting
+   ======================================== */
+
+.article-footer {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.article-meta {
+    font-style: italic;
+    color: #048eb1;
+    font-size: 0.75rem;
+}
+
+/* ========================================
+   VOTING BUTTONS
+   ======================================== */
+
+.vote-buttons-container {
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.vote-buttons {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 6px;
+    user-select: none;
+}
+
+.vote-buttons a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.vote-buttons a:hover {
+    opacity: 0.85;
+}
+
+.vote-buttons img.vote-icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    filter: grayscale(100%);
+    cursor: pointer;
+}
+
+.vote-buttons img.vote-icon:hover {
+    transform: scale(1.15);
+}
+
+.vote-buttons img.vote-icon.active {
+    filter: none; /* Display color for active vote */
+}
+
+.vote-buttons span {
+    font-size: 14px;
+    min-width: 18px;
+    display: inline-block;
+}
+
+/* ========================================
+   VOTE & VIEW COUNTS
+   ======================================== */
+
+.like-count,
+.dislike-count,
+.view-count,
+.comments-count {
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+    min-width: 20px;
+    text-align: left;
+    display: inline-block;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.like-count:hover,
+.dislike-count:hover,
+.view-count:hover,
+.comments-count:hover {
+    cursor: default;
+}
+
+.like-count {
+    color: #6a6b6b;
+}
+
+.dislike-count {
+    color: #6a6b6b;
+}
+
+.view-count {
+    color: #333;
+}
+
+.comments-count {
+    color: #333;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .article-card {
+        padding: 8px 12px;
+        margin-bottom: 16px;
+    }
+    
+    .article-title {
+        font-size: 1rem;
+        padding-left: 15px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    
+    .article-body {
+        font-size: 0.8rem;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        max-height: 3.72em;
+    }
+    
+    .article-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .vote-buttons-container {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .article-meta {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .article-title {
+        font-size: 0.95rem;
+    }
+    
+    .article-tags {
+        margin: 4px 5px;
+        padding-bottom: 6px;
+    }
+    
+    .tag-badge-1 {
+        font-size: 0.75em;
+        padding: 0px 4px;
+    }
+    
+    .vote-buttons img.vote-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .like-count,
+    .dislike-count,
+    .view-count,
+    .comments-count {
+        font-size: 12px;
+    }
+}
+
+/* ========================================
+   DARK THEME SUPPORT
+   ======================================== */
+
+[data-theme="dark"] .article-card,
+body.dark-theme .article-card {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .article-title,
+body.dark-theme .article-title {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .article-body,
+body.dark-theme .article-body {
+    color: #cccccc;
+}
+
+[data-theme="dark"] .article-meta,
+body.dark-theme .article-meta {
+    color: #4fc3f7;
+}
+
+[data-theme="dark"] .tag-badge-1,
+body.dark-theme .tag-badge-1 {
+    background: #3a3a3a;
+    color: #81d4fa;
+    border-color: #555;
+}
+
+[data-theme="dark"] .tag-badge-1:hover,
+body.dark-theme .tag-badge-1:hover {
+    background: #4a4a4a;
+    color: #b3e5fc;
+}
+
+[data-theme="dark"] .vote-buttons a,
+body.dark-theme .vote-buttons a {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .like-count,
+[data-theme="dark"] .dislike-count,
+[data-theme="dark"] .view-count,
+[data-theme="dark"] .comments-count,
+body.dark-theme .like-count,
+body.dark-theme .dislike-count,
+body.dark-theme .view-count,
+body.dark-theme .comments-count {
+    color: #b0b0b0;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+    .article-card {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .bookmark-icon,
+    .vote-buttons-container {
+        display: none;
+    }
+    
+    .article-body {
+        max-height: none;
+        -webkit-line-clamp: unset;
+        overflow: visible;
+    }
+}

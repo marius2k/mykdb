@@ -333,11 +333,11 @@ getUserLocationAndWeather();
                         
                         $articlesData[] = [
                             'id' => $a['id'],
-                            'title' => $a['title'],
+                            'title' => htmlspecialchars($a['title']),
                             'icon' => $a['icon'] ?? null,
                             'catid' => $a['catid'],
-                            'category' => $a['category'],
-                            'username' => $a['username'],
+                            'category' => htmlspecialchars($a['category']),
+                            'username' => htmlspecialchars($a['username']),
                             'shortText' => $shortText,
                             'tags' => $a['tags'] ?? [],
                             'publishedAt' => formatDate($a['publish_at']),

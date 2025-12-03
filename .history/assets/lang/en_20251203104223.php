@@ -159,7 +159,7 @@ return [
     'lang_art_updated_at' => 'Last Update',
     'lang_art_history' => 'Version History',
     'lang_art_no_change_note' => 'No Change Note',
-    'lang_art_restore' => 'Restore Online',
+    'lang_art_restore' => 'Restore',
     'lang_art_view' => 'View',  
     'lang_art_edit' => 'Edit',
     'lang_art_delete' => 'Delete',

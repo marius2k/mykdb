@@ -212,9 +212,6 @@ $username = isset($_SESSION['user']['username']) ? htmlspecialchars($_SESSION['u
 var APP_URL = '<?= APP_URL ?>';
 </script>
 
-<!-- ArticleBox Component Styles -->
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/ArticleBox.css">
-
 <!-- React CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -333,11 +330,11 @@ getUserLocationAndWeather();
                         
                         $articlesData[] = [
                             'id' => $a['id'],
-                            'title' => $a['title'],
+                            'title' => htmlspecialchars($a['title']),
                             'icon' => $a['icon'] ?? null,
                             'catid' => $a['catid'],
-                            'category' => $a['category'],
-                            'username' => $a['username'],
+                            'category' => htmlspecialchars($a['category']),
+                            'username' => htmlspecialchars($a['username']),
                             'shortText' => $shortText,
                             'tags' => $a['tags'] ?? [],
                             'publishedAt' => formatDate($a['publish_at']),
