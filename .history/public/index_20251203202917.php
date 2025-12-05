@@ -437,8 +437,7 @@ getUserLocationAndWeather();
                                         onVote: handleVote,
                                         isBookmarked: article.isBookmarked,
                                         currentVote: article.currentVote,
-                                        appUrl: appUrl,
-                                        lang: langTranslations
+                                        appUrl: appUrl
                                     })
                                 )
                             )

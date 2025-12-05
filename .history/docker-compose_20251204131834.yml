@@ -1,0 +1,67 @@
+# Specifică versiunea de Docker Compose.
+version: '3.8'
+
+# Definește serviciile (containerele) care compun aplicația.
+services:
+  # Serviciul pentru baza de date MySQL
+  db:
+    image: mysql:8.0
+    container_name: mykdb-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: knowledge_db         # Numele bazei de date care va fi creată
+    volumes:
+      # Acest volum va stoca datele MySQL persistent, chiar dacă containerul este șters.
+      - db_data:/var/lib/mysql
+    networks:
+      - mykdb-network
+
+  # Serviciul pentru aplicația web (PHP + Apache)
+  webapp:
+    # Construiește imaginea folosind Dockerfile-ul din directorul curent (.).
+    build: .
+    container_name: mykdb-webapp
+    restart: unless-stopped
+    # Mapează portul 8080 de pe mașina ta la portul 80 al containerului webapp.
+    ports:
+      - "8080:80"
+    volumes:
+      # Montează codul sursă direct în container.
+      # Orice modificare în codul tău va fi reflectată instant în container, fără a reconstrui imaginea.
+      - .:/var/www/html
+    networks:
+      - mykdb-network
+    # Specifică faptul că serviciul `webapp` depinde de serviciul `db`.
+    # Va porni containerul `db` înainte de `webapp`.
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      MYSQL_DATABASE: knowledge_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""      # Pune parola dacă ai setat-o la db!
+      
+  # Database management interface (Adminer - lightweight, ARM64 compatible)
+  adminer:
+    image: adminer:latest
+    container_name: mykdb-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+    networks:
+      - mykdb-network
+
+
+# Definește rețelele
+networks:
+  mykdb-network:
+    driver: bridge
+
+# Definește volumele
+volumes:
+  db_data:
+    driver: local
+

@@ -90,7 +90,10 @@ const ArticleBox = ({
             <div className="article-footer">
                 <div className="article-meta-section">
                     <span className="article-meta">
-                        {lang.author}: {article.username} | {lang.category}: {article.category} | {lang.published}: {article.publishedAt} | {lang.updated}: {article.updatedAt}
+                        Author: {article.username} | 
+                        Category: {article.category} | 
+                        Published: {article.publishedAt} | 
+                        Updated: {article.updatedAt}
                     </span>
                 </div>
 

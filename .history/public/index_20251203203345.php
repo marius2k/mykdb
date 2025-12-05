@@ -364,8 +364,8 @@ getUserLocationAndWeather();
                     // Language translations
                     const langTranslations = {
                         author: '<?= lang('lang_article_author') ?>',
-                        category: '<?= lang('lang_article_category') ?>',
-                        published: '<?= lang('lang_article_published') ?>',
+                        category: '<?= lang('lang_article_category') ?> ',
+                        published: '<?= lang('lang_article_published') ?> ',
                         updated: '<?= lang('lang_article_updated') ?>'
                     };
                     
