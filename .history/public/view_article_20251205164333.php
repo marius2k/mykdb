@@ -175,6 +175,7 @@ try {
     let translationCache = {};  // Cache multiple translations by language
     let originalTitle = '';
     let originalContent = '';
+    let articleIconHtml = '';  // Store the article icon HTML
     let translationServiceReady = false;
 
     // Check translation service status on page load

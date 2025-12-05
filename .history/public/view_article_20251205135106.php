@@ -172,274 +172,88 @@ try {
     const isOnlineParam = <?= $isOnline ?>;
 
     // Translation state
+    let showingOriginal = true;
     let translationCache = {};  // Cache multiple translations by language
     let originalTitle = '';
     let originalContent = '';
-    let translationServiceReady = false;
 
-    // Check translation service status on page load
-    async function checkTranslationServiceStatus() {
-        const statusEl = document.getElementById('translation-status');
+    // Toggle between original and translated content
+    async function toggleTranslation() {
+        const btn = document.getElementById('translate-btn');
+        const btnText = document.getElementById('translate-btn-text');
         const langSelect = document.getElementById('translate-lang-select');
-        
-        if (!statusEl || !langSelect) return;
-        
-        try {
-            statusEl.textContent = '⏳ Checking...';
-            statusEl.style.color = '#888';
-            statusEl.style.display = 'inline';
-            
-            const response = await fetch('<?= APP_URL ?>public/api/bkd_translate_article.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ article_id: articleId, target_lang: 'en' }),
-                signal: AbortSignal.timeout(5000) // 5 second timeout
-            });
-            
-            let data = null;
-            try {
-                const text = await response.text();
-                if (text) {
-                    data = JSON.parse(text);
-                }
-            } catch (parseError) {
-                console.error('Failed to parse response:', parseError);
-            }
-            
-            // Check if service is starting up (503 error)
-            if (response.status === 503) {
-                statusEl.textContent = '⏳ Translation service starting up... Please wait';
-                statusEl.style.color = '#f39c12';
-                langSelect.disabled = true;
-                
-                // Retry every 10 seconds
-                setTimeout(checkTranslationServiceStatus, 10000);
-            } else if (response.status === 200 || response.status === 400) {
-                // Service is ready (200 = success, 400 = bad request means service responded)
-                statusEl.textContent = '✓ Ready';
-                statusEl.style.color = '#27ae60';
-                langSelect.disabled = false;
-                translationServiceReady = true;
-                
-                // Hide status after 3 seconds
-                setTimeout(() => { statusEl.textContent = ''; }, 3000);
-            } else {
-                // Other errors - assume service is available
-                statusEl.textContent = '';
-                langSelect.disabled = false;
-                translationServiceReady = true;
-            }
-        } catch (error) {
-            console.error('Error checking translation service:', error);
-            // Don't block the UI - assume service might work
-            statusEl.textContent = '';
-            langSelect.disabled = false;
-            translationServiceReady = true;
-        }
-    }
-
-    // Call after page content has loaded (delayed to not block content)
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            // Delay translation check by 1 second to allow content to load first
-            setTimeout(checkTranslationServiceStatus, 1000);
-        });
-    } else {
-        // Page already loaded, still delay slightly
-        setTimeout(checkTranslationServiceStatus, 500);
-    }
-
-    // Handle translation dropdown change
-    async function handleTranslationChange() {
-        const langSelect = document.getElementById('translate-lang-select');
-        const selectedValue = langSelect.value;
         const titleEl = document.getElementById('article-title');
         const contentEl = document.getElementById('article-content');
-        const statusEl = document.getElementById('translation-status');
         
-        // Save original content on first translation
-        if (!originalTitle && selectedValue && selectedValue !== 'original') {
-            originalTitle = titleEl.innerHTML;
-            originalContent = contentEl.innerHTML;
-        }
-        
-        // Handle restore original
-        if (selectedValue === 'original' || selectedValue === '') {
-            if (originalTitle) {
-                titleEl.innerHTML = originalTitle;
-                contentEl.innerHTML = originalContent;
+        if (showingOriginal) {
+            // Get selected language
+            const targetLang = langSelect.value;
+            
+            if (!targetLang) {
+                alert('Please select a language first');
+                return;
             }
-            langSelect.selectedIndex = 0; // Reset to "Translate..."
-            statusEl.textContent = '';
-            return;
-        }
-        
-        // Don't translate separator option
-        if (selectedValue === '──────────') {
-            langSelect.selectedIndex = 0;
-            return;
-        }
-        
-        // Translate to selected language
-        langSelect.disabled = true;
-        statusEl.textContent = '⏳ Translating...';
-        statusEl.style.color = '#3498db';
-        
-        try {
-            // Check if we already have this translation cached
-            if (!translationCache[selectedValue]) {
-                const response = await fetch('<?= APP_URL ?>public/api/bkd_translate_article.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'same-origin',  // Include cookies in the request
-                    body: JSON.stringify({
-                        article_id: articleId,
-                        target_lang: selectedValue
-                    })
-                });
-                
-                // Check if response is JSON
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    const text = await response.text();
-                    console.error('Non-JSON response:', text);
-                    throw new Error('Server returned invalid response. Check console for details.');
+            
+            // Translate to selected language
+            btn.disabled = true;
+            langSelect.disabled = true;
+            btnText.textContent = 'Translating...';
+            
+            try {
+                // Check if we already have this translation cached
+                if (!translationCache[targetLang]) {
+                    const response = await fetch('<?= APP_URL ?>public/api/translate_article.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            article_id: articleId,
+                            target_lang: targetLang
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Translation failed');
+                    }
+                    
+                    translationCache[targetLang] = data;
                 }
                 
-                const data = await response.json();
+                const translation = translationCache[targetLang];
                 
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Translation failed');
+                if (translation.success) {
+                    // Save original content if not already saved
+                    if (!originalTitle) {
+                        originalTitle = titleEl.innerHTML;
+                        originalContent = contentEl.innerHTML;
+                    }
+                    
+                    // Update with translated content
+                    titleEl.textContent = translation.title;
+                    contentEl.innerHTML = translation.content;
+                    btnText.textContent = 'Show Original';
+                    showingOriginal = false;
+                } else {
+                    throw new Error(translation.message || 'Translation failed');
                 }
-                
-                translationCache[selectedValue] = data;
+            } catch (error) {
+                console.error('Translation error:', error);
+                alert('Translation failed: ' + error.message);
+                langSelect.disabled = false;
+            } finally {
+                btn.disabled = false;
             }
-            
-            const translation = translationCache[selectedValue];
-            
-            if (translation.success) {
-                // Update with translated content
-                titleEl.textContent = translation.title;
-                contentEl.innerHTML = translation.content;
-                statusEl.textContent = '✓ Translated';
-                statusEl.style.color = '#27ae60';
-                
-                // Hide status after 2 seconds
-                setTimeout(() => { statusEl.textContent = ''; }, 2000);
-            } else {
-                throw new Error(translation.message || 'Translation failed');
-            }
-        } catch (error) {
-            console.error('Translation error:', error);
-            statusEl.textContent = '✗ ' + error.message;
-            statusEl.style.color = '#e74c3c';
-            
-            // Show error in alert as well
-            alert('Translation failed: ' + error.message);
-            
-            // Reset to original
-            if (originalTitle) {
-                titleEl.innerHTML = originalTitle;
-                contentEl.innerHTML = originalContent;
-            }
-            langSelect.selectedIndex = 0;
-        } finally {
+        } else {
+            // Restore original content
+            titleEl.innerHTML = originalTitle;
+            contentEl.innerHTML = originalContent;
+            btnText.textContent = 'Translate';
+            showingOriginal = true;
             langSelect.disabled = false;
-        }
-    }
-
-    // Export current page content to PDF (including translations)
-    async function exportToPDF() {
-        try {
-            // Get current page content (may be translated)
-            const title = document.getElementById('article-title').innerText;
-            const content = document.getElementById('article-content').innerHTML;
-            const metaEl = document.getElementById('article-meta');
-            
-            // Extract metadata from page
-            let author = '';
-            let category = '';
-            let created_at = '';
-            let updated_at = '';
-            
-            if (metaEl && metaEl.innerText) {
-                const metaText = metaEl.innerText;
-                // Parse meta info (format: "Autor: Name | Categorie: Cat | Data: Date")
-                const authorMatch = metaText.match(/Autor[:\s]+([^|]+)/i);
-                const categoryMatch = metaText.match(/Categorie[:\s]+([^|]+)/i);
-                const dateMatch = metaText.match(/Data[:\s]+([^|]+)/i);
-                
-                author = authorMatch ? authorMatch[1].trim() : '';
-                category = categoryMatch ? categoryMatch[1].trim() : '';
-                created_at = dateMatch ? dateMatch[1].trim() : '';
-            }
-            
-            // Determine language (check if translated)
-            const langSelect = document.getElementById('translate-lang-select');
-            const currentLang = langSelect ? langSelect.value : '';
-            const language = currentLang && currentLang !== 'original' && currentLang !== '' 
-                ? currentLang.toUpperCase() 
-                : '';
-            
-            // Prepare data to send
-            const data = {
-                article_id: articleId,
-                title: title,
-                content: content,
-                author: author,
-                category: category,
-                created_at: created_at,
-                updated_at: updated_at,
-                language: language
-            };
-            
-            // Send POST request to generate PDF
-            const response = await fetch('<?= APP_URL ?>public/api/bkd_export_article.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                // Try to parse JSON error if available
-                let errText = '';
-                try {
-                    errText = await response.text();
-                } catch (e) {
-                    errText = response.statusText || 'Unknown error';
-                }
-                throw new Error('Failed to generate PDF: ' + errText);
-            }
-
-            // Verify the response is a PDF
-            const contentType = response.headers.get('Content-Type') || '';
-            if (!contentType.includes('application/pdf')) {
-                const text = await response.text();
-                console.error('Export API returned non-PDF response:', text);
-                throw new Error('Export failed: server did not return a PDF. See console for details.');
-            }
-
-            // Get PDF blob and download it
-            const arrayBuffer = await response.arrayBuffer();
-            const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'article_' + articleId + (language ? '_' + language : '') + '.pdf';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            
-        } catch (error) {
-            console.error('PDF export error:', error);
-            alert('Failed to export PDF: ' + error.message);
+            btn.disabled = false;
         }
     }
 </script>
@@ -457,24 +271,33 @@ try {
 
        <div class="article-view" style="max-width:80%; margin:20px auto;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="flex: 1; text-align: left;">
-                    <h2 class="article-title" id="article-title" style="text-align: left;"></h2>
+                <div style="flex: 1;">
+                    <h2 class="article-title" id="article-title"></h2>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <!-- Translation status message (on the left) -->
-                    <span id="translation-status" style="font-size: 0.85rem; color: #888; min-width: 120px; text-align: right;"></span>
                     <!-- Translation dropdown -->
                     <select id="translate-lang-select" 
                             style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: white; cursor: pointer; font-size: 0.9rem;"
                             onchange="handleTranslationChange()">
                         <option value="">🌍 Translate...</option>
                         <option value="original">🔄 Original</option>
-                        <option disabled>──────────</option>
+                        <option value="">──────────</option>
                         <option value="en">🇬🇧 English</option>
                         <option value="ro">🇷🇴 Romanian</option>
                         <option value="es">🇪🇸 Spanish</option>
                         <option value="fr">🇫🇷 French</option>
                         <option value="de">🇩🇪 German</option>
+                        <option value="it">🇮🇹 Italian</option>
+                        <option value="pt">🇵🇹 Portuguese</option>
+                        <option value="ru">🇷🇺 Russian</option>
+                        <option value="zh">🇨🇳 Chinese</option>
+                        <option value="ja">🇯🇵 Japanese</option>
+                        <option value="ko">🇰🇷 Korean</option>
+                        <option value="ar">🇸🇦 Arabic</option>
+                        <option value="hi">🇮🇳 Hindi</option>
+                        <option value="nl">🇳🇱 Dutch</option>
+                        <option value="pl">🇵🇱 Polish</option>
+                        <option value="tr">🇹🇷 Turkish</option>
                     </select>
                     <div id="bookmark-img"></div>
                 </div>              
@@ -588,7 +411,7 @@ function loadArticle() {
             
             // Bookmark + export to PDF
             let bookmarkHtml = '';
-            bookmarkHtml += `<a href="javascript:void(0)" onclick="exportToPDF()" title="Export to PDF" style="margin-left:20px; display:inline-block;">
+            bookmarkHtml += `<a href="<?=APP_URL?>public/api/bkd_export_article.php?id=${data.id}" title="Export to PDF" style="margin-left:20px; display:inline-block;">
                         <img src="<?=APP_URL?>assets/icons/icon-pdf.png" alt="Export PDF" style="height:35px; vertical-align:middle; cursor:pointer;">
                     </a>&nbsp;&nbsp;&nbsp;&nbsp;`;
 

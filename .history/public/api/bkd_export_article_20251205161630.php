@@ -1,8 +1,6 @@
 <?php
 require_once '../../vendor/autoload.php';
 require_once '../../config/bootstrap.php';
-//require_once '../../includes/functions.php';
-//require_once '../../config/db.php';
 
 // Set headers to avoid mixed content warnings
 header('Content-Security-Policy: upgrade-insecure-requests');
@@ -11,31 +9,62 @@ header('Access-Control-Allow-Origin: *');
 
 use Dompdf\Dompdf;
 
-$article_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($article_id <= 0) {
-    http_response_code(400);
-    echo 'ID articol invalid.';
-    exit;
+// Support both GET (old method) and POST (new method with current page content)
+$isPostRequest = $_SERVER['REQUEST_METHOD'] === 'POST';
+
+if ($isPostRequest) {
+    // New method: receive current page content (possibly translated)
+    $jsonData = file_get_contents('php://input');
+    $data = json_decode($jsonData, true);
+    
+    if (!$data || !isset($data['article_id']) || !isset($data['title']) || !isset($data['content'])) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Missing required fields']);
+        exit;
+    }
+    
+    $article_id = intval($data['article_id']);
+    $title = $data['title'];
+    $content = $data['content'];
+    $author = $data['author'] ?? '';
+    $category = $data['category'] ?? '';
+    $created_at = $data['created_at'] ?? '';
+    $updated_at = $data['updated_at'] ?? '';
+    $language = $data['language'] ?? '';  // Track if translated
+    
+} else {
+    // Old method: GET request, fetch from database
+    $article_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    if ($article_id <= 0) {
+        http_response_code(400);
+        echo 'ID articol invalid.';
+        exit;
+    }
+
+    // Fetch article from database
+    $sql = 'SELECT a.title, a.content, a.created_at, a.updated_at, c.name AS category, u.first_name, u.last_name
+            FROM articles a
+            LEFT JOIN categories c ON a.category_id = c.id
+            LEFT JOIN users u ON a.user_id = u.id
+            WHERE a.id = ?';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$article_id]);
+    $article = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$article) {
+        http_response_code(404);
+        echo 'Articolul nu a fost găsit.';
+        exit;
+    }
+
+    $title = $article['title'];
+    $content = $article['content'];
+    $author = trim($article['first_name'] . ' ' . $article['last_name']);
+    $category = $article['category'] ?? 'Fără categorie';
+    $created_at = $article['created_at'];
+    $updated_at = $article['updated_at'];
+    $language = '';
 }
-
-// Preia articolul cu join la categorie și autor
-$sql = 'SELECT a.title, a.content, a.created_at, a.updated_at, c.name AS category, u.first_name, u.last_name
-        FROM articles a
-        LEFT JOIN categories c ON a.category_id = c.id
-        LEFT JOIN users u ON a.user_id = u.id
-        WHERE a.id = ?';
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$article_id]);
-$article = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$article) {
-    http_response_code(404);
-    echo 'Articolul nu a fost găsit.';
-    exit;
-}
-
-$author = trim($article['first_name'] . ' ' . $article['last_name']);
-$category = $article['category'] ?? 'Fără categorie';
 
 $html = '<html><head><meta charset="UTF-8">'
     . '<style>body { font-family: DejaVu Sans, sans-serif; }</style>'
@@ -87,9 +116,6 @@ try {
             trackUserActionDirect($analyticsData);
             
         }
-
-            // Return success
-            //echo json_encode(['success' => true]);
     }
 
 

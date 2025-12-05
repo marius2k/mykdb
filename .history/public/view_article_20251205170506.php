@@ -322,7 +322,15 @@ try {
             
             if (translation.success) {
                 // Update with translated content
-                titleEl.textContent = translation.title;
+                // Preserve the icon if it exists (first element of title)
+                const iconSpan = titleEl.querySelector('span.me-1');
+                if (iconSpan) {
+                    // Keep the icon and update only the text after it
+                    titleEl.innerHTML = iconSpan.outerHTML + escapeHtml(translation.title);
+                } else {
+                    // No icon, just update the text
+                    titleEl.textContent = translation.title;
+                }
                 contentEl.innerHTML = translation.content;
                 statusEl.textContent = '✓ Translated';
                 statusEl.style.color = '#27ae60';

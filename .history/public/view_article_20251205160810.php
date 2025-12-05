@@ -350,98 +350,6 @@ try {
             langSelect.disabled = false;
         }
     }
-
-    // Export current page content to PDF (including translations)
-    async function exportToPDF() {
-        try {
-            // Get current page content (may be translated)
-            const title = document.getElementById('article-title').innerText;
-            const content = document.getElementById('article-content').innerHTML;
-            const metaEl = document.getElementById('article-meta');
-            
-            // Extract metadata from page
-            let author = '';
-            let category = '';
-            let created_at = '';
-            let updated_at = '';
-            
-            if (metaEl && metaEl.innerText) {
-                const metaText = metaEl.innerText;
-                // Parse meta info (format: "Autor: Name | Categorie: Cat | Data: Date")
-                const authorMatch = metaText.match(/Autor[:\s]+([^|]+)/i);
-                const categoryMatch = metaText.match(/Categorie[:\s]+([^|]+)/i);
-                const dateMatch = metaText.match(/Data[:\s]+([^|]+)/i);
-                
-                author = authorMatch ? authorMatch[1].trim() : '';
-                category = categoryMatch ? categoryMatch[1].trim() : '';
-                created_at = dateMatch ? dateMatch[1].trim() : '';
-            }
-            
-            // Determine language (check if translated)
-            const langSelect = document.getElementById('translate-lang-select');
-            const currentLang = langSelect ? langSelect.value : '';
-            const language = currentLang && currentLang !== 'original' && currentLang !== '' 
-                ? currentLang.toUpperCase() 
-                : '';
-            
-            // Prepare data to send
-            const data = {
-                article_id: articleId,
-                title: title,
-                content: content,
-                author: author,
-                category: category,
-                created_at: created_at,
-                updated_at: updated_at,
-                language: language
-            };
-            
-            // Send POST request to generate PDF
-            const response = await fetch('<?= APP_URL ?>public/api/bkd_export_article.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                // Try to parse JSON error if available
-                let errText = '';
-                try {
-                    errText = await response.text();
-                } catch (e) {
-                    errText = response.statusText || 'Unknown error';
-                }
-                throw new Error('Failed to generate PDF: ' + errText);
-            }
-
-            // Verify the response is a PDF
-            const contentType = response.headers.get('Content-Type') || '';
-            if (!contentType.includes('application/pdf')) {
-                const text = await response.text();
-                console.error('Export API returned non-PDF response:', text);
-                throw new Error('Export failed: server did not return a PDF. See console for details.');
-            }
-
-            // Get PDF blob and download it
-            const arrayBuffer = await response.arrayBuffer();
-            const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'article_' + articleId + (language ? '_' + language : '') + '.pdf';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            
-        } catch (error) {
-            console.error('PDF export error:', error);
-            alert('Failed to export PDF: ' + error.message);
-        }
-    }
 </script>
 
 <style>
@@ -588,7 +496,7 @@ function loadArticle() {
             
             // Bookmark + export to PDF
             let bookmarkHtml = '';
-            bookmarkHtml += `<a href="javascript:void(0)" onclick="exportToPDF()" title="Export to PDF" style="margin-left:20px; display:inline-block;">
+            bookmarkHtml += `<a href="<?=APP_URL?>public/api/bkd_export_article.php?id=${data.id}" title="Export to PDF" style="margin-left:20px; display:inline-block;">
                         <img src="<?=APP_URL?>assets/icons/icon-pdf.png" alt="Export PDF" style="height:35px; vertical-align:middle; cursor:pointer;">
                     </a>&nbsp;&nbsp;&nbsp;&nbsp;`;
 

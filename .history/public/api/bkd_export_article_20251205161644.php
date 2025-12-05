@@ -95,14 +95,14 @@ $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 
-// Track the PDF download (KEEP ANALYTICS)
+// Track the PDF download
 $userId = isset($_SESSION['user']) ? $_SESSION['user']['id'] : null;
-$fileName = 'article_' . $article_id . ($language ? '_' . $language : '') . '.pdf';
+$fileName = 'article_' . $article_id . '.pdf';
 try {
     // Initialize database connection
     $db = new Database();
     
-    // Record the PDF download in file_downloads table
+    // Record the PDF download
     $downloadData = [
         'user_id' => $userId,
         'article_id' => $article_id,
@@ -115,7 +115,7 @@ try {
     
     $db->insert('file_downloads', $downloadData);
 
-    // Also record in user_activity_analytics for unified reporting
+     // Also record in user_activity_analytics for unified reporting
     if ($userId && file_exists(APP_ROOT . '/public/api/bkd_user_analytics.php')) {
         require_once APP_ROOT . '/public/api/bkd_user_analytics.php';
         if (function_exists('trackUserActionDirect')) {
@@ -126,14 +126,16 @@ try {
                 'value' => 1
             ];
             trackUserActionDirect($analyticsData);
+            
         }
     }
+
+
 } catch (Exception $e) {
     // Log error but continue with download
     error_log('Error tracking PDF download: ' . $e->getMessage());
 }
 
-// Output PDF
 header('Content-Type: application/pdf');
 header('Content-Disposition: attachment; filename="' . $fileName . '"');
 echo $dompdf->output();

@@ -405,29 +405,13 @@ try {
                 credentials: 'same-origin',
                 body: JSON.stringify(data)
             });
-
+            
             if (!response.ok) {
-                // Try to parse JSON error if available
-                let errText = '';
-                try {
-                    errText = await response.text();
-                } catch (e) {
-                    errText = response.statusText || 'Unknown error';
-                }
-                throw new Error('Failed to generate PDF: ' + errText);
+                throw new Error('Failed to generate PDF');
             }
-
-            // Verify the response is a PDF
-            const contentType = response.headers.get('Content-Type') || '';
-            if (!contentType.includes('application/pdf')) {
-                const text = await response.text();
-                console.error('Export API returned non-PDF response:', text);
-                throw new Error('Export failed: server did not return a PDF. See console for details.');
-            }
-
+            
             // Get PDF blob and download it
-            const arrayBuffer = await response.arrayBuffer();
-            const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+            const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;

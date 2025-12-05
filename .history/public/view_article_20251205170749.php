@@ -321,8 +321,22 @@ try {
             const translation = translationCache[selectedValue];
             
             if (translation.success) {
-                // Update with translated content
-                titleEl.textContent = translation.title;
+                // Extract icon from current title (if exists)
+                const currentTitleHTML = titleEl.innerHTML;
+                let iconHTML = '';
+                
+                // Check if there's an icon (img or span with icon)
+                const imgMatch = currentTitleHTML.match(/(<img[^>]*class="[^"]*me-1[^"]*"[^>]*>)/);
+                const spanMatch = currentTitleHTML.match(/(<span[^>]*class="[^"]*me-1[^"]*"[^>]*>.*?<\/span>)/);
+                
+                if (imgMatch) {
+                    iconHTML = imgMatch[1];
+                } else if (spanMatch) {
+                    iconHTML = spanMatch[1];
+                }
+                
+                // Update with translated content, preserving icon
+                titleEl.innerHTML = iconHTML + escapeHtml(translation.title);
                 contentEl.innerHTML = translation.content;
                 statusEl.textContent = '✓ Translated';
                 statusEl.style.color = '#27ae60';

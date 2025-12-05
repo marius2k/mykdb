@@ -66,7 +66,7 @@ services:
       - "5000:5000"
     environment:
       LT_DISABLE_WEB_UI: "false"
-      LT_LOAD_ONLY: "en,ro,es,fr,de"  # Load only these languages for faster startup
+      LT_UPDATE_MODELS: "true"
     networks:
       - mykdb-network
 
