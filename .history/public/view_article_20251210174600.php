@@ -605,8 +605,7 @@ function loadArticle() {
             
             // Adaugă change_note dacă există și este o versiune specifică
             if (data.is_version && data.change_note) {
-                metaHtml += `<br><small style="color: #7f8c8d; font-style: italic;"><strong><?= lang('lang_art_change_note'); ?></strong> ${escapeHtml(data.change_note)}</small>`;
-            }
+                metaHtml += `<br><small style="color: #7f8c8d; font-style: italic;"><strong><?= lang('lang_art_change_note
             
             document.getElementById('article-meta').innerHTML = metaHtml;
 

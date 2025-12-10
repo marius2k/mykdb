@@ -1,0 +1,46 @@
+MYKDB Migration Backup Information
+===================================
+Backup Date: luni 8 decembrie 2025, 13:56:33 +0200
+Source Machine: LenovoT480
+Source User: marius
+Source Path: /home/marius/work/projects/mykdb
+
+Docker Information:
+-------------------
+Docker Version: Docker version 28.5.0, build 887030f
+Docker Compose Version: 
+
+Database Information:
+---------------------
+Database Name: knowledge_db
+Database Size: 220M
+MySQL Version: mysql  Ver 8.0.42 for Linux on x86_64 (MySQL Community Server - GPL)
+
+Containers Status:
+------------------
+mykdb-translator	Up 13 hours	0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp
+mykdb-phpmyadmin	Up 13 hours	0.0.0.0:8081->80/tcp, [::]:8081->80/tcp
+mykdb-webapp	Up 13 hours	0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+mykdb-db	Up 13 hours	3306/tcp, 33060/tcp
+
+Network Information:
+--------------------
+9b8f9af11eea   mykdb_mykdb-network   bridge    local
+
+Volume Information:
+-------------------
+local     mykdb_db_data
+
+Files in this backup:
+---------------------
+mykdb_backup_20251208_135629_database.sql     - MySQL database dump
+mykdb_backup_20251208_135629_volume.tar.gz    - Docker volume data
+mykdb_backup_20251208_135629_project.tar.gz   - Project source code
+mykdb_backup_20251208_135629_info.txt         - This file
+restore_on_new_machine.sh       - Restoration script
+
+Instructions:
+-------------
+1. Copy the entire 'migration_backup' folder to the new machine
+2. On the new machine, run: bash restore_on_new_machine.sh
+3. Follow the prompts

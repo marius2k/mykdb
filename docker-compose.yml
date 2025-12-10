@@ -30,6 +30,7 @@ services:
       # Montează codul sursă direct în container.
       # Orice modificare în codul tău va fi reflectată instant în container, fără a reconstrui imaginea.
       - .:/var/www/html
+      - /opt/lampp/htdocs/pgallery:/var/www/html/pgallery
     networks:
       - mykdb-network
     # Specifică faptul că serviciul `webapp` depinde de serviciul `db`.
