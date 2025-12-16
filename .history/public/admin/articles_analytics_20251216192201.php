@@ -211,8 +211,7 @@ const TRANSLATIONS = {
     public_views: '<?= lang('lang_analytics_public_views') ?>',
     admin_views: '<?= lang('lang_analytics_admin_views') ?>',
     public_reading_time_seconds: '<?= lang('lang_analytics_public_reading_time_seconds') ?>',
-    admin_label: '<?= lang('lang_analytics_admin_label') ?>',
-    user_reactions: '<?= lang('lang_analytics_user_reactions') ?>'
+    admin_label: '<?= lang('lang_analytics_admin_label') ?>'
 };
 
 // Variabile globale
@@ -319,7 +318,6 @@ function displayWeeklyStats(stats, period = '7') {
             color: '#f1c40f' // Yellow
         },
         {
-            topText: TRANSLATIONS.user_reactions,
             counter: formatNumber(stats.weekly_likes || 0),
             bottomText: TRANSLATIONS.likes,
             color: '#e74c3c' // Red
@@ -344,7 +342,7 @@ function displayWeeklyStats(stats, period = '7') {
         metricsData.map((metric, index) => 
             React.createElement(MetricsInfoBox, {
                 key: index,
-                topText: metric.topText || '\u00A0',
+                topText: metric.topText || '',
                 counter: metric.counter,
                 bottomText: metric.bottomText,
                 color: metric.color

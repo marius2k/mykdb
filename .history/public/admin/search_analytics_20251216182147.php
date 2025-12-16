@@ -123,7 +123,7 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 .analytics-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0px;
+    gap: 20px;
     /*margin: 20px 0;*/
 }
 
@@ -211,11 +211,8 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 <!-- React and CardInfoBox Component -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="<?= APP_URL ?>assets/js/react-components-dist/CardInfoBox.js"></script>
-<script src="<?= APP_URL ?>assets/js/react-components/MetricsInfoBox.jsx" type="text/babel"></script>
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/CardInfoBox.css">
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/MetricsInfoBox.css">
 
 <div class="breadcrumb-filter-section" style="display: flex; justify-content: space-between; align-items: center; width: 100vw; padding: 6px 20px; margin-top: 0; margin-bottom: 0; margin-left: calc(-50vw + 50%);">
     <nav aria-label="breadcrumb">
@@ -260,7 +257,28 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
     <div class="section-content active" id="overview-section">
         
         <!-- Metrics Cards -->
-        <div id="overview-metrics-root"></div>
+        <div class="metrics-grid">
+            <div class="metric-card searches">
+                <h3><?= lang('lang_search_analytics_total_searches') ?></h3>
+                <p class="metric-value" id="total-searches"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_in_last_days') ?> <span id="period-label"><?= $period ?></span> <?= lang('lang_search_analytics_days') ?></p>
+            </div>
+            <div class="metric-card queries">
+                <h3><?= lang('lang_search_analytics_unique_queries') ?></h3>
+                <p class="metric-value" id="unique-queries"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_different_terms') ?></p>
+            </div>
+            <div class="metric-card users">
+                <h3><?= lang('lang_search_analytics_unique_users') ?></h3>
+                <p class="metric-value" id="unique-users"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_users_searching') ?></p>
+            </div>
+            <div class="metric-card results">
+                <h3><?= lang('lang_search_analytics_avg_results') ?></h3>
+                <p class="metric-value" id="avg-results"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_results_per_search') ?></p>
+            </div>
+        </div>
         
         <!-- Search Trends Chart wrapped in CardInfoBox -->
         <div id="search-trends-root"></div>
@@ -272,42 +290,99 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
     <!-- Search Queries Section -->
     <div class="section-content" id="queries-section">
         <div class="analytics-grid">
-            <!-- Top Searches wrapped in CardInfoBox -->
-            <div id="top-searches-root"></div>
+            <!-- Top Searches -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-top-search.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_top_searches') ?></h4>
+                <div id="top-searches-container"><?= lang('lang_search_analytics_loading') ?></div>
+            </div>
             
-            <!-- Zero Results Searches wrapped in CardInfoBox -->
-            <div id="zero-results-root"></div>
+            <!-- Zero Results Searches -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-search-no-results.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_no_results') ?></h4>
+                <p style="color: #666; font-size: 0.9em;"><?= lang('lang_search_analytics_no_results_desc') ?></p>
+                <div id="zero-results-container"><?= lang('lang_search_analytics_loading') ?></div>
+            </div>
         </div>
     </div> <!-- Close queries-section -->
     
     <!-- Performance Section -->
     <div class="section-content" id="performance-section">
         <div class="analytics-grid">
-            <!-- Click-Through Rates wrapped in CardInfoBox -->
-            <div id="ctr-root"></div>
+            <!-- Click-Through Rates -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-search-click-rates.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_click_through_rates') ?></h4>
+                <p style="color: #666; font-size: 0.9em;"><?= lang('lang_search_analytics_ctr_desc') ?></p>
+                <div id="ctr-container"><?= lang('lang_search_analytics_loading') ?></div>
+            </div>
             
-            <!-- Most Clicked Articles wrapped in CardInfoBox -->
-            <div id="clicked-articles-root"></div>
+            <!-- Most Clicked Articles -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-search-most-clicked.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_most_clicked') ?></h4>
+                <div id="clicked-articles-container"><?= lang('lang_search_analytics_loading') ?></div>
+            </div>
             
-            <!-- Click Position Distribution wrapped in CardInfoBox -->
-            <div id="position-distribution-root"></div>
+            <!-- Click Position Distribution -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-search-click-position.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_click_position') ?></h4>
+                <p style="color: #666; font-size: 0.9em;"><?= lang('lang_search_analytics_click_position_desc') ?></p>
+                <div id="position-container">
+                    <div class="chart-container">
+                        <canvas id="positionChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </div> <!-- Close performance-section -->
     
     <!-- User Behavior Section -->
     <div class="section-content" id="user-behavior-section">
         <!-- Search Behavior Metrics Cards -->
-        <div id="user-behavior-metrics-root" style="margin-bottom: 30px;"></div>
+        <div class="metrics-grid" style="margin-bottom: 30px;">
+            <div class="metric-card" style="border-left-color: #9b59b6;">
+                <h3><?= lang('lang_search_analytics_total_searches') ?></h3>
+                <p class="metric-value" id="behavior-total-searches">0</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_search_queries_metric') ?></p>
+            </div>
+            <div class="metric-card" style="border-left-color: #3498db;">
+                <h3><?= lang('lang_search_analytics_unique_users') ?></h3>
+                <p class="metric-value" id="behavior-unique-users">0</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_users_searching') ?></p>
+            </div>
+            <div class="metric-card" style="border-left-color: #2ecc71;">
+                <h3><?= lang('lang_search_analytics_click_rate') ?></h3>
+                <p class="metric-value" id="behavior-click-rate">0%</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_searches_with_clicks') ?></p>
+            </div>
+            <div class="metric-card" style="border-left-color: #f39c12;">
+                <h3><?= lang('lang_search_analytics_avg_position') ?></h3>
+                <p class="metric-value" id="behavior-avg-position">0</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_clicked_result_position') ?></p>
+            </div>
+        </div>
         
         <div class="analytics-grid">
-            <!-- Top Search Queries by Users wrapped in CardInfoBox -->
-            <div id="user-top-queries-root"></div>
+            <!-- Top Search Queries by Users -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-search-popular.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_popular_queries') ?></h4>
+                <p style="color: #666; font-size: 0.9em;"><?= lang('lang_search_analytics_popular_queries_desc') ?></p>
+                <div id="user-top-queries-container"><?= lang('lang_search_analytics_loading') ?></div>
+            </div>
             
-            <!-- Most Clicked Articles by Users wrapped in CardInfoBox -->
-            <div id="user-clicked-articles-root"></div>
+            <!-- Most Clicked Articles by Users -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-search-most-clicked.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_articles_found') ?></h4>
+                <p style="color: #666; font-size: 0.9em;"><?= lang('lang_search_analytics_articles_found_desc') ?></p>
+                <div id="user-clicked-articles-container"><?= lang('lang_search_analytics_loading') ?></div>
+            </div>
             
-            <!-- Recent Search Activity wrapped in CardInfoBox -->
-            <div id="recent-search-activity-root"></div>
+            <!-- Recent Search Activity -->
+            <div class="widget">
+                <h4><img src="<?=APP_URL?>assets/icons/icon-search-recent.svg" width="40">&nbsp;&nbsp;<?= lang('lang_search_analytics_recent_activity') ?></h4>
+                <p style="color: #666; font-size: 0.9em;"><?= lang('lang_search_analytics_recent_activity_desc') ?></p>
+                <div id="recent-search-activity-container" style="max-height: 500px; overflow-y: auto;">
+                    <p style="color: #999; text-align: center; padding: 20px;"><?= lang('lang_search_analytics_loading') ?></p>
+                </div>
+            </div>
         </div>
     </div> <!-- Close user-behavior-section -->
     
@@ -340,17 +415,6 @@ const TRANSLATIONS = {
     no_recent: '<?= lang('lang_search_analytics_no_recent') ?>',
     loading: '<?= lang('lang_search_analytics_loading') ?>',
     guest: '<?= lang('lang_search_analytics_guest') ?>',
-    
-    // Metrics labels
-    in_last_days: '<?= lang('lang_search_analytics_in_last_days') ?>',
-    days: '<?= lang('lang_search_analytics_days') ?>',
-    different_terms: '<?= lang('lang_search_analytics_different_terms') ?>',
-    users_searching: '<?= lang('lang_search_analytics_users_searching') ?>',
-    results_per_search: '<?= lang('lang_search_analytics_results_per_search') ?>',
-    search_queries_metric: '<?= lang('lang_search_analytics_search_queries_metric') ?>',
-    searches_with_clicks: '<?= lang('lang_search_analytics_searches_with_clicks') ?>',
-    clicked_result_position: '<?= lang('lang_search_analytics_clicked_result_position') ?>',
-    click_rate: '<?= lang('lang_search_analytics_click_rate') ?>',
     
     // Chart labels
     chart_searches: '<?= lang('lang_search_analytics_chart_searches') ?>',
@@ -443,188 +507,6 @@ function renderUserSearchStatsCard() {
         React.createElement(CardInfoBox, {
             icon: '<?= APP_URL ?>assets/icons/icon-search-over-time.svg',
             title: '<?= lang('lang_search_analytics_search_activity') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-// Render functions for Search Queries section
-function renderTopSearchesCard() {
-    const root = ReactDOM.createRoot(document.getElementById('top-searches-root'));
-    
-    const bodyContent = React.createElement('div', {
-        id: 'top-searches-container'
-    }, '<?= lang('lang_search_analytics_loading') ?>');
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-top-search.svg',
-            title: '<?= lang('lang_search_analytics_top_searches') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderZeroResultsCard() {
-    const root = ReactDOM.createRoot(document.getElementById('zero-results-root'));
-    
-    const bodyContent = React.createElement('div', null,
-        React.createElement('p', {
-            style: { color: '#666', fontSize: '0.9em' }
-        }, '<?= lang('lang_search_analytics_no_results_desc') ?>'),
-        React.createElement('div', {
-            id: 'zero-results-container'
-        }, '<?= lang('lang_search_analytics_loading') ?>')
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-search-no-results.svg',
-            title: '<?= lang('lang_search_analytics_no_results') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-// Render functions for Performance section
-function renderCTRCard() {
-    const root = ReactDOM.createRoot(document.getElementById('ctr-root'));
-    
-    const bodyContent = React.createElement('div', null,
-        React.createElement('p', {
-            style: { color: '#666', fontSize: '0.9em' }
-        }, '<?= lang('lang_search_analytics_ctr_desc') ?>'),
-        React.createElement('div', {
-            id: 'ctr-container'
-        }, '<?= lang('lang_search_analytics_loading') ?>')
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-search-click-rates.svg',
-            title: '<?= lang('lang_search_analytics_click_through_rates') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderClickedArticlesCard() {
-    const root = ReactDOM.createRoot(document.getElementById('clicked-articles-root'));
-    
-    const bodyContent = React.createElement('div', {
-        id: 'clicked-articles-container'
-    }, '<?= lang('lang_search_analytics_loading') ?>');
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-search-most-clicked.svg',
-            title: '<?= lang('lang_search_analytics_most_clicked') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderPositionDistributionCard() {
-    const root = ReactDOM.createRoot(document.getElementById('position-distribution-root'));
-    
-    const bodyContent = React.createElement('div', null,
-        React.createElement('p', {
-            style: { color: '#666', fontSize: '0.9em' }
-        }, '<?= lang('lang_search_analytics_click_position_desc') ?>'),
-        React.createElement('div', {
-            id: 'position-container'
-        },
-            React.createElement('div', {
-                className: 'chart-container'
-            },
-                React.createElement('canvas', {
-                    id: 'positionChart'
-                })
-            )
-        )
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-search-click-position.svg',
-            title: '<?= lang('lang_search_analytics_click_position') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-// Render functions for User Behavior section
-function renderUserTopQueriesCard() {
-    const root = ReactDOM.createRoot(document.getElementById('user-top-queries-root'));
-    
-    const bodyContent = React.createElement('div', null,
-        React.createElement('p', {
-            style: { color: '#666', fontSize: '0.9em' }
-        }, '<?= lang('lang_search_analytics_popular_queries_desc') ?>'),
-        React.createElement('div', {
-            id: 'user-top-queries-container'
-        }, '<?= lang('lang_search_analytics_loading') ?>')
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-search-popular.svg',
-            title: '<?= lang('lang_search_analytics_popular_queries') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderUserClickedArticlesCard() {
-    const root = ReactDOM.createRoot(document.getElementById('user-clicked-articles-root'));
-    
-    const bodyContent = React.createElement('div', null,
-        React.createElement('p', {
-            style: { color: '#666', fontSize: '0.9em' }
-        }, '<?= lang('lang_search_analytics_articles_found_desc') ?>'),
-        React.createElement('div', {
-            id: 'user-clicked-articles-container'
-        }, '<?= lang('lang_search_analytics_loading') ?>')
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-search-most-clicked.svg',
-            title: '<?= lang('lang_search_analytics_articles_found') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderRecentActivityCard() {
-    const root = ReactDOM.createRoot(document.getElementById('recent-search-activity-root'));
-    
-    const bodyContent = React.createElement('div', null,
-        React.createElement('p', {
-            style: { color: '#666', fontSize: '0.9em' }
-        }, '<?= lang('lang_search_analytics_recent_activity_desc') ?>'),
-        React.createElement('div', {
-            id: 'recent-search-activity-container',
-            style: { maxHeight: '500px', overflowY: 'auto' }
-        },
-            React.createElement('p', {
-                style: { color: '#999', textAlign: 'center', padding: '20px' }
-            }, '<?= lang('lang_search_analytics_loading') ?>')
-        )
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-search-recent.svg',
-            title: '<?= lang('lang_search_analytics_recent_activity') ?>',
             body: bodyContent,
             defaultOpen: false
         })
@@ -765,50 +647,10 @@ async function loadDashboardData(period = currentPeriod) {
 }
 
 function updateMetrics(metrics) {
-    const root = document.getElementById('overview-metrics-root');
-    
-    const metricsData = [
-        {
-            topText: TRANSLATIONS.total_searches,
-            counter: formatNumber(metrics.total_searches || 0),
-            bottomText: `${TRANSLATIONS.in_last_days} ${currentPeriod} ${TRANSLATIONS.days}`,
-            color: '#3498db' // Blue
-        },
-        {
-            topText: TRANSLATIONS.unique_queries,
-            counter: formatNumber(metrics.unique_queries || 0),
-            bottomText: TRANSLATIONS.different_terms,
-            color: '#9b59b6' // Purple
-        },
-        {
-            topText: TRANSLATIONS.unique_users,
-            counter: formatNumber(metrics.unique_users || 0),
-            bottomText: TRANSLATIONS.users_searching,
-            color: '#2ecc71' // Green
-        },
-        {
-            topText: TRANSLATIONS.avg_results,
-            counter: parseFloat(metrics.avg_results || 0).toFixed(1),
-            bottomText: TRANSLATIONS.results_per_search,
-            color: '#f39c12' // Orange
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '\u00A0',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    document.getElementById('total-searches').textContent = formatNumber(metrics.total_searches || 0);
+    document.getElementById('unique-queries').textContent = formatNumber(metrics.unique_queries || 0);
+    document.getElementById('unique-users').textContent = formatNumber(metrics.unique_users || 0);
+    document.getElementById('avg-results').textContent = parseFloat(metrics.avg_results || 0).toFixed(1);
 }
 
 function updateTopSearches(searches) {
@@ -1168,72 +1010,68 @@ function updateTrendsChart(trends) {
             }
         }
     });
-    }, 100);
 }
 
 function updatePositionChart(positionStats) {
-    // Wait for React to render the CardInfoBox before accessing the canvas
-    setTimeout(() => {
-        const container = document.getElementById('position-container');
-        
-        if (!positionStats || positionStats.length === 0) {
-            if (container) {
-                container.innerHTML = `<div class="no-data">${TRANSLATIONS.no_position_data}</div>`;
-            }
-            return;
+    const container = document.getElementById('position-container');
+    
+    if (!positionStats || positionStats.length === 0) {
+        if (container) {
+            container.innerHTML = `<div class="no-data">${TRANSLATIONS.no_position_data}</div>`;
         }
-        
-        // Ensure we have the chart container with canvas
-        if (container && !document.getElementById('positionChart')) {
-            console.log('Recreating position canvas element...');
-            container.innerHTML = '<div class="chart-container"><canvas id="positionChart"></canvas></div>';
-        }
-        
-        const labels = positionStats.map(p => `${TRANSLATIONS.chart_position} ${p.position}`);
-        const clicks = positionStats.map(p => parseInt(p.clicks));
-        
-        if (positionChart) {
-            positionChart.destroy();
-        }
-        
-        const canvas = document.getElementById('positionChart');
-        if (!canvas) {
-            console.warn('Position chart canvas not found');
-            return;
-        }
-        
-        const ctx = canvas.getContext('2d');
-        positionChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: TRANSLATIONS.chart_clicks,
-                    data: clicks,
-                    backgroundColor: '#3498db',
-                    borderColor: '#2980b9',
-                    borderWidth: 1
-                }]
+        return;
+    }
+    
+    // Ensure we have the chart container with canvas
+    if (container && !document.getElementById('positionChart')) {
+        console.log('Recreating position canvas element...');
+        container.innerHTML = '<div class="chart-container"><canvas id="positionChart"></canvas></div>';
+    }
+    
+    const labels = positionStats.map(p => `${TRANSLATIONS.chart_position} ${p.position}`);
+    const clicks = positionStats.map(p => parseInt(p.clicks));
+    
+    if (positionChart) {
+        positionChart.destroy();
+    }
+    
+    const canvas = document.getElementById('positionChart');
+    if (!canvas) {
+        console.warn('Position chart canvas not found');
+        return;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    positionChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: TRANSLATIONS.chart_clicks,
+                data: clicks,
+                backgroundColor: '#3498db',
+                borderColor: '#2980b9',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
                     }
                 }
             }
-        });
-    }, 100);
+        }
+    });
 }
 
 
@@ -1482,50 +1320,10 @@ function processUserBehaviorData(data) {
 
 // Display user behavior metrics
 function displayUserBehaviorMetrics(metrics) {
-    const root = document.getElementById('user-behavior-metrics-root');
-    
-    const metricsData = [
-        {
-            topText: TRANSLATIONS.total_searches,
-            counter: formatNumber(metrics.totalSearches),
-            bottomText: TRANSLATIONS.search_queries_metric,
-            color: '#9b59b6' // Purple
-        },
-        {
-            topText: TRANSLATIONS.unique_users,
-            counter: formatNumber(metrics.uniqueUsers),
-            bottomText: TRANSLATIONS.users_searching,
-            color: '#3498db' // Blue
-        },
-        {
-            topText: TRANSLATIONS.click_rate,
-            counter: metrics.clickRate + '%',
-            bottomText: TRANSLATIONS.searches_with_clicks,
-            color: '#2ecc71' // Green
-        },
-        {
-            topText: TRANSLATIONS.avg_position,
-            counter: metrics.avgPosition,
-            bottomText: TRANSLATIONS.clicked_result_position,
-            color: '#f39c12' // Orange
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '\u00A0',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    document.getElementById('behavior-total-searches').textContent = formatNumber(metrics.totalSearches);
+    document.getElementById('behavior-unique-users').textContent = formatNumber(metrics.uniqueUsers);
+    document.getElementById('behavior-click-rate').textContent = metrics.clickRate + '%';
+    document.getElementById('behavior-avg-position').textContent = metrics.avgPosition;
 }
 
 // Display top queries by users
@@ -1717,20 +1515,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Render CardInfoBox components for Overview section
     renderSearchTrendsCard();
     renderUserSearchStatsCard();
-    
-    // Render CardInfoBox components for Search Queries section
-    renderTopSearchesCard();
-    renderZeroResultsCard();
-    
-    // Render CardInfoBox components for Performance section
-    renderCTRCard();
-    renderClickedArticlesCard();
-    renderPositionDistributionCard();
-    
-    // Render CardInfoBox components for User Behavior section
-    renderUserTopQueriesCard();
-    renderUserClickedArticlesCard();
-    renderRecentActivityCard();
     
     // Set initial section based on active tab
     const activeTab = document.querySelector('.section-tab.active');

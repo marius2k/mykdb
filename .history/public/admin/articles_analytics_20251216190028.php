@@ -17,7 +17,6 @@ if ($lang === 'en') $lang = 'en-GB';
 
 <!-- Component CSS -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/CardInfoBox.css">
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/MetricsInfoBox.css">
 
 <!-- React CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -27,7 +26,6 @@ if ($lang === 'en') $lang = 'en-GB';
 <!-- CardInfoBox Component (Compiled from JSX) -->
 <script src="<?= APP_URL ?>assets/js/react-components-dist/CardInfoBox.js"></script>
 <script src="<?= APP_URL ?>assets/js/react-components/CardInfoBoxClosable.jsx" type="text/babel"></script>
-<script src="<?= APP_URL ?>assets/js/react-components/MetricsInfoBox.jsx" type="text/babel"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -160,7 +158,9 @@ if ($lang === 'en') $lang = 'en-GB';
 </div>
 <div class="analytics-container">
     <!-- Statistici generale -->
-    <div id="weekly-stats-root"></div>
+    <div class="stats-grid" id="weekly-stats">
+        <!-- Se populează dinamic -->
+    </div>
     
     
     
@@ -211,8 +211,7 @@ const TRANSLATIONS = {
     public_views: '<?= lang('lang_analytics_public_views') ?>',
     admin_views: '<?= lang('lang_analytics_admin_views') ?>',
     public_reading_time_seconds: '<?= lang('lang_analytics_public_reading_time_seconds') ?>',
-    admin_label: '<?= lang('lang_analytics_admin_label') ?>',
-    user_reactions: '<?= lang('lang_analytics_user_reactions') ?>'
+    admin_label: '<?= lang('lang_analytics_admin_label') ?>'
 };
 
 // Variabile globale
@@ -309,50 +308,35 @@ async function loadArticleDetailsByClick(articleId) {
 
 // Funcție pentru afișarea statisticilor săptămânale
 function displayWeeklyStats(stats, period = '7') {
-    const root = document.getElementById('weekly-stats-root');
-    
-    const metricsData = [
-        {
-            topText: TRANSLATIONS.public_views,
-            counter: formatNumber(stats.weekly_public_views || 0),
-            bottomText: `${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_views || 0)}`,
-            color: '#f1c40f' // Yellow
-        },
-        {
-            topText: TRANSLATIONS.user_reactions,
-            counter: formatNumber(stats.weekly_likes || 0),
-            bottomText: TRANSLATIONS.likes,
-            color: '#e74c3c' // Red
-        },
-        {
-            topText: TRANSLATIONS.avg_public_reading_time,
-            counter: formatTime(stats.avg_weekly_public_reading_time || 0),
-            bottomText: `${TRANSLATIONS.admin_label}: ${formatTime(stats.avg_weekly_admin_reading_time || 0)}`,
-            color: '#2ecc71' // Green
-        },
-        {
-            topText: TRANSLATIONS.reading_sessions,
-            counter: formatNumber(stats.weekly_public_reading_sessions || 0),
-            bottomText: `${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_reading_sessions || 0)}`,
-            color: '#3498db' // Blue
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '\u00A0',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    //const periodLabel = period === '7' ? 'this week' : `last ${period} days`;
+    const container = document.getElementById('weekly-stats');
+    container.innerHTML = `
+        <div class="stat-card views">
+            <div class="stat-value">${formatNumber(stats.weekly_public_views || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.public_views}</div>
+            <div class="stat-sublabel" style="font-size: 1em; color: #95a5a6; margin-top: 2px; margin-left: 10px;">
+                ${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_views || 0)}
+            </div>
+        </div>
+        <div class="stat-card likes">
+            <div class="stat-value">${formatNumber(stats.weekly_likes || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.likes}</div>
+        </div>
+        <div class="stat-card reading">
+            <div class="stat-value">${formatTime(stats.avg_weekly_public_reading_time || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.avg_public_reading_time}</div>
+            <div class="stat-sublabel" style="font-size: 1em; color: #95a5a6; margin-top: 2px; margin-left: 10px;">
+                ${TRANSLATIONS.admin_label}: ${formatTime(stats.avg_weekly_admin_reading_time || 0)}
+            </div>
+        </div>
+        <div class="stat-card engagement">
+            <div class="stat-value">${formatNumber(stats.weekly_public_reading_sessions || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.reading_sessions}</div>
+            <div class="stat-sublabel" style="font-size: 1em; color: #95a5a6; margin-top: 2px; margin-left: 10px;">
+                ${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_reading_sessions || 0)}
+            </div>
+        </div>
+    `;
 }
 
 // Funcție pentru afișarea graficului de performanță

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storeify Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1d2e;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #1a1d2e;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #2a2d3e;
+        }
+
+        .logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2a2d3e;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .search {
+            padding: 16px;
+            border-bottom: 1px solid #2a2d3e;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #252837;
+            border: 1px solid #2a2d3e;
+            border-radius: 8px;
+            color: #8b8d98;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #5a5c6a;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        .nav-title {
+            padding: 0 20px;
+            font-size: 11px;
+            color: #5a5c6a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #8b8d98;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: #252837;
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: #252837;
+            color: #fff;
+            border-left: 3px solid #667eea;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Capacity Widget */
+        .capacity-widget {
+            margin: 20px;
+            padding: 20px;
+            background: #252837;
+            border-radius: 12px;
+        }
+
+        .capacity-circle {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+
+        .circle-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#667eea 0% 60%, #2a2d3e 60% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle-inner {
+            width: 60px;
+            height: 60px;
+            background: #252837;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .capacity-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .capacity-text {
+            font-size: 12px;
+            color: #8b8d98;
+            margin-bottom: 16px;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 10px;
+            background: #667eea;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .upgrade-btn:hover {
+            background: #5568d3;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            border-top: 1px solid #2a2d3e;
+        }
+
+        .user-profile {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: #5a5c6a;
+        }
+
+        .user-status {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            background: linear-gradient(135deg, #b8c6db 0%, #d5dce8 100%);
+            position: relative;
+        }
+
+        /* Media Player */
+        .media-player {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(42, 45, 62, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .player-btn {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+
+        .player-btn:hover {
+            opacity: 0.7;
+        }
+
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .player-icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">📦</div>
+                <div class="logo-text">Storeify</div>
+            </div>
+
+            <div class="search">
+                <input type="text" class="search-input" placeholder="Search for anything...">
+            </div>
+
+            <nav class="nav">
+                <div class="nav-section">
+                    <div class="nav-title">Main</div>
+                    <a href="#" class="nav-item active">
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📦</span>
+                        <span>Orders</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📄</span>
+                        <span>Documentation</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">🗺️</span>
+                        <span>Map Overview</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📊</span>
+                        <span>Statistics</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Communication</div>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">💬</span>
+                        <span>Communication</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">👥</span>
+                        <span>Couriers</span>
+                    </a>
+                </div>
+                <div class="capacity-widget">
+                    <div class="capacity-circle">
+                        <div class="circle-bg">
+                            <div class="circle-inner">60%</div>
+                        </div>
+                    </div>
+                    <div class="capacity-title">Used Capacity</div>
+                    <div class="capacity-text">You are already using 60% of your capacity.</div>
+                    <button class="upgrade-btn">Upgrade plan</button>
+                </div>
+            </nav>
+
+            <div class="bottom-nav">
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">❓</span>
+                    <span>Help</span>
+                </a>
+                <div class="user-profile">
+                    <div class="user-avatar"></div>
+                    <div class="user-info">
+                        <div class="user-name">Joe Doe</div>
+                        <div class="user-email">joe.doe@there.ai</div>
+                    </div>
+                    <div class="user-status"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Media Player -->
+            <div class="media-player">
+                <button class="player-btn">
+                    <svg class="player-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <button class="player-btn">
+                    <svg class="player-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 6h4v12H6V6zm8 0h4v12h-4V6z"/>
+                    </svg>
+                </button>
+                <button class="player-btn">
+                    <span style="font-size: 10px;">-30</span>
+                </button>
+                <button class="player-btn play-btn">
+                    <svg class="player-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+                <button class="player-btn">
+                    <span style="font-size: 10px;">+30</span>
+                </button>
+                <button class="player-btn">
+                    <svg class="player-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 6h4v12H6V6zm8 0h4v12h-4V6z"/>
+                    </svg>
+                </button>
+                <button class="player-btn">
+                    <svg class="player-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

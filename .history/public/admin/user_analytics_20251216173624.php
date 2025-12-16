@@ -36,16 +36,13 @@ try {
 
 <!-- Component CSS -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/CardInfoBox.css">
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/MetricsInfoBox.css">
 
 <!-- React CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- CardInfoBox Component (Compiled from JSX) -->
 <script src="<?= APP_URL ?>assets/js/react-components-dist/CardInfoBox.js"></script>
-<script src="<?= APP_URL ?>assets/js/react-components/MetricsInfoBox.jsx" type="text/babel"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -270,7 +267,24 @@ try {
     <!-- User Engagement Tab -->
     <div class="tab-content active" id="user-engagement-tab">
         <!-- User Engagement Overview Stats -->
-        <div id="user-engagement-metrics-root"></div>
+        <div class="stats-grid">
+            <div class="stat-card" style="border-left-color: #3498db;">
+                <div class="stat-value" id="total-active-users">0</div>
+                <div class="stat-label"><?= lang('lang_analytics_active_users') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #2ecc71;">
+                <div class="stat-value" id="returning-users">0</div>
+                <div class="stat-label"><?= lang('lang_analytics_returning_users') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f1c40f;">
+                <div class="stat-value" id="avg-interactions">0%</div>
+                <div class="stat-label"><?= lang('lang_analytics_retention_rate') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #9b59b6;">
+                <div class="stat-value" id="power-users">0</div>
+                <div class="stat-label"><?= lang('lang_analytics_power_users') ?></div>
+            </div>
+        </div>
         
         <!-- Engagement Over Time Chart wrapped in CardInfoBox -->
         <div id="engagement-over-time-root"></div>
@@ -297,25 +311,124 @@ try {
     <!-- Content Interaction Tab -->
     <div class="tab-content" id="content-interaction-tab">
         <!-- Content Interaction Overview -->
-        <div id="content-interaction-metrics-root"></div>
+        <div class="stats-grid">
+            <div class="stat-card" style="border-left-color: #9b59b6;">
+                <div class="stat-value" id="total-bookmarks">0</div>
+                <div class="stat-label"><?= lang('lang_analytics_bookmarks') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #3498db;">
+                <div class="stat-value" id="avg-rating">0.0</div>
+                <div class="stat-label"><?= lang('lang_analytics_avg_rating') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #2ecc71;">
+                <div class="stat-value" id="useful-ratio">0%</div>
+                <div class="stat-label"><?= lang('lang_analytics_useful_ratio') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f1c40f;">
+                <div class="stat-value" id="total-comments">0</div>
+                <div class="stat-label"><?= lang('lang_analytics_comments') ?></div>
+            </div>
+        </div>
         
-        <!-- User Actions Chart wrapped in CardInfoBox -->
-        <div id="user-actions-chart-root"></div>
+        <!-- User Actions Chart -->
+        <div class="chart-container">
+            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-actions-over-time.svg" width="40">&nbsp;&nbsp;<span id="title-user-actions-over-time"><?= lang('lang_analytics_user_actions_over_time') ?></span></h4>
+            <div id="content-loading-indicator" class="text-center my-3" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden"><?= lang('lang_analytics_loading') ?></span>
+                </div>
+                <p><?= lang('lang_analytics_loading_data') ?></p>
+            </div>
+            <canvas id="userActionsChart" width="400" height="200"></canvas>
+        </div>
         
-        <!-- Top Articles by User Interaction wrapped in CardInfoBox -->
-        <div id="top-articles-interaction-root"></div>
+        <!-- Top Articles by User Interaction -->
+        <div class="table-container">
+            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user-eng-interactions.svg" width="40">&nbsp;&nbsp;<span id="title-top-articles-by-interaction"><?= lang('lang_analytics_top_articles_by_interaction') ?></span></h4>
+            <table id="articleInteractionTable" class="articles-table" style="font-size: 0.85em; width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th width="30%"><?= lang('lang_analytics_title') ?></th>
+                        <th><?= lang('lang_analytics_bookmarks') ?></th>
+                        <th><?= lang('lang_analytics_rating') ?></th>
+                        <th><?= lang('lang_analytics_useful_yes') ?></th>
+                        <th><?= lang('lang_analytics_useful_no') ?></th>
+                        <th><?= lang('lang_analytics_comments') ?></th>
+                        <th><?= lang('lang_analytics_pdf_saves') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Will be populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
     </div>
 
     <!-- User Statistics Tab -->
     <div class="tab-content" id="user-statistics-tab">
-        <!-- Most Active Contributors wrapped in CardInfoBox -->
-        <div id="most-active-contributors-root"></div>
+        <!-- Most Active Contributors -->
+        <div class="table-container">
+            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-user.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_most_active_contributors') ?></h4>
+            <table id="activeContributorsTable" class="articles-table" style="font-size: 0.85em; width:100%">
+                <thead>
+                    <tr>
+                        <th><?= lang('lang_analytics_rank') ?></th>
+                        <th><?= lang('lang_analytics_username') ?></th>
+                        <th><?= lang('lang_analytics_role') ?></th>
+                        <th><?= lang('lang_analytics_articles_submitted') ?></th>
+                        <th><?= lang('lang_analytics_articles_approved') ?></th>
+                        <th><?= lang('lang_analytics_articles_published') ?></th>
+                        <th><?= lang('lang_analytics_total_activity') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Will be populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
 
-        <!-- Top Commenters wrapped in CardInfoBox -->
-        <div id="top-commenters-root"></div>
+        <!-- Top Commenters -->
+        <div class="table-container">
+            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-comment.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_top_commenters') ?></h4>
+            <table id="topCommentersTable" class="articles-table" style="font-size: 0.85em; width:100%">
+                <thead>
+                    <tr>
+                        <th><?= lang('lang_analytics_rank') ?></th>
+                        <th><?= lang('lang_analytics_username') ?></th>
+                        <th><?= lang('lang_analytics_role') ?></th>
+                        <th><?= lang('lang_analytics_total_comments') ?></th>
+                        <th><?= lang('lang_analytics_approved_comments') ?></th>
+                        <th><?= lang('lang_analytics_avg_comment_length') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Will be populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
 
-        <!-- Most Engaged Readers wrapped in CardInfoBox -->
-        <div id="most-engaged-readers-root"></div>
+        <!-- Most Engaged Readers -->
+        <div class="table-container">
+            <h4 style="font-size: 1.5em;"><img src="<?=APP_URL?>assets/icons/icon-view.svg" width="40">&nbsp;&nbsp;<?= lang('lang_analytics_most_engaged_readers') ?></h4>
+            <table id="engagedReadersTable" class="articles-table" style="font-size: 0.85em; width:100%">
+                <thead>
+                    <tr>
+                        <th><?= lang('lang_analytics_rank') ?></th>
+                        <th><?= lang('lang_analytics_username') ?></th>
+                        <th><?= lang('lang_analytics_role') ?></th>
+                        <th><?= lang('lang_analytics_articles_viewed') ?></th>
+                        <th><?= lang('lang_analytics_bookmarks') ?></th>
+                        <th><?= lang('lang_analytics_ratings_given') ?></th>
+                        <th><?= lang('lang_analytics_engagement_score') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Will be populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -349,9 +462,6 @@ const USER_ANALYTICS_TRANSLATIONS = {
     active_users: '<?= lang('lang_analytics_active_users') ?>',
     returning_users: '<?= lang('lang_analytics_returning_users') ?>',
     power_users: '<?= lang('lang_analytics_power_users') ?>',
-    retention_rate: '<?= lang('lang_analytics_retention_rate') ?>',
-    avg_rating: '<?= lang('lang_analytics_avg_rating') ?>',
-    useful_ratio: '<?= lang('lang_analytics_useful_ratio') ?>',
     interactions: '<?= lang('lang_analytics_interactions') ?>',
     users: '<?= lang('lang_analytics_users') ?? 'Users' ?>',
     avg_interactions: '<?= lang('lang_analytics_avg_interactions') ?? 'Avg. Interactions' ?>',
@@ -466,15 +576,6 @@ document.addEventListener('DOMContentLoaded', function() {
     renderAdminActivityChartCard();
     renderActivityByAdminCard();
     renderMostActiveArticlesCard();
-    
-    // Render CardInfoBox components for Content Interaction sections
-    renderUserActionsChartCard();
-    renderTopArticlesByInteractionCard();
-    
-    // Render CardInfoBox components for User Statistics sections
-    renderMostActiveContributorsCard();
-    renderTopCommentersCard();
-    renderMostEngagedReadersCard();
     
     // Initialize tabs
     initTabs();
@@ -842,53 +943,15 @@ async function loadContentInteractionData() {
 
 // Function to display user engagement overview
 function displayUserEngagementOverview(retention) {
-    const root = document.getElementById('user-engagement-metrics-root');
-    
-    const metricsData = [
-        {
-            counter: formatNumber(retention.total_users || 0),
-            bottomText: USER_ANALYTICS_TRANSLATIONS.active_users,
-            color: '#3498db'
-        },
-        {
-            counter: formatNumber(retention.returning_users || 0),
-            bottomText: USER_ANALYTICS_TRANSLATIONS.returning_users,
-            color: '#2ecc71'
-        },
-        {
-            counter: calculateRetentionRate(retention.returning_users, retention.total_users) + '%',
-            bottomText: USER_ANALYTICS_TRANSLATIONS.retention_rate,
-            color: '#f1c40f'
-        },
-        {
-            counter: formatNumber(retention.power_users || 0),
-            bottomText: USER_ANALYTICS_TRANSLATIONS.power_users,
-            color: '#9b59b6'
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    document.getElementById('total-active-users').textContent = formatNumber(retention.total_users || 0);
+    document.getElementById('returning-users').textContent = formatNumber(retention.returning_users || 0);
+    document.getElementById('avg-interactions').textContent = calculateRetentionRate(retention.returning_users, retention.total_users) + '%';
+    document.getElementById('power-users').textContent = formatNumber(retention.power_users || 0);
 }
 
 // Function to display content interaction overview
 function displayContentInteractionOverview(stats) {
     console.log('Updating content interaction overview stats');
-    
-    const root = document.getElementById('content-interaction-metrics-root');
     
     try {
         // Safety check for undefined stats data
@@ -903,53 +966,47 @@ function displayContentInteractionOverview(stats) {
             };
         }
         
-        // Calculate useful ratio
-        const usefulYes = parseInt(stats.useful_yes || 0);
-        const usefulNo = parseInt(stats.useful_no || 0);
-        const usefulRatio = usefulYes + usefulNo > 0 ? Math.round(usefulYes / (usefulYes + usefulNo) * 100) : 0;
-        
-        // Calculate average rating display
-        const rating = parseFloat(stats.avg_star_rating) || 0;
-        const ratingDisplay = rating > 0 ? rating.toFixed(1) + '/5.0' : '0.0/5.0';
-        
-        const metricsData = [
-            {
-                counter: formatNumber(stats.bookmarks || 0),
-                bottomText: USER_ANALYTICS_TRANSLATIONS.bookmarks,
-                color: '#9b59b6'
-            },
-            {
-                counter: ratingDisplay,
-                bottomText: USER_ANALYTICS_TRANSLATIONS.avg_rating,
-                color: '#3498db'
-            },
-            {
-                counter: usefulRatio + '%',
-                bottomText: USER_ANALYTICS_TRANSLATIONS.useful_ratio,
-                color: '#2ecc71'
-            },
-            {
-                counter: formatNumber(stats.comments || 0),
-                bottomText: USER_ANALYTICS_TRANSLATIONS.comments,
-                color: '#f1c40f'
+        // Safely update each element, with error handling
+        try {
+            const totalBookmarks = document.getElementById('total-bookmarks');
+            if (totalBookmarks) {
+                totalBookmarks.textContent = formatNumber(stats.bookmarks || 0);
             }
-        ];
+        } catch (e) {
+            console.error('Error updating total-bookmarks:', e);
+        }
         
-        // Create the metrics grid container
-        const metricsGrid = React.createElement('div', 
-            { className: 'metrics-grid' },
-            metricsData.map((metric, index) => 
-                React.createElement(MetricsInfoBox, {
-                    key: index,
-                    topText: metric.topText || '',
-                    counter: metric.counter,
-                    bottomText: metric.bottomText,
-                    color: metric.color
-                })
-            )
-        );
+        try {
+            const avgRating = document.getElementById('avg-rating');
+            if (avgRating) {
+                const rating = parseFloat(stats.avg_star_rating) || 0;
+                avgRating.textContent = rating > 0 ? rating.toFixed(1) + '/5.0' : '0.0/5.0';
+            }
+        } catch (e) {
+            console.error('Error updating avg-rating:', e);
+        }
         
-        ReactDOM.render(metricsGrid, root);
+        try {
+            const usefulYes = parseInt(stats.useful_yes || 0);
+            const usefulNo = parseInt(stats.useful_no || 0);
+            const usefulRatio = usefulYes + usefulNo > 0 ? Math.round(usefulYes / (usefulYes + usefulNo) * 100) : 0;
+            
+            const usefulRatioEl = document.getElementById('useful-ratio');
+            if (usefulRatioEl) {
+                usefulRatioEl.textContent = usefulRatio + '%';
+            }
+        } catch (e) {
+            console.error('Error updating useful-ratio:', e);
+        }
+        
+        try {
+            const totalComments = document.getElementById('total-comments');
+            if (totalComments) {
+                totalComments.textContent = formatNumber(stats.comments || 0);
+            }
+        } catch (e) {
+            console.error('Error updating total-comments:', e);
+        }
         
         console.log('Content interaction overview updated successfully');
     } catch (error) {
@@ -1140,195 +1197,6 @@ function renderMostActiveArticlesCard() {
     );
 }
 
-// Render functions for CardInfoBox components in Content Interaction tab
-function renderUserActionsChartCard() {
-    const root = ReactDOM.createRoot(document.getElementById('user-actions-chart-root'));
-    
-    const bodyContent = React.createElement('div', {
-        className: 'chart-container',
-        style: { margin: 0 }
-    }, 
-        React.createElement('div', {
-            id: 'content-loading-indicator',
-            className: 'text-center my-3',
-            style: { display: 'none' }
-        },
-            React.createElement('div', {
-                className: 'spinner-border text-primary',
-                role: 'status'
-            },
-                React.createElement('span', {
-                    className: 'visually-hidden'
-                }, '<?= lang('lang_analytics_loading') ?>')
-            ),
-            React.createElement('p', null, '<?= lang('lang_analytics_loading_data') ?>')
-        ),
-        React.createElement('canvas', {
-            id: 'userActionsChart',
-            width: 400,
-            height: 200
-        })
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-user-eng-actions-over-time.svg',
-            title: React.createElement('span', { id: 'title-user-actions-over-time' }, '<?= lang('lang_analytics_user_actions_over_time') ?>'),
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderTopArticlesByInteractionCard() {
-    const root = ReactDOM.createRoot(document.getElementById('top-articles-interaction-root'));
-    
-    const bodyContent = React.createElement('div', {
-        className: 'table-container',
-        style: { margin: 0 }
-    }, 
-        React.createElement('table', {
-            id: 'articleInteractionTable',
-            className: 'articles-table',
-            style: { fontSize: '0.85em', width: '100%' }
-        },
-            React.createElement('thead', null,
-                React.createElement('tr', null,
-                    React.createElement('th', null, 'ID'),
-                    React.createElement('th', { width: '30%' }, '<?= lang('lang_analytics_title') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_bookmarks') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_rating') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_useful_yes') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_useful_no') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_comments') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_pdf_saves') ?>')
-                )
-            ),
-            React.createElement('tbody', null)
-        )
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-user-eng-interactions.svg',
-            title: React.createElement('span', { id: 'title-top-articles-by-interaction' }, '<?= lang('lang_analytics_top_articles_by_interaction') ?>'),
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-// Render functions for CardInfoBox components in User Statistics tab
-function renderMostActiveContributorsCard() {
-    const root = ReactDOM.createRoot(document.getElementById('most-active-contributors-root'));
-    
-    const bodyContent = React.createElement('div', {
-        className: 'table-container',
-        style: { margin: 0 }
-    }, 
-        React.createElement('table', {
-            id: 'activeContributorsTable',
-            className: 'articles-table',
-            style: { fontSize: '0.85em', width: '100%' }
-        },
-            React.createElement('thead', null,
-                React.createElement('tr', null,
-                    React.createElement('th', null, '<?= lang('lang_analytics_rank') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_username') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_role') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_articles_submitted') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_articles_approved') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_articles_published') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_total_activity') ?>')
-                )
-            ),
-            React.createElement('tbody', null)
-        )
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-user.svg',
-            title: '<?= lang('lang_analytics_most_active_contributors') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderTopCommentersCard() {
-    const root = ReactDOM.createRoot(document.getElementById('top-commenters-root'));
-    
-    const bodyContent = React.createElement('div', {
-        className: 'table-container',
-        style: { margin: 0 }
-    }, 
-        React.createElement('table', {
-            id: 'topCommentersTable',
-            className: 'articles-table',
-            style: { fontSize: '0.85em', width: '100%' }
-        },
-            React.createElement('thead', null,
-                React.createElement('tr', null,
-                    React.createElement('th', null, '<?= lang('lang_analytics_rank') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_username') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_role') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_total_comments') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_approved_comments') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_avg_comment_length') ?>')
-                )
-            ),
-            React.createElement('tbody', null)
-        )
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-comment.svg',
-            title: '<?= lang('lang_analytics_top_commenters') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
-function renderMostEngagedReadersCard() {
-    const root = ReactDOM.createRoot(document.getElementById('most-engaged-readers-root'));
-    
-    const bodyContent = React.createElement('div', {
-        className: 'table-container',
-        style: { margin: 0 }
-    }, 
-        React.createElement('table', {
-            id: 'engagedReadersTable',
-            className: 'articles-table',
-            style: { fontSize: '0.85em', width: '100%' }
-        },
-            React.createElement('thead', null,
-                React.createElement('tr', null,
-                    React.createElement('th', null, '<?= lang('lang_analytics_rank') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_username') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_role') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_articles_viewed') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_bookmarks') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_ratings_given') ?>'),
-                    React.createElement('th', null, '<?= lang('lang_analytics_engagement_score') ?>')
-                )
-            ),
-            React.createElement('tbody', null)
-        )
-    );
-    
-    root.render(
-        React.createElement(CardInfoBox, {
-            icon: '<?= APP_URL ?>assets/icons/icon-view.svg',
-            title: '<?= lang('lang_analytics_most_engaged_readers') ?>',
-            body: bodyContent,
-            defaultOpen: false
-        })
-    );
-}
-
 // Function to display engagement chart
 function displayEngagementChart(engagementData) {
     // Wait for React to render the CardInfoBox before accessing the canvas
@@ -1462,25 +1330,17 @@ function displayRoleEngagementChart(roleData) {
 
 // Function to display admin activity chart
 function displayAdminActivityChart(activityData) {
-    // Wait for React to render the CardInfoBox before accessing the canvas
-    setTimeout(() => {
-        const canvasElement = document.getElementById('adminActivityChart');
-        if (!canvasElement) {
-            console.error('adminActivityChart canvas not found');
-            return;
-        }
-        
-        const ctx = canvasElement.getContext('2d');
-        
-        if (adminActivityChart) {
-            adminActivityChart.destroy();
-        }
-        
-        // Safety check for undefined data
-        if (!activityData || !Array.isArray(activityData) || activityData.length === 0) {
-            console.log('No activity data available for admin activity chart');
-            // Create empty chart with legend to avoid errors
-            adminActivityChart = new Chart(ctx, {
+    const ctx = document.getElementById('adminActivityChart').getContext('2d');
+    
+    if (adminActivityChart) {
+        adminActivityChart.destroy();
+    }
+    
+    // Safety check for undefined data
+    if (!activityData || !Array.isArray(activityData) || activityData.length === 0) {
+        console.log('No activity data available for admin activity chart');
+        // Create empty chart with legend to avoid errors
+        adminActivityChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [],
@@ -1588,30 +1448,21 @@ function displayAdminActivityChart(activityData) {
             }
         }
     });
-    }, 100);
 }
 
 // Function to display user actions chart
 function displayUserActionsChart(activityData) {
-    // Wait for React to render the CardInfoBox before accessing the canvas
-    setTimeout(() => {
-        const canvasElement = document.getElementById('userActionsChart');
-        if (!canvasElement) {
-            console.error('userActionsChart canvas not found');
-            return;
-        }
-        
-        const ctx = canvasElement.getContext('2d');
-        
-        if (userActionsChart) {
-            userActionsChart.destroy();
-        }
-        
-        // Safety check for undefined data
-        if (!activityData || !Array.isArray(activityData) || activityData.length === 0) {
-            console.log('No activity data available for user actions chart');
-            // Create empty chart with legend to avoid errors
-            userActionsChart = new Chart(ctx, {
+    const ctx = document.getElementById('userActionsChart').getContext('2d');
+    
+    if (userActionsChart) {
+        userActionsChart.destroy();
+    }
+    
+    // Safety check for undefined data
+    if (!activityData || !Array.isArray(activityData) || activityData.length === 0) {
+        console.log('No activity data available for user actions chart');
+        // Create empty chart with legend to avoid errors
+        userActionsChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [],
@@ -1737,7 +1588,6 @@ function displayUserActionsChart(activityData) {
             }
         }
     });
-    }, 100);
 }
 
 // Function to display engaged users table

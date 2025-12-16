@@ -319,7 +319,7 @@ function displayWeeklyStats(stats, period = '7') {
             color: '#f1c40f' // Yellow
         },
         {
-            topText: TRANSLATIONS.user_reactions,
+            topText: '\u00A0', // Non-breaking space for alignment
             counter: formatNumber(stats.weekly_likes || 0),
             bottomText: TRANSLATIONS.likes,
             color: '#e74c3c' // Red

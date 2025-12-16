@@ -123,7 +123,7 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 .analytics-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0px;
+    gap: 5px;
     /*margin: 20px 0;*/
 }
 
@@ -211,11 +211,8 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 <!-- React and CardInfoBox Component -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="<?= APP_URL ?>assets/js/react-components-dist/CardInfoBox.js"></script>
-<script src="<?= APP_URL ?>assets/js/react-components/MetricsInfoBox.jsx" type="text/babel"></script>
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/CardInfoBox.css">
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/MetricsInfoBox.css">
 
 <div class="breadcrumb-filter-section" style="display: flex; justify-content: space-between; align-items: center; width: 100vw; padding: 6px 20px; margin-top: 0; margin-bottom: 0; margin-left: calc(-50vw + 50%);">
     <nav aria-label="breadcrumb">
@@ -260,7 +257,28 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
     <div class="section-content active" id="overview-section">
         
         <!-- Metrics Cards -->
-        <div id="overview-metrics-root"></div>
+        <div class="metrics-grid">
+            <div class="metric-card searches">
+                <h3><?= lang('lang_search_analytics_total_searches') ?></h3>
+                <p class="metric-value" id="total-searches"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_in_last_days') ?> <span id="period-label"><?= $period ?></span> <?= lang('lang_search_analytics_days') ?></p>
+            </div>
+            <div class="metric-card queries">
+                <h3><?= lang('lang_search_analytics_unique_queries') ?></h3>
+                <p class="metric-value" id="unique-queries"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_different_terms') ?></p>
+            </div>
+            <div class="metric-card users">
+                <h3><?= lang('lang_search_analytics_unique_users') ?></h3>
+                <p class="metric-value" id="unique-users"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_users_searching') ?></p>
+            </div>
+            <div class="metric-card results">
+                <h3><?= lang('lang_search_analytics_avg_results') ?></h3>
+                <p class="metric-value" id="avg-results"><?= lang('lang_search_analytics_loading') ?></p>
+                <p class="metric-label"><?= lang('lang_search_analytics_results_per_search') ?></p>
+            </div>
+        </div>
         
         <!-- Search Trends Chart wrapped in CardInfoBox -->
         <div id="search-trends-root"></div>
@@ -297,7 +315,28 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
     <!-- User Behavior Section -->
     <div class="section-content" id="user-behavior-section">
         <!-- Search Behavior Metrics Cards -->
-        <div id="user-behavior-metrics-root" style="margin-bottom: 30px;"></div>
+        <div class="metrics-grid" style="margin-bottom: 30px;">
+            <div class="metric-card" style="border-left-color: #9b59b6;">
+                <h3><?= lang('lang_search_analytics_total_searches') ?></h3>
+                <p class="metric-value" id="behavior-total-searches">0</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_search_queries_metric') ?></p>
+            </div>
+            <div class="metric-card" style="border-left-color: #3498db;">
+                <h3><?= lang('lang_search_analytics_unique_users') ?></h3>
+                <p class="metric-value" id="behavior-unique-users">0</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_users_searching') ?></p>
+            </div>
+            <div class="metric-card" style="border-left-color: #2ecc71;">
+                <h3><?= lang('lang_search_analytics_click_rate') ?></h3>
+                <p class="metric-value" id="behavior-click-rate">0%</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_searches_with_clicks') ?></p>
+            </div>
+            <div class="metric-card" style="border-left-color: #f39c12;">
+                <h3><?= lang('lang_search_analytics_avg_position') ?></h3>
+                <p class="metric-value" id="behavior-avg-position">0</p>
+                <p class="metric-label"><?= lang('lang_search_analytics_clicked_result_position') ?></p>
+            </div>
+        </div>
         
         <div class="analytics-grid">
             <!-- Top Search Queries by Users wrapped in CardInfoBox -->
@@ -340,17 +379,6 @@ const TRANSLATIONS = {
     no_recent: '<?= lang('lang_search_analytics_no_recent') ?>',
     loading: '<?= lang('lang_search_analytics_loading') ?>',
     guest: '<?= lang('lang_search_analytics_guest') ?>',
-    
-    // Metrics labels
-    in_last_days: '<?= lang('lang_search_analytics_in_last_days') ?>',
-    days: '<?= lang('lang_search_analytics_days') ?>',
-    different_terms: '<?= lang('lang_search_analytics_different_terms') ?>',
-    users_searching: '<?= lang('lang_search_analytics_users_searching') ?>',
-    results_per_search: '<?= lang('lang_search_analytics_results_per_search') ?>',
-    search_queries_metric: '<?= lang('lang_search_analytics_search_queries_metric') ?>',
-    searches_with_clicks: '<?= lang('lang_search_analytics_searches_with_clicks') ?>',
-    clicked_result_position: '<?= lang('lang_search_analytics_clicked_result_position') ?>',
-    click_rate: '<?= lang('lang_search_analytics_click_rate') ?>',
     
     // Chart labels
     chart_searches: '<?= lang('lang_search_analytics_chart_searches') ?>',
@@ -765,50 +793,10 @@ async function loadDashboardData(period = currentPeriod) {
 }
 
 function updateMetrics(metrics) {
-    const root = document.getElementById('overview-metrics-root');
-    
-    const metricsData = [
-        {
-            topText: TRANSLATIONS.total_searches,
-            counter: formatNumber(metrics.total_searches || 0),
-            bottomText: `${TRANSLATIONS.in_last_days} ${currentPeriod} ${TRANSLATIONS.days}`,
-            color: '#3498db' // Blue
-        },
-        {
-            topText: TRANSLATIONS.unique_queries,
-            counter: formatNumber(metrics.unique_queries || 0),
-            bottomText: TRANSLATIONS.different_terms,
-            color: '#9b59b6' // Purple
-        },
-        {
-            topText: TRANSLATIONS.unique_users,
-            counter: formatNumber(metrics.unique_users || 0),
-            bottomText: TRANSLATIONS.users_searching,
-            color: '#2ecc71' // Green
-        },
-        {
-            topText: TRANSLATIONS.avg_results,
-            counter: parseFloat(metrics.avg_results || 0).toFixed(1),
-            bottomText: TRANSLATIONS.results_per_search,
-            color: '#f39c12' // Orange
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '\u00A0',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    document.getElementById('total-searches').textContent = formatNumber(metrics.total_searches || 0);
+    document.getElementById('unique-queries').textContent = formatNumber(metrics.unique_queries || 0);
+    document.getElementById('unique-users').textContent = formatNumber(metrics.unique_users || 0);
+    document.getElementById('avg-results').textContent = parseFloat(metrics.avg_results || 0).toFixed(1);
 }
 
 function updateTopSearches(searches) {
@@ -1482,50 +1470,10 @@ function processUserBehaviorData(data) {
 
 // Display user behavior metrics
 function displayUserBehaviorMetrics(metrics) {
-    const root = document.getElementById('user-behavior-metrics-root');
-    
-    const metricsData = [
-        {
-            topText: TRANSLATIONS.total_searches,
-            counter: formatNumber(metrics.totalSearches),
-            bottomText: TRANSLATIONS.search_queries_metric,
-            color: '#9b59b6' // Purple
-        },
-        {
-            topText: TRANSLATIONS.unique_users,
-            counter: formatNumber(metrics.uniqueUsers),
-            bottomText: TRANSLATIONS.users_searching,
-            color: '#3498db' // Blue
-        },
-        {
-            topText: TRANSLATIONS.click_rate,
-            counter: metrics.clickRate + '%',
-            bottomText: TRANSLATIONS.searches_with_clicks,
-            color: '#2ecc71' // Green
-        },
-        {
-            topText: TRANSLATIONS.avg_position,
-            counter: metrics.avgPosition,
-            bottomText: TRANSLATIONS.clicked_result_position,
-            color: '#f39c12' // Orange
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '\u00A0',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    document.getElementById('behavior-total-searches').textContent = formatNumber(metrics.totalSearches);
+    document.getElementById('behavior-unique-users').textContent = formatNumber(metrics.uniqueUsers);
+    document.getElementById('behavior-click-rate').textContent = metrics.clickRate + '%';
+    document.getElementById('behavior-avg-position').textContent = metrics.avgPosition;
 }
 
 // Display top queries by users

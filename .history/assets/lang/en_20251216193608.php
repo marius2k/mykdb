@@ -489,7 +489,6 @@ return [
     'lang_analytics_rating' => 'Ratings',
     'lang_analytics_useful_yes' => 'Useful YES',
     'lang_analytics_useful_no' => 'Useful NO',
-    'lang_analytics_retention_rate' => 'Retention Rate',
     
 
     // Public/Admin view tracking translations

@@ -341,17 +341,6 @@ const TRANSLATIONS = {
     loading: '<?= lang('lang_search_analytics_loading') ?>',
     guest: '<?= lang('lang_search_analytics_guest') ?>',
     
-    // Metrics labels
-    in_last_days: '<?= lang('lang_search_analytics_in_last_days') ?>',
-    days: '<?= lang('lang_search_analytics_days') ?>',
-    different_terms: '<?= lang('lang_search_analytics_different_terms') ?>',
-    users_searching: '<?= lang('lang_search_analytics_users_searching') ?>',
-    results_per_search: '<?= lang('lang_search_analytics_results_per_search') ?>',
-    search_queries_metric: '<?= lang('lang_search_analytics_search_queries_metric') ?>',
-    searches_with_clicks: '<?= lang('lang_search_analytics_searches_with_clicks') ?>',
-    clicked_result_position: '<?= lang('lang_search_analytics_clicked_result_position') ?>',
-    click_rate: '<?= lang('lang_search_analytics_click_rate') ?>',
-    
     // Chart labels
     chart_searches: '<?= lang('lang_search_analytics_chart_searches') ?>',
     chart_unique_users: '<?= lang('lang_search_analytics_chart_unique_users') ?>',

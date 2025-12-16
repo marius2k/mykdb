@@ -211,8 +211,7 @@ const TRANSLATIONS = {
     public_views: '<?= lang('lang_analytics_public_views') ?>',
     admin_views: '<?= lang('lang_analytics_admin_views') ?>',
     public_reading_time_seconds: '<?= lang('lang_analytics_public_reading_time_seconds') ?>',
-    admin_label: '<?= lang('lang_analytics_admin_label') ?>',
-    user_reactions: '<?= lang('lang_analytics_user_reactions') ?>'
+    admin_label: '<?= lang('lang_analytics_admin_label') ?>'
 };
 
 // Variabile globale
@@ -319,7 +318,7 @@ function displayWeeklyStats(stats, period = '7') {
             color: '#f1c40f' // Yellow
         },
         {
-            topText: TRANSLATIONS.user_reactions,
+            topText: '\u00A0', // Non-breaking space for alignment
             counter: formatNumber(stats.weekly_likes || 0),
             bottomText: TRANSLATIONS.likes,
             color: '#e74c3c' // Red

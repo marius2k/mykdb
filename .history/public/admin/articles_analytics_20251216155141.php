@@ -17,17 +17,13 @@ if ($lang === 'en') $lang = 'en-GB';
 
 <!-- Component CSS -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/CardInfoBox.css">
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/MetricsInfoBox.css">
 
 <!-- React CDN -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- CardInfoBox Component (Compiled from JSX) -->
 <script src="<?= APP_URL ?>assets/js/react-components-dist/CardInfoBox.js"></script>
-<script src="<?= APP_URL ?>assets/js/react-components/CardInfoBoxClosable.jsx" type="text/babel"></script>
-<script src="<?= APP_URL ?>assets/js/react-components/MetricsInfoBox.jsx" type="text/babel"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -160,21 +156,63 @@ if ($lang === 'en') $lang = 'en-GB';
 </div>
 <div class="analytics-container">
     <!-- Statistici generale -->
-    <div id="weekly-stats-root"></div>
+    <div class="stats-grid" id="weekly-stats">
+        <!-- Se populează dinamic -->
+    </div>
     
     
     
-    <!-- Grafic performanță wrapped in CardInfoBox -->
-    <div id="top-articles-performance-root"></div>
+    <!-- Grafic performanță -->
+    <div class="chart-container">
+        <h3><img src="<?=APP_URL?>assets/icons/icon-performance.svg" width="40"> <?= lang('lang_analytics_top_articles_performance') ?></h3>
+        <br>
+        
+        <!-- React CardInfoBox for Top Article -->
+        <div id="top-article-card-root"></div>
+        
+        <canvas id="performanceChart" width="400" height="200"></canvas>
+    </div>
     
-    <!-- Tabel articole wrapped in CardInfoBox -->
-    <div id="top-articles-detailed-root"></div>
-    
+    <!-- Tabel articole -->
+    <div class="table-container">
+        <h3><img src="<?=APP_URL?>assets/icons/icon-analytics-detailed.svg" width="40"> <?= lang('lang_analytics_top_articles_detailed') ?></h3>
+        <br>
+        
+        <!-- React CardInfoBox for Selected Article -->
+        <div id="selected-article-card-root" style="display: none;"></div>
+        
+        <table id="articlesTable" class="articles-table" style="font-size: 0.85em; width:100%">
+            <thead>
+                <tr>
+                    <th><?= lang('lang_analytics_id') ?></th>
+                    <th><?= lang('lang_analytics_title') ?></th>
+                    <th><?= lang('lang_analytics_author') ?></th>
+                    <th><?= lang('lang_analytics_public_views') ?></th>
+                    <th><?= lang('lang_analytics_admin_views') ?></th>
+                    <th><?= lang('lang_analytics_likes') ?></th>
+                    <th><?= lang('lang_analytics_avg_public_reading_time') ?></th>
+                    <th><?= lang('lang_analytics_scroll_avg') ?></th>
+                    <th><?= lang('lang_analytics_unique_readers') ?></th>
+                    <th><?= lang('lang_analytics_engagement') ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Se populează dinamic -->
+            </tbody>
+        </table>
+    </div>
     <br>
     <!-- Detalii articol specific -->
-    <div id="article-details-root"></div>
+    <div id="article-details" class="chart-container">
+        <h3><img src="<?=APP_URL?>assets/icons/icon-article-details.svg" width="40"> <?= lang('lang_analytics_article_details') ?></h3>
+        <br>
+        <div id="article-stats"></div>
+        <br>
+        <canvas id="articleChart" width="400" height="200"></canvas>
+    </div>
 
 </div>
+
 
 
 <script>
@@ -202,7 +240,6 @@ const TRANSLATIONS = {
     no_data_found: '<?= lang('lang_analytics_no_data_found') ?>',
     article_not_found: '<?= lang('lang_analytics_article_not_found') ?>',
     error_loading_data: '<?= lang('lang_analytics_error_loading_data') ?>',
-    lang_analytics_article_details: '<?= lang('lang_analytics_article_details') ?>',
     
     // Public/Admin view tracking translations
     public_views_this_week: '<?= lang('lang_analytics_public_views_this_week') ?>',
@@ -211,8 +248,7 @@ const TRANSLATIONS = {
     public_views: '<?= lang('lang_analytics_public_views') ?>',
     admin_views: '<?= lang('lang_analytics_admin_views') ?>',
     public_reading_time_seconds: '<?= lang('lang_analytics_public_reading_time_seconds') ?>',
-    admin_label: '<?= lang('lang_analytics_admin_label') ?>',
-    user_reactions: '<?= lang('lang_analytics_user_reactions') ?>'
+    admin_label: '<?= lang('lang_analytics_admin_label') ?>'
 };
 
 // Variabile globale
@@ -290,14 +326,13 @@ async function loadArticleDetailsByClick(articleId) {
         const data = await response.json();
         
         if (data.success) {
-            renderArticleDetailsCard(data.stats, data.daily_views, data.daily_reading);
+            displayArticleDetails(data.stats, data.daily_views, data.daily_reading);
+            document.getElementById('article-details').style.display = 'block';
             
             // Scroll to the article details section
-            setTimeout(() => {
-                document.getElementById('article-details-root').scrollIntoView({ 
-                    behavior: 'smooth' 
-                });
-            }, 100);
+            document.getElementById('article-details').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
         } else {
             alert(TRANSLATIONS.no_data_found + ' ' + (data.error || TRANSLATIONS.article_not_found));
         }
@@ -309,238 +344,147 @@ async function loadArticleDetailsByClick(articleId) {
 
 // Funcție pentru afișarea statisticilor săptămânale
 function displayWeeklyStats(stats, period = '7') {
-    const root = document.getElementById('weekly-stats-root');
-    
-    const metricsData = [
-        {
-            topText: TRANSLATIONS.public_views,
-            counter: formatNumber(stats.weekly_public_views || 0),
-            bottomText: `${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_views || 0)}`,
-            color: '#f1c40f' // Yellow
-        },
-        {
-            topText: TRANSLATIONS.user_reactions,
-            counter: formatNumber(stats.weekly_likes || 0),
-            bottomText: TRANSLATIONS.likes,
-            color: '#e74c3c' // Red
-        },
-        {
-            topText: TRANSLATIONS.avg_public_reading_time,
-            counter: formatTime(stats.avg_weekly_public_reading_time || 0),
-            bottomText: `${TRANSLATIONS.admin_label}: ${formatTime(stats.avg_weekly_admin_reading_time || 0)}`,
-            color: '#2ecc71' // Green
-        },
-        {
-            topText: TRANSLATIONS.reading_sessions,
-            counter: formatNumber(stats.weekly_public_reading_sessions || 0),
-            bottomText: `${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_reading_sessions || 0)}`,
-            color: '#3498db' // Blue
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '\u00A0',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    //const periodLabel = period === '7' ? 'this week' : `last ${period} days`;
+    const container = document.getElementById('weekly-stats');
+    container.innerHTML = `
+        <div class="stat-card views">
+            <div class="stat-value">${formatNumber(stats.weekly_public_views || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.public_views}</div>
+            <div class="stat-sublabel" style="font-size: 1em; color: #95a5a6; margin-top: 2px; margin-left: 10px;">
+                ${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_views || 0)}
+            </div>
+        </div>
+        <div class="stat-card likes">
+            <div class="stat-value">${formatNumber(stats.weekly_likes || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.likes}</div>
+        </div>
+        <div class="stat-card reading">
+            <div class="stat-value">${formatTime(stats.avg_weekly_public_reading_time || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.avg_public_reading_time}</div>
+            <div class="stat-sublabel" style="font-size: 1em; color: #95a5a6; margin-top: 2px; margin-left: 10px;">
+                ${TRANSLATIONS.admin_label}: ${formatTime(stats.avg_weekly_admin_reading_time || 0)}
+            </div>
+        </div>
+        <div class="stat-card engagement">
+            <div class="stat-value">${formatNumber(stats.weekly_public_reading_sessions || 0)}</div>
+            <div class="stat-label">${TRANSLATIONS.reading_sessions}</div>
+            <div class="stat-sublabel" style="font-size: 1em; color: #95a5a6; margin-top: 2px; margin-left: 10px;">
+                ${TRANSLATIONS.admin_label}: ${formatNumber(stats.weekly_admin_reading_sessions || 0)}
+            </div>
+        </div>
+    `;
 }
 
 // Funcție pentru afișarea graficului de performanță
 function displayPerformanceChart(articles) {
-    // First render the CardInfoBox container
-    renderTopArticlesPerformanceCard();
+    const ctx = document.getElementById('performanceChart').getContext('2d');
     
-    // Wait for React to mount the canvas element, then create the chart
-    setTimeout(() => {
-        const ctx = document.getElementById('performanceChart');
-        if (!ctx) {
-            console.error('Canvas element not found');
-            return;
-        }
-        
-        const canvasContext = ctx.getContext('2d');
-        
-        if (performanceChart) {
-            performanceChart.destroy();
-        }
-        
-        const labels = articles.slice(0, 10).map(a => truncateText(a.title, 30));
-        const publicViewsData = articles.slice(0, 10).map(a => a.public_views || 0);
-        const adminViewsData = articles.slice(0, 10).map(a => a.admin_views || 0);
-        const likesData = articles.slice(0, 10).map(a => a.total_likes || 0);
-        const publicReadingData = articles.slice(0, 10).map(a => Math.round((a.avg_public_reading_time || 0) / 1000));
-        
-        performanceChart = new Chart(canvasContext, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: TRANSLATIONS.public_views,
-                        data: publicViewsData,
-                        backgroundColor: 'rgba(1, 165, 75, 0.7)',
-                        borderColor: 'rgba(1, 165, 75, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: TRANSLATIONS.admin_views,
-                        data: adminViewsData,
-                        backgroundColor: 'rgba(1, 165, 75, 0.4)',
-                        borderColor: 'rgba(1, 165, 75, 0.8)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: TRANSLATIONS.likes,
-                        data: likesData,
-                        backgroundColor: 'rgba(230, 52, 32, 0.7)',
-                        borderColor: 'rgba(230, 52, 32, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: TRANSLATIONS.public_reading_time_seconds,
-                        data: publicReadingData,
-                        backgroundColor: 'rgba(1, 79, 130, 0.7)',
-                        borderColor: 'rgba(4, 79, 130, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: TRANSLATIONS.top_10_comparison
-                    },
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
+    if (performanceChart) {
+        performanceChart.destroy();
+    }
+    
+    // Render CardInfoBox for top performing article
+    if (articles.length > 0) {
+        renderTopArticleCard(articles[0]);
+    }
+    
+    const labels = articles.slice(0, 10).map(a => truncateText(a.title, 30));
+    const publicViewsData = articles.slice(0, 10).map(a => a.public_views || 0);
+    const adminViewsData = articles.slice(0, 10).map(a => a.admin_views || 0);
+    const likesData = articles.slice(0, 10).map(a => a.total_likes || 0);
+    const publicReadingData = articles.slice(0, 10).map(a => Math.round((a.avg_public_reading_time || 0) / 1000));
+    
+    performanceChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: TRANSLATIONS.public_views,
+                    data: publicViewsData,
+                    backgroundColor: 'rgba(1, 165, 75, 0.7)',
+                    borderColor: 'rgba(1, 165, 75, 1)',
+                    borderWidth: 1
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                {
+                    label: TRANSLATIONS.admin_views,
+                    data: adminViewsData,
+                    backgroundColor: 'rgba(1, 165, 75, 0.4)',
+                    borderColor: 'rgba(1, 165, 75, 0.8)',
+                    borderWidth: 1
+                },
+                {
+                    label: TRANSLATIONS.likes,
+                    data: likesData,
+                    backgroundColor: 'rgba(230, 52, 32, 0.7)',
+                    borderColor: 'rgba(230, 52, 32, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: TRANSLATIONS.public_reading_time_seconds,
+                    data: publicReadingData,
+                    backgroundColor: 'rgba(1, 79, 130, 0.7)',
+                    borderColor: 'rgba(4, 79, 130, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: TRANSLATIONS.top_10_comparison
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        });
-    }, 100); // Wait 100ms for React to mount the canvas
+        }
+    });
 }
 
 // Funcție pentru afișarea tabelului cu articole
 function displayTopArticlesTable(articles) {
-    // First render the CardInfoBox container
-    renderTopArticlesDetailedCard();
+    // Distruge tabelul existent dacă există
+    if ($.fn.DataTable.isDataTable('#articlesTable')) {
+        $('#articlesTable').DataTable().destroy();
+    }
     
-    // Wait for React to mount the table element
-    setTimeout(() => {
-        // Distruge tabelul existent dacă există
-        if ($.fn.DataTable.isDataTable('#articlesTable')) {
-            $('#articlesTable').DataTable().destroy();
+    const tbody = document.querySelector('#articlesTable tbody');
+    tbody.innerHTML = '';
+    
+    articles.forEach(article => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${article.id}</td>
+            <td><a href="#" onclick="loadArticleDetailsByClick(${article.id}); return false;" class="clickable-article-title" title="Click to view analytics for this article">${truncateText(article.title, 50)}</a></td>
+            <td>${article.author || 'N/A'}</td>
+            <td>${formatNumber(article.public_views || 0)}</td>
+            <td>${formatNumber(article.admin_views || 0)}</td>
+            <td>${formatNumber(article.total_likes || 0)}</td>
+            <td>${formatTime(article.avg_public_reading_time || 0)}</td>
+            <td>${formatPercentage(article.avg_scroll_percentage || 0)}</td>
+            <td>${formatNumber(article.unique_readers || 0)}</td>
+            <td>${formatNumber(article.engagement_score || 0)}</td>
+        `;
+    });
+    
+    // Reinițializează DataTable
+    $('#articlesTable').DataTable({
+        order: [[9, 'desc']], // Sortează după engagement score (updated column index)
+        pageLength: 10,
+        responsive: true,
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
         }
-        
-        const tbody = document.querySelector('#articlesTable tbody');
-        if (!tbody) {
-            console.error('Table tbody not found');
-            return;
-        }
-        
-        tbody.innerHTML = '';
-        
-        articles.forEach(article => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${article.id}</td>
-                <td><a href="#" onclick="loadArticleDetailsByClick(${article.id}); return false;" class="clickable-article-title" title="Click to view analytics for this article">${truncateText(article.title, 50)}</a></td>
-                <td>${article.author || 'N/A'}</td>
-                <td>${formatNumber(article.public_views || 0)}</td>
-                <td>${formatNumber(article.admin_views || 0)}</td>
-                <td>${formatNumber(article.total_likes || 0)}</td>
-                <td>${formatTime(article.avg_public_reading_time || 0)}</td>
-                <td>${formatPercentage(article.avg_scroll_percentage || 0)}</td>
-                <td>${formatNumber(article.unique_readers || 0)}</td>
-                <td>${formatNumber(article.engagement_score || 0)}</td>
-            `;
-        });
-        
-        // Reinițializează DataTable
-        $('#articlesTable').DataTable({
-            order: [[9, 'desc']], // Sortează după engagement score (updated column index)
-            pageLength: 10,
-            responsive: true,
-            language: {
-                url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/<?= $lang ?>.json"
-            }
-        });
-    }, 100);
-}
-
-// Helper function to escape HTML in strings for safe insertion
-function escapeHtml(text) {
-    if (!text) return '';
-    return String(text).replace(/'/g, "\\'").replace(/"/g, '\\"');
-}
-
-// React component render for Article Details with CardInfoBoxClosable
-function renderArticleDetailsCard(stats, dailyViews, dailyReading) {
-    const root = document.getElementById('article-details-root');
-    
-    // Create stats content
-    const statsContent = `
-        <h4>${stats.title}</h4>
-        <br>
-        <div class="stats-grid">
-            <div class="stat-card views">
-                <div class="stat-value">${formatNumber(stats.total_views || 0)}</div>
-                <div class="stat-label">${TRANSLATIONS.total_views}</div>
-            </div>
-            <div class="stat-card likes">
-                <div class="stat-value">${formatNumber(stats.total_likes || 0)}</div>
-                <div class="stat-label">${TRANSLATIONS.total_likes}</div>
-            </div>
-            <div class="stat-card reading">
-                <div class="stat-value">${formatTime(stats.avg_reading_time || 0)}</div>
-                <div class="stat-label">${TRANSLATIONS.avg_reading_time_label}</div>
-            </div>
-            <div class="stat-card engagement">
-                <div class="stat-value">${formatPercentage(stats.avg_scroll_percentage || 0)}</div>
-                <div class="stat-label">${TRANSLATIONS.avg_scroll}</div>
-            </div>
-        </div>
-        <br>
-        <canvas id="articleChart" width="400" height="200"></canvas>
-    `;
-    
-    // Close handler - unmount the component
-    const handleClose = () => {
-        ReactDOM.unmountComponentAtNode(root);
-    };
-    
-    // Render the CardInfoBoxClosable component
-    ReactDOM.render(
-        React.createElement(CardInfoBoxClosable, {
-            icon: `<?=APP_URL?>assets/icons/icon-article-details.svg`,
-            title: TRANSLATIONS.lang_analytics_article_details,
-            body: statsContent,
-            onClose: handleClose
-        }),
-        root
-    );
-    
-    // Create the chart after a small delay to ensure canvas is rendered
-    setTimeout(() => {
-        displayArticleChart(dailyViews, dailyReading);
-    }, 100);
+    });
 }
 
 // Funcție pentru afișarea detaliilor unui articol
@@ -693,70 +637,69 @@ function showSuccess(message) {
     }, 3000);
 }
 
-// Funcție pentru renderizarea CardInfoBox-ului cu graficul Top Articles Performance
-function renderTopArticlesPerformanceCard() {
-    const rootElement = document.getElementById('top-articles-performance-root');
+// Funcție pentru renderizarea CardInfoBox-ului cu articolul top
+function renderTopArticleCard(article) {
+    const rootElement = document.getElementById('top-article-card-root');
     if (!rootElement) return;
     
-    // Icon for performance
-    const icon = '<?= APP_URL ?>assets/icons/icon-performance.svg';
+    // Get category icon if available
+    const icon = article.icon ? `<?= APP_URL ?>assets/icons/categories/${article.icon}` : '📄';
     
-    // Create canvas element directly as React element
-    const canvasElement = React.createElement('canvas', {
-        id: 'performanceChart',
-        width: 400,
-        height: 200
-    });
+    // Build body content with article stats
+    const bodyContent = `
+        <p><strong>${article.title}</strong></p>
+        <p><strong>${TRANSLATIONS.lang_analytics_author || 'Author'}:</strong> ${article.author || 'N/A'}</p>
+        <p><strong>${TRANSLATIONS.public_views}:</strong> ${formatNumber(article.public_views || 0)} | 
+           <strong>${TRANSLATIONS.admin_views}:</strong> ${formatNumber(article.admin_views || 0)}</p>
+        <p><strong>${TRANSLATIONS.likes}:</strong> ${formatNumber(article.total_likes || 0)} | 
+           <strong>${TRANSLATIONS.avg_public_reading_time}:</strong> ${formatTime(article.avg_public_reading_time || 0)}</p>
+        <p><strong>${TRANSLATIONS.avg_scroll}:</strong> ${formatPercentage(article.avg_scroll_percentage || 0)} | 
+           <strong>Engagement:</strong> ${formatNumber(article.engagement_score || 0)}</p>
+    `;
     
     // Render React component
     const root = ReactDOM.createRoot(rootElement);
     root.render(
         React.createElement(CardInfoBox, {
             icon: icon,
-            title: '<?= lang('lang_analytics_top_articles_performance') ?>',
-            body: canvasElement
+            title: 'Top Performing Article',
+            body: bodyContent,
+            className: 'shadow-lg'
         })
     );
 }
 
-// Funcție pentru renderizarea CardInfoBox-ului cu tabelul Top Articles Detailed
-function renderTopArticlesDetailedCard() {
-    const rootElement = document.getElementById('top-articles-detailed-root');
+// Funcție pentru renderizarea CardInfoBox-ului cu articolul selectat
+function renderSelectedArticleCard(article) {
+    const rootElement = document.getElementById('selected-article-card-root');
     if (!rootElement) return;
     
-    // Icon for detailed analytics
-    const icon = '<?= APP_URL ?>assets/icons/icon-analytics-detailed.svg';
+    // Get category icon if available
+    const icon = article.icon ? `<?= APP_URL ?>assets/icons/categories/${article.icon}` : '📄';
     
-    // Create table element structure as React element
-    const tableElement = React.createElement('table', {
-        id: 'articlesTable',
-        className: 'articles-table',
-        style: { fontSize: '0.85em', width: '100%' }
-    }, 
-        React.createElement('thead', null,
-            React.createElement('tr', null,
-                React.createElement('th', null, '<?= lang('lang_analytics_id') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_title') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_author') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_public_views') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_admin_views') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_likes') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_avg_public_reading_time') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_scroll_avg') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_unique_readers') ?>'),
-                React.createElement('th', null, '<?= lang('lang_analytics_engagement') ?>')
-            )
-        ),
-        React.createElement('tbody', null)
-    );
+    // Build body content with article details
+    const bodyContent = `
+        <p><strong>${TRANSLATIONS.lang_analytics_author || 'Author'}:</strong> ${article.author || 'N/A'}</p>
+        <p><strong>${TRANSLATIONS.public_views}:</strong> ${formatNumber(article.public_views || 0)} | 
+           <strong>${TRANSLATIONS.admin_views}:</strong> ${formatNumber(article.admin_views || 0)}</p>
+        <p><strong>${TRANSLATIONS.likes}:</strong> ${formatNumber(article.total_likes || 0)}</p>
+        <p><strong>${TRANSLATIONS.avg_public_reading_time}:</strong> ${formatTime(article.avg_public_reading_time || 0)}</p>
+        <p><strong>${TRANSLATIONS.avg_scroll}:</strong> ${formatPercentage(article.avg_scroll_percentage || 0)}</p>
+        <p><strong>Unique Readers:</strong> ${formatNumber(article.unique_readers || 0)}</p>
+        <p><strong>Engagement Score:</strong> ${formatNumber(article.engagement_score || 0)}</p>
+    `;
+    
+    // Show the container
+    rootElement.style.display = 'block';
     
     // Render React component
     const root = ReactDOM.createRoot(rootElement);
     root.render(
         React.createElement(CardInfoBox, {
             icon: icon,
-            title: '<?= lang('lang_analytics_top_articles_detailed') ?>',
-            body: tableElement
+            title: article.title,
+            body: bodyContent,
+            className: 'shadow-lg'
         })
     );
 }

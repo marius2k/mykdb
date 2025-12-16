@@ -341,17 +341,6 @@ const TRANSLATIONS = {
     loading: '<?= lang('lang_search_analytics_loading') ?>',
     guest: '<?= lang('lang_search_analytics_guest') ?>',
     
-    // Metrics labels
-    in_last_days: '<?= lang('lang_search_analytics_in_last_days') ?>',
-    days: '<?= lang('lang_search_analytics_days') ?>',
-    different_terms: '<?= lang('lang_search_analytics_different_terms') ?>',
-    users_searching: '<?= lang('lang_search_analytics_users_searching') ?>',
-    results_per_search: '<?= lang('lang_search_analytics_results_per_search') ?>',
-    search_queries_metric: '<?= lang('lang_search_analytics_search_queries_metric') ?>',
-    searches_with_clicks: '<?= lang('lang_search_analytics_searches_with_clicks') ?>',
-    clicked_result_position: '<?= lang('lang_search_analytics_clicked_result_position') ?>',
-    click_rate: '<?= lang('lang_search_analytics_click_rate') ?>',
-    
     // Chart labels
     chart_searches: '<?= lang('lang_search_analytics_chart_searches') ?>',
     chart_unique_users: '<?= lang('lang_search_analytics_chart_unique_users') ?>',
@@ -1482,50 +1471,10 @@ function processUserBehaviorData(data) {
 
 // Display user behavior metrics
 function displayUserBehaviorMetrics(metrics) {
-    const root = document.getElementById('user-behavior-metrics-root');
-    
-    const metricsData = [
-        {
-            topText: TRANSLATIONS.total_searches,
-            counter: formatNumber(metrics.totalSearches),
-            bottomText: TRANSLATIONS.search_queries_metric,
-            color: '#9b59b6' // Purple
-        },
-        {
-            topText: TRANSLATIONS.unique_users,
-            counter: formatNumber(metrics.uniqueUsers),
-            bottomText: TRANSLATIONS.users_searching,
-            color: '#3498db' // Blue
-        },
-        {
-            topText: TRANSLATIONS.click_rate,
-            counter: metrics.clickRate + '%',
-            bottomText: TRANSLATIONS.searches_with_clicks,
-            color: '#2ecc71' // Green
-        },
-        {
-            topText: TRANSLATIONS.avg_position,
-            counter: metrics.avgPosition,
-            bottomText: TRANSLATIONS.clicked_result_position,
-            color: '#f39c12' // Orange
-        }
-    ];
-    
-    // Create the metrics grid container
-    const metricsGrid = React.createElement('div', 
-        { className: 'metrics-grid' },
-        metricsData.map((metric, index) => 
-            React.createElement(MetricsInfoBox, {
-                key: index,
-                topText: metric.topText || '\u00A0',
-                counter: metric.counter,
-                bottomText: metric.bottomText,
-                color: metric.color
-            })
-        )
-    );
-    
-    ReactDOM.render(metricsGrid, root);
+    document.getElementById('behavior-total-searches').textContent = formatNumber(metrics.totalSearches);
+    document.getElementById('behavior-unique-users').textContent = formatNumber(metrics.uniqueUsers);
+    document.getElementById('behavior-click-rate').textContent = metrics.clickRate + '%';
+    document.getElementById('behavior-avg-position').textContent = metrics.avgPosition;
 }
 
 // Display top queries by users

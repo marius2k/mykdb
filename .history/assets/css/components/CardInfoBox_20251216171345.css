@@ -1,0 +1,364 @@
+/**
+ * CardInfoBox Component Styles
+ * 
+ * This file contains all styles for the CardInfoBox React component.
+ * Used for displaying information cards with icon, title, and body content.
+ */
+
+/* ========================================
+   CARD INFO BOX - Main Container
+   ======================================== */
+
+.card-info-box {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.card-info-box:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.card-info-box.clickable {
+    cursor: pointer;
+}
+
+.card-info-box.clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   CARD TOP - Icon & Title Layout
+   ======================================== */
+
+.card-info-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.card-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    min-height: 50px;
+    flex-shrink: 0;
+}
+
+.card-info-icon img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.card-info-icon span {
+    font-size: 40px;
+    line-height: 1;
+}
+
+.card-info-title {
+    flex: 1;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 16px;
+    background: #fff;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+/* ========================================
+   TOGGLE BUTTON - Collapse/Expand
+   ======================================== */
+
+.card-info-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.2s ease;
+    border-radius: 4px;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.card-info-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.card-info-toggle:active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+    color: #555;
+}
+
+.toggle-icon.open {
+    transform: rotate(0deg);
+}
+
+.toggle-icon.closed {
+    transform: rotate(-90deg);
+}
+
+/* ========================================
+   CARD BODY - Content Area
+   ======================================== */
+
+.card-info-body {
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.card-info-body.open {
+    max-height: 5000px;
+    opacity: 1;
+}
+
+.card-info-body.closed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.card-info-body-inner {
+    padding: 15px 0 0 0;
+    color: #333;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    background: #fff;
+}
+
+.card-info-body.closed .card-info-body-inner {
+    padding: 0;
+}
+
+.card-info-body-inner p {
+    margin: 0 0 8px 0;
+}
+
+.card-info-body-inner p:last-child {
+    margin-bottom: 0;
+}
+
+.card-info-body-inner strong {
+    color: #000;
+    font-weight: 600;
+}
+
+/* Links in body */
+.card-info-body-inner a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.card-info-body-inner a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* Lists in body */
+.card-info-body-inner ul,
+.card-info-body-inner ol {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+
+.card-info-body-inner li {
+    margin-bottom: 6px;
+}
+
+/* Code blocks in body */
+.card-info-body-inner code {
+    background: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-family: 'Courier New', monospace;
+}
+
+/* ========================================
+   DARK THEME SUPPORT
+   ======================================== */
+
+.dark-theme .card-info-box {
+    background: #2c3e50;
+    border-color: #34495e;
+}
+
+.dark-theme .card-info-title {
+    color: #ecf0f1;
+    background: #34495e;
+    border-color: #4a5f7f;
+}
+
+.dark-theme .card-info-body-inner {
+    color: #bdc3c7;
+    background: #2c3e50;
+}
+
+.dark-theme .card-info-body-inner strong {
+    color: #ecf0f1;
+}
+
+.dark-theme .card-info-body-inner a {
+    color: #5dade2;
+}
+
+.dark-theme .card-info-body-inner code {
+    background: #34495e;
+    color: #ecf0f1;
+}
+
+.dark-theme .toggle-icon {
+    color: #ecf0f1;
+}
+
+.dark-theme .card-info-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .card-info-toggle:active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ========================================
+   GRAY THEME SUPPORT
+   ======================================== */
+
+.gray-theme .card-info-box {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+}
+
+.gray-theme .card-info-title {
+    background: #e8e8e8;
+    border-color: #d0d0d0;
+}
+
+.gray-theme .card-info-body-inner {
+    background: #f5f5f5;
+    color: #333;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    .card-info-box {
+        margin-bottom: 16px;
+        padding: 16px;
+    }
+    
+    .card-info-top {
+        gap: 12px;
+    }
+    
+    .card-info-icon {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    
+    .card-info-icon img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .card-info-icon span {
+        font-size: 32px;
+    }
+    
+    .card-info-title {
+        font-size: 0.95rem;
+        padding: 10px 12px;
+        min-height: 40px;
+    }
+    
+    .card-info-body-inner {
+        padding: 12px 0 0 0;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-info-box {
+        padding: 12px;
+    }
+    
+    .card-info-top {
+        gap: 10px;
+    }
+    
+    .card-info-icon {
+        min-width: 35px;
+        min-height: 35px;
+    }
+    
+    .card-info-icon img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .card-info-icon span {
+        font-size: 28px;
+    }
+    
+    .card-info-title {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+        min-height: 35px;
+    }
+    
+    .card-info-body-inner {
+        padding: 10px 0 0 0;
+        font-size: 0.85rem;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.card-info-box.compact {
+    margin-bottom: 12px;
+    padding: 15px;
+}
+
+.card-info-box.compact .card-info-top {
+    margin-bottom: 10px;
+}
+
+.card-info-box.compact .card-info-body {
+    padding: 10px 0 0 0;
+}
+
+.card-info-box.no-border {
+    border: none;
+}
+
+.card-info-box.shadow-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card-info-box.shadow-lg {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}

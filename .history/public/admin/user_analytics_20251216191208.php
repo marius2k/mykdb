@@ -297,7 +297,24 @@ try {
     <!-- Content Interaction Tab -->
     <div class="tab-content" id="content-interaction-tab">
         <!-- Content Interaction Overview -->
-        <div id="content-interaction-metrics-root"></div>
+        <div class="stats-grid">
+            <div class="stat-card" style="border-left-color: #9b59b6;">
+                <div class="stat-value" id="total-bookmarks">0</div>
+                <div class="stat-label"><?= lang('lang_analytics_bookmarks') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #3498db;">
+                <div class="stat-value" id="avg-rating">0.0</div>
+                <div class="stat-label"><?= lang('lang_analytics_avg_rating') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #2ecc71;">
+                <div class="stat-value" id="useful-ratio">0%</div>
+                <div class="stat-label"><?= lang('lang_analytics_useful_ratio') ?></div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f1c40f;">
+                <div class="stat-value" id="total-comments">0</div>
+                <div class="stat-label"><?= lang('lang_analytics_comments') ?></div>
+            </div>
+        </div>
         
         <!-- User Actions Chart wrapped in CardInfoBox -->
         <div id="user-actions-chart-root"></div>
@@ -350,8 +367,6 @@ const USER_ANALYTICS_TRANSLATIONS = {
     returning_users: '<?= lang('lang_analytics_returning_users') ?>',
     power_users: '<?= lang('lang_analytics_power_users') ?>',
     retention_rate: '<?= lang('lang_analytics_retention_rate') ?>',
-    avg_rating: '<?= lang('lang_analytics_avg_rating') ?>',
-    useful_ratio: '<?= lang('lang_analytics_useful_ratio') ?>',
     interactions: '<?= lang('lang_analytics_interactions') ?>',
     users: '<?= lang('lang_analytics_users') ?? 'Users' ?>',
     avg_interactions: '<?= lang('lang_analytics_avg_interactions') ?? 'Avg. Interactions' ?>',
@@ -847,22 +862,22 @@ function displayUserEngagementOverview(retention) {
     const metricsData = [
         {
             counter: formatNumber(retention.total_users || 0),
-            bottomText: USER_ANALYTICS_TRANSLATIONS.active_users,
+            bottomText: TRANSLATIONS.active_users,
             color: '#3498db'
         },
         {
             counter: formatNumber(retention.returning_users || 0),
-            bottomText: USER_ANALYTICS_TRANSLATIONS.returning_users,
+            bottomText: TRANSLATIONS.returning_users,
             color: '#2ecc71'
         },
         {
             counter: calculateRetentionRate(retention.returning_users, retention.total_users) + '%',
-            bottomText: USER_ANALYTICS_TRANSLATIONS.retention_rate,
+            bottomText: TRANSLATIONS.retention_rate,
             color: '#f1c40f'
         },
         {
             counter: formatNumber(retention.power_users || 0),
-            bottomText: USER_ANALYTICS_TRANSLATIONS.power_users,
+            bottomText: TRANSLATIONS.power_users,
             color: '#9b59b6'
         }
     ];
@@ -888,8 +903,6 @@ function displayUserEngagementOverview(retention) {
 function displayContentInteractionOverview(stats) {
     console.log('Updating content interaction overview stats');
     
-    const root = document.getElementById('content-interaction-metrics-root');
-    
     try {
         // Safety check for undefined stats data
         if (!stats || typeof stats !== 'object') {
@@ -903,53 +916,47 @@ function displayContentInteractionOverview(stats) {
             };
         }
         
-        // Calculate useful ratio
-        const usefulYes = parseInt(stats.useful_yes || 0);
-        const usefulNo = parseInt(stats.useful_no || 0);
-        const usefulRatio = usefulYes + usefulNo > 0 ? Math.round(usefulYes / (usefulYes + usefulNo) * 100) : 0;
-        
-        // Calculate average rating display
-        const rating = parseFloat(stats.avg_star_rating) || 0;
-        const ratingDisplay = rating > 0 ? rating.toFixed(1) + '/5.0' : '0.0/5.0';
-        
-        const metricsData = [
-            {
-                counter: formatNumber(stats.bookmarks || 0),
-                bottomText: USER_ANALYTICS_TRANSLATIONS.bookmarks,
-                color: '#9b59b6'
-            },
-            {
-                counter: ratingDisplay,
-                bottomText: USER_ANALYTICS_TRANSLATIONS.avg_rating,
-                color: '#3498db'
-            },
-            {
-                counter: usefulRatio + '%',
-                bottomText: USER_ANALYTICS_TRANSLATIONS.useful_ratio,
-                color: '#2ecc71'
-            },
-            {
-                counter: formatNumber(stats.comments || 0),
-                bottomText: USER_ANALYTICS_TRANSLATIONS.comments,
-                color: '#f1c40f'
+        // Safely update each element, with error handling
+        try {
+            const totalBookmarks = document.getElementById('total-bookmarks');
+            if (totalBookmarks) {
+                totalBookmarks.textContent = formatNumber(stats.bookmarks || 0);
             }
-        ];
+        } catch (e) {
+            console.error('Error updating total-bookmarks:', e);
+        }
         
-        // Create the metrics grid container
-        const metricsGrid = React.createElement('div', 
-            { className: 'metrics-grid' },
-            metricsData.map((metric, index) => 
-                React.createElement(MetricsInfoBox, {
-                    key: index,
-                    topText: metric.topText || '',
-                    counter: metric.counter,
-                    bottomText: metric.bottomText,
-                    color: metric.color
-                })
-            )
-        );
+        try {
+            const avgRating = document.getElementById('avg-rating');
+            if (avgRating) {
+                const rating = parseFloat(stats.avg_star_rating) || 0;
+                avgRating.textContent = rating > 0 ? rating.toFixed(1) + '/5.0' : '0.0/5.0';
+            }
+        } catch (e) {
+            console.error('Error updating avg-rating:', e);
+        }
         
-        ReactDOM.render(metricsGrid, root);
+        try {
+            const usefulYes = parseInt(stats.useful_yes || 0);
+            const usefulNo = parseInt(stats.useful_no || 0);
+            const usefulRatio = usefulYes + usefulNo > 0 ? Math.round(usefulYes / (usefulYes + usefulNo) * 100) : 0;
+            
+            const usefulRatioEl = document.getElementById('useful-ratio');
+            if (usefulRatioEl) {
+                usefulRatioEl.textContent = usefulRatio + '%';
+            }
+        } catch (e) {
+            console.error('Error updating useful-ratio:', e);
+        }
+        
+        try {
+            const totalComments = document.getElementById('total-comments');
+            if (totalComments) {
+                totalComments.textContent = formatNumber(stats.comments || 0);
+            }
+        } catch (e) {
+            console.error('Error updating total-comments:', e);
+        }
         
         console.log('Content interaction overview updated successfully');
     } catch (error) {

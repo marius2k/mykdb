@@ -420,7 +420,7 @@ return [
     'lang_analytics_no_data_found' => 'Nu s-au găsit date pentru acest articol:',
     'lang_analytics_article_not_found' => 'Articol inexistent',
     'lang_analytics_error_loading_data' => 'Eroare la încărcarea datelor',
-    'lang_analytics_retention_rate' => 'Rata de retenție',
+
     // Analytics translations
     
    
