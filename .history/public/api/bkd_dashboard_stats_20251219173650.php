@@ -192,12 +192,13 @@ try {
     $pendingArticlesStmt = $db->query("
         SELECT 
             av.article_id,
-            av.title,
+            a.title,
             u.username as author,
-            av.version_number,
+            av.version,
             av.created_at
         FROM article_versions av
-        JOIN users u ON av.author_id = u.id
+        JOIN articles a ON av.article_id = a.id
+        JOIN users u ON a.author = u.id
         WHERE av.status = 'pending'
         ORDER BY av.created_at DESC
         LIMIT 10
@@ -209,7 +210,7 @@ try {
             'article_id' => $row['article_id'],
             'title' => htmlspecialchars($row['title']),
             'author' => htmlspecialchars($row['author']),
-            'version' => $row['version_number'],
+            'version' => $row['version'],
             'created_at' => $row['created_at']
         ];
     }
@@ -218,12 +219,13 @@ try {
     $draftArticlesStmt = $db->query("
         SELECT 
             av.article_id,
-            av.title,
+            a.title,
             u.username as author,
-            av.version_number,
+            av.version,
             av.created_at
         FROM article_versions av
-        JOIN users u ON av.author_id = u.id
+        JOIN articles a ON av.article_id = a.id
+        JOIN users u ON a.author = u.id
         WHERE av.status = 'draft'
         ORDER BY av.created_at DESC
         LIMIT 10
@@ -235,7 +237,7 @@ try {
             'article_id' => $row['article_id'],
             'title' => htmlspecialchars($row['title']),
             'author' => htmlspecialchars($row['author']),
-            'version' => $row['version_number'],
+            'version' => $row['version'],
             'created_at' => $row['created_at']
         ];
     }

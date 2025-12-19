@@ -1,0 +1,111 @@
+/**
+ * ScrollablePanel Component Styles
+ * 
+ * General-purpose scrollable panel with fixed title section
+ */
+
+/* ========================================
+   SCROLLABLE PANEL CONTAINER
+   ======================================== */
+
+.scrollable-panel-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 80px;
+    overflow: hidden;
+}
+
+/* ========================================
+   PANEL LABEL (LEFT SIDE - 25%)
+   ======================================== */
+
+.scrollable-panel-label {
+    flex: 0 0 25%;
+    background: #c1dfdf;
+    color: #1f2937;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    border-right: 1px solid #e5e7eb;
+    text-align: center;
+    word-break: break-word;
+}
+
+/* ========================================
+   PANEL CONTENT (RIGHT SIDE - 75%)
+   ======================================== */
+
+.scrollable-panel-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 50px;
+    padding: 10px 8px;
+}
+
+.scrollable-panel-item {
+    display: flex;
+    gap: 10px;
+    padding: 0;
+    width: 100%;
+    animation: slideUpFade 0.6s ease-out;
+}
+
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+
+.scrollable-panel-empty {
+    color: #6b7280;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 640px) {
+    .scrollable-panel-container {
+        flex-direction: column;
+        min-height: 90px;
+    }
+    
+    .scrollable-panel-label {
+        flex: 0 0 auto;
+        padding: 10px 16px;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .scrollable-panel-content {
+        padding: 12px 16px;
+    }
+    
+    .scrollable-panel-item {
+        gap: 12px;
+    }
+}

@@ -118,38 +118,11 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 </style>
 <br>
 
-<!-- ScrollablePanels Container -->
-<div class="scrollable-panels-wrapper">
-    <!-- Single Multi-Section Panel -->
-    <div id="dashboard-info-panel-root" class="scrollable-panel-full"></div>
-</div>
-
-<style>
-.scrollable-panels-wrapper {
-    width: 90%;
-    display: flex;
-    align-items: flex-start;
-    padding: 1px;
-    margin: 0 auto 20px auto;
-}
-
-.scrollable-panel-full {
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    .scrollable-panels-wrapper {
-        flex-direction: column;
-    }
-    
-    .scrollable-panels-wrapper > div {
-        width: 100% !important;
-    }
-}
-</style>
+<!-- Recent Activity Feed -->
+<div id="recent-activity-root"></div>
 
 <!-- Dashboard Metrics -->
-<!-- <div id="dashboard-metrics-root"></div> -->
+<div id="dashboard-metrics-root"></div>
 
 
 
@@ -246,113 +219,27 @@ $(function() {
     // Load Dashboard Metrics and Activity
     $.getJSON('api/bkd_dashboard_stats.php', function(statsData) {
         if (statsData.success) {
-            // Create sections array for multi-section ScrollablePanel
-            const sections = [
-                {
-                    title: 'Recent Activity',
-                    items: statsData.activities,
-                    emptyMessage: '📭 No recent activity',
-                    renderItem: (activity, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px'
-                                } 
-                            },
-                                React.createElement('strong', null, activity.username),
-                                ' ',
-                                activity.message
-                            ),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, activity.timeAgo)
-                        );
-                    }
-                },
-                {
-                    title: 'Articles in Pending',
-                    items: statsData.pendingArticles,
-                    emptyMessage: '✅ No pending articles',
-                    renderItem: (article, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
-                                } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
-                        );
-                    }
-                },
-                {
-                    title: 'Articles in Draft',
-                    items: statsData.draftArticles,
-                    emptyMessage: '📝 No draft articles',
-                    renderItem: (article, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
-                                } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
-                        );
-                    }
-                }
-            ];
+            // Render Metrics Cards
+            const metricsRoot = ReactDOM.createRoot(document.getElementById('dashboard-metrics-root'));
+            metricsRoot.render(
+                React.createElement('div', { className: 'dashboard-metrics-container' },
+                    statsData.metrics.map((metric, index) => 
+                        React.createElement(MetricsInfoBox, {
+                            key: index,
+                            topText: metric.topText,
+                            counter: metric.counter,
+                            bottomText: metric.bottomText,
+                            color: metric.color
+                        })
+                    )
+                )
+            );
             
-            // Render Single Multi-Section ScrollablePanel
-            const panelRoot = ReactDOM.createRoot(document.getElementById('dashboard-info-panel-root'));
-            panelRoot.render(
-                React.createElement(ScrollablePanel, {
-                    sections: sections,
-                    itemScrollInterval: 3000,
-                    sectionTransitionDelay: 1000,
-                    leftSideColor: '#d9ebebff',
-                    leftSideTextColor: '#1f2937'
+            // Render Recent Activity Feed
+            const activityRoot = ReactDOM.createRoot(document.getElementById('recent-activity-root'));
+            activityRoot.render(
+                React.createElement(RecentActivity, {
+                    activities: statsData.activities
                 })
             );
         }

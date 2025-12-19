@@ -10,32 +10,10 @@ $userId = $_SESSION['user']['id'];
 try {
     // Calculate stats
     
-    
-    // 1. Total Articles
-    $totalArticlesStmt = $db->query("SELECT COUNT(*) FROM articles");
-    $totalArticles = $totalArticlesStmt->fetchColumn();
-    
-    // 2. Total Users
-    $totalUsersStmt = $db->query("SELECT COUNT(*) FROM users");
-    $totalUsers = $totalUsersStmt->fetchColumn();
-    
-    // 3. Online Users
-    $onlineUsersStmt = $db->query("SELECT COUNT(*) FROM users WHERE online = 1");
-    $onlineUsers = $onlineUsersStmt->fetchColumn();
-    
-    // 4. Active Users (logged in last 7 days)
-    $activeUsersStmt = $db->query("
-        SELECT COUNT(DISTINCT user_id) 
-        FROM activity_log 
-        WHERE action_type = 'login_success' 
-        AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-    ");
-    $activeUsers = $activeUsersStmt->fetchColumn();
-    
-    // 5. Monthly Stats
+    // Month start for monthly stats
     $monthStart = date('Y-m-01');
     
-    // Published this month
+    // 1. Published this month
     $publishedStmt = $db->query("
         SELECT COUNT(DISTINCT article_id) 
         FROM admin_activity_analytics 
@@ -44,7 +22,15 @@ try {
     ", [$monthStart]);
     $publishedCount = $publishedStmt->fetchColumn();
     
-    // Approved this month
+    // 2. Drafts this month
+    $draftsStmt = $db->query("SELECT COUNT(*) FROM article_versions WHERE status = 'draft' AND created_at >= ?", [$monthStart]);
+    $draftsCount = $draftsStmt->fetchColumn();
+    
+    // 3. Pending this month
+    $pendingStmt = $db->query("SELECT COUNT(*) FROM article_versions WHERE status = 'pending' AND created_at >= ?", [$monthStart]);
+    $pendingCount = $pendingStmt->fetchColumn();
+    
+    // 4. Approved this month
     $approvedStmt = $db->query("
         SELECT COUNT(DISTINCT article_id) 
         FROM admin_activity_analytics 
@@ -53,13 +39,26 @@ try {
     ", [$monthStart]);
     $approvedCount = $approvedStmt->fetchColumn();
     
-    // Drafts this month
-    $draftsStmt = $db->query("SELECT COUNT(*) FROM article_versions WHERE status = 'draft' AND created_at >= ?", [$monthStart]);
-    $draftsCount = $draftsStmt->fetchColumn();
+    // 5. Total Articles
+    $totalArticlesStmt = $db->query("SELECT COUNT(*) FROM articles");
+    $totalArticles = $totalArticlesStmt->fetchColumn();
     
-    // Pending this month
-    $pendingStmt = $db->query("SELECT COUNT(*) FROM article_versions WHERE status = 'pending' AND created_at >= ?", [$monthStart]);
-    $pendingCount = $pendingStmt->fetchColumn();
+    // 6. Total Users
+    $totalUsersStmt = $db->query("SELECT COUNT(*) FROM users");
+    $totalUsers = $totalUsersStmt->fetchColumn();
+    
+    // 7. Online Users
+    $onlineUsersStmt = $db->query("SELECT COUNT(*) FROM users WHERE online = 1");
+    $onlineUsers = $onlineUsersStmt->fetchColumn();
+    
+    // 8. Active Users (logged in last 7 days)
+    $activeUsersStmt = $db->query("
+        SELECT COUNT(DISTINCT user_id) 
+        FROM activity_log 
+        WHERE action_type = 'login_success' 
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+    ");
+    $activeUsers = $activeUsersStmt->fetchColumn();
     
     // Get Recent Activity (last 20 activities)
     $activitiesStmt = $db->query("
@@ -74,7 +73,7 @@ try {
         LEFT JOIN articles a ON uaa.article_id = a.id
         WHERE uaa.action_type IN ('view', 'comment', 'bookmark', 'rating', 'publish', 'approve', 'edit')
         ORDER BY uaa.action_date DESC
-        LIMIT 10
+        LIMIT 20
     ");
     
     $activities = [];
@@ -142,109 +141,34 @@ try {
         ];
     }
     
-    // Prepare stats items for ScrollablePanel
-    $statsItems = [
-        [
-            'label' => 'Total Articles',
-            'value' => (int)$totalArticles,
-            'icon' => '📚',
-            'color' => '#04709bcc'
-        ],
-        [
-            'label' => 'Total Users',
-            'value' => (int)$totalUsers,
-            'icon' => '👥',
-            'color' => '#04709bcc'
-        ],
-        [
-            'label' => 'Active Users',
-            'value' => (int)$activeUsers,
-            'icon' => '🟢',
-            'color' => '#10b981'
-        ],
-        [
-            'label' => 'Published (This Month)',
-            'value' => (int)$publishedCount,
-            'icon' => '🚀',
-            'color' => '#770286ff'
-        ],
-        [
-            'label' => 'Approved (This Month)',
-            'value' => (int)$approvedCount,
-            'icon' => '✅',
-            'color' => '#029affff'
-        ],
-        [
-            'label' => 'Drafts (This Month)',
-            'value' => (int)$draftsCount,
-            'icon' => '📝',
-            'color' => '#d60303ff'
-        ],
-        [
-            'label' => 'Pending (This Month)',
-            'value' => (int)$pendingCount,
-            'icon' => '⏳',
-            'color' => '#02860dff'
-        ]
-    ];
-    
-    // Get Articles in Pending
-    $pendingArticlesStmt = $db->query("
-        SELECT 
-            av.article_id,
-            av.title,
-            u.username as author,
-            av.version_number,
-            av.created_at
-        FROM article_versions av
-        JOIN users u ON av.author_id = u.id
-        WHERE av.status = 'pending'
-        ORDER BY av.created_at DESC
-        LIMIT 10
-    ");
-    
-    $pendingArticles = [];
-    while ($row = $pendingArticlesStmt->fetch()) {
-        $pendingArticles[] = [
-            'article_id' => $row['article_id'],
-            'title' => htmlspecialchars($row['title']),
-            'author' => htmlspecialchars($row['author']),
-            'version' => $row['version_number'],
-            'created_at' => $row['created_at']
-        ];
-    }
-    
-    // Get Articles in Draft
-    $draftArticlesStmt = $db->query("
-        SELECT 
-            av.article_id,
-            av.title,
-            u.username as author,
-            av.version_number,
-            av.created_at
-        FROM article_versions av
-        JOIN users u ON av.author_id = u.id
-        WHERE av.status = 'draft'
-        ORDER BY av.created_at DESC
-        LIMIT 10
-    ");
-    
-    $draftArticles = [];
-    while ($row = $draftArticlesStmt->fetch()) {
-        $draftArticles[] = [
-            'article_id' => $row['article_id'],
-            'title' => htmlspecialchars($row['title']),
-            'author' => htmlspecialchars($row['author']),
-            'version' => $row['version_number'],
-            'created_at' => $row['created_at']
-        ];
-    }
-    
     // Prepare response
     $response = [
         'success' => true,
         'metrics' => [
-            
+            [
+                'topText' => 'Published',
+                'counter' => (int)$publishedCount,
+                'bottomText' => 'Articles This Month',
+                'color' => '#770286ff'
+            ],
+            [
+                'topText' => 'In Draft',
+                'counter' => (int)$draftsCount,
+                'bottomText' => 'Articles This Month',
+                'color' => '#d60303ff'
+            ],
+            [
+                'topText' => 'Pending',
+                'counter' => (int)$pendingCount,
+                'bottomText' => 'Articles This Month',
+                'color' => '#02860dff'
+            ],
+            [
+                'topText' => 'Approved',
+                'counter' => (int)$approvedCount,
+                'bottomText' => 'Articles This Month',
+                'color' => '#029affff'
+            ],
             [
                 'topText' => 'Total',
                 'counter' => (int)$totalArticles,
@@ -270,10 +194,7 @@ try {
                 'color' => '#3b82f6'
             ]
         ],
-        'statsItems' => $statsItems,
-        'activities' => $activities,
-        'pendingArticles' => $pendingArticles,
-        'draftArticles' => $draftArticles
+        'activities' => $activities
     ];
     
     echo json_encode($response);

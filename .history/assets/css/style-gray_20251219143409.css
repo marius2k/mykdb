@@ -2296,21 +2296,9 @@ ul.top-articles .li-icon {
 }
 
 
-#dashboard-metrics-root,
-#recent-activity-root {
+#dashboard-stats-root {
   width: 90%;
-  margin: 0 auto;
-}
-
-#recent-activity-root {
-  margin-bottom: 20px;
-}
-
-.dashboard-metrics-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px auto;
 }
 
 .dashboard-wrapper {

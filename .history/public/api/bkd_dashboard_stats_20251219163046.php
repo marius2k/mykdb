@@ -74,7 +74,7 @@ try {
         LEFT JOIN articles a ON uaa.article_id = a.id
         WHERE uaa.action_type IN ('view', 'comment', 'bookmark', 'rating', 'publish', 'approve', 'edit')
         ORDER BY uaa.action_date DESC
-        LIMIT 10
+        LIMIT 20
     ");
     
     $activities = [];
@@ -188,58 +188,6 @@ try {
         ]
     ];
     
-    // Get Articles in Pending
-    $pendingArticlesStmt = $db->query("
-        SELECT 
-            av.article_id,
-            av.title,
-            u.username as author,
-            av.version_number,
-            av.created_at
-        FROM article_versions av
-        JOIN users u ON av.author_id = u.id
-        WHERE av.status = 'pending'
-        ORDER BY av.created_at DESC
-        LIMIT 10
-    ");
-    
-    $pendingArticles = [];
-    while ($row = $pendingArticlesStmt->fetch()) {
-        $pendingArticles[] = [
-            'article_id' => $row['article_id'],
-            'title' => htmlspecialchars($row['title']),
-            'author' => htmlspecialchars($row['author']),
-            'version' => $row['version_number'],
-            'created_at' => $row['created_at']
-        ];
-    }
-    
-    // Get Articles in Draft
-    $draftArticlesStmt = $db->query("
-        SELECT 
-            av.article_id,
-            av.title,
-            u.username as author,
-            av.version_number,
-            av.created_at
-        FROM article_versions av
-        JOIN users u ON av.author_id = u.id
-        WHERE av.status = 'draft'
-        ORDER BY av.created_at DESC
-        LIMIT 10
-    ");
-    
-    $draftArticles = [];
-    while ($row = $draftArticlesStmt->fetch()) {
-        $draftArticles[] = [
-            'article_id' => $row['article_id'],
-            'title' => htmlspecialchars($row['title']),
-            'author' => htmlspecialchars($row['author']),
-            'version' => $row['version_number'],
-            'created_at' => $row['created_at']
-        ];
-    }
-    
     // Prepare response
     $response = [
         'success' => true,
@@ -271,9 +219,7 @@ try {
             ]
         ],
         'statsItems' => $statsItems,
-        'activities' => $activities,
-        'pendingArticles' => $pendingArticles,
-        'draftArticles' => $draftArticles
+        'activities' => $activities
     ];
     
     echo json_encode($response);

@@ -71,13 +71,13 @@ include APP_ROOT . 'includes/header.php';
 
 <!-- CardInfoBox Component -->
 <link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/CardInfoBox.css">
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/MetricsInfoBox.css">
-<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/ScrollablePanel.css">
+<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/DashboardStats.css">
+<link rel="stylesheet" href="<?= APP_URL ?>assets/css/components/RecentActivity.css">
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="<?= APP_URL ?>assets/js/react-components-dist/CardInfoBox.js"></script>
-<script src="<?= APP_URL ?>assets/js/react-components-dist/MetricsInfoBox.js"></script>
-<script src="<?= APP_URL ?>assets/js/react-components-dist/ScrollablePanel.js"></script>
+<script src="<?= APP_URL ?>assets/js/react-components-dist/DashboardStats.js"></script>
+<script src="<?= APP_URL ?>assets/js/react-components-dist/RecentActivity.js"></script>
 
 <script>
 window.CSRF_TOKEN = "<?= $_SESSION['csrf_token'] ?>";
@@ -118,40 +118,8 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 </style>
 <br>
 
-<!-- ScrollablePanels Container -->
-<div class="scrollable-panels-wrapper">
-    <!-- Single Multi-Section Panel -->
-    <div id="dashboard-info-panel-root" class="scrollable-panel-full"></div>
-</div>
-
-<style>
-.scrollable-panels-wrapper {
-    width: 90%;
-    display: flex;
-    align-items: flex-start;
-    padding: 1px;
-    margin: 0 auto 20px auto;
-}
-
-.scrollable-panel-full {
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    .scrollable-panels-wrapper {
-        flex-direction: column;
-    }
-    
-    .scrollable-panels-wrapper > div {
-        width: 100% !important;
-    }
-}
-</style>
-
-<!-- Dashboard Metrics -->
-<!-- <div id="dashboard-metrics-root"></div> -->
-
-
+<!-- Dashboard Stats Bar -->
+<div id="dashboard-stats-root"></div>
 
 <div id="dashboard-root">
     
@@ -243,116 +211,14 @@ window.USER_ROLE = "<?= $_SESSION['user']['role'] ?>";
 
 <script>
 $(function() {
-    // Load Dashboard Metrics and Activity
+    // Load Dashboard Stats Bar
     $.getJSON('api/bkd_dashboard_stats.php', function(statsData) {
         if (statsData.success) {
-            // Create sections array for multi-section ScrollablePanel
-            const sections = [
-                {
-                    title: 'Recent Activity',
-                    items: statsData.activities,
-                    emptyMessage: '📭 No recent activity',
-                    renderItem: (activity, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px'
-                                } 
-                            },
-                                React.createElement('strong', null, activity.username),
-                                ' ',
-                                activity.message
-                            ),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, activity.timeAgo)
-                        );
-                    }
-                },
-                {
-                    title: 'Articles in Pending',
-                    items: statsData.pendingArticles,
-                    emptyMessage: '✅ No pending articles',
-                    renderItem: (article, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
-                                } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
-                        );
-                    }
-                },
-                {
-                    title: 'Articles in Draft',
-                    items: statsData.draftArticles,
-                    emptyMessage: '📝 No draft articles',
-                    renderItem: (article, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
-                                } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
-                        );
-                    }
-                }
-            ];
-            
-            // Render Single Multi-Section ScrollablePanel
-            const panelRoot = ReactDOM.createRoot(document.getElementById('dashboard-info-panel-root'));
-            panelRoot.render(
-                React.createElement(ScrollablePanel, {
-                    sections: sections,
-                    itemScrollInterval: 3000,
-                    sectionTransitionDelay: 1000,
-                    leftSideColor: '#d9ebebff',
-                    leftSideTextColor: '#1f2937'
+            const statsRoot = ReactDOM.createRoot(document.getElementById('dashboard-stats-root'));
+            statsRoot.render(
+                React.createElement(DashboardStatsBar, {
+                    stats: statsData.stats,
+                    activities: statsData.activities
                 })
             );
         }

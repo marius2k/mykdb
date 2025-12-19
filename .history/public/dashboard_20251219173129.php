@@ -281,64 +281,31 @@ $(function() {
                     }
                 },
                 {
-                    title: 'Articles in Pending',
-                    items: statsData.pendingArticles,
-                    emptyMessage: '✅ No pending articles',
-                    renderItem: (article, index) => {
+                    title: 'Stats',
+                    items: statsData.statsItems,
+                    emptyMessage: '📊 No statistics available',
+                    renderItem: (stat, index) => {
                         return React.createElement('div', { 
                             style: { 
                                 display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
+                                alignItems: 'center',
+                                width: '100%',
+                                fontSize: '14px',
+                                color: '#1f2937'
                             } 
                         },
-                            React.createElement('div', { 
+                            React.createElement('span', { 
                                 style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
-                                } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
                                     color: '#6b7280'
                                 } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
-                        );
-                    }
-                },
-                {
-                    title: 'Articles in Draft',
-                    items: statsData.draftArticles,
-                    emptyMessage: '📝 No draft articles',
-                    renderItem: (article, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
+                            }, stat.label + ': '),
+                            React.createElement('span', { 
                                 style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
+                                    fontWeight: '700',
+                                    color: stat.color,
+                                    marginLeft: '8px'
                                 } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
+                            }, stat.value)
                         );
                     }
                 }

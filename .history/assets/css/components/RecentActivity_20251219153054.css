@@ -1,0 +1,224 @@
+/**
+ * RecentActivity Component Styles
+ * 
+ * Styles for recent activity timeline feed with carousel
+ */
+
+/* ========================================
+   ACTIVITY FEED
+   ======================================== */
+
+.activity-feed-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 140px;
+}
+
+.activity-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f3f4f6;
+    flex-shrink: 0;
+}
+
+.activity-feed-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.activity-icon {
+    font-size: 22px;
+}
+
+.activity-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.activity-counter {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: right;
+}
+
+.activity-nav-btn {
+    background: #f3f4f6;
+    border: none;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.activity-nav-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+    transform: scale(1.1);
+}
+
+.activity-nav-btn:active {
+    transform: scale(0.95);
+}
+
+/* Single Activity Display */
+.activity-feed-single {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 60px;
+}
+
+.activity-item-single {
+    display: flex;
+    gap: 16px;
+    padding: 8px 0;
+    width: 100%;
+    animation: slideUpFade 0.6s ease-out;
+}
+
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.activity-icon-wrapper {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-radius: 50%;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.activity-type-icon {
+    line-height: 1;
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.activity-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.activity-text {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.activity-text strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+/* Progress Bar */
+.activity-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: #f3f4f6;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.activity-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    border-radius: 2px;
+    animation: progressFill 3s linear infinite;
+}
+
+@keyframes progressFill {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+.no-activity {
+    text-align: center;
+    padding: 20px;
+    color: #9ca3af;
+    font-size: 14px;
+    width: 100%;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 640px) {
+    .activity-feed-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}

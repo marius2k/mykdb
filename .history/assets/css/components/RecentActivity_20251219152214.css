@@ -1,0 +1,216 @@
+/**
+ * RecentActivity Component Styles
+ * 
+ * Styles for recent activity timeline feed
+ */
+
+/* ========================================
+   ACTIVITY FEED
+   ======================================== */
+
+.activity-feed-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f3f4f6;
+    flex-shrink: 0;
+}
+
+.activity-feed-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.activity-icon {
+    font-size: 22px;
+}
+
+.toggle-activities-btn {
+    background: #f3f4f6;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.toggle-activities-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.activity-feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    flex: 1;
+}
+
+/* Custom scrollbar styling */
+.activity-feed-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.activity-feed-list::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+}
+
+.activity-feed-list::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.activity-feed-list::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Firefox scrollbar */
+.activity-feed-list {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+    scroll-behavior: smooth;
+}
+
+.activity-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+    transition: all 0.3s ease;
+    animation: slideInFromRight 0.4s ease-out;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+/* Stagger animation for each item */
+.activity-item:nth-child(1) { animation-delay: 0.1s; }
+.activity-item:nth-child(2) { animation-delay: 0.2s; }
+.activity-item:nth-child(3) { animation-delay: 0.3s; }
+.activity-item:nth-child(4) { animation-delay: 0.4s; }
+.activity-item:nth-child(5) { animation-delay: 0.5s; }
+.activity-item:nth-child(n+6) { animation-delay: 0.6s; }
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item:hover {
+    background-color: #f9fafb;
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 6px;
+    transform: translateX(4px);
+}
+
+.activity-icon-wrapper {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.activity-item:hover .activity-icon-wrapper {
+    background: #e5e7eb;
+    transform: scale(1.1) rotate(5deg);
+}
+
+.activity-type-icon {
+    line-height: 1;
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.activity-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.activity-text {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.activity-text strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.no-activity {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 640px) {
+    .activity-feed-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}

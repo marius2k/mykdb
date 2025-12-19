@@ -2296,20 +2296,13 @@ ul.top-articles .li-icon {
 }
 
 
-#dashboard-metrics-root,
+#dashboard-stats-root,
 #recent-activity-root {
   width: 90%;
   margin: 0 auto;
 }
 
 #recent-activity-root {
-  margin-bottom: 20px;
-}
-
-.dashboard-metrics-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
   margin-bottom: 20px;
 }
 

@@ -246,12 +246,32 @@ $(function() {
     // Load Dashboard Metrics and Activity
     $.getJSON('api/bkd_dashboard_stats.php', function(statsData) {
         if (statsData.success) {
-            // Create sections array for multi-section ScrollablePanel
-            const sections = [
-                {
+            // Render Metrics Cards
+            /*const metricsRoot = ReactDOM.createRoot(document.getElementById('dashboard-metrics-root'));
+            metricsRoot.render(
+                React.createElement('div', { className: 'dashboard-metrics-container' },
+                    statsData.metrics.map((metric, index) => 
+                        React.createElement(MetricsInfoBox, {
+                            key: index,
+                            topText: metric.topText,
+                            counter: metric.counter,
+                            bottomText: metric.bottomText,
+                            color: metric.color
+                        })
+                    )
+                )
+            );
+            */
+            // Render Recent Activity Feed using ScrollablePanel
+            const activityRoot = ReactDOM.createRoot(document.getElementById('recent-activity-root'));
+            activityRoot.render(
+                React.createElement(ScrollablePanel, {
                     title: 'Recent Activity',
                     items: statsData.activities,
                     emptyMessage: '📭 No recent activity',
+                    scrollInterval: 3000,
+                    leftSideColor: '#c1dfdf',
+                    leftSideTextColor: '#1f2937',
                     renderItem: (activity, index) => {
                         return React.createElement('div', { 
                             style: { 
@@ -279,80 +299,43 @@ $(function() {
                             }, activity.timeAgo)
                         );
                     }
-                },
-                {
-                    title: 'Articles in Pending',
-                    items: statsData.pendingArticles,
-                    emptyMessage: '✅ No pending articles',
-                    renderItem: (article, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
-                                } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
-                        );
-                    }
-                },
-                {
-                    title: 'Articles in Draft',
-                    items: statsData.draftArticles,
-                    emptyMessage: '📝 No draft articles',
-                    renderItem: (article, index) => {
-                        return React.createElement('div', { 
-                            style: { 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                width: '100%'
-                            } 
-                        },
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '14px',
-                                    color: '#1f2937',
-                                    marginBottom: '4px',
-                                    fontWeight: '600'
-                                } 
-                            }, article.title),
-                            React.createElement('div', { 
-                                style: { 
-                                    fontSize: '12px',
-                                    color: '#6b7280'
-                                } 
-                            }, 
-                                'by ' + article.author + ' • v' + article.version
-                            )
-                        );
-                    }
-                }
-            ];
+                })
+            );
             
-            // Render Single Multi-Section ScrollablePanel
-            const panelRoot = ReactDOM.createRoot(document.getElementById('dashboard-info-panel-root'));
-            panelRoot.render(
+            // Render Platform Statistics using ScrollablePanel
+            const statsRoot = ReactDOM.createRoot(document.getElementById('platform-stats-root'));
+            statsRoot.render(
                 React.createElement(ScrollablePanel, {
-                    sections: sections,
-                    itemScrollInterval: 3000,
-                    sectionTransitionDelay: 1000,
-                    leftSideColor: '#d9ebebff',
-                    leftSideTextColor: '#1f2937'
+                    title: 'Stats',
+                    items: statsData.statsItems,
+                    emptyMessage: '📊 No statistics available',
+                    scrollInterval: 4000,
+                    leftSideColor: '#c1dfdf',
+                    leftSideTextColor: '#1f2937',
+                    renderItem: (stat, index) => {
+                        return React.createElement('div', { 
+                            style: { 
+                                display: 'flex', 
+                                alignItems: 'center',
+                                width: '100%',
+                                fontSize: '14px',
+                                color: '#1f2937'
+                            } 
+                        },
+                            React.createElement('span', { 
+                                style: { 
+                                    color: '#6b7280'
+                                } 
+                            }, stat.label + ': '),
+                            React.createElement('span', { 
+                                style: { 
+                                    fontWeight: '700',
+                                    color: stat.color,
+                                    marginLeft: '8px'
+                                } 
+                            }, stat.value)
+                        );
+                    }
                 })
             );
         }
