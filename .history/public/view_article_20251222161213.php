@@ -824,7 +824,10 @@ function sendRating(val, articleId, ratingAvg) {
         if (data.success) {
             getAverageRating(articleId, ratingAvg, document.querySelectorAll('.article-rating .star'));
             
-            // Note: Rating tracking is done server-side in bkd_article_rating.php
+            // Track via client-side analytics too
+            if (typeof UserAnalytics !== 'undefined') {
+                UserAnalytics.trackRating(articleId, val);
+            }
         } else {
             alert(data.error || "Eroare la rating!");
         }
