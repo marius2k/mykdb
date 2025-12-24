@@ -2191,7 +2191,7 @@ ul.top-articles .li-icon {
 .tag-item {
     display: inline-flex;
     align-items: center;
-    padding: 2px 8px;
+    padding: 4px 10px;
     background: #f0f0f0;
     border: 1px solid #ddd;
     border-radius: 4px;
