@@ -32,7 +32,7 @@
 
 .react-button--primary:hover:not(.react-button--disabled) {
   background-color: var(--primary-dark);
-  color: rgb(61, 61, 61)
+  color: rgb(61, 61, 61);
 }
 
 .react-button--danger {
