@@ -13,7 +13,7 @@ LOG_FILE="remote_repo_update.log"
 
 # Numele ramurii principale pe care se face push-ul
 # (De obicei 'main' sau 'master')
-GIT_BRANCH="dev" 
+GIT_BRANCH="version_2_2" 
 
 # ----------------------------------------------------
 # NU MODIFICAȚI CODUL SUB ACEASTĂ SECȚIUNE
