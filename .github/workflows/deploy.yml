@@ -1,0 +1,40 @@
+name: Sync to GCP
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Sync files to VM
+        uses: Burnett01/rsync-deployments@5.2.1
+        with:
+          # Adăugăm flag-urile --exclude pentru tot ce nu vrei pe server
+          switches: >-
+            -avzr --delete 
+            --exclude='.git*' 
+            --exclude='.github*' 
+            --exclude='.history*' 
+            --exclude='.vscode*' 
+            --exclude='backups*'
+          path: ./
+          remote_path: /home/mariusdragulescu/mykdb/ # Calea pe care am văzut-o în promptul tău
+          remote_host: ${{ secrets.VM_IP }}
+          remote_user: ${{ secrets.VM_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Opțional: Dacă modifici fișiere de configurare Apache sau PHP, 
+      # e bine să dai un restart rapid containerului webapp.
+      - name: Refresh Webapp
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: docker restart mykdb-webapp
