@@ -24,8 +24,6 @@ jobs:
             --exclude='.vscode*' 
             --exclude='node_modules*'
             --exclude='backups*'
-            --exclude='pgallery*'
-            --exclude='assets/js/react-components-dist*'
           path: ./
           remote_path: /home/mariusdragulescu/mykdb/ # Calea pe care am văzut-o în promptul tău
           remote_host: ${{ secrets.VM_IP }}
