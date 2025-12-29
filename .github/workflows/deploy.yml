@@ -22,6 +22,7 @@ jobs:
             --exclude='.github*' 
             --exclude='.history*' 
             --exclude='.vscode*' 
+            --exclude='node_modules*'
             --exclude='backups*'
           path: ./
           remote_path: /home/mariusdragulescu/mykdb/ # Calea pe care am văzut-o în promptul tău
